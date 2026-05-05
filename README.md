@@ -13,9 +13,9 @@
 
 ## 界面预览
 
-![悬浮面板 DPS 页截图](md/images/usage-floating-dps.svg)
+![悬浮面板 DPS 页截图](md/images/usage-floating-dps.png)
 
-![设置窗口截图](md/images/usage-settings-window.svg)
+![设置窗口截图](md/images/usage-settings-window.png)
 
 ## 这是什么
 

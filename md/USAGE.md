@@ -48,7 +48,7 @@
 - 启用插件后，可以在游戏里的插件入口中打开 `DPS统计` 主窗口。
 - 主窗口主要用于查看插件状态，以及打开设置和悬浮统计面板。
 
-![主窗口截图](images/usage-main-window.svg)
+![主窗口截图](images/usage-main-window.png)
 
 截图看点：
 
@@ -65,7 +65,7 @@
 
 再次右键 `DPS` 页签时，会关闭设置窗口。
 
-![设置窗口截图](images/usage-settings-window.svg)
+![设置窗口截图](images/usage-settings-window.png)
 
 截图看点：
 
@@ -128,7 +128,7 @@
 - 右键点击 `DPS` 页签：
   - 打开 / 关闭设置窗口
 
-![悬浮面板 DPS 页截图](images/usage-floating-dps.svg)
+![悬浮面板 DPS 页截图](images/usage-floating-dps.png)
 
 截图看点：
 
@@ -220,7 +220,7 @@
 - 当前选中的历史记录会高亮显示
 - 新的实时战斗开始后，界面会自动切回实时数据
 
-![历史记录点击回看截图](images/usage-history-records.svg)
+![历史记录点击回看截图](images/usage-history-records.png)
 
 截图看点：
 
@@ -315,7 +315,7 @@
 - `极神兵破坏作战`
 - `木人演练场`
 
-![导入测试数据截图](images/usage-test-data.svg)
+![导入测试数据截图](images/usage-test-data.png)
 
 截图看点：
 
@@ -388,15 +388,15 @@
 
 当前使用说明中的截图主要对应下面几个场景：
 
-- `md/images/usage-main-window.svg`
+- `md/images/usage-main-window.png`
   对应主窗口
-- `md/images/usage-settings-window.svg`
+- `md/images/usage-settings-window.png`
   对应设置窗口
-- `md/images/usage-floating-dps.svg`
+- `md/images/usage-floating-dps.png`
   对应悬浮面板的 `DPS` 页
-- `md/images/usage-history-records.svg`
+- `md/images/usage-history-records.png`
   对应历史记录点击回看
-- `md/images/usage-test-data.svg`
+- `md/images/usage-test-data.png`
   对应导入测试数据
 
 如果你后面还要继续更新截图，建议保持：

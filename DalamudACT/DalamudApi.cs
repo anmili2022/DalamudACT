@@ -20,6 +20,7 @@ public sealed class DalamudApi
     [PluginService] public static Dalamud.Plugin.Services.IObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IPluginLog Log { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IPartyList PartyList { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IBuddyList BuddyList { get; private set; } = null!;
 
     public static uint GetTerritoryTypeId()
         => TryGetUInt32Property(ClientState, "TerritoryType", "TerritoryTypeId", "CurrentTerritoryType");

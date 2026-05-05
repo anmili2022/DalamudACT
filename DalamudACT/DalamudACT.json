@@ -24,6 +24,6 @@
     ],
     "InternalName": "DalamudACT",
     "ApplicableVersion": "any",
-    "AssemblyVersion": "0.15.2.0",
+    "AssemblyVersion": "0.15.2.1",
     "DalamudApiLevel": 15
 }

@@ -42,7 +42,10 @@ internal static class StatsPanel
         var hasCombatData = combatData?.Msg?.Encounter != null && combatData.Msg.Combatant.Count > 0;
         if (!collapseToTabBar && !hasCombatData)
         {
-            ImGui.TextDisabled("等待战斗数据...");
+            var history = statsService.HistoricalRecords;
+            ImGui.TextDisabled(history.Count > 0
+                ? "当前没有实时战斗数据，可点击下方历史记录查看。"
+                : "等待战斗数据...");
 
             if (config.ShowHistoryTab)
             {
@@ -412,6 +415,10 @@ internal static class StatsPanel
         ImGui.SameLine();
         if (ImGui.Button("导入历史记录"))
             statsService.ImportHistoricalRecords();
+
+        ImGui.SameLine();
+        if (ImGui.Button("清空历史"))
+            statsService.ClearHistory();
 
         ImGui.TextDisabled($"文件: {statsService.HistoryTransferFilePath}");
         if (!string.IsNullOrWhiteSpace(statsService.HistoryTransferStatusText))

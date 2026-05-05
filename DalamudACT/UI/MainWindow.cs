@@ -8,6 +8,8 @@ namespace DalamudACT;
 
 internal sealed class MainWindow : Window
 {
+    private static readonly string PluginVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString() ?? "unknown";
+
     private readonly PluginConfiguration config;
     private readonly LocalStatsService statsService;
     private readonly Action openSettings;
@@ -33,6 +35,8 @@ internal sealed class MainWindow : Window
         BgAlpha = Math.Clamp(config.WindowOpacity, 0.2f, 1f);
 
         ImGui.TextUnformatted("ACTX 风格本地统计");
+        ImGui.SameLine();
+        ImGui.TextDisabled($"v{PluginVersion}");
         ImGui.Separator();
         ImGui.TextWrapped("当前版本直接在 Dalamud 内采集战斗事件，并使用 ACTX / NotACT 的统计口径生成本地战斗快照，不再依赖外部 MiniParse。");
         ImGui.Spacing();
@@ -51,6 +55,7 @@ internal sealed class MainWindow : Window
         if (ImGui.BeginTable("##ui_summary", 2, ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH))
         {
             DrawRow("模式", "独立运行 / 本地采集");
+            DrawRow("版本", PluginVersion);
             DrawRow("统计来源", statsService.DataSourceText);
             DrawRow("战斗结束判定", BuildCombatEndSummary(config));
             DrawRow("主界面透明度", $"{config.WindowOpacity:P0}");

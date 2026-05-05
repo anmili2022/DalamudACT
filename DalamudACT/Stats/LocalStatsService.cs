@@ -4,14 +4,17 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace DalamudACT;
 
 internal sealed class LocalStatsService
 {
     private const uint InvalidActorId = 0xE0000000;
+    private const double MinimumHistoricalEncounterSeconds = 30d;
     private static readonly TimeSpan OwnerCacheTtl = TimeSpan.FromMilliseconds(2500);
     private static readonly TimeSpan OwnerCacheWarmupInterval = TimeSpan.FromMilliseconds(500);
     private static readonly JsonSerializerOptions HistoryJsonOptions = new()
@@ -29,6 +32,7 @@ internal sealed class LocalStatsService
     private EncounterSession currentEncounter = new();
     private DateTime lastOwnerWarmupUtc;
     private DateTime partyOutOfCombatSinceUtc;
+    private int encounterFinalizedVersion;
     private int selectedHistoricalRecordIndex = -1;
 
     public LocalStatsService(PluginConfiguration config)
@@ -55,6 +59,15 @@ internal sealed class LocalStatsService
         {
             lock (gate)
                 return selectedHistoricalRecordIndex;
+        }
+    }
+
+    public int EncounterFinalizedVersion
+    {
+        get
+        {
+            lock (gate)
+                return encounterFinalizedVersion;
         }
     }
 
@@ -156,7 +169,9 @@ internal sealed class LocalStatsService
 
                 var json = JsonSerializer.Serialize(payload, HistoryJsonOptions);
                 File.WriteAllText(exportPath, json);
+                TrySelectLatestHistoricalRecord();
                 HistoryTransferStatusText = $"已导出 {historicalRecords.Count} 条历史记录到 {exportPath}";
+                UpdateStatusText();
             }
             catch (Exception ex)
             {
@@ -198,9 +213,13 @@ internal sealed class LocalStatsService
                 }
 
                 SortHistoricalRecords();
-                selectedHistoricalRecordIndex = -1;
+                if (importedCount > 0)
+                    TrySelectLatestHistoricalRecord();
+                else
+                    selectedHistoricalRecordIndex = -1;
+
                 HistoryTransferStatusText = importedCount > 0
-                    ? $"已导入 {importedCount} 条历史记录。"
+                    ? $"已导入 {importedCount} 条历史记录，已自动打开最新记录。"
                     : "导入完成，但没有可写入的历史记录。";
                 UpdateStatusText();
             }
@@ -361,26 +380,14 @@ internal sealed class LocalStatsService
     {
         var activePartyActorIds = new HashSet<uint>();
 
-        foreach (var member in DalamudApi.PartyList)
+        foreach (var actor in EnumerateTrackedPartyBattleCharas())
         {
-            var actorId = ResolvePartyMemberActorId(member);
+            var actorId = ResolveBattleCharaActorId(actor);
             if (actorId is 0 or InvalidActorId)
                 continue;
 
             activePartyActorIds.Add(actorId);
-            var currentHp = member.CurrentHP;
-
-            if (partyMemberHpCache.TryGetValue(actorId, out var previousHp)
-                && previousHp > 0
-                && currentHp == 0
-                && (inCombat || currentEncounter.Started)
-                && TryGetTrackedActor(actorId, out var actor))
-            {
-                currentEncounter.ZoneName = zoneName;
-                currentEncounter.RecordDeath(actor, nowUtc);
-            }
-
-            partyMemberHpCache[actorId] = currentHp;
+            UpdateTrackedActorHp(actorId, actor.CurrentHp, nowUtc, zoneName, inCombat);
         }
 
         if (partyMemberHpCache.Count == 0)
@@ -395,6 +402,21 @@ internal sealed class LocalStatsService
 
         foreach (var actorId in staleActorIds)
             partyMemberHpCache.Remove(actorId);
+    }
+
+    private void UpdateTrackedActorHp(uint actorId, uint currentHp, DateTime nowUtc, string zoneName, bool inCombat)
+    {
+        if (partyMemberHpCache.TryGetValue(actorId, out var previousHp)
+            && previousHp > 0
+            && currentHp == 0
+            && (inCombat || currentEncounter.Started)
+            && TryGetTrackedActor(actorId, out var actor))
+        {
+            currentEncounter.ZoneName = zoneName;
+            currentEncounter.RecordDeath(actor, nowUtc);
+        }
+
+        partyMemberHpCache[actorId] = currentHp;
     }
 
     private void UpdatePartyOutOfCombatTimer(DateTime nowUtc, bool allPartyMembersOutOfCombat)
@@ -439,6 +461,7 @@ internal sealed class LocalStatsService
                 ZoneName = currentEncounter.ZoneName,
             };
             partyOutOfCombatSinceUtc = default;
+            encounterFinalizedVersion++;
             return;
         }
 
@@ -453,18 +476,22 @@ internal sealed class LocalStatsService
             currentEncounter.StartUtc,
             finalizedAtUtc);
 
-        if (historicalRecords.Count == 0 || !HasSameHistoryIdentity(historicalRecords[^1], history))
-            historicalRecords.Add(history);
-        else
-            historicalRecords[^1] = history;
+        if (currentEncounter.DurationSeconds >= MinimumHistoricalEncounterSeconds)
+        {
+            if (historicalRecords.Count == 0 || !HasSameHistoryIdentity(historicalRecords[^1], history))
+                historicalRecords.Add(history);
+            else
+                historicalRecords[^1] = history;
 
-        SortHistoricalRecords();
+            SortHistoricalRecords();
+        }
 
         currentEncounter = new EncounterSession
         {
             ZoneName = history.ZoneName,
         };
         partyOutOfCombatSinceUtc = default;
+        encounterFinalizedVersion++;
     }
 
     private bool TryResolveTrackedSource(uint actorId, DateTime nowUtc, out TrackedActor actor)
@@ -485,7 +512,7 @@ internal sealed class LocalStatsService
         if (actorId == 0 || actorId == InvalidActorId)
             return InvalidActorId;
 
-        var obj = DalamudApi.ObjectTable.SearchByEntityId(actorId);
+        var obj = FindObjectByActorId(actorId);
         if (obj != null && obj.OwnerId is > 0 and not InvalidActorId)
         {
             ownerCache[actorId] = new OwnerCacheEntry(obj.OwnerId, nowUtc);
@@ -500,13 +527,21 @@ internal sealed class LocalStatsService
 
     private static uint ResolvePartyMemberActorId(Dalamud.Game.ClientState.Party.IPartyMember member)
     {
-        var gameObjectEntityId = member.GameObject?.EntityId ?? 0;
-        if (gameObjectEntityId > 0 && gameObjectEntityId != InvalidActorId)
-            return gameObjectEntityId;
+        var gameObjectId = TryGetGameObjectGameObjectId(member.GameObject);
+        if (gameObjectId > 0 && gameObjectId != InvalidActorId)
+            return gameObjectId;
 
         var objectId = member.ObjectId;
         if (objectId > 0 && objectId != InvalidActorId)
             return objectId;
+
+        var entityId = TryGetPropertyActorId(member, "EntityId");
+        if (entityId > 0 && entityId != InvalidActorId)
+            return entityId;
+
+        var gameObjectEntityId = member.GameObject?.EntityId ?? 0;
+        if (gameObjectEntityId > 0 && gameObjectEntityId != InvalidActorId)
+            return gameObjectEntityId;
 
         return 0;
     }
@@ -517,7 +552,13 @@ internal sealed class LocalStatsService
         if (actorId is 0 or InvalidActorId)
             return false;
 
+        if (TryGetResolvedPartySlotTrackedActor(actorId, out actor))
+            return true;
+
         if (TryGetPartyMemberTrackedActor(actorId, out actor))
+            return true;
+
+        if (TryGetBuddyTrackedActor(actorId, out actor))
             return true;
 
         return TryGetLocalPlayerTrackedActor(actorId, out actor);
@@ -527,20 +568,335 @@ internal sealed class LocalStatsService
     {
         foreach (var member in DalamudApi.PartyList)
         {
-            if (ResolvePartyMemberActorId(member) != actorId)
+            if (!MatchesPartyMemberActor(member, actorId))
                 continue;
 
             var name = member.Name.TextValue ?? string.Empty;
             if (string.IsNullOrWhiteSpace(name))
-                break;
+                continue;
 
             var jobId = member.ClassJob.RowId;
-            actor = new TrackedActor(actorId, name.Trim(), jobId, ResolveJobName(jobId));
+            var canonicalActorId = ResolvePartyMemberActorId(member);
+            actor = new TrackedActor(canonicalActorId is 0 or InvalidActorId ? actorId : canonicalActorId, name.Trim(), jobId, ResolveJobName(jobId));
             return true;
         }
 
         actor = default;
         return false;
+    }
+
+    private static bool TryGetResolvedPartySlotTrackedActor(uint actorId, out TrackedActor actor)
+    {
+        foreach (var battleChara in EnumerateTrackedPartyBattleCharas())
+        {
+            if (!MatchesBattleCharaActor(battleChara, actorId))
+                continue;
+
+            var trackedActor = CreateTrackedActor(battleChara, actorId);
+            if (trackedActor == null)
+                continue;
+
+            actor = trackedActor.Value;
+            return true;
+        }
+
+        actor = default;
+        return false;
+    }
+
+    private static bool TryGetBuddyTrackedActor(uint actorId, out TrackedActor actor)
+    {
+        foreach (var buddy in DalamudApi.BuddyList)
+        {
+            if (!MatchesBuddyActor(buddy, actorId))
+                continue;
+
+            var canonicalActorId = ResolveBuddyActorId(buddy);
+            var name = buddy.GameObject?.Name.TextValue?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+                name = FindObjectByActorId(actorId)?.Name.TextValue?.Trim();
+
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+
+            actor = new TrackedActor(canonicalActorId is 0 or InvalidActorId ? actorId : canonicalActorId, name, 0, string.Empty);
+            return true;
+        }
+
+        actor = default;
+        return false;
+    }
+
+    private static bool MatchesPartyMemberActor(Dalamud.Game.ClientState.Party.IPartyMember member, uint actorId)
+    {
+        if (actorId is 0 or InvalidActorId)
+            return false;
+
+        var gameObjectId = TryGetGameObjectGameObjectId(member.GameObject);
+        if (gameObjectId > 0 && gameObjectId != InvalidActorId && gameObjectId == actorId)
+            return true;
+
+        var objectId = member.ObjectId;
+        if (objectId > 0 && objectId != InvalidActorId && objectId == actorId)
+            return true;
+
+        var partyMemberEntityId = TryGetPropertyActorId(member, "EntityId");
+        if (partyMemberEntityId > 0 && partyMemberEntityId != InvalidActorId && partyMemberEntityId == actorId)
+            return true;
+
+        var entityId = member.GameObject?.EntityId ?? 0;
+        if (entityId > 0 && entityId != InvalidActorId && entityId == actorId)
+            return true;
+
+        var partyMemberName = member.Name.TextValue?.Trim();
+        if (string.IsNullOrWhiteSpace(partyMemberName))
+            return false;
+
+        var obj = FindObjectByActorId(actorId);
+        var objectName = obj?.Name.TextValue?.Trim();
+        return !string.IsNullOrWhiteSpace(objectName)
+               && string.Equals(objectName, partyMemberName, StringComparison.Ordinal);
+    }
+
+    private static bool MatchesBuddyActor(IBuddyMember buddy, uint actorId)
+    {
+        if (actorId is 0 or InvalidActorId)
+            return false;
+
+        var gameObjectId = TryGetGameObjectGameObjectId(buddy.GameObject);
+        if (gameObjectId > 0 && gameObjectId != InvalidActorId && gameObjectId == actorId)
+            return true;
+
+        var objectId = buddy.ObjectId;
+        if (objectId > 0 && objectId != InvalidActorId && objectId == actorId)
+            return true;
+
+        var entityId = TryGetPropertyActorId(buddy, "EntityId");
+        if (entityId > 0 && entityId != InvalidActorId && entityId == actorId)
+            return true;
+
+        var gameObjectEntityId = buddy.GameObject?.EntityId ?? 0;
+        return gameObjectEntityId > 0
+               && gameObjectEntityId != InvalidActorId
+               && gameObjectEntityId == actorId;
+    }
+
+    private static bool MatchesBattleCharaActor(IBattleChara battleChara, uint actorId)
+    {
+        if (actorId is 0 or InvalidActorId)
+            return false;
+
+        var canonicalActorId = ResolveBattleCharaActorId(battleChara);
+        if (canonicalActorId > 0 && canonicalActorId != InvalidActorId && canonicalActorId == actorId)
+            return true;
+
+        var entityId = battleChara.EntityId;
+        if (entityId > 0 && entityId != InvalidActorId && entityId == actorId)
+            return true;
+
+        var objectId = TryGetGameObjectObjectId(battleChara);
+        return objectId > 0
+               && objectId != InvalidActorId
+               && objectId == actorId;
+    }
+
+    private static IGameObject? FindObjectByActorId(uint actorId)
+    {
+        if (actorId is 0 or InvalidActorId)
+            return null;
+
+        var entityMatch = DalamudApi.ObjectTable.SearchByEntityId(actorId);
+        if (entityMatch != null)
+            return entityMatch;
+
+        foreach (var obj in DalamudApi.ObjectTable)
+        {
+            if (obj == null)
+                continue;
+
+            var gameObjectId = TryGetGameObjectGameObjectId(obj);
+            var objectId = TryGetGameObjectObjectId(obj);
+            if (gameObjectId == actorId || objectId == actorId || obj.EntityId == actorId)
+                return obj;
+        }
+
+        return null;
+    }
+
+    private static uint ResolveBattleCharaActorId(IBattleChara battleChara)
+    {
+        var gameObjectId = TryGetGameObjectGameObjectId(battleChara);
+        if (gameObjectId > 0 && gameObjectId != InvalidActorId)
+            return gameObjectId;
+
+        var objectId = TryGetGameObjectObjectId(battleChara);
+        if (objectId > 0 && objectId != InvalidActorId)
+            return objectId;
+
+        var entityId = battleChara.EntityId;
+        if (entityId > 0 && entityId != InvalidActorId)
+            return entityId;
+
+        return 0;
+    }
+
+    private static TrackedActor? CreateTrackedActor(IBattleChara battleChara, uint fallbackActorId)
+    {
+        var name = battleChara.Name.TextValue?.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+            return null;
+
+        var actorId = ResolveBattleCharaActorId(battleChara);
+        var jobId = battleChara.ClassJob.RowId;
+        return new TrackedActor(
+            actorId is 0 or InvalidActorId ? fallbackActorId : actorId,
+            name,
+            jobId,
+            ResolveJobName(jobId));
+    }
+
+    private static IEnumerable<IBattleChara> EnumerateTrackedPartyBattleCharas()
+    {
+        var seen = new HashSet<ulong>();
+
+        for (var slot = 1; slot <= 8; slot++)
+        {
+            var battleChara = ResolvePartySlotBattleChara(slot);
+            if (battleChara == null || !TryMarkUniqueBattleChara(battleChara, seen))
+                continue;
+
+            yield return battleChara;
+        }
+
+        foreach (var member in DalamudApi.PartyList)
+        {
+            if (member.GameObject is not IBattleChara battleChara || !TryMarkUniqueBattleChara(battleChara, seen))
+                continue;
+
+            yield return battleChara;
+        }
+
+        foreach (var buddy in DalamudApi.BuddyList)
+        {
+            if (buddy.GameObject is not IBattleChara battleChara || !TryMarkUniqueBattleChara(battleChara, seen))
+                continue;
+
+            yield return battleChara;
+        }
+    }
+
+    private static unsafe IBattleChara? ResolvePartySlotBattleChara(int slot)
+    {
+        var framework = Framework.Instance();
+        if (framework == null || framework->UIModule == null)
+            return null;
+
+        var gameObject = framework->UIModule->GetPronounModule()->ResolvePlaceholder($"<{slot}>", 0, 0);
+        if (gameObject == null || gameObject->EntityId is 0 or InvalidActorId)
+            return null;
+
+        return DalamudApi.ObjectTable.SearchByEntityId(gameObject->EntityId) as IBattleChara;
+    }
+
+    private static bool TryMarkUniqueBattleChara(IBattleChara battleChara, ISet<ulong> seen)
+    {
+        var uniqueId = ResolveBattleCharaUniqueId(battleChara);
+        return uniqueId != 0 && seen.Add(uniqueId);
+    }
+
+    private static ulong ResolveBattleCharaUniqueId(IBattleChara battleChara)
+    {
+        var address = battleChara.Address;
+        if (address != nint.Zero)
+            return unchecked((ulong)address);
+
+        try
+        {
+            return Convert.ToUInt64(battleChara.GameObjectId, CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return battleChara.EntityId;
+        }
+    }
+
+    private static uint ResolveBuddyActorId(IBuddyMember buddy)
+    {
+        var gameObjectId = TryGetGameObjectGameObjectId(buddy.GameObject);
+        if (gameObjectId > 0 && gameObjectId != InvalidActorId)
+            return gameObjectId;
+
+        var objectId = buddy.ObjectId;
+        if (objectId > 0 && objectId != InvalidActorId)
+            return objectId;
+
+        var entityId = TryGetPropertyActorId(buddy, "EntityId");
+        if (entityId > 0 && entityId != InvalidActorId)
+            return entityId;
+
+        var gameObjectEntityId = buddy.GameObject?.EntityId ?? 0;
+        if (gameObjectEntityId > 0 && gameObjectEntityId != InvalidActorId)
+            return gameObjectEntityId;
+
+        return 0;
+    }
+
+    private static uint TryGetGameObjectGameObjectId(IGameObject? gameObject)
+    {
+        if (gameObject == null)
+            return 0;
+
+        try
+        {
+            return TryConvertActorId(gameObject.GameObjectId);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static uint TryGetGameObjectObjectId(IGameObject gameObject)
+    {
+        try
+        {
+            return TryGetPropertyActorId(gameObject, "ObjectId");
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static uint TryGetPropertyActorId(object? instance, string propertyName)
+    {
+        if (instance == null)
+            return 0;
+
+        try
+        {
+            var property = instance.GetType().GetProperty(propertyName);
+            return TryConvertActorId(property?.GetValue(instance));
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static uint TryConvertActorId(object? rawValue)
+    {
+        if (rawValue == null)
+            return 0;
+
+        try
+        {
+            return unchecked((uint)(Convert.ToUInt64(rawValue, CultureInfo.InvariantCulture) & uint.MaxValue));
+        }
+        catch
+        {
+            return 0;
+        }
     }
 
     private static bool TryGetLocalPlayerTrackedActor(uint actorId, out TrackedActor actor)
@@ -568,11 +924,8 @@ internal sealed class LocalStatsService
     {
         var hasUsablePartyState = false;
 
-        foreach (var member in DalamudApi.PartyList)
+        foreach (var character in EnumerateTrackedPartyBattleCharas())
         {
-            if (member.GameObject is not ICharacter character)
-                continue;
-
             hasUsablePartyState = true;
             if ((character.StatusFlags & StatusFlags.InCombat) != 0)
                 return false;
@@ -638,6 +991,16 @@ internal sealed class LocalStatsService
         }
 
         historicalRecords.Add(record);
+    }
+
+    private bool TrySelectLatestHistoricalRecord()
+    {
+        if (historicalRecords.Count == 0)
+            return false;
+
+        selectedHistoricalRecordIndex = historicalRecords.Count - 1;
+        DisplayCombatData = historicalRecords[selectedHistoricalRecordIndex].Snapshot;
+        return true;
     }
 
     private void SortHistoricalRecords()

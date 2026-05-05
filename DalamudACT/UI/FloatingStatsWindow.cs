@@ -16,6 +16,7 @@ internal sealed class FloatingStatsWindow : Window
     private Vector2 expandedWindowSize;
     private bool collapseToTabBar;
     private StatsPanelTabId activeTab = StatsPanelTabId.None;
+    private int observedEncounterFinalizedVersion;
 
     public FloatingStatsWindow(
         PluginConfiguration config,
@@ -37,6 +38,14 @@ internal sealed class FloatingStatsWindow : Window
 
         if (!collapseToTabBar)
             expandedWindowSize = ImGui.GetWindowSize();
+
+        var finalizedVersion = statsService.EncounterFinalizedVersion;
+        if (finalizedVersion != observedEncounterFinalizedVersion)
+        {
+            observedEncounterFinalizedVersion = finalizedVersion;
+            if (activeTab == StatsPanelTabId.History)
+                activeTab = ResolvePreferredLiveTab();
+        }
 
         var drawResult = StatsPanel.Draw(statsService, config, activeTab, collapseToTabBar);
         if (drawResult.ActiveTab != StatsPanelTabId.None)
@@ -66,5 +75,22 @@ internal sealed class FloatingStatsWindow : Window
         collapseToTabBar = true;
         activeTab = StatsPanelTabId.Dps;
         ImGui.SetWindowSize(new Vector2(CollapsedWindowWidth, CollapsedWindowHeight), ImGuiCond.Always);
+    }
+
+    private StatsPanelTabId ResolvePreferredLiveTab()
+    {
+        if (config.ShowDpsTab)
+            return StatsPanelTabId.Dps;
+
+        if (config.ShowHpsTab)
+            return StatsPanelTabId.Hps;
+
+        if (config.ShowTakenTab)
+            return StatsPanelTabId.Taken;
+
+        if (config.ShowOverviewTab)
+            return StatsPanelTabId.Overview;
+
+        return config.ShowHistoryTab ? StatsPanelTabId.History : StatsPanelTabId.None;
     }
 }

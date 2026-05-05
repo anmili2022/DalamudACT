@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 
@@ -12,6 +14,11 @@ internal sealed class LocalStatsService
     private const uint InvalidActorId = 0xE0000000;
     private static readonly TimeSpan OwnerCacheTtl = TimeSpan.FromMilliseconds(2500);
     private static readonly TimeSpan OwnerCacheWarmupInterval = TimeSpan.FromMilliseconds(500);
+    private static readonly JsonSerializerOptions HistoryJsonOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNameCaseInsensitive = false,
+    };
 
     private readonly object gate = new();
     private readonly List<HistoricalCombatData> historicalRecords = new();
@@ -21,6 +28,7 @@ internal sealed class LocalStatsService
 
     private EncounterSession currentEncounter = new();
     private DateTime lastOwnerWarmupUtc;
+    private DateTime partyOutOfCombatSinceUtc;
     private int selectedHistoricalRecordIndex = -1;
 
     public LocalStatsService(PluginConfiguration config)
@@ -54,6 +62,17 @@ internal sealed class LocalStatsService
 
     public string StatusText { get; private set; } = "等待战斗数据...";
 
+    public string HistoryTransferStatusText { get; private set; } = string.Empty;
+
+    public string HistoryTransferFilePath
+    {
+        get
+        {
+            var configDirectory = DalamudApi.PluginInterface.GetPluginConfigDirectory();
+            return Path.Combine(configDirectory, "history-records.json");
+        }
+    }
+
     public void ClearHistory()
     {
         lock (gate)
@@ -65,6 +84,8 @@ internal sealed class LocalStatsService
             DisplayCombatData = null;
             selectedHistoricalRecordIndex = -1;
             currentEncounter = new EncounterSession();
+            partyOutOfCombatSinceUtc = default;
+            HistoryTransferStatusText = string.Empty;
             StatusText = "等待战斗数据...";
         }
     }
@@ -73,12 +94,14 @@ internal sealed class LocalStatsService
     {
         lock (gate)
         {
+            var syntheticAnchorUtc = DateTime.UtcNow.Date.AddHours(12);
             var firstSnapshot = BuildRaidTestCombatData();
             var secondSnapshot = BuildTrialTestCombatData();
             var thirdSnapshot = BuildTrainingTestCombatData();
-            UpsertHistoricalRecord(CreateHistoricalRecord(firstSnapshot));
-            UpsertHistoricalRecord(CreateHistoricalRecord(secondSnapshot));
-            UpsertHistoricalRecord(CreateHistoricalRecord(thirdSnapshot));
+            UpsertHistoricalRecord(CreateSyntheticHistoricalRecord(firstSnapshot, syntheticAnchorUtc.AddMinutes(-36)));
+            UpsertHistoricalRecord(CreateSyntheticHistoricalRecord(secondSnapshot, syntheticAnchorUtc.AddMinutes(-22)));
+            UpsertHistoricalRecord(CreateSyntheticHistoricalRecord(thirdSnapshot, syntheticAnchorUtc.AddMinutes(-8)));
+            SortHistoricalRecords();
 
             ownerCache.Clear();
             partyMemberHpCache.Clear();
@@ -89,6 +112,8 @@ internal sealed class LocalStatsService
             {
                 ZoneName = CurrentCombatData.Msg?.Encounter?.CurrentZoneName ?? "零式测试场",
             };
+            partyOutOfCombatSinceUtc = default;
+            HistoryTransferStatusText = $"已导入测试数据，共 {historicalRecords.Count} 条历史记录。";
             StatusText = "已导入测试数据，可用于预览 DPS 统计面板。";
         }
     }
@@ -104,6 +129,86 @@ internal sealed class LocalStatsService
             DisplayCombatData = historicalRecords[index].Snapshot;
             UpdateStatusText();
             return true;
+        }
+    }
+
+    public void ExportHistoricalRecords()
+    {
+        lock (gate)
+        {
+            try
+            {
+                if (historicalRecords.Count == 0)
+                {
+                    HistoryTransferStatusText = "没有可导出的历史记录。";
+                    return;
+                }
+
+                var exportPath = HistoryTransferFilePath;
+                Directory.CreateDirectory(Path.GetDirectoryName(exportPath)!);
+
+                var payload = new HistoricalRecordsExportPayload
+                {
+                    Version = 1,
+                    ExportedAtUtc = DateTime.UtcNow,
+                    Records = historicalRecords.ToList(),
+                };
+
+                var json = JsonSerializer.Serialize(payload, HistoryJsonOptions);
+                File.WriteAllText(exportPath, json);
+                HistoryTransferStatusText = $"已导出 {historicalRecords.Count} 条历史记录到 {exportPath}";
+            }
+            catch (Exception ex)
+            {
+                DalamudApi.Log.Error(ex, "Failed to export historical combat records.");
+                HistoryTransferStatusText = $"导出失败: {ex.Message}";
+            }
+        }
+    }
+
+    public void ImportHistoricalRecords()
+    {
+        lock (gate)
+        {
+            try
+            {
+                var importPath = HistoryTransferFilePath;
+                if (!File.Exists(importPath))
+                {
+                    HistoryTransferStatusText = $"导入失败: 未找到文件 {importPath}";
+                    return;
+                }
+
+                var json = File.ReadAllText(importPath);
+                var importedRecords = DeserializeHistoricalRecords(json);
+                if (importedRecords.Count == 0)
+                {
+                    HistoryTransferStatusText = "导入完成，但文件中没有可用的历史记录。";
+                    return;
+                }
+
+                var importedCount = 0;
+                foreach (var record in importedRecords)
+                {
+                    if (!IsValidHistoricalRecord(record))
+                        continue;
+
+                    UpsertHistoricalRecord(record);
+                    importedCount++;
+                }
+
+                SortHistoricalRecords();
+                selectedHistoricalRecordIndex = -1;
+                HistoryTransferStatusText = importedCount > 0
+                    ? $"已导入 {importedCount} 条历史记录。"
+                    : "导入完成，但没有可写入的历史记录。";
+                UpdateStatusText();
+            }
+            catch (Exception ex)
+            {
+                DalamudApi.Log.Error(ex, "Failed to import historical combat records.");
+                HistoryTransferStatusText = $"导入失败: {ex.Message}";
+            }
         }
     }
 
@@ -229,13 +334,11 @@ internal sealed class LocalStatsService
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
             PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, inCombat);
             var allPartyMembersOutOfCombat = AreAllPartyMembersOutOfCombat(inCombat);
+            UpdatePartyOutOfCombatTimer(nowUtc, allPartyMembersOutOfCombat);
 
-            if (currentEncounter.ShouldFinalize(
-                    nowUtc,
-                    TimeSpan.FromSeconds(config.EncounterTimeoutSeconds),
-                    allPartyMembersOutOfCombat))
+            if (ShouldFinalizeEncounter(nowUtc, allPartyMembersOutOfCombat))
             {
-                FinalizeEncounter();
+                FinalizeEncounter(nowUtc);
             }
             else if (currentEncounter.Started)
             {
@@ -294,7 +397,40 @@ internal sealed class LocalStatsService
             partyMemberHpCache.Remove(actorId);
     }
 
-    private void FinalizeEncounter()
+    private void UpdatePartyOutOfCombatTimer(DateTime nowUtc, bool allPartyMembersOutOfCombat)
+    {
+        if (!currentEncounter.Started)
+        {
+            partyOutOfCombatSinceUtc = default;
+            return;
+        }
+
+        if (!allPartyMembersOutOfCombat)
+        {
+            partyOutOfCombatSinceUtc = default;
+            return;
+        }
+
+        if (partyOutOfCombatSinceUtc == default)
+            partyOutOfCombatSinceUtc = nowUtc;
+    }
+
+    private bool ShouldFinalizeEncounter(DateTime nowUtc, bool allPartyMembersOutOfCombat)
+    {
+        if (!currentEncounter.Started)
+            return false;
+
+        return config.CombatEndRule switch
+        {
+            CombatEndRule.PartyList => allPartyMembersOutOfCombat,
+            CombatEndRule.PartyListWithDelay => allPartyMembersOutOfCombat
+                && partyOutOfCombatSinceUtc != default
+                && nowUtc - partyOutOfCombatSinceUtc >= TimeSpan.FromSeconds(config.EncounterTimeoutSeconds),
+            _ => allPartyMembersOutOfCombat,
+        };
+    }
+
+    private void FinalizeEncounter(DateTime finalizedAtUtc)
     {
         if (!currentEncounter.HasMeaningfulData)
         {
@@ -302,6 +438,7 @@ internal sealed class LocalStatsService
             {
                 ZoneName = currentEncounter.ZoneName,
             };
+            partyOutOfCombatSinceUtc = default;
             return;
         }
 
@@ -312,17 +449,22 @@ internal sealed class LocalStatsService
         var history = new HistoricalCombatData(
             currentEncounter.ZoneName,
             ActxSnapshotFormatter.FormatDuration(currentEncounter.DurationSeconds),
-            CurrentCombatData);
+            CurrentCombatData,
+            currentEncounter.StartUtc,
+            finalizedAtUtc);
 
         if (historicalRecords.Count == 0 || !HasSameHistoryIdentity(historicalRecords[^1], history))
             historicalRecords.Add(history);
         else
             historicalRecords[^1] = history;
 
+        SortHistoricalRecords();
+
         currentEncounter = new EncounterSession
         {
             ZoneName = history.ZoneName,
         };
+        partyOutOfCombatSinceUtc = default;
     }
 
     private bool TryResolveTrackedSource(uint actorId, DateTime nowUtc, out TrackedActor actor)
@@ -469,8 +611,20 @@ internal sealed class LocalStatsService
     }
 
     private static bool HasSameHistoryIdentity(HistoricalCombatData left, HistoricalCombatData right)
-        => string.Equals(left.ZoneName, right.ZoneName, StringComparison.Ordinal)
-           && string.Equals(left.Duration, right.Duration, StringComparison.Ordinal);
+    {
+        if (left.StartTimeUtc.HasValue
+            && right.StartTimeUtc.HasValue
+            && left.EndTimeUtc.HasValue
+            && right.EndTimeUtc.HasValue)
+        {
+            return string.Equals(left.ZoneName, right.ZoneName, StringComparison.Ordinal)
+                   && left.StartTimeUtc.Value == right.StartTimeUtc.Value
+                   && left.EndTimeUtc.Value == right.EndTimeUtc.Value;
+        }
+
+        return string.Equals(left.ZoneName, right.ZoneName, StringComparison.Ordinal)
+               && string.Equals(left.Duration, right.Duration, StringComparison.Ordinal);
+    }
 
     private void UpsertHistoricalRecord(HistoricalCombatData record)
     {
@@ -486,14 +640,82 @@ internal sealed class LocalStatsService
         historicalRecords.Add(record);
     }
 
-    private static HistoricalCombatData CreateHistoricalRecord(CombatDataWrapper snapshot)
+    private void SortHistoricalRecords()
+        => historicalRecords.Sort(static (left, right) =>
+        {
+            var timeComparison = Nullable.Compare(GetHistorySortTime(left), GetHistorySortTime(right));
+            if (timeComparison != 0)
+                return timeComparison;
+
+            var zoneComparison = string.Compare(left.ZoneName, right.ZoneName, StringComparison.Ordinal);
+            if (zoneComparison != 0)
+                return zoneComparison;
+
+            return string.Compare(left.Duration, right.Duration, StringComparison.Ordinal);
+        });
+
+    private static DateTime? GetHistorySortTime(HistoricalCombatData record)
+        => record.EndTimeUtc ?? record.StartTimeUtc;
+
+    private static HistoricalCombatData CreateHistoricalRecord(
+        CombatDataWrapper snapshot,
+        DateTime? startTimeUtc = null,
+        DateTime? endTimeUtc = null)
     {
         var encounter = snapshot.Msg?.Encounter;
         return new HistoricalCombatData(
             encounter?.CurrentZoneName ?? "未知区域",
             encounter?.DurationText ?? "00:00",
-            snapshot);
+            snapshot,
+            startTimeUtc,
+            endTimeUtc);
     }
+
+    private static HistoricalCombatData CreateSyntheticHistoricalRecord(CombatDataWrapper snapshot, DateTime endTimeUtc)
+    {
+        var duration = ParseDurationText(snapshot.Msg?.Encounter?.DurationText);
+        var startTimeUtc = endTimeUtc - duration;
+        return CreateHistoricalRecord(snapshot, startTimeUtc, endTimeUtc);
+    }
+
+    private static TimeSpan ParseDurationText(string? durationText)
+    {
+        if (string.IsNullOrWhiteSpace(durationText))
+            return TimeSpan.FromSeconds(1);
+
+        return TimeSpan.TryParseExact(
+                durationText.Trim(),
+                new[] { @"hh\:mm\:ss", @"mm\:ss" },
+                CultureInfo.InvariantCulture,
+                out var parsed)
+            ? parsed
+            : TimeSpan.FromSeconds(1);
+    }
+
+    private static List<HistoricalCombatData> DeserializeHistoricalRecords(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+            return new List<HistoricalCombatData>();
+
+        try
+        {
+            var payload = JsonSerializer.Deserialize<HistoricalRecordsExportPayload>(json, HistoryJsonOptions);
+            if (payload?.Records != null)
+                return payload.Records;
+        }
+        catch
+        {
+            // Fall back to direct array deserialization for compatibility.
+        }
+
+        return JsonSerializer.Deserialize<List<HistoricalCombatData>>(json, HistoryJsonOptions)
+               ?? new List<HistoricalCombatData>();
+    }
+
+    private static bool IsValidHistoricalRecord(HistoricalCombatData record)
+        => !string.IsNullOrWhiteSpace(record.ZoneName)
+           && record.Snapshot?.Msg?.Encounter != null
+           && record.Snapshot.Msg.Combatant.Count > 0;
 
     private static string ResolveJobName(uint jobId)
     {
@@ -883,6 +1105,15 @@ internal sealed class LocalStatsService
         };
     }
 
+    private sealed class HistoricalRecordsExportPayload
+    {
+        public int Version { get; set; }
+
+        public DateTime ExportedAtUtc { get; set; }
+
+        public List<HistoricalCombatData> Records { get; set; } = new();
+    }
+
     private readonly record struct OwnerCacheEntry(uint OwnerId, DateTime UpdatedAtUtc);
 
     private readonly record struct TrackedActor(uint ActorId, string Name, uint JobId, string JobName);
@@ -977,11 +1208,6 @@ internal sealed class LocalStatsService
             MarkActivity(timeUtc);
             EnsureCombatant(target).NoteDeath(timeUtc);
         }
-
-        public bool ShouldFinalize(DateTime nowUtc, TimeSpan timeout, bool allPartyMembersOutOfCombat)
-            => Started
-               && allPartyMembersOutOfCombat
-               && nowUtc - LastEventUtc > timeout;
 
         private CombatantSession EnsureCombatant(TrackedActor actor)
         {

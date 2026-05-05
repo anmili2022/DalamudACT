@@ -2,19 +2,27 @@
     {
         "Author": "wozaiha",
         "Name": "DPS统计",
-        "Description": "直接在游戏里显示队伍伤害、治疗、承伤和历史记录。",
+        "Description": "一个基于本地 ACTX 风格统计口径的 Dalamud 战斗统计插件，直接在游戏内显示队伍 DPS、HPS、承伤、概览和战斗历史，不依赖外部网页面板。\nLocal ACTX-style combat meter for Dalamud. Displays party DPS, HPS, damage taken, overview summaries, and encounter history directly in game without relying on an external web overlay.",
         "InternalName": "DalamudACT",
-        "AssemblyVersion": "0.15.1.0",
-        "TestingAssemblyVersion": "0.15.1.0",
-        "RepoUrl": "https://github.com/wozaiha/DalamudACT",
+        "AssemblyVersion": "0.15.2.0",
+        "TestingAssemblyVersion": "0.15.2.0",
+        "RepoUrl": "https://github.com/anmili2022/DalamudACT",
         "ApplicableVersion": "any",
         "DalamudApiLevel": 15,
+        "Tags": [
+            "combat",
+            "dps",
+            "hps",
+            "overlay",
+            "history",
+            "act"
+        ],
         "IsHide": false,
         "IsTestingExclusive": false,
-        "DownloadLinkInstall": "https://raw.githubusercontent.com/wozaiha/DalamudPlugins/CustomRepo/plugins/DalamudACT/latest.zip",
-        "DownloadLinkTesting": "https://raw.githubusercontent.com/wozaiha/DalamudPlugins/CustomRepo/plugins/DalamudACT/latest.zip",
-        "DownloadLinkUpdate": "https://raw.githubusercontent.com/wozaiha/DalamudPlugins/CustomRepo/plugins/DalamudACT/latest.zip",
+        "DownloadLinkInstall": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.0/DalamudACT.zip",
+        "DownloadLinkTesting": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.0/DalamudACT.zip",
+        "DownloadLinkUpdate": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.0/DalamudACT.zip",
         "DownloadCount": 0,
-        "LastUpdated": "1728272328"
+        "LastUpdated": "1778012690"
     }
 ]

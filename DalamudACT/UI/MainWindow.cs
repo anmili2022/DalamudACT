@@ -52,7 +52,7 @@ internal sealed class MainWindow : Window
         {
             DrawRow("模式", "独立运行 / 本地采集");
             DrawRow("统计来源", statsService.DataSourceText);
-            DrawRow("遭遇超时", $"{config.EncounterTimeoutSeconds} 秒");
+            DrawRow("战斗结束判定", BuildCombatEndSummary(config));
             DrawRow("主界面透明度", $"{config.WindowOpacity:P0}");
             DrawRow("DPS统计面板透明度", $"{config.FloatingStatsOpacity:P0}");
             DrawRow("悬浮面板", config.ShowStatsPanel ? "已开启" : "已关闭");
@@ -91,4 +91,9 @@ internal sealed class MainWindow : Window
 
         return index == 0 ? "全部隐藏" : string.Join(" / ", tabNames.Take(index));
     }
+
+    private static string BuildCombatEndSummary(PluginConfiguration config)
+        => config.CombatEndRule == CombatEndRule.PartyListWithDelay
+            ? $"全队脱战 + {config.EncounterTimeoutSeconds} 秒延迟"
+            : "全队脱战（PartyList）";
 }

@@ -114,4 +114,9 @@ internal sealed class Combatant
     public string? DeathsText { get; set; }
 }
 
-internal sealed record HistoricalCombatData(string ZoneName, string Duration, CombatDataWrapper Snapshot);
+internal sealed record HistoricalCombatData(
+    string ZoneName,
+    string Duration,
+    CombatDataWrapper Snapshot,
+    System.DateTime? StartTimeUtc = null,
+    System.DateTime? EndTimeUtc = null);

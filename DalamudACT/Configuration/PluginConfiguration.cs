@@ -13,6 +13,12 @@ public enum StatsBarColorMode
     Single = 1,
 }
 
+public enum CombatEndRule
+{
+    PartyList = 0,
+    PartyListWithDelay = 1,
+}
+
 [Serializable]
 public sealed class ThemeBarColorSetting
 {
@@ -43,11 +49,12 @@ public sealed class ThemeBarColorSetting
 [Serializable]
 public sealed class PluginConfiguration : IPluginConfiguration
 {
-    public int Version { get; set; } = 13;
+    public int Version { get; set; } = 14;
 
     public float WindowOpacity = 0.92f;
     public float FloatingStatsOpacity = 0.72f;
     public bool ShowStatsPanel = true;
+    public CombatEndRule CombatEndRule = CombatEndRule.PartyList;
     public int EncounterTimeoutSeconds = 30;
 
     public bool ShowDpsTab = true;
@@ -92,6 +99,9 @@ public sealed class PluginConfiguration : IPluginConfiguration
         FloatingStatsMetricColumnWidth = Math.Clamp(FloatingStatsMetricColumnWidth, 48f, 220f);
         FloatingStatsRowHeight = Math.Clamp(FloatingStatsRowHeight, 0f, 60f);
 
+        if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
+            CombatEndRule = CombatEndRule.PartyList;
+
         SingleBarColorR = Math.Clamp(SingleBarColorR, 0f, 1f);
         SingleBarColorG = Math.Clamp(SingleBarColorG, 0f, 1f);
         SingleBarColorB = Math.Clamp(SingleBarColorB, 0f, 1f);
@@ -126,6 +136,9 @@ public sealed class PluginConfiguration : IPluginConfiguration
         if (Version < 13)
             ShowDpsDamageColumn = true;
 
+        if (Version < 14)
+            CombatEndRule = CombatEndRule.PartyList;
+
         if (Version < 11)
             DpsVisibleCount = 8;
 
@@ -154,7 +167,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         EnsureThemeBarColors();
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = 13;
+        Version = 14;
     }
 
     public bool HasAnyVisibleStatsTab()
@@ -202,6 +215,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         FloatingStatsOpacity = 0.72f;
         ShowStatsPanel = true;
         ShowDemoPanel = true;
+        CombatEndRule = CombatEndRule.PartyList;
         EncounterTimeoutSeconds = 30;
         ShowDpsTab = true;
         ShowHpsTab = true;

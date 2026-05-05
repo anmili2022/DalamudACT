@@ -44,6 +44,7 @@ internal sealed class SettingsWindow : Window
         ImGui.Spacing();
 
         DrawWindowSection();
+        DrawCombatSection();
         DrawVisibleTabsSection();
         DrawDpsColumnsSection();
         DrawBarColorsSection();
@@ -53,7 +54,7 @@ internal sealed class SettingsWindow : Window
 
     private void DrawWindowSection()
     {
-        if (!ImGui.CollapsingHeader("窗口与遭遇", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("窗口设置", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
         var opacity = config.WindowOpacity;
@@ -77,13 +78,40 @@ internal sealed class SettingsWindow : Window
             config.ShowDemoPanel = showStats;
             config.Save();
         }
+    }
 
-        var timeoutSeconds = config.EncounterTimeoutSeconds;
-        if (ImGui.SliderInt("遭遇结束延迟(秒)", ref timeoutSeconds, 5, 180))
+    private void DrawCombatSection()
+    {
+        if (!ImGui.CollapsingHeader("战斗结束设置", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        var currentRule = config.CombatEndRule;
+        if (ImGui.RadioButton("全队脱战（PartyList）即为战斗结束", currentRule == CombatEndRule.PartyList))
         {
-            config.EncounterTimeoutSeconds = timeoutSeconds;
+            config.CombatEndRule = CombatEndRule.PartyList;
             config.Save();
         }
+
+        if (ImGui.RadioButton("全队脱战，且延迟 X 秒为战斗结束", currentRule == CombatEndRule.PartyListWithDelay))
+        {
+            config.CombatEndRule = CombatEndRule.PartyListWithDelay;
+            config.Save();
+        }
+
+        if (config.CombatEndRule == CombatEndRule.PartyListWithDelay)
+        {
+            var timeoutSeconds = config.EncounterTimeoutSeconds;
+            if (ImGui.SliderInt("X（秒）", ref timeoutSeconds, 5, 180))
+            {
+                config.EncounterTimeoutSeconds = timeoutSeconds;
+                config.Save();
+            }
+
+            ImGui.TextDisabled("全队脱战后，延迟 X 秒再视为战斗结束。");
+            return;
+        }
+
+        ImGui.TextDisabled("默认使用 PartyList，全队脱战后立即视为战斗结束。");
     }
 
     private void DrawVisibleTabsSection()
@@ -224,6 +252,14 @@ internal sealed class SettingsWindow : Window
             statsService.LoadTestData();
 
         ImGui.SameLine();
+        if (ImGui.Button("导出历史记录"))
+            statsService.ExportHistoricalRecords();
+
+        ImGui.SameLine();
+        if (ImGui.Button("导入历史记录"))
+            statsService.ImportHistoricalRecords();
+
+        ImGui.SameLine();
         if (ImGui.Button("清空历史"))
             statsService.ClearHistory();
 
@@ -233,6 +269,11 @@ internal sealed class SettingsWindow : Window
             config.Reset();
             config.Save();
         }
+
+        ImGui.Spacing();
+        ImGui.TextDisabled($"历史文件: {statsService.HistoryTransferFilePath}");
+        if (!string.IsNullOrWhiteSpace(statsService.HistoryTransferStatusText))
+            ImGui.TextDisabled(statsService.HistoryTransferStatusText);
 
         ImGui.Spacing();
         ImGui.TextDisabled(statsService.DataSourceText);

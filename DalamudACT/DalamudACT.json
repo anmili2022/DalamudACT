@@ -1,17 +1,29 @@
 {
     "Author": "wozaiha",
     "Name": "DPS统计",
-    "Punchline": "在游戏里直接查看队伍战斗统计。",
-    "Description": "一个直接在游戏内显示伤害、治疗、承伤和历史记录的插件。只统计自己和当前队伍成员，不依赖外部网页面板。",
-    "IconUrl": "https://github.com/flyrio/DalamudACT/raw/master/DalamudACT/images/icon.png",
+    "Punchline": "在游戏里直接查看队伍战斗统计。\nLocal ACTX-style combat stats directly inside the game.",
+    "Description": "一个基于本地 ACTX 风格统计口径的 Dalamud 战斗统计插件，直接在游戏内显示队伍 DPS、HPS、承伤、概览和战斗历史，不依赖外部网页面板。\nLocal ACTX-style combat meter for Dalamud. Displays party DPS, HPS, damage taken, overview summaries, and encounter history directly in game without relying on an external web overlay.",
+    "IconUrl": "https://github.com/anmili2022/DalamudACT/raw/master/DalamudACT/images/icon.png",
     "ImageUrls": [],
-    "RepoUrl": "https://github.com/flyrio/DalamudACT",
+    "RepoUrl": "https://github.com/anmili2022/DalamudACT",
+    "Tags": [
+        "combat",
+        "dps",
+        "hps",
+        "overlay",
+        "history",
+        "act"
+    ],
     "CategoryTags": [
-        "ACT",
-        "DPS"
+        "Combat",
+        "DPS",
+        "HPS",
+        "Overlay",
+        "History",
+        "ACT"
     ],
     "InternalName": "DalamudACT",
     "ApplicableVersion": "any",
-    "AssemblyVersion": "0.15.1.0",
+    "AssemblyVersion": "0.15.2.0",
     "DalamudApiLevel": 15
 }

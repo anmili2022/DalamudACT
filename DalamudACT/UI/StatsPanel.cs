@@ -345,6 +345,9 @@ internal static class StatsPanel
 
     private static void DrawOverviewTab(CombatDataWrapper combatData, PluginConfiguration config)
     {
+        if (!ImGui.BeginChild("##overview_scroll", new Vector2(0f, 0f), false))
+            return;
+
         var encounter = combatData.Msg!.Encounter!;
         ImGui.TextUnformatted($"区域: {encounter.CurrentZoneName ?? "Unknown"}");
         ImGui.TextUnformatted($"战斗时长: {encounter.DurationText ?? "00:00"}");
@@ -388,6 +391,8 @@ internal static class StatsPanel
             DrawOverviewRow("死亡", combatant.DeathsText, config);
             ImGui.EndTable();
         }
+
+        ImGui.EndChild();
     }
 
     private static void DrawOverviewRow(string label, string? value, PluginConfiguration config)
@@ -401,6 +406,19 @@ internal static class StatsPanel
 
     private static void DrawHistoryTab(LocalStatsService statsService, PluginConfiguration config)
     {
+        if (ImGui.Button("导出历史记录"))
+            statsService.ExportHistoricalRecords();
+
+        ImGui.SameLine();
+        if (ImGui.Button("导入历史记录"))
+            statsService.ImportHistoricalRecords();
+
+        ImGui.TextDisabled($"文件: {statsService.HistoryTransferFilePath}");
+        if (!string.IsNullOrWhiteSpace(statsService.HistoryTransferStatusText))
+            ImGui.TextDisabled(statsService.HistoryTransferStatusText);
+
+        ImGui.Spacing();
+
         var history = statsService.HistoricalRecords;
         if (history.Count == 0)
         {
@@ -408,10 +426,18 @@ internal static class StatsPanel
             return;
         }
 
-        if (!ImGui.BeginTable("##history", 2, ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH))
+        if (!ImGui.BeginChild("##history_scroll", new Vector2(0f, 320f), false))
             return;
 
+        if (!ImGui.BeginTable("##history", 4, ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.ScrollX | ImGuiTableFlags.Resizable))
+        {
+            ImGui.EndChild();
+            return;
+        }
+
         ImGui.TableSetupColumn("区域", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("开始时间", ImGuiTableColumnFlags.WidthFixed, ResolveFixedColumnWidth(config, 180f, "开始时间"));
+        ImGui.TableSetupColumn("结束时间", ImGuiTableColumnFlags.WidthFixed, ResolveFixedColumnWidth(config, 180f, "结束时间"));
         ImGui.TableSetupColumn("时长", ImGuiTableColumnFlags.WidthFixed, ResolveFixedColumnWidth(config, 100f, "时长"));
         ImGui.TableHeadersRow();
 
@@ -425,17 +451,20 @@ internal static class StatsPanel
                 ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(new Vector4(0.22f, 0.34f, 0.54f, 0.35f)));
 
             ImGui.TableSetColumnIndex(0);
-            ImGui.TextUnformatted(record.ZoneName);
-            if (ImGui.IsItemClicked())
-                statsService.LoadHistoricalRecord(index);
+            DrawHistoryCell(record.ZoneName, index, statsService);
 
             ImGui.TableSetColumnIndex(1);
-            ImGui.TextUnformatted(record.Duration);
-            if (ImGui.IsItemClicked())
-                statsService.LoadHistoricalRecord(index);
+            DrawHistoryCell(FormatHistoryTimestamp(record.StartTimeUtc), index, statsService);
+
+            ImGui.TableSetColumnIndex(2);
+            DrawHistoryCell(FormatHistoryTimestamp(record.EndTimeUtc), index, statsService);
+
+            ImGui.TableSetColumnIndex(3);
+            DrawHistoryCell(record.Duration, index, statsService);
         }
 
         ImGui.EndTable();
+        ImGui.EndChild();
     }
 
     private static Vector4 ResolveBarColor(Combatant combatant, PluginConfiguration config)
@@ -456,6 +485,27 @@ internal static class StatsPanel
 
         return $"{left} ({right})";
     }
+
+    private static void DrawHistoryCell(string? value, int index, LocalStatsService statsService)
+    {
+        var text = string.IsNullOrWhiteSpace(value) ? "--" : value;
+        ImGui.TextUnformatted(text);
+
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.TextUnformatted(text);
+            ImGui.EndTooltip();
+        }
+
+        if (ImGui.IsItemClicked())
+            statsService.LoadHistoricalRecord(index);
+    }
+
+    private static string FormatHistoryTimestamp(DateTime? utcTime)
+        => utcTime.HasValue
+            ? utcTime.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
+            : "--";
 
     private static double ParseMetric(string? value)
     {

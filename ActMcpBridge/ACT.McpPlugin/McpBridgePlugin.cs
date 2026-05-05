@@ -234,6 +234,10 @@ public sealed class McpBridgePlugin : IActPluginV1
         if (encounter != null)
             status["encounter"] = encounter;
 
+        var combatData = BuildCombatDataSnapshot(DefaultStatusTopCombatants);
+        if (combatData != null)
+            status["combatData"] = combatData;
+
         return status;
     }
 
@@ -533,6 +537,241 @@ public sealed class McpBridgePlugin : IActPluginV1
                 return null;
             }
         }, fallback: null);
+    }
+
+    private Dictionary<string, object?>? BuildCombatDataSnapshot(int topCombatants)
+    {
+        return RunOnUiThread(() =>
+        {
+            try
+            {
+                var form = ActGlobals.oFormActMain;
+                var zone = form?.ActiveZone;
+                var encounter = zone?.ActiveEncounter;
+                if (encounter == null)
+                    return null;
+
+                var encounterCombatants = GetEncounterAllies(encounter);
+                var totalDamage = 0L;
+                var totalDamageTaken = 0L;
+                var totalHits = 0;
+                var totalHitFailed = 0;
+                var totalCritHits = 0;
+
+                var combatants = new List<Dictionary<string, object?>>();
+                foreach (var combatant in encounterCombatants)
+                {
+                    var snapshot = BuildCombatDataCombatantSnapshot(combatant);
+                    if (snapshot == null)
+                        continue;
+
+                    combatants.Add(snapshot);
+                    totalDamage += GetLong(snapshot, "damageValue");
+                    totalDamageTaken += GetLong(snapshot, "damagetakenValue");
+                    totalHits += (int)GetLong(snapshot, "hitsValue");
+                    totalHitFailed += (int)GetLong(snapshot, "hitfailedValue");
+                    totalCritHits += (int)GetLong(snapshot, "critHitsValue");
+                }
+
+                if (combatants.Count > 1)
+                {
+                    combatants.Sort((a, b) =>
+                    {
+                        var ad = GetLong(a, "damageValue");
+                        var bd = GetLong(b, "damageValue");
+                        return bd.CompareTo(ad);
+                    });
+                }
+
+                if (topCombatants > 0 && combatants.Count > topCombatants)
+                    combatants = combatants.GetRange(0, topCombatants);
+
+                var combatantMap = new Dictionary<string, object?>(StringComparer.Ordinal);
+                foreach (var combatant in combatants)
+                {
+                    var name = combatant.TryGetValue("name", out var n) ? (n?.ToString() ?? string.Empty) : string.Empty;
+                    if (string.IsNullOrWhiteSpace(name) || combatantMap.ContainsKey(name))
+                        continue;
+
+                    combatantMap[name] = combatant;
+                }
+
+                var durationSeconds = 0d;
+                try
+                {
+                    durationSeconds = Math.Max(encounter.Duration.TotalSeconds, 0d);
+                }
+                catch
+                {
+                    durationSeconds = 0d;
+                }
+
+                var encounterDps = durationSeconds > 0d
+                    ? totalDamage / durationSeconds
+                    : SanitizeDouble(GetDoubleMember(encounter, "DPS") ?? 0d);
+
+                var critPct = totalHits > 0
+                    ? FormatPercentValue(totalCritHits * 100d / totalHits, 0)
+                    : "--";
+
+                var maxHitText = TryInvokeStringMethod(encounter, "GetMaxHit", true, true) ?? string.Empty;
+                var maxHitValueText = TryInvokeStringMethod(encounter, "GetMaxHit", false, true) ?? maxHitText;
+
+                var msg = new Dictionary<string, object?>
+                {
+                    ["type"] = "CombatData",
+                    ["Encounter"] = new Dictionary<string, object?>
+                    {
+                        ["CurrentZoneName"] = zone?.ZoneName ?? string.Empty,
+                        ["duration"] = encounter.DurationS ?? string.Empty,
+                        ["durationSeconds"] = durationSeconds,
+                        ["damage"] = totalDamage.ToString(CultureInfo.InvariantCulture),
+                        ["damageValue"] = totalDamage,
+                        ["damage-*"] = FormatCompactNumber(totalDamage),
+                        ["ENCDPS"] = encounterDps.ToString("F1", CultureInfo.InvariantCulture),
+                        ["encdpsValue"] = encounterDps,
+                        ["hits"] = totalHits.ToString(CultureInfo.InvariantCulture),
+                        ["hitsValue"] = totalHits,
+                        ["hitfailed"] = totalHitFailed.ToString(CultureInfo.InvariantCulture),
+                        ["hitfailedValue"] = totalHitFailed,
+                        ["crithits"] = totalCritHits.ToString(CultureInfo.InvariantCulture),
+                        ["critHitsValue"] = totalCritHits,
+                        ["crithit%"] = critPct,
+                        ["maxhit-*"] = maxHitText,
+                        ["MAXHIT-*"] = maxHitValueText,
+                        ["damagetaken"] = totalDamageTaken.ToString(CultureInfo.InvariantCulture),
+                        ["damagetakenValue"] = totalDamageTaken,
+                        ["damagetaken-*"] = FormatCompactNumber(totalDamageTaken),
+                    },
+                    ["Combatant"] = combatantMap,
+                    ["isActive"] = GetBoolMember(encounter, "Active") ? "true" : "false",
+                };
+
+                return new Dictionary<string, object?>
+                {
+                    ["type"] = "broadcast",
+                    ["msgtype"] = "CombatData",
+                    ["msg"] = msg,
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }, fallback: null);
+    }
+
+    private static Dictionary<string, object?>? BuildCombatDataCombatantSnapshot(CombatantData combatant)
+    {
+        try
+        {
+            var name = combatant.Name ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+
+            var damage = GetLongMember(combatant, "Damage") ?? 0L;
+            var encdps = SanitizeDouble(GetDoubleMember(combatant, "EncDPS") ?? GetCombatantItemAsDouble(combatant, "encdps") ?? 0d);
+            var enchps = SanitizeDouble(GetDoubleMember(combatant, "EncHPS") ?? GetCombatantItemAsDouble(combatant, "enchps") ?? 0d);
+            var damageTaken = GetLongMember(combatant, "DamageTaken") ?? GetCombatantItemAsLong(combatant, "damagetaken") ?? 0L;
+            var hits = (int)(GetLongMember(combatant, "Hits") ?? 0L);
+            var critHits = (int)(GetLongMember(combatant, "CritHits") ?? 0L);
+            var hitFailed = (int)(GetLongMember(combatant, "Misses") ?? 0L);
+            var blocked = (int)(GetLongMember(combatant, "Blocked") ?? 0L);
+            var swings = (int)(GetLongMember(combatant, "Swings") ?? 0L);
+            var toHit = SanitizeDouble(GetDoubleMember(combatant, "ToHit") ?? 0d);
+            var blockPct = swings > 0
+                ? FormatPercentValue(blocked * 100d / swings, 1)
+                : "--";
+            var parryPct = GetStringMember(combatant, "ParryPct") ?? "--";
+            var maxHit = TryInvokeStringMethod(combatant, "GetMaxHit", true, true) ?? string.Empty;
+            var damagePercent = GetStringMember(combatant, "DamagePercent");
+            if (string.IsNullOrWhiteSpace(damagePercent))
+            {
+                damagePercent = GetCombatantItemAsString(combatant, "damage%");
+            }
+
+            var job = GetStringMember(combatant, "Job");
+            if (string.IsNullOrWhiteSpace(job))
+                job = GetCombatantItemAsString(combatant, "job");
+
+            var deaths = (uint)Math.Max(0L, GetLongMember(combatant, "Deaths") ?? 0L);
+
+            return new Dictionary<string, object?>
+            {
+                ["name"] = name,
+                ["Job"] = job ?? string.Empty,
+                ["jobId"] = 0,
+                ["damage"] = damage.ToString(CultureInfo.InvariantCulture),
+                ["damageValue"] = damage,
+                ["damage-*"] = FormatCompactNumber(damage),
+                ["damage_percent"] = string.IsNullOrWhiteSpace(damagePercent) ? "--" : damagePercent,
+                ["damage%"] = string.IsNullOrWhiteSpace(damagePercent) ? "--" : damagePercent,
+                ["ENCDPS"] = encdps.ToString("F1", CultureInfo.InvariantCulture),
+                ["encdpsValue"] = encdps,
+                ["ENCHPS"] = enchps.ToString("F1", CultureInfo.InvariantCulture),
+                ["enchpsValue"] = enchps,
+                ["damagetaken"] = damageTaken.ToString(CultureInfo.InvariantCulture),
+                ["damagetakenValue"] = damageTaken,
+                ["damagetaken-*"] = FormatCompactNumber(damageTaken),
+                ["maxhit-*"] = maxHit,
+                ["hits"] = hits.ToString(CultureInfo.InvariantCulture),
+                ["hitsValue"] = hits,
+                ["hitfailed"] = hitFailed.ToString(CultureInfo.InvariantCulture),
+                ["hitfailedValue"] = hitFailed,
+                ["crithits"] = critHits.ToString(CultureInfo.InvariantCulture),
+                ["critHitsValue"] = critHits,
+                ["tohit"] = toHit > 0d ? toHit.ToString("F1", CultureInfo.InvariantCulture) : "--",
+                ["TOHIT"] = toHit > 0d ? toHit.ToString("F1", CultureInfo.InvariantCulture) : "--",
+                ["BlockPct"] = blockPct,
+                ["ParryPct"] = parryPct,
+                ["deaths"] = deaths.ToString(CultureInfo.InvariantCulture),
+                ["deathsValue"] = deaths,
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static List<CombatantData> GetEncounterAllies(EncounterData encounter)
+    {
+        var result = new List<CombatantData>();
+
+        try
+        {
+            var method = encounter.GetType().GetMethod("GetAllies", Type.EmptyTypes);
+            if (method?.Invoke(encounter, null) is System.Collections.IEnumerable enumerable)
+            {
+                foreach (var item in enumerable)
+                {
+                    if (item is CombatantData combatant)
+                        result.Add(combatant);
+                }
+            }
+        }
+        catch
+        {
+            // ignore and fall back
+        }
+
+        if (result.Count > 0)
+            return result;
+
+        try
+        {
+            foreach (var entry in encounter.Items)
+            {
+                if (entry.Value != null)
+                    result.Add(entry.Value);
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+
+        return result;
     }
 
     private Dictionary<string, object?>? BuildCombatantSnapshot(CombatantData combatant)
@@ -886,6 +1125,26 @@ public sealed class McpBridgePlugin : IActPluginV1
     private static double SanitizeDouble(double value)
         => double.IsNaN(value) || double.IsInfinity(value) ? 0d : value;
 
+    private static string FormatCompactNumber(long value)
+    {
+        var abs = Math.Abs((double)value);
+        var sign = value < 0 ? "-" : string.Empty;
+
+        if (abs >= 1_000_000_000_000d) return $"{sign}{abs / 1_000_000_000_000d:0.0}T";
+        if (abs >= 1_000_000_000d) return $"{sign}{abs / 1_000_000_000d:0.0}B";
+        if (abs >= 1_000_000d) return $"{sign}{abs / 1_000_000d:0.0}M";
+        if (abs >= 1_000d) return $"{sign}{abs / 1_000d:0.0}K";
+        return value.ToString("N0", CultureInfo.InvariantCulture);
+    }
+
+    private static string FormatPercentValue(double value, int decimals)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value))
+            return "--";
+
+        return value.ToString($"F{Math.Max(0, Math.Min(4, decimals))}", CultureInfo.InvariantCulture) + "%";
+    }
+
     private static long? GetLongMember(object instance, string name)
     {
         try
@@ -923,11 +1182,99 @@ public sealed class McpBridgePlugin : IActPluginV1
         }
     }
 
+    private static bool GetBoolMember(object instance, string name)
+    {
+        try
+        {
+            var prop = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+            if (prop == null) return false;
+            var value = prop.GetValue(instance);
+            return value switch
+            {
+                bool b => b,
+                string s when bool.TryParse(s, out var parsed) => parsed,
+                _ => false,
+            };
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static string? GetStringMember(object instance, string name)
+    {
+        try
+        {
+            var prop = instance.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+            return prop?.GetValue(instance)?.ToString();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string? TryInvokeStringMethod(object instance, string name, params object[] args)
+    {
+        try
+        {
+            var argTypes = new Type[args.Length];
+            for (var i = 0; i < args.Length; i++)
+                argTypes[i] = args[i].GetType();
+
+            var method = instance.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public, null, argTypes, null);
+            if (method == null)
+            {
+                method = instance.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.Public);
+                if (method == null) return null;
+            }
+
+            return method.Invoke(instance, args)?.ToString();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private static long? GetCombatantItemAsLong(CombatantData combatant, string keyName)
         => GetCombatantItem(combatant, keyName, ParseLong);
 
     private static double? GetCombatantItemAsDouble(CombatantData combatant, string keyName)
         => GetCombatantItem(combatant, keyName, ParseDouble);
+
+    private static string? GetCombatantItemAsString(CombatantData combatant, string keyName)
+    {
+        try
+        {
+            var itemsProp = combatant.GetType().GetProperty("Items", BindingFlags.Instance | BindingFlags.Public);
+            if (itemsProp == null) return null;
+
+            var itemsObj = itemsProp.GetValue(combatant);
+            if (itemsObj is not System.Collections.IDictionary dict) return null;
+
+            var normalized = NormalizeMetricKey(keyName);
+            if (string.IsNullOrWhiteSpace(normalized))
+                return null;
+
+            foreach (System.Collections.DictionaryEntry entry in dict)
+            {
+                var kName = GetDictionaryKeyName(entry.Key);
+                if (string.IsNullOrWhiteSpace(kName)) continue;
+                if (!string.Equals(NormalizeMetricKey(kName), normalized, StringComparison.Ordinal))
+                    continue;
+
+                return entry.Value?.ToString();
+            }
+
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     private static T? GetCombatantItem<T>(CombatantData combatant, string keyName, Func<string?, T?> parser) where T : struct
     {
@@ -1216,29 +1563,11 @@ public sealed class McpBridgePlugin : IActPluginV1
 
     private void SafeWriteInfoLog(string text)
     {
-        try
-        {
-            ActGlobals.oFormActMain?.WriteInfoLog(text);
-        }
-        catch
-        {
-            // ignored
-        }
-
         LogLine(text);
     }
 
     private void SafeWriteDebugLog(string text)
     {
-        try
-        {
-            ActGlobals.oFormActMain?.WriteDebugLog(text);
-        }
-        catch
-        {
-            // ignored
-        }
-
         LogLine(text);
     }
 

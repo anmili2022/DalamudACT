@@ -338,3 +338,13 @@ DalamudACT/DalamudPackager.targets
 
 tmp/
 DalamudACT/Potency.update.warnings.txt
+
+# Local packaging / reference artifacts
+/output/
+/output.rar
+/Advanced Combat Tracker.dll
+/1.css
+/2.css
+/_skyline.css
+/_skyline.js
+/_skyline_index.html

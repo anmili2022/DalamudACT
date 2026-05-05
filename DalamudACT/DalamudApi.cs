@@ -1,69 +1,83 @@
-﻿using System;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Dalamud.Game;
-using Dalamud.Game.ClientState.Objects;
+using System;
+using System.Globalization;
+using System.Reflection;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Local
 
 namespace DalamudACT;
 
-public class DalamudApi
+public sealed class DalamudApi
 {
     public static void Initialize(IDalamudPluginInterface pluginInterface)
         => pluginInterface.Create<DalamudApi>();
 
-    // @formatter:off
     [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
-    [PluginService] public static ICommandManager Commands { get; private set; } = null!;
-    [PluginService] public static ISigScanner SigScanner { get; private set; } = null!;
-    [PluginService] public static IDataManager GameData { get; private set; } = null!;
-    [PluginService] public static IClientState ClientState { get; private set; } = null!;
-    [PluginService] public static IFramework Framework { get; private set; } = null!;
-    [PluginService] public static ICondition Conditions { get; private set; } = null!;
-    [PluginService] public static IGameGui GameGui { get; private set; } = null!;
-    
-    [PluginService] public static ITargetManager Targets { get; private set; } = null!;
-    [PluginService] public static IGameInteropProvider Interop { get; private set; } = null!;
-    [PluginService] public static IObjectTable ObjectTable { get; private set; } = null!;
-    [PluginService] public static IPluginLog Log { get; private set; } = null!;
-    [PluginService] public static IPartyList PartyList { get; private set; } = null!;
-    // @formatter:on
+    [PluginService] public static Dalamud.Plugin.Services.IDataManager GameData { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IClientState ClientState { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IFramework Framework { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.ICondition Conditions { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IGameInteropProvider Interop { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IObjectTable ObjectTable { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IPluginLog Log { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IPartyList PartyList { get; private set; } = null!;
 
+    public static uint GetTerritoryTypeId()
+        => TryGetUInt32Property(ClientState, "TerritoryType", "TerritoryTypeId", "CurrentTerritoryType");
 
-    [PluginService] public static IChatGui ChatGui { get; private set; } = null!;
-    [PluginService] public static IKeyState KeyState { get; private set; } = null!;
-    [PluginService] public static IToastGui Toasts { get; private set; } = null!;
-    [PluginService] public static IGameConfig GameConfig { get; private set; } = null!;
-    [PluginService] public static ITextureProvider TextureProvider { get; private set; } = null!;
-    [PluginService] public static ITextureSubstitutionProvider TextureSubstitutionProvider { get; private set; } = null!;
-    [PluginService] public static ITextureReadbackProvider TextureReadbackProvider { get; private set; } = null!;
-    [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; } = null!;
-    [PluginService] public static IDtrBar DtrBar { get; private set; } = null!;
-    [PluginService] public static IDutyState DutyState { get; private set; } = null!;
-    [PluginService] public static INotificationManager NotificationManager { get; private set; } = null!;
-    [PluginService] public static IContextMenu ContextMenu { get; private set; } = null!;
-    [PluginService] public static INamePlateGui NamePlateGui { get; private set; } = null!;
-    [PluginService] public static IPlayerState PlayerState { get; private set; } = null!;
-    
-
-    public static async Task<T> RunOnFrameworkThread<T>(Func<T> func, [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
+    public static string? GetLocalPlayerName()
     {
-        var fileName = Path.GetFileNameWithoutExtension(callerFilePath);
-        if (!Framework.IsInFrameworkUpdateThread)
+        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        var name = GetPropertyValue(localPlayer, "Name");
+
+        return GetPropertyValue(name, "TextValue") as string
+               ?? name?.ToString();
+    }
+
+    public static uint GetLocalPlayerActorId()
+    {
+        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        return TryGetUInt32Property(localPlayer, "EntityId", "ObjectId");
+    }
+
+    public static uint GetLocalPlayerClassJobId()
+    {
+        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        var classJob = GetPropertyValue(localPlayer, "ClassJob");
+        return TryGetUInt32Property(classJob, "RowId");
+    }
+
+    private static uint TryGetUInt32Property(object? instance, params string[] propertyNames)
+    {
+        foreach (var propertyName in propertyNames)
         {
-            var result = await Framework.RunOnFrameworkThread(func).ContinueWith((task) => task.Result).ConfigureAwait(false);
-            while (Framework.IsInFrameworkUpdateThread) // yield the thread again, should technically never be triggered
-            {
-                await Task.Delay(1).ConfigureAwait(false);
-            }
-            return result;
+            var value = GetPropertyValue(instance, propertyName);
+            if (TryConvertToUInt32(value, out var result))
+                return result;
         }
 
-        return func.Invoke();
+        return 0;
+    }
+
+    private static object? GetPropertyValue(object? instance, string propertyName)
+        => instance?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(instance);
+
+    private static bool TryConvertToUInt32(object? value, out uint result)
+    {
+        try
+        {
+            if (value == null)
+            {
+                result = 0;
+                return false;
+            }
+
+            result = Convert.ToUInt32(value, CultureInfo.InvariantCulture);
+            return true;
+        }
+        catch
+        {
+            result = 0;
+            return false;
+        }
     }
 }

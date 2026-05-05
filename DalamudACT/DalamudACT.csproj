@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.CN.NET.Sdk/14.0.1">
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
 
   <PropertyGroup>
-    <AssemblyVersion>0.14.0.1</AssemblyVersion>
+    <AssemblyVersion>0.15.0.0</AssemblyVersion>
     <InternalName>DalamudACT</InternalName>
-    <Description>Dalamud Damage Display plugin.</Description>
+    <RootNamespace>DalamudACT</RootNamespace>
+    <Description>Independent Dalamud DPS meter powered by local ACTX-style statistics.</Description>
     <Copyright>wozaiha</Copyright>
     <PackageProjectUrl>https://github.com/wozaiha/DalamudACT</PackageProjectUrl>
   </PropertyGroup>
@@ -16,23 +17,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <!--<OutputPath>D:\Git\DalamudPlugins\plugins</OutputPath>-->
+    <OutputPath>..\output\</OutputPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ACT.cs" />
+    <None Include="..\Data\DalamudACT.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>DalamudACT.json</TargetPath>
+    </None>
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <Content Include="..\Data\DalamudACT.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    --><!--<Content Include="..\Data\goat.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>--><!--
-  </ItemGroup>-->
 
   <PropertyGroup>
     <DalamudLibPath>$(APPDATA)\XIVLauncherCN\addon\Hooks\dev\</DalamudLibPath>
@@ -60,16 +54,4 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
 
-
-  <ItemGroup>
-    <None Update="DDD.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="14.0.1" />
-  </ItemGroup>
-  
 </Project>

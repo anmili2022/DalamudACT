@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>false</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -11,14 +11,16 @@
   <PropertyGroup>
     <ActDieMoeRoot Condition="'$(ActDieMoeRoot)' == ''">C:\Program Files (x86)\宝宝轮椅\ACT.DieMoe</ActDieMoeRoot>
     <ActDieMoeLibDir>$(ActDieMoeRoot)\DLibs</ActDieMoeLibDir>
+    <LocalActDllPath>$(MSBuildThisFileDirectory)..\..\Advanced Combat Tracker.dll</LocalActDllPath>
+    <ActDllHintPath Condition="Exists('$(LocalActDllPath)')">$(LocalActDllPath)</ActDllHintPath>
+    <ActDllHintPath Condition="'$(ActDllHintPath)' == ''">$(ActDieMoeLibDir)\Advanced Combat Tracker.dll</ActDllHintPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Advanced Combat Tracker">
-      <HintPath>$(ActDieMoeLibDir)\Advanced Combat Tracker.dll</HintPath>
+      <HintPath>$(ActDllHintPath)</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
 
 </Project>

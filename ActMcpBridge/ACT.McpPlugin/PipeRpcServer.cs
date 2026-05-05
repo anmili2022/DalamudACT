@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
-using System.Security.AccessControl;
-using System.Security.Principal;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
-
 namespace ActMcpBridge;
 
 internal sealed class PipeRpcServer : IDisposable
@@ -17,9 +14,9 @@ internal sealed class PipeRpcServer : IDisposable
     private readonly Func<string, Dictionary<string, object?>?, Dictionary<string, object?>> handler;
     private readonly Action<string> log;
 
-    private readonly JavaScriptSerializer serializer = new()
+    private readonly JsonSerializerOptions serializerOptions = new()
     {
-        MaxJsonLength = 1024 * 1024,
+        MaxDepth = 64,
     };
 
     private readonly object handlerGate = new();
@@ -122,20 +119,7 @@ internal sealed class PipeRpcServer : IDisposable
 
     private NamedPipeServerStream CreateServerStream()
     {
-        var security = CreatePipeSecurityForCurrentUser();
         const int maxInstances = NamedPipeServerStream.MaxAllowedServerInstances;
-        if (security == null)
-        {
-            return new NamedPipeServerStream(
-                pipeName,
-                PipeDirection.InOut,
-                maxInstances,
-                PipeTransmissionMode.Byte,
-                PipeOptions.Asynchronous,
-                4096,
-                4096);
-        }
-
         return new NamedPipeServerStream(
             pipeName,
             PipeDirection.InOut,
@@ -143,26 +127,7 @@ internal sealed class PipeRpcServer : IDisposable
             PipeTransmissionMode.Byte,
             PipeOptions.Asynchronous,
             4096,
-            4096,
-            security);
-    }
-
-    private static PipeSecurity? CreatePipeSecurityForCurrentUser()
-    {
-        var security = new PipeSecurity();
-
-        // Current user full control.
-        var identity = WindowsIdentity.GetCurrent();
-        var sid = identity.User;
-        if (sid == null)
-            return null;
-
-        security.AddAccessRule(new PipeAccessRule(
-            sid,
-            PipeAccessRights.FullControl,
-            AccessControlType.Allow));
-
-        return security;
+            4096);
     }
 
     private async Task HandleClientAsync(NamedPipeServerStream pipe, CancellationToken token)
@@ -202,14 +167,15 @@ internal sealed class PipeRpcServer : IDisposable
                 };
             }
 
-            var json = serializer.Serialize(response);
+            var json = JsonSerializer.Serialize(response, serializerOptions);
             await writer.WriteLineAsync(json).ConfigureAwait(false);
         }
     }
 
     private Dictionary<string, object?> HandleLine(string line)
     {
-        var parsed = serializer.DeserializeObject(line) as Dictionary<string, object?>;
+        using var document = JsonDocument.Parse(line);
+        var parsed = ConvertObject(document.RootElement);
         if (parsed == null)
             throw new PipeRpcException(-32600, "Invalid request.");
 
@@ -238,6 +204,50 @@ internal sealed class PipeRpcServer : IDisposable
             log($"[ACT.McpBridge] RPC handler error: {e.GetType().Name}: {e.Message}");
             return Error(id, -32603, "Internal error", $"{e.GetType().Name}: {e.Message}");
         }
+    }
+
+    private static Dictionary<string, object?>? ConvertObject(JsonElement element)
+    {
+        if (element.ValueKind != JsonValueKind.Object)
+            return null;
+
+        var result = new Dictionary<string, object?>(StringComparer.Ordinal);
+        foreach (var property in element.EnumerateObject())
+            result[property.Name] = ConvertValue(property.Value);
+        return result;
+    }
+
+    private static object? ConvertValue(JsonElement element)
+        => element.ValueKind switch
+        {
+            JsonValueKind.Object => ConvertObject(element),
+            JsonValueKind.Array => ConvertArray(element),
+            JsonValueKind.String => element.GetString(),
+            JsonValueKind.Number => ConvertNumber(element),
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.Null => null,
+            JsonValueKind.Undefined => null,
+            _ => element.GetRawText(),
+        };
+
+    private static List<object?> ConvertArray(JsonElement element)
+    {
+        var result = new List<object?>();
+        foreach (var item in element.EnumerateArray())
+            result.Add(ConvertValue(item));
+        return result;
+    }
+
+    private static object ConvertNumber(JsonElement element)
+    {
+        if (element.TryGetInt32(out var intValue))
+            return intValue;
+        if (element.TryGetInt64(out var longValue))
+            return longValue;
+        if (element.TryGetDecimal(out var decimalValue))
+            return decimalValue;
+        return element.GetDouble();
     }
 
     private static Dictionary<string, object?> Ok(object? id, Dictionary<string, object?> result)

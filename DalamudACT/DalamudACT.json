@@ -1,13 +1,17 @@
 {
     "Author": "wozaiha",
-    "Name": "伤害统计",
-    "Punchline": "简单的显示一下DPS",
-    "Description": "非满级情况或野外有概率不精确,青魔不适用望周知",
+    "Name": "DPS统计",
+    "Punchline": "在游戏里直接查看队伍战斗统计。",
+    "Description": "一个直接在游戏内显示伤害、治疗、承伤和历史记录的插件。只统计自己和当前队伍成员，不依赖外部网页面板。",
     "IconUrl": "https://github.com/flyrio/DalamudACT/raw/master/DalamudACT/images/icon.png",
     "ImageUrls": [],
     "RepoUrl": "https://github.com/flyrio/DalamudACT",
     "CategoryTags": [
-        "ACT"
+        "ACT",
+        "DPS"
     ],
-    "InternalName": "DalamudACT"
+    "InternalName": "DalamudACT",
+    "ApplicableVersion": "any",
+    "AssemblyVersion": "0.15.0.0",
+    "DalamudApiLevel": 15
 }

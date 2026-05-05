@@ -1,15 +1,15 @@
 {
     "Author": "wozaiha",
-    "Name": "Dalamud Damage Display",
-    "Punchline": "Show your battle Damage in game.",
-    "Description": "Display your Damage in game.",
+    "Name": "DPS统计",
+    "Punchline": "在游戏里直接查看队伍战斗统计。",
+    "Description": "一个直接在游戏内显示伤害、治疗、承伤和历史记录的插件。只统计自己和当前队伍成员，不依赖外部网页面板。",
     "InternalName": "DalamudACT",
     "RepoUrl": "https://github.com/wozaiha/DalamudACT",
     "ApplicableVersion": "any",
-    "AssemblyVersion": "0.2.0.0",
+    "AssemblyVersion": "0.15.0.0",
     "Tags": [
         "ACT",
-        "Battle"
+        "DPS"
     ],
-    "DalamudApiLevel": 7
+    "DalamudApiLevel": 15
 }

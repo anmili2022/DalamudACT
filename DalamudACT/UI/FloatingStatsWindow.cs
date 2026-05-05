@@ -1,0 +1,70 @@
+using System;
+using System.Numerics;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Windowing;
+
+namespace DalamudACT;
+
+internal sealed class FloatingStatsWindow : Window
+{
+    private const float CollapsedWindowWidth = 270f;
+    private const float CollapsedWindowHeight = 42f;
+
+    private readonly PluginConfiguration config;
+    private readonly LocalStatsService statsService;
+    private readonly Action toggleSettingsWindow;
+    private Vector2 expandedWindowSize;
+    private bool collapseToTabBar;
+    private StatsPanelTabId activeTab = StatsPanelTabId.None;
+
+    public FloatingStatsWindow(
+        PluginConfiguration config,
+        LocalStatsService statsService,
+        Action toggleSettingsWindow)
+        : base("###DpsStatsPanel", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoTitleBar)
+    {
+        this.config = config;
+        this.statsService = statsService;
+        this.toggleSettingsWindow = toggleSettingsWindow;
+        Size = new Vector2(720f, 520f);
+        SizeCondition = ImGuiCond.FirstUseEver;
+        expandedWindowSize = Size.Value;
+    }
+
+    public override void Draw()
+    {
+        BgAlpha = Math.Clamp(config.FloatingStatsOpacity, 0f, 1f);
+
+        if (!collapseToTabBar)
+            expandedWindowSize = ImGui.GetWindowSize();
+
+        var drawResult = StatsPanel.Draw(statsService, config, activeTab, collapseToTabBar);
+        if (drawResult.ActiveTab != StatsPanelTabId.None)
+            activeTab = drawResult.ActiveTab;
+
+        if (drawResult.OpenSettingsRequested)
+            toggleSettingsWindow();
+
+        if (collapseToTabBar && activeTab != StatsPanelTabId.Dps)
+        {
+            collapseToTabBar = false;
+            ImGui.SetWindowSize(expandedWindowSize, ImGuiCond.Always);
+            return;
+        }
+
+        if (!drawResult.ToggleDpsCollapseRequested)
+            return;
+
+        if (collapseToTabBar)
+        {
+            collapseToTabBar = false;
+            ImGui.SetWindowSize(expandedWindowSize, ImGuiCond.Always);
+            return;
+        }
+
+        expandedWindowSize = ImGui.GetWindowSize();
+        collapseToTabBar = true;
+        activeTab = StatsPanelTabId.Dps;
+        ImGui.SetWindowSize(new Vector2(CollapsedWindowWidth, CollapsedWindowHeight), ImGuiCond.Always);
+    }
+}

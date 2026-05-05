@@ -81,7 +81,7 @@
    - `md/CHANGELOG.md`
    - `md/RELEASE-NOTES.md`
 4. 提交并推送 `master`
-5. 创建并推送正式 tag，例如 `0.15.2.1`
+5. 用 `git -c tag.gpgSign=false tag -a ...` 创建并推送正式 tag，例如 `0.15.2.1`
 6. 由 `.github/workflows/release.yml` 自动构建并创建 GitHub Release
 
 ## 哪个 workflow 才是正式发版入口
@@ -110,6 +110,17 @@
 - 文件：`.github/workflows/build.yml`
 - 用途：分支构建与 `latest` 发布
 - 不是本项目当前正式插件仓库发版链路
+
+## 这台机器的 tag 注意事项
+
+- 当前 git 配置里 `tag.gpgSign=true`
+- 直接执行 `git tag 0.15.2.1` 会卡在签名流程
+- 本次实际使用的命令是：
+
+```powershell
+git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a 0.15.2.1 -m "DalamudACT 0.15.2.1"
+git -C E:\git\DalamudACT push origin 0.15.2.1
+```
 
 ## 本地验证
 

@@ -89,16 +89,15 @@ git -C E:\git\DalamudACT push origin master
 ### 3. 创建正式 tag
 
 ```powershell
-git -C E:\git\DalamudACT tag 0.15.2.1
+git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a 0.15.2.1 -m "DalamudACT 0.15.2.1"
 git -C E:\git\DalamudACT push origin 0.15.2.1
 ```
 
-如果想带说明，也可以用带注释 tag：
+说明：
 
-```powershell
-git -C E:\git\DalamudACT tag -a 0.15.2.1 -m "DalamudACT 0.15.2.1"
-git -C E:\git\DalamudACT push origin 0.15.2.1
-```
+- 当前这台机器启用了 `tag.gpgSign=true`
+- 直接执行 `git tag 0.15.2.1` 会被 GPG 签名流程卡住
+- 本次实际可用命令是上面这条：临时关闭 tag 签名，再创建带注释 tag
 
 ## GitHub Actions 对应关系
 
@@ -181,6 +180,7 @@ git -C E:\git\DalamudACT push origin 0.15.2.1
 
 - 正式版本不要用 `testing_*` tag
 - 正式版本不要依赖 `build.yml` 的 `latest`
+- 这台机器如果直接 `git tag`，会被 `tag.gpgSign=true` 卡住；请直接用 `git -c tag.gpgSign=false tag -a ...`
 - tag 名称必须和版本号完全一致
 - `repo.json` 的下载链接必须提前改到目标 tag
 - 版本号不要只改 `csproj`，manifest 和 `repo.json` 也要一起改

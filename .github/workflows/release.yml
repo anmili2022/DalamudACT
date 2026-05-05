@@ -2,6 +2,8 @@ name: Create Release
 
 on:
   push:
+    tags:
+      - '*'
     tags-ignore:
       - testing_*
 
@@ -52,8 +54,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ env.REPO_NAME }} ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ env.REPO_NAME }} ${{ github.ref_name }}
           draft: false
           prerelease: false
       - name: Upload Release Asset

@@ -6,7 +6,7 @@
     "InternalName": "DalamudACT",
     "RepoUrl": "https://github.com/wozaiha/DalamudACT",
     "ApplicableVersion": "any",
-    "AssemblyVersion": "0.15.0.0",
+    "AssemblyVersion": "0.15.1.0",
     "Tags": [
         "ACT",
         "DPS"

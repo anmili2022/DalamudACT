@@ -6,7 +6,7 @@
     "InternalName": "DalamudACT",
     "RepoUrl": "https://github.com/anmili2022/DalamudACT",
     "ApplicableVersion": "any",
-    "AssemblyVersion": "0.15.2.3",
+    "AssemblyVersion": "0.15.2.4",
     "Tags": [
         "combat",
         "dps",

@@ -17,7 +17,6 @@ internal sealed class FloatingStatsWindow : Window
     private readonly Action toggleSettingsWindow;
     private Vector2 expandedWindowSize;
     private bool collapseToTabBar;
-    private bool hideStartupCollapsedTabs;
     private bool applyStartupCollapsedSize;
     private StatsPanelTabId activeTab = StatsPanelTabId.None;
     private int observedEncounterFinalizedVersion;
@@ -58,9 +57,7 @@ internal sealed class FloatingStatsWindow : Window
                 activeTab = ResolvePreferredLiveTab();
         }
 
-        var drawResult = collapseToTabBar && hideStartupCollapsedTabs
-            ? DrawStartupCollapsedState()
-            : StatsPanel.Draw(statsService, config, activeTab, collapseToTabBar);
+        var drawResult = StatsPanel.Draw(statsService, config, activeTab, collapseToTabBar);
         if (drawResult.ActiveTab != StatsPanelTabId.None)
             activeTab = drawResult.ActiveTab;
 
@@ -79,7 +76,6 @@ internal sealed class FloatingStatsWindow : Window
 
         if (collapseToTabBar)
         {
-            hideStartupCollapsedTabs = false;
             collapseToTabBar = false;
             ImGui.SetWindowSize(expandedWindowSize, ImGuiCond.Always);
             return;
@@ -87,7 +83,6 @@ internal sealed class FloatingStatsWindow : Window
 
         expandedWindowSize = ImGui.GetWindowSize();
         collapseToTabBar = true;
-        hideStartupCollapsedTabs = drawResult.HideTabsWhenCollapsedRequested;
         activeTab = StatsPanelTabId.Dps;
         ImGui.SetWindowSize(new Vector2(CollapsedWindowWidth, CollapsedWindowHeight), ImGuiCond.Always);
     }
@@ -101,18 +96,8 @@ internal sealed class FloatingStatsWindow : Window
         }
 
         collapseToTabBar = true;
-        hideStartupCollapsedTabs = true;
         applyStartupCollapsedSize = true;
         activeTab = StatsPanelTabId.Dps;
-    }
-
-    private StatsPanelDrawResult DrawStartupCollapsedState()
-    {
-        const string collapsedHintText = "等待战斗数据...";
-        ImGui.TextDisabled(collapsedHintText);
-        var toggleRequested = ImGui.IsItemClicked();
-        var openSettingsRequested = ImGui.IsItemClicked(ImGuiMouseButton.Right);
-        return new StatsPanelDrawResult(StatsPanelTabId.Dps, toggleRequested, openSettingsRequested, true);
     }
 
     private StatsPanelTabId ResolvePreferredLiveTab()

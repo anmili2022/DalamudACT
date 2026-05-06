@@ -10,7 +10,7 @@ Updated: 2026-05-06
 - Current branch at handover time: `master`
 - Latest verified automation baseline commit: `b1324c9`
 - Working tree was clean when the automation baseline above was verified
-- Current metadata version: `0.15.2.3`
+- Current metadata version: `0.15.2.4`
 - Verified local build:
   - Command: `dotnet build E:\git\DalamudACT\DalamudACT.sln`
   - Result: `0 warnings / 0 errors`
@@ -46,8 +46,10 @@ Practical conclusion:
 
 ## What Changed In This Handover Window
 
-- released `0.15.2.3`
-- confirmed `repo.json`, manifests, and assembly version all point to `0.15.2.3`
+- released `0.15.2.4`
+- confirmed `repo.json`, manifests, and assembly version all point to `0.15.2.4`
+- adjusted floating window collapse/expand behavior to use the compact DPS tab state consistently
+- fixed the UI gating that could still show `等待战斗数据...` after a combat snapshot already existed
 - verified local `Release` packaging path remains `output/`
 - fixed `.github/workflows/build.yml` to archive from `output/` instead of the old `bin/Release` path
 - verified `.github/workflows/release.yml` can successfully rebuild and publish for tag `0.15.2.3`
@@ -65,10 +67,15 @@ The current project direction is:
 
 ## Current Version Scope
 
-The latest checked-in metadata version is `0.15.2.3`.
+The latest checked-in metadata version is `0.15.2.4`.
 
 Recent changes already reflected in the repo:
 
+- `0.15.2.4`
+  - floating window collapsed state now stays in the compact DPS tab flow
+  - clicking the compact DPS tab expands directly into live data
+  - combat snapshot presence is now enough to display stats instead of staying on the waiting text
+  - README includes maintainer handoff links for direct navigation
 - `0.15.2.3`
   - maintenance handover entry added at repo root
   - README now links maintainers directly to the handover entry points

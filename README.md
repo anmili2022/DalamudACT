@@ -249,3 +249,8 @@ dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Debug
 产物位置：
 
 - `E:\git\DalamudACT\output\DalamudACT.dll`
+## Handoff / 交接入口
+
+- [HANDOVER.md](HANDOVER.md)
+- [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
+- [2026-05-06 Release Handoff](md/2026-05-06-RELEASE-HANDOFF.md)

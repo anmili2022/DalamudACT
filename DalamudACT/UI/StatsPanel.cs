@@ -40,7 +40,7 @@ internal static class StatsPanel
         }
 
         var combatData = statsService.DisplayCombatData;
-        var hasCombatData = combatData?.Msg?.Encounter != null && combatData.Msg.Combatant.Count > 0;
+        var hasCombatData = combatData?.Msg?.Encounter != null;
         if (!collapseToTabBar && !hasCombatData)
         {
             var history = statsService.HistoricalRecords;

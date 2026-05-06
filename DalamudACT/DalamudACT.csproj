@@ -2,7 +2,7 @@
 <Project Sdk="Dalamud.NET.Sdk/15.0.0">
 
   <PropertyGroup>
-    <AssemblyVersion>0.15.2.2</AssemblyVersion>
+    <AssemblyVersion>0.15.2.3</AssemblyVersion>
     <InternalName>DalamudACT</InternalName>
     <RootNamespace>DalamudACT</RootNamespace>
     <Description>Independent Dalamud DPS meter powered by local ACTX-style statistics.</Description>

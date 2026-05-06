@@ -3,26 +3,47 @@ name: Create Release
 on:
   push:
     tags:
-      - '*'
+      - '*.*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to publish, for example 0.15.2.2
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 jobs:
   build-and-release:
-    if: ${{ !startsWith(github.ref_name, 'testing_') }}
     runs-on: windows-latest
 
     steps:
+      - name: Validate release tag
+        shell: pwsh
+        run: |
+          $ver = '${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}'
+          if ([string]::IsNullOrWhiteSpace($ver)) {
+            throw 'Release version is empty.'
+          }
+
+          if ($ver -like 'testing_*') {
+            throw 'testing_* tags must use .github/workflows/test_release.yml instead of release.yml.'
+          }
+
+          "RELEASE_VERSION=$ver" >> $env:GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', inputs.tag) || github.ref }}
+          fetch-depth: 0
           submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '9.0.x'
 
       - name: Clean output
         shell: pwsh
@@ -31,35 +52,53 @@ jobs:
             Remove-Item ./output -Recurse -Force
           }
 
-      - name: Download Dalamud
+      - name: Download Dalamud CN
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
-          Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+          $dalamudPath = "$env:AppData\XIVLauncherCN\addon\Hooks\dev\"
+          New-Item -ItemType Directory -Force -Path $dalamudPath | Out-Null
+          Invoke-WebRequest -Uri "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip" -OutFile dalamud.zip -UseBasicParsing
+          Expand-Archive -Force dalamud.zip $dalamudPath
+
+      - name: Restore dependencies
+        shell: pwsh
+        run: dotnet restore ./DalamudACT/DalamudACT.csproj
+        env:
+          DALAMUD_HOME: ${{ env.APPDATA }}\XIVLauncherCN\addon\Hooks\dev
 
       - name: Build release package
         shell: pwsh
         run: |
-          $ver = '${{ github.ref_name }}'
-          dotnet build ./DalamudACT/DalamudACT.csproj --configuration Release --nologo -p:Version=$ver -p:FileVersion=$ver -p:AssemblyVersion=$ver
+          $dalamudPath = "$env:AppData\XIVLauncherCN\addon\Hooks\dev\"
+          dotnet build ./DalamudACT/DalamudACT.csproj `
+            --configuration Release `
+            --no-restore `
+            --nologo `
+            -p:DalamudLibPath="$dalamudPath" `
+            -p:Version="$env:RELEASE_VERSION" `
+            -p:FileVersion="$env:RELEASE_VERSION" `
+            -p:AssemblyVersion="$env:RELEASE_VERSION"
 
       - name: Update output manifest version
         shell: pwsh
         run: |
-          $ver = '${{ github.ref_name }}'
           foreach ($path in @('./output/DalamudACT.json', './output/DalamudACT/DalamudACT.json')) {
             if (-not (Test-Path $path)) {
               continue
             }
 
-            $json = Get-Content -Raw $path | ConvertFrom-Json
-            $json.AssemblyVersion = $ver
-            $json | ConvertTo-Json -Depth 10 | Set-Content -Path $path
+            $json = Get-Content -Raw -Encoding UTF8 $path | ConvertFrom-Json
+            $json.AssemblyVersion = $env:RELEASE_VERSION
+            $json | ConvertTo-Json -Depth 10 | Set-Content -Path $path -Encoding utf8
           }
 
       - name: Archive release asset
         shell: pwsh
-        run: Compress-Archive -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json -DestinationPath ./DalamudACT.zip
+        run: |
+          Compress-Archive `
+            -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json `
+            -DestinationPath ./DalamudACT.zip `
+            -Force
 
       - name: Prepare release notes
         shell: pwsh
@@ -69,7 +108,9 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          name: DalamudACT ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
+          name: DalamudACT ${{ env.RELEASE_VERSION }}
+          tag_name: ${{ env.RELEASE_VERSION }}
+          target_commitish: ${{ github.sha }}
           body_path: ./release-notes.md
           files: ./DalamudACT.zip
+          fail_on_unmatched_files: true

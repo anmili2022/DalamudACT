@@ -1,23 +1,26 @@
-# DPS统计 发布说明
+# DalamudACT 0.15.2.5 Release Notes
 
-- 当前发布版本：`0.15.2.4`
-- 这份文档会作为 GitHub Release 正文使用。
+- Current release version: `0.15.2.5`
+- This file is used as the GitHub Release body by `.github/workflows/release.yml`.
 
-## 本次更新
+## Highlights
 
-- 悬浮窗折叠态统一为缩小窗口的 `DPS` 页签入口，点击后会直接展开显示当前数据。
-- 修复已经收到战斗快照时，界面仍停留在 `等待战斗数据...` 的问题。
-- `README.md` 增加交接入口链接，便于维护时直接跳转到 handoff 文档。
+- Added a `Lock floating window` option under window settings.
+- When locked, the floating window can no longer be moved or resized.
+- Metric and history table headers are disabled while locked, so the user's current column widths stay in place and can no longer be dragged.
+- All settings sections now default collapsed except for window settings and data/status.
+- The synthetic `零式测试场` sample now contains eight characters for full-party testing.
+- README handoff links now point at the current release handoff entry for maintainers.
 
-## 重点说明
+## Notes
 
-- 这是一个小范围行为修正版，主要调整悬浮窗折叠/展开交互和数据显示判定。
-- 统计口径没有变化，仍然沿用当前本地 ACTX 风格统计逻辑。
-- `repo.json`、插件 manifest 和程序集版本号已同步到 `0.15.2.4`。
+- This is a UI and maintainability patch release.
+- Stats calculation behavior is unchanged in this release.
+- `repo.json`, both plugin manifests, and the assembly version are all synchronized to `0.15.2.5`.
 
-## 发布后建议检查
+## Post-release checks
 
-1. 确认 GitHub 上生成 `DalamudACT 0.15.2.4` Release。
-2. 确认附件中存在 `DalamudACT.zip`。
-3. 确认 Release 正文正常显示中文，没有编码异常。
-4. 确认 `repo.json` 三个下载链接都指向 `0.15.2.4`。
+1. Confirm GitHub created `DalamudACT 0.15.2.5`.
+2. Confirm the release contains `DalamudACT.zip`.
+3. Confirm the release body renders this file correctly.
+4. Confirm all three `repo.json` download links point to `0.15.2.5`.

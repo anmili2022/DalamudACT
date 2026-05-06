@@ -49,11 +49,12 @@ public sealed class ThemeBarColorSetting
 [Serializable]
 public sealed class PluginConfiguration : IPluginConfiguration
 {
-    public int Version { get; set; } = 14;
+    public int Version { get; set; } = 15;
 
     public float WindowOpacity = 0.92f;
     public float FloatingStatsOpacity = 0.72f;
     public bool ShowStatsPanel = true;
+    public bool LockFloatingStatsWindow = false;
     public CombatEndRule CombatEndRule = CombatEndRule.PartyList;
     public int EncounterTimeoutSeconds = 30;
 
@@ -139,6 +140,9 @@ public sealed class PluginConfiguration : IPluginConfiguration
         if (Version < 14)
             CombatEndRule = CombatEndRule.PartyList;
 
+        if (Version < 15)
+            LockFloatingStatsWindow = false;
+
         if (Version < 11)
             DpsVisibleCount = 8;
 
@@ -167,7 +171,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         EnsureThemeBarColors();
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = 14;
+        Version = 15;
     }
 
     public bool HasAnyVisibleStatsTab()
@@ -214,6 +218,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         WindowOpacity = 0.92f;
         FloatingStatsOpacity = 0.72f;
         ShowStatsPanel = true;
+        LockFloatingStatsWindow = false;
         ShowDemoPanel = true;
         CombatEndRule = CombatEndRule.PartyList;
         EncounterTimeoutSeconds = 30;

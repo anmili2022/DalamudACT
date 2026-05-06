@@ -246,10 +246,12 @@ internal static class StatsPanel
         if (showDeathsColumn)
             columnCount++;
 
+        var metricTableFlags = ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.Resizable;
+
         if (!ImGui.BeginTable(
                 $"##metric_{id}",
                 columnCount,
-                ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.Resizable))
+                metricTableFlags))
         {
             return;
         }
@@ -264,7 +266,7 @@ internal static class StatsPanel
         if (showDeathsColumn)
             ImGui.TableSetupColumn("死亡", ImGuiTableColumnFlags.WidthFixed, deathColumnWidth);
         ImGui.TableSetupColumn("占比", ImGuiTableColumnFlags.WidthStretch, Math.Max(180f, fixedColumnWidth * 1.8f));
-        ImGui.TableHeadersRow();
+        DrawTableHeadersRow(config);
 
         foreach (var combatant in rows)
         {
@@ -440,7 +442,9 @@ internal static class StatsPanel
         if (!ImGui.BeginChild("##history_scroll", new Vector2(0f, 320f), false))
             return;
 
-        if (!ImGui.BeginTable("##history", 4, ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.ScrollX | ImGuiTableFlags.Resizable))
+        var historyTableFlags = ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.ScrollX | ImGuiTableFlags.Resizable;
+
+        if (!ImGui.BeginTable("##history", 4, historyTableFlags))
         {
             ImGui.EndChild();
             return;
@@ -450,7 +454,7 @@ internal static class StatsPanel
         ImGui.TableSetupColumn("开始时间", ImGuiTableColumnFlags.WidthFixed, ResolveFixedColumnWidth(config, 180f, "开始时间"));
         ImGui.TableSetupColumn("结束时间", ImGuiTableColumnFlags.WidthFixed, ResolveFixedColumnWidth(config, 180f, "结束时间"));
         ImGui.TableSetupColumn("时长", ImGuiTableColumnFlags.WidthFixed, ResolveFixedColumnWidth(config, 100f, "时长"));
-        ImGui.TableHeadersRow();
+        DrawTableHeadersRow(config);
 
         var rowHeight = ResolveRowHeight(config);
         var selectedIndex = statsService.SelectedHistoricalRecordIndex;
@@ -616,5 +620,19 @@ internal static class StatsPanel
     {
         var style = ImGui.GetStyle();
         return style.CellPadding.X * 2f + style.FramePadding.X * 2f + 4f;
+    }
+
+    private static void DrawTableHeadersRow(PluginConfiguration config)
+    {
+        if (config.LockFloatingStatsWindow)
+        {
+            ImGui.BeginDisabled();
+            ImGui.TableHeadersRow();
+            ImGui.EndDisabled();
+        }
+        else
+        {
+            ImGui.TableHeadersRow();
+        }
     }
 }

@@ -78,11 +78,20 @@ internal sealed class SettingsWindow : Window
             config.ShowDemoPanel = showStats;
             config.Save();
         }
+
+        var lockFloatingStatsWindow = config.LockFloatingStatsWindow;
+        if (ImGui.Checkbox("锁定悬浮窗口", ref lockFloatingStatsWindow))
+        {
+            config.LockFloatingStatsWindow = lockFloatingStatsWindow;
+            config.Save();
+        }
+
+        ImGui.TextDisabled("启用后，悬浮窗口的位置和大小将无法手动修改。");
     }
 
     private void DrawCombatSection()
     {
-        if (!ImGui.CollapsingHeader("战斗结束设置", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("战斗结束设置"))
             return;
 
         var currentRule = config.CombatEndRule;
@@ -116,7 +125,7 @@ internal sealed class SettingsWindow : Window
 
     private void DrawVisibleTabsSection()
     {
-        if (!ImGui.CollapsingHeader("悬浮面板显示项目", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("悬浮面板显示项目"))
             return;
 
         DrawToggle("显示 DPS", ref config.ShowDpsTab);
@@ -156,7 +165,7 @@ internal sealed class SettingsWindow : Window
 
     private void DrawDpsColumnsSection()
     {
-        if (!ImGui.CollapsingHeader("DPS 页面列显示", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("DPS 页面列显示"))
             return;
 
         DrawToggle("显示职业列", ref config.ShowDpsJobColumn);
@@ -174,7 +183,7 @@ internal sealed class SettingsWindow : Window
 
     private void DrawBarColorsSection()
     {
-        if (!ImGui.CollapsingHeader("占比条配色", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("占比条配色"))
             return;
 
         var isThemeMode = config.BarColorMode == StatsBarColorMode.Theme;
@@ -209,7 +218,7 @@ internal sealed class SettingsWindow : Window
 
     private void DrawThemePaletteSection()
     {
-        if (!ImGui.CollapsingHeader("主题色调色板", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!ImGui.CollapsingHeader("主题色调色板"))
             return;
 
         if (ImGui.Button("恢复默认主题色"))

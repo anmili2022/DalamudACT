@@ -7,6 +7,8 @@ namespace DalamudACT;
 
 internal sealed class FloatingStatsWindow : Window
 {
+    private const ImGuiWindowFlags BaseWindowFlags =
+        ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoTitleBar;
     private const float DefaultExpandedWindowWidth = 300f;
     private const float DefaultExpandedWindowHeight = 300f;
     private const float CollapsedWindowWidth = 270f;
@@ -25,7 +27,7 @@ internal sealed class FloatingStatsWindow : Window
         PluginConfiguration config,
         LocalStatsService statsService,
         Action toggleSettingsWindow)
-        : base("###DpsStatsPanel", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoTitleBar)
+        : base("###DpsStatsPanel", BaseWindowFlags)
     {
         this.config = config;
         this.statsService = statsService;
@@ -38,6 +40,10 @@ internal sealed class FloatingStatsWindow : Window
 
     public override void Draw()
     {
+        Flags = config.LockFloatingStatsWindow
+            ? BaseWindowFlags | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize
+            : BaseWindowFlags;
+
         BgAlpha = Math.Clamp(config.FloatingStatsOpacity, 0f, 1f);
 
         if (applyStartupCollapsedSize && collapseToTabBar)

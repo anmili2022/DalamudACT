@@ -54,7 +54,7 @@
 ## Maintenance / 交接入口
 
 - [HANDOVER.md](HANDOVER.md) ← 维护交接总入口
-- [2026-05-06 Release Handoff](md/2026-05-06-RELEASE-HANDOFF.md)
+- [2026-05-06 Release Handoff (0.15.2.5)](md/2026-05-06-RELEASE-HANDOFF.md)
 - [Release Runbook](md/RELEASE-RUNBOOK.md)
 
 ### 第一次建议这样用

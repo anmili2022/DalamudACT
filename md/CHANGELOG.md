@@ -13,7 +13,28 @@
 
 - 暂无
 
-Current metadata version: `0.15.2.4`
+Current metadata version: `0.15.2.5`
+
+## 0.15.2.5 - 2026-05-06
+
+### Floating window lock
+
+- added a floating window lock option under window settings
+- locking prevents moving or resizing the floating window itself
+- metric and history table headers are disabled while locked, so the current user-adjusted widths stay in place and can no longer be dragged
+
+### Settings defaults
+
+- all settings sections now default collapsed except for window settings and data/status
+
+### Test data
+
+- the synthetic `零式测试场` sample now contains eight characters for full-party testing
+
+### Documentation
+
+- refreshed release notes and release handoff for `0.15.2.5`
+- updated the README handoff link to point at the current release handoff entry
 
 ## 0.15.2.4 - 2026-05-06
 

@@ -10,9 +10,10 @@ Updated: 2026-05-06
 - Current branch at handover time: `master`
 - Latest verified automation baseline commit: `b1324c9`
 - Working tree was clean when the automation baseline above was verified
-- Current metadata version: `0.15.2.4`
+- Current metadata version: `0.15.2.5`
 - Verified local build:
-  - Command: `dotnet build E:\git\DalamudACT\DalamudACT.sln`
+  - Debug: `dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Debug`
+  - Release: `dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Release -p:Version=0.15.2.5 -p:FileVersion=0.15.2.5 -p:AssemblyVersion=0.15.2.5`
   - Result: `0 warnings / 0 errors`
   - Output: `E:\git\DalamudACT\output\DalamudACT.dll`
 
@@ -46,8 +47,13 @@ Practical conclusion:
 
 ## What Changed In This Handover Window
 
-- released `0.15.2.4`
-- confirmed `repo.json`, manifests, and assembly version all point to `0.15.2.4`
+- released `0.15.2.5`
+- confirmed `repo.json`, manifests, and assembly version all point to `0.15.2.5`
+- added a floating window lock option in settings
+- locking now prevents moving or resizing the floating window
+- table column resize handles are disabled while locked, preserving the user's current widths
+- settings sections now default collapsed except for window settings and data/status
+- synthetic raid test data now uses an eight-character `零式测试场` sample
 - adjusted floating window collapse/expand behavior to use the compact DPS tab state consistently
 - fixed the UI gating that could still show `等待战斗数据...` after a combat snapshot already existed
 - verified local `Release` packaging path remains `output/`
@@ -67,9 +73,16 @@ The current project direction is:
 
 ## Current Version Scope
 
-The latest checked-in metadata version is `0.15.2.4`.
+The latest checked-in metadata version is `0.15.2.5`.
 
 Recent changes already reflected in the repo:
+
+- `0.15.2.5`
+  - added a floating window lock option under window settings
+  - locked floating windows cannot be moved or resized
+  - current table widths remain in place and header dragging is disabled while locked
+  - settings sections now default collapsed except for window settings and data/status
+  - synthetic raid test data now covers eight characters in `零式测试场`
 
 - `0.15.2.4`
   - floating window collapsed state now stays in the compact DPS tab flow

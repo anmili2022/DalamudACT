@@ -108,7 +108,7 @@ internal sealed class LocalStatsService
         lock (gate)
         {
             var syntheticAnchorUtc = DateTime.UtcNow.Date.AddHours(12);
-            var firstSnapshot = BuildRaidTestCombatData();
+            var firstSnapshot = BuildRaidEightPlayerTestCombatData();
             var secondSnapshot = BuildTrialTestCombatData();
             var thirdSnapshot = BuildTrainingTestCombatData();
             UpsertHistoricalRecord(CreateSyntheticHistoricalRecord(firstSnapshot, syntheticAnchorUtc.AddMinutes(-36)));
@@ -1221,6 +1221,139 @@ internal sealed class LocalStatsService
             maxHitText: "古·拉哈·提亚-照破-9.68万",
             maxHitValueText: "古·拉哈·提亚-9.7万",
             damageTakenText: "79.37万",
+            combatants: combatants);
+    }
+
+    private static CombatDataWrapper BuildRaidEightPlayerTestCombatData()
+    {
+        var combatants = new Dictionary<string, Combatant>(StringComparer.Ordinal)
+        {
+            ["测试骑士#E0000001"] = CreateTestCombatant(
+                name: "测试骑士",
+                job: "骑士",
+                damagePercentText: "17%",
+                damageText: "98.00万",
+                encDpsText: "2121",
+                encHpsText: "145",
+                dtpsText: "964",
+                maxHitText: "圣灵-4.82万",
+                hitsText: "168",
+                critHitsText: "42",
+                toHitText: "95.5",
+                damageTakenText: "44.54万",
+                deathsText: "0"),
+            ["古·拉哈·提亚#E0000002"] = CreateTestCombatant(
+                name: "古·拉哈·提亚",
+                job: "武士",
+                damagePercentText: "26%",
+                damageText: "145.00万",
+                encDpsText: "3139",
+                encHpsText: "0",
+                dtpsText: "221",
+                maxHitText: "照破-9.68万",
+                hitsText: "214",
+                critHitsText: "63",
+                toHitText: "97.3",
+                damageTakenText: "10.21万",
+                deathsText: "1"),
+            ["阿莉塞#E0000003"] = CreateTestCombatant(
+                name: "阿莉塞",
+                job: "赤魔法师",
+                damagePercentText: "23%",
+                damageText: "131.00万",
+                encDpsText: "2837",
+                encHpsText: "38",
+                dtpsText: "172",
+                maxHitText: "决断-8.84万",
+                hitsText: "196",
+                critHitsText: "57",
+                toHitText: "96.0",
+                damageTakenText: "7.96万",
+                deathsText: "0"),
+            ["阿尔菲诺#E0000004"] = CreateTestCombatant(
+                name: "阿尔菲诺",
+                job: "贤者",
+                damagePercentText: "7%",
+                damageText: "42.00万",
+                encDpsText: "909",
+                encHpsText: "2514",
+                dtpsText: "145",
+                maxHitText: "注药-3.12万",
+                hitsText: "88",
+                critHitsText: "18",
+                toHitText: "94.6",
+                damageTakenText: "6.71万",
+                deathsText: "0"),
+            ["于里昂热#E0000005"] = CreateTestCombatant(
+                name: "于里昂热",
+                job: "占星术士",
+                damagePercentText: "5%",
+                damageText: "31.00万",
+                encDpsText: "671",
+                encHpsText: "1898",
+                dtpsText: "131",
+                maxHitText: "重力-2.69万",
+                hitsText: "75",
+                critHitsText: "14",
+                toHitText: "93.8",
+                damageTakenText: "6.08万",
+                deathsText: "0"),
+            ["机工支援兵#E0000006"] = CreateTestCombatant(
+                name: "机工支援兵",
+                job: "机工士",
+                damagePercentText: "10%",
+                damageText: "55.00万",
+                encDpsText: "1190",
+                encHpsText: "0",
+                dtpsText: "84",
+                maxHitText: "钻头-5.40万",
+                hitsText: "102",
+                critHitsText: "24",
+                toHitText: "95.1",
+                damageTakenText: "3.87万",
+                deathsText: "0"),
+            ["雅·修特拉#E0000007"] = CreateTestCombatant(
+                name: "雅·修特拉",
+                job: "黑魔法师",
+                damagePercentText: "6%",
+                damageText: "36.00万",
+                encDpsText: "779",
+                encHpsText: "0",
+                dtpsText: "57",
+                maxHitText: "耀星-4.11万",
+                hitsText: "66",
+                critHitsText: "15",
+                toHitText: "94.2",
+                damageTakenText: "2.61万",
+                deathsText: "0"),
+            ["爱梅特赛尔克#E0000008"] = CreateTestCombatant(
+                name: "爱梅特赛尔克",
+                job: "召唤师",
+                damagePercentText: "5%",
+                damageText: "27.00万",
+                encDpsText: "584",
+                encHpsText: "22",
+                dtpsText: "31",
+                maxHitText: "灵泉之炎-3.48万",
+                hitsText: "59",
+                critHitsText: "13",
+                toHitText: "95.0",
+                damageTakenText: "1.44万",
+                deathsText: "0"),
+        };
+
+        return BuildTestCombatData(
+            zoneName: "零式测试场",
+            durationText: "07:42",
+            damageText: "565.00万",
+            encDpsText: "12230",
+            hitsText: "968",
+            hitFailedText: "36",
+            critHitsText: "246",
+            critHitPercentText: "25%",
+            maxHitText: "古·拉哈·提亚-照破-9.68万",
+            maxHitValueText: "古·拉哈·提亚-9.7万",
+            damageTakenText: "83.42万",
             combatants: combatants);
     }
 

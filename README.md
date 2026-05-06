@@ -51,6 +51,12 @@
 
 - `E:\git\DalamudACT\output\DalamudACT.dll`
 
+## Maintenance / 交接入口
+
+- [HANDOVER.md](HANDOVER.md)
+- [2026-05-06 Release Handoff](md/2026-05-06-RELEASE-HANDOFF.md)
+- [Release Runbook](md/RELEASE-RUNBOOK.md)
+
 ### 第一次建议这样用
 
 第一次打开后，推荐先这样设置：

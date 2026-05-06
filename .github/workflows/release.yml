@@ -4,14 +4,13 @@ on:
   push:
     tags:
       - '*'
-    tags-ignore:
-      - testing_*
 
 permissions:
   contents: write
 
 jobs:
   build-and-release:
+    if: ${{ !startsWith(github.ref_name, 'testing_') }}
     runs-on: windows-latest
 
     steps:

@@ -7,6 +7,8 @@ namespace DalamudACT;
 
 internal sealed class FloatingStatsWindow : Window
 {
+    private const float DefaultExpandedWindowWidth = 300f;
+    private const float DefaultExpandedWindowHeight = 300f;
     private const float CollapsedWindowWidth = 270f;
     private const float CollapsedWindowHeight = 42f;
 
@@ -15,6 +17,8 @@ internal sealed class FloatingStatsWindow : Window
     private readonly Action toggleSettingsWindow;
     private Vector2 expandedWindowSize;
     private bool collapseToTabBar;
+    private bool hideStartupCollapsedTabs;
+    private bool applyStartupCollapsedSize;
     private StatsPanelTabId activeTab = StatsPanelTabId.None;
     private int observedEncounterFinalizedVersion;
 
@@ -27,14 +31,21 @@ internal sealed class FloatingStatsWindow : Window
         this.config = config;
         this.statsService = statsService;
         this.toggleSettingsWindow = toggleSettingsWindow;
-        Size = new Vector2(720f, 520f);
+        Size = new Vector2(DefaultExpandedWindowWidth, DefaultExpandedWindowHeight);
         SizeCondition = ImGuiCond.FirstUseEver;
         expandedWindowSize = Size.Value;
+        InitializeStartupLayout();
     }
 
     public override void Draw()
     {
         BgAlpha = Math.Clamp(config.FloatingStatsOpacity, 0f, 1f);
+
+        if (applyStartupCollapsedSize && collapseToTabBar)
+        {
+            ImGui.SetWindowSize(new Vector2(CollapsedWindowWidth, CollapsedWindowHeight), ImGuiCond.Always);
+            applyStartupCollapsedSize = false;
+        }
 
         if (!collapseToTabBar)
             expandedWindowSize = ImGui.GetWindowSize();
@@ -47,7 +58,9 @@ internal sealed class FloatingStatsWindow : Window
                 activeTab = ResolvePreferredLiveTab();
         }
 
-        var drawResult = StatsPanel.Draw(statsService, config, activeTab, collapseToTabBar);
+        var drawResult = collapseToTabBar && hideStartupCollapsedTabs
+            ? DrawStartupCollapsedState()
+            : StatsPanel.Draw(statsService, config, activeTab, collapseToTabBar);
         if (drawResult.ActiveTab != StatsPanelTabId.None)
             activeTab = drawResult.ActiveTab;
 
@@ -66,6 +79,7 @@ internal sealed class FloatingStatsWindow : Window
 
         if (collapseToTabBar)
         {
+            hideStartupCollapsedTabs = false;
             collapseToTabBar = false;
             ImGui.SetWindowSize(expandedWindowSize, ImGuiCond.Always);
             return;
@@ -73,8 +87,32 @@ internal sealed class FloatingStatsWindow : Window
 
         expandedWindowSize = ImGui.GetWindowSize();
         collapseToTabBar = true;
+        hideStartupCollapsedTabs = drawResult.HideTabsWhenCollapsedRequested;
         activeTab = StatsPanelTabId.Dps;
         ImGui.SetWindowSize(new Vector2(CollapsedWindowWidth, CollapsedWindowHeight), ImGuiCond.Always);
+    }
+
+    private void InitializeStartupLayout()
+    {
+        if (!config.ShowDpsTab)
+        {
+            activeTab = ResolvePreferredLiveTab();
+            return;
+        }
+
+        collapseToTabBar = true;
+        hideStartupCollapsedTabs = true;
+        applyStartupCollapsedSize = true;
+        activeTab = StatsPanelTabId.Dps;
+    }
+
+    private StatsPanelDrawResult DrawStartupCollapsedState()
+    {
+        const string collapsedHintText = "等待战斗数据...";
+        ImGui.TextDisabled(collapsedHintText);
+        var toggleRequested = ImGui.IsItemClicked();
+        var openSettingsRequested = ImGui.IsItemClicked(ImGuiMouseButton.Right);
+        return new StatsPanelDrawResult(StatsPanelTabId.Dps, toggleRequested, openSettingsRequested, true);
     }
 
     private StatsPanelTabId ResolvePreferredLiveTab()

@@ -20,7 +20,8 @@ internal enum StatsPanelTabId
 internal readonly record struct StatsPanelDrawResult(
     StatsPanelTabId ActiveTab,
     bool ToggleDpsCollapseRequested,
-    bool OpenSettingsRequested);
+    bool OpenSettingsRequested,
+    bool HideTabsWhenCollapsedRequested = false);
 
 internal static class StatsPanel
 {
@@ -35,7 +36,7 @@ internal static class StatsPanel
         if (!config.HasAnyVisibleStatsTab())
         {
             ImGui.TextDisabled("当前没有启用任何页面，请在设置中勾选。");
-            return new StatsPanelDrawResult(StatsPanelTabId.None, false, false);
+            return new StatsPanelDrawResult(StatsPanelTabId.None, false, false, false);
         }
 
         var combatData = statsService.DisplayCombatData;
@@ -43,9 +44,12 @@ internal static class StatsPanel
         if (!collapseToTabBar && !hasCombatData)
         {
             var history = statsService.HistoricalRecords;
+            var toggleNoCombatCollapseRequested = false;
             ImGui.TextDisabled(history.Count > 0
                 ? "当前没有实时战斗数据，可点击下方历史记录查看。"
                 : "等待战斗数据...");
+
+            toggleNoCombatCollapseRequested = config.ShowDpsTab && ImGui.IsItemClicked();
 
             if (config.ShowHistoryTab)
             {
@@ -53,11 +57,11 @@ internal static class StatsPanel
                 DrawHistoryTab(statsService, config);
             }
 
-            return new StatsPanelDrawResult(previousActiveTab, false, false);
+            return new StatsPanelDrawResult(previousActiveTab, toggleNoCombatCollapseRequested, false, toggleNoCombatCollapseRequested);
         }
 
         if (!ImGui.BeginTabBar("##stats_tabs"))
-            return new StatsPanelDrawResult(previousActiveTab, false, false);
+            return new StatsPanelDrawResult(previousActiveTab, false, false, false);
 
         var activeTab = previousActiveTab;
         var toggleDpsCollapseRequested = false;
@@ -156,7 +160,7 @@ internal static class StatsPanel
         }
 
         ImGui.EndTabBar();
-        return new StatsPanelDrawResult(activeTab, toggleDpsCollapseRequested, openSettingsRequested);
+        return new StatsPanelDrawResult(activeTab, toggleDpsCollapseRequested, openSettingsRequested, false);
     }
 
     private static void DrawDpsTab(CombatDataWrapper combatData, PluginConfiguration config)

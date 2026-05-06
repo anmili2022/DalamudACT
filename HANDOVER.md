@@ -8,13 +8,49 @@ Updated: 2026-05-06
 - Remote: `origin = https://github.com/anmili2022/DalamudACT`
 - Main maintenance branch: `master`
 - Current branch at handover time: `master`
-- Current HEAD at handover time: `c1cf2dc`
-- Working tree status at handover time: clean
-- Current metadata version: `0.15.2.2`
+- Latest verified automation baseline commit: `b1324c9`
+- Working tree was clean when the automation baseline above was verified
+- Current metadata version: `0.15.2.3`
 - Verified local build:
   - Command: `dotnet build E:\git\DalamudACT\DalamudACT.sln`
   - Result: `0 warnings / 0 errors`
   - Output: `E:\git\DalamudACT\output\DalamudACT.dll`
+
+## Automation Status
+
+This repository is a fork of `flyrio/DalamudACT`.
+
+GitHub Actions for this fork have now been verified working on `2026-05-06`.
+
+Verified runs:
+
+- `.github/workflows/build.yml`
+  - Trigger check commit: `08c4c30`
+  - First observed run: `25427532514`
+  - Initial result: workflow triggered correctly, but failed in `Archive`
+  - Cause: workflow still archived `DalamudACT/bin/Release/*`, while the project now outputs to `output/`
+- `.github/workflows/build.yml` fixed state
+  - Fix commit: `b1324c9`
+  - Successful run: `25427744876`
+  - Result: `Build`, `Archive`, `Upload Artifact`, and `Update Latest Release` all succeeded
+- `.github/workflows/release.yml`
+  - Verified via `workflow_dispatch` with existing tag `0.15.2.3`
+  - Successful run: `25427944539`
+  - Result: full release workflow succeeded, including zip packaging and GitHub Release update
+
+Practical conclusion:
+
+- branch builds are now usable again
+- official release workflow is now usable again
+- the current release automation path no longer needs the earlier manual-only fallback for normal cases
+
+## What Changed In This Handover Window
+
+- released `0.15.2.3`
+- confirmed `repo.json`, manifests, and assembly version all point to `0.15.2.3`
+- verified local `Release` packaging path remains `output/`
+- fixed `.github/workflows/build.yml` to archive from `output/` instead of the old `bin/Release` path
+- verified `.github/workflows/release.yml` can successfully rebuild and publish for tag `0.15.2.3`
 
 ## What This Repo Is Now
 
@@ -29,10 +65,15 @@ The current project direction is:
 
 ## Current Version Scope
 
-The latest checked-in metadata version is `0.15.2.2`.
+The latest checked-in metadata version is `0.15.2.3`.
 
 Recent changes already reflected in the repo:
 
+- `0.15.2.3`
+  - maintenance handover entry added at repo root
+  - README now links maintainers directly to the handover entry points
+  - branch build workflow fixed to archive from `output/`
+  - GitHub Actions branch build and formal release workflow both verified on this fork
 - `0.15.2.2`
   - floating window defaults to collapsed on plugin load
   - floating window default expanded size changed to `300x300`
@@ -73,6 +114,11 @@ Release automation:
 - `.github/workflows/test_release.yml`
 - `.github/workflows/build.yml`
 
+Current automation note:
+
+- `build.yml` now packages `output/DalamudACT.dll`, `output/DalamudACT.json`, and `output/DalamudACT.deps.json`
+- `release.yml` has been validated successfully after Actions were enabled for this fork
+
 ## Release Entry Points
 
 Official release flow:
@@ -89,6 +135,12 @@ Official release flow:
 4. Push `master`
 5. Create and push the formal version tag
 6. Let `.github/workflows/release.yml` create the GitHub Release
+
+Current verified state:
+
+- branch build flow: verified
+- formal release flow by existing tag and `workflow_dispatch`: verified
+- manual fallback release creation is still worth keeping in the runbook, but it is no longer the only trusted path
 
 Important workflow roles:
 
@@ -120,4 +172,7 @@ If you are debugging runtime behavior, prioritize:
 
 - The repo was clean at the time this handover document was created.
 - The currently trusted local artifact path is `output\DalamudACT.dll`.
+- The currently trusted branch build fix is in commit `b1324c9`.
+- The first successful branch build run is `25427744876`.
+- The verified successful formal release workflow run is `25427944539`.
 - Existing detailed day-by-day notes are already stored under `md/`; this file is intended to be the short maintainer entry point, not a replacement for those records.

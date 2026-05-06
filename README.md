@@ -53,7 +53,7 @@
 
 ## Maintenance / 交接入口
 
-- [HANDOVER.md](HANDOVER.md)
+- [HANDOVER.md](HANDOVER.md) ← 维护交接总入口
 - [2026-05-06 Release Handoff](md/2026-05-06-RELEASE-HANDOFF.md)
 - [Release Runbook](md/RELEASE-RUNBOOK.md)
 
@@ -209,10 +209,11 @@
 
 如果你是继续接手开发或排查问题，建议优先看：
 
-1. [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
-2. [2026-05-06 工作记录](md/2026-05-06.md)
-3. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
-4. 再按需要查看更早记录
+1. [HANDOVER.md](HANDOVER.md)
+2. [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
+3. [2026-05-06 工作记录](md/2026-05-06.md)
+4. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
+5. 再按需要查看更早记录
 
 ## 文档入口
 
@@ -225,6 +226,7 @@
 
 开发 / 交接文档：
 
+- [HANDOVER.md](HANDOVER.md)
 - [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
 - [2026-05-06 工作记录](md/2026-05-06.md)
 - [SESSION-HANDOFF](md/SESSION-HANDOFF.md)

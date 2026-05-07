@@ -156,6 +156,82 @@ Official release flow:
 5. Create and push the formal version tag
 6. Let `.github/workflows/release.yml` create the GitHub Release
 
+Existing tag republish flow:
+
+Use this when the version tag already exists on GitHub, but you still need GitHub Actions to rebuild or publish that exact tag again.
+
+1. Open the `Create Release` workflow in GitHub Actions.
+2. Use `Run workflow`.
+3. Fill the `tag` input with the existing formal tag, for example `0.15.2.6`.
+4. Let `.github/workflows/release.yml` rebuild and upload `DalamudACT.zip`.
+5. Confirm the Release page for that tag now contains the expected asset.
+
+Important:
+
+- do not use `Re-run jobs` on an old failed release run if the workflow file has changed since then
+- GitHub re-runs the old workflow against the original `GITHUB_SHA` and `GITHUB_REF`
+- if the old run used a stale workflow snapshot, the same stale packaging logic will run again
+- when in doubt, use `workflow_dispatch` with the exact existing tag instead
+
+Quick release flow for normal patch releases:
+
+Use this when:
+
+- release automation is already healthy
+- this is a normal version bump, not a workflow repair session
+- you only need the shortest trusted path from local changes to GitHub Release
+
+1. Set the target version once, for example `0.15.2.6`.
+2. Update these files to that exact version:
+   - `DalamudACT/DalamudACT.csproj`
+   - `DalamudACT/DalamudACT.json`
+   - `Data/DalamudACT.json`
+   - `repo.json`
+   - `md/CHANGELOG.md`
+   - `md/RELEASE-NOTES.md`
+3. Run the release build locally:
+
+```powershell
+$ver = "0.15.2.6"
+dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Release -p:Version=$ver -p:FileVersion=$ver -p:AssemblyVersion=$ver
+```
+
+4. Commit and push `master`:
+
+```powershell
+git -C E:\git\DalamudACT status --short
+git -C E:\git\DalamudACT add .
+git -C E:\git\DalamudACT commit -m "chore: release $ver"
+git -C E:\git\DalamudACT push origin master
+```
+
+5. Create and push the release tag:
+
+```powershell
+git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a $ver -m "DalamudACT $ver"
+git -C E:\git\DalamudACT push origin $ver
+```
+
+6. Confirm GitHub created the Release and attached `DalamudACT.zip`.
+
+Testing release flow:
+
+Use this only for `testing_*` tags, not for a formal release.
+
+1. Confirm `.github/workflows/test_release.yml` on the target commit is the current version that packages from `output/`.
+2. Create a testing tag from the commit you want to validate, for example `testing_0.15.2.6`.
+3. Push that testing tag.
+4. Let `.github/workflows/test_release.yml` build the plugin, create the test release zip, and update the testing fields in `repo.json`.
+5. Verify the testing release page and confirm `repo.json` points its testing download link at the same `testing_*` tag.
+
+Shortcut reminder:
+
+- do not use `testing_*`
+- do not use `latest`
+- do not skip `repo.json`
+- do not use plain `git tag` on this machine if signing blocks
+- keep the tag name exactly equal to the release version
+
 Current verified state:
 
 - branch build flow: verified

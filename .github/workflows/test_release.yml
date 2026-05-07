@@ -5,12 +5,16 @@ on:
     tags:
       - testing_*
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
       - name: Set up repository name environment variable
         shell: pwsh
@@ -18,34 +22,70 @@ jobs:
           $repoName = $env:GITHUB_REPOSITORY.Split('/')[1]
           echo "REPO_NAME=$repoName" >> $env:GITHUB_ENV
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x.x'
+          dotnet-version: '9.0.x'
+      - name: Clean output
+        shell: pwsh
+        run: |
+          if (Test-Path ./output) {
+            Remove-Item ./output -Recurse -Force
+          }
+      - name: Download Dalamud CN
+        shell: pwsh
+        run: |
+          $dalamudPath = "$env:AppData\XIVLauncherCN\addon\Hooks\dev\"
+          New-Item -ItemType Directory -Force -Path $dalamudPath | Out-Null
+          Invoke-WebRequest -Uri "https://goatcorp.github.io/dalamud-distrib/stg/latest.zip" -OutFile dalamud.zip -UseBasicParsing
+          Expand-Archive -Force dalamud.zip $dalamudPath
       - name: Restore dependencies
-        run: dotnet restore
-      - name: Download Dalamud
-        run: |
-          Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile latest.zip
-          Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev"
+        shell: pwsh
+        run: dotnet restore ./DalamudACT/DalamudACT.csproj
+        env:
+          DALAMUD_HOME: ${{ env.APPDATA }}\XIVLauncherCN\addon\Hooks\dev
       - name: Build
+        shell: pwsh
         run: |
-          $ver = '${{ github.ref_name }}' -replace 'testing_'
-          invoke-expression 'dotnet build --no-restore --configuration Debug --nologo -p:Version=$ver -p:FileVersion=$ver -p:AssemblyVersion=$ver'
+          $ver = '${{ github.ref_name }}' -replace '^testing_'
+          if ([string]::IsNullOrWhiteSpace($ver)) {
+            throw 'Testing release version is empty.'
+          }
+          $dalamudPath = "$env:AppData\XIVLauncherCN\addon\Hooks\dev\"
+          "TEST_RELEASE_VERSION=$ver" >> $env:GITHUB_ENV
+          dotnet build ./DalamudACT/DalamudACT.csproj `
+            --configuration Debug `
+            --no-restore `
+            --nologo `
+            -p:DalamudLibPath="$dalamudPath" `
+            -p:Version="$ver" `
+            -p:FileVersion="$ver" `
+            -p:AssemblyVersion="$ver"
       - name: write version into json
+        shell: pwsh
         run: |
-          $ver = '${{ github.ref_name }}' -replace 'testing_'
-          $path = './${{ env.REPO_NAME }}/bin/Debug/${{ env.REPO_NAME }}.json'
-          $json = Get-Content -Raw $path | ConvertFrom-Json
-          $json.AssemblyVersion = $ver
-          $content = $json | ConvertTo-Json
-          set-content -Path $path -Value $content
+          foreach ($path in @('./output/DalamudACT.json', './output/DalamudACT/DalamudACT.json')) {
+            if (-not (Test-Path $path)) {
+              continue
+            }
+
+            $json = Get-Content -Raw -Encoding UTF8 $path | ConvertFrom-Json
+            $json.AssemblyVersion = $env:TEST_RELEASE_VERSION
+            $json | ConvertTo-Json -Depth 10 | Set-Content -Path $path -Encoding utf8
+          }
       - name: Archive
-        run: Compress-Archive -Path ${{ env.REPO_NAME }}/bin/Debug/* -DestinationPath ${{ env.REPO_NAME }}.zip
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json `
+            -DestinationPath ${{ env.REPO_NAME }}.zip `
+            -Force
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
           path: |
-            ./${{ env.REPO_NAME }}/bin/Debug/*
+            ./output/DalamudACT.dll
+            ./output/DalamudACT.json
+            ./output/DalamudACT.deps.json
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -68,17 +108,17 @@ jobs:
           asset_content_type: application/zip
 
       - name: Write out repo.json
+        shell: pwsh
         run: |
           $verT = '${{ github.ref_name }}'
-          $ver = $verT -replace 'testing_'
           $path = './repo.json'
-          $json = Get-Content -Raw $path | ConvertFrom-Json
-          $json[0].TestingAssemblyVersion = $ver          
-          $json[0].DownloadLinkTesting = $json.DownloadLinkTesting -replace '[^/]+/${{ env.REPO_NAME }}.zip',"$verT/${{ env.REPO_NAME }}.zip"
-          $content = $json | ConvertTo-Json -AsArray
-          set-content -Path $path -Value $content
+          $json = Get-Content -Raw -Encoding UTF8 $path | ConvertFrom-Json
+          $json[0].TestingAssemblyVersion = $env:TEST_RELEASE_VERSION
+          $json[0].DownloadLinkTesting = $json[0].DownloadLinkTesting -replace '[^/]+/${{ env.REPO_NAME }}.zip',"$verT/${{ env.REPO_NAME }}.zip"
+          $json | ConvertTo-Json -Depth 10 -AsArray | Set-Content -Path $path -Encoding utf8
 
       - name: Commit repo.json
+        shell: pwsh
         run: |
           git config --global user.name "Actions User"
           git config --global user.email "actions@github.com"

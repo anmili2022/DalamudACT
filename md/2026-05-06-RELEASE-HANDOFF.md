@@ -66,6 +66,64 @@ git -C E:\git\DalamudACT push origin 0.15.2.5
 
 4. Let `.github/workflows/release.yml` rebuild the release package and create the GitHub Release.
 
+## Republish an existing formal tag
+
+Use this when the formal tag already exists, but you need GitHub Actions to rebuild or recreate the release for that same tag.
+
+1. Open `Create Release` in GitHub Actions.
+2. Click `Run workflow`.
+3. Enter the exact existing tag in the `tag` input, for example `0.15.2.5` or `0.15.2.6`.
+4. Let `.github/workflows/release.yml` rebuild and upload `DalamudACT.zip`.
+5. Re-check the Release page for that tag.
+
+Do not use `Re-run jobs` on an old failed run if the workflow file changed after that run was created.
+
+- A re-run still uses the original workflow snapshot and original `GITHUB_SHA`.
+- If that old run still referenced stale package paths, the re-run will fail the same way.
+- Prefer `workflow_dispatch` with the existing tag when the goal is to republish.
+
+## Quick release shortcut
+
+Use this shortcut when the workflow is already known-good and you only need a normal patch release.
+
+```powershell
+$ver = "0.15.2.6"
+
+# 1. Update version references in:
+#    DalamudACT.csproj / both manifests / repo.json / CHANGELOG / RELEASE-NOTES
+
+dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Release -p:Version=$ver -p:FileVersion=$ver -p:AssemblyVersion=$ver
+git -C E:\git\DalamudACT add .
+git -C E:\git\DalamudACT commit -m "chore: release $ver"
+git -C E:\git\DalamudACT push origin master
+git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a $ver -m "DalamudACT $ver"
+git -C E:\git\DalamudACT push origin $ver
+```
+
+Quick checks:
+
+- `repo.json` download links must already point to `$ver`
+- the tag must exactly match `$ver`
+- the Release page should contain `DalamudACT.zip`
+
+## Testing release flow
+
+Use this only for `testing_*` tags.
+
+```powershell
+$testVer = "0.15.2.6"
+$testTag = "testing_$testVer"
+
+git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a $testTag -m "DalamudACT $testTag"
+git -C E:\git\DalamudACT push origin $testTag
+```
+
+Notes:
+
+- make sure `.github/workflows/test_release.yml` on the pushed commit is the current version that packages from `output/`
+- do not use `testing_*` tags for a formal release
+- after the workflow succeeds, verify the testing asset and the testing download link in `repo.json`
+
 ## Why the unsigned tag command matters
 
 - This machine has previously had `tag.gpgSign=true`.

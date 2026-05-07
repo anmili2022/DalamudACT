@@ -216,6 +216,9 @@ internal static class StatsPanel
         string? summaryValueText = null,
         string? summaryDeathsText = null)
     {
+        if (!ImGui.BeginChild($"##metric_{id}_scroll", new Vector2(0f, 0f), false))
+            return;
+
         var allRows = combatData.Msg!.Combatant.Values
             .Where(static c => !string.IsNullOrWhiteSpace(c.Name))
             .OrderByDescending(selector)
@@ -224,6 +227,7 @@ internal static class StatsPanel
         if (allRows.Count == 0)
         {
             ImGui.TextDisabled("没有可显示的数据。");
+            ImGui.EndChild();
             return;
         }
 
@@ -253,6 +257,7 @@ internal static class StatsPanel
                 columnCount,
                 metricTableFlags))
         {
+            ImGui.EndChild();
             return;
         }
 
@@ -350,6 +355,7 @@ internal static class StatsPanel
         }
 
         ImGui.EndTable();
+        ImGui.EndChild();
     }
 
     private static void DrawOverviewTab(CombatDataWrapper combatData, PluginConfiguration config)

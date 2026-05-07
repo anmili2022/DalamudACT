@@ -35,10 +35,17 @@
 
 如果你是正常使用插件的玩家：
 
-1. 在你常用的 Dalamud 插件仓库里找到 `DPS统计`
-2. 安装插件
-3. 启用后，从游戏里的插件入口打开主窗口
-4. 点击 `打开悬浮DPS统计面板`
+先把这条 Dalamud 自定义仓库地址加进去：
+
+`https://raw.githubusercontent.com/anmili2022/MyDalamudRepo/main/pluginmaster.json`
+
+然后按下面步骤安装：
+
+1. 在 Dalamud 的自定义仓库设置里添加上面的仓库地址
+2. 刷新插件仓库列表
+3. 搜索并安装 `DPS统计`
+4. 启用后，从游戏里的插件入口打开主窗口
+5. 点击 `打开悬浮DPS统计面板`
 
 ### 本地测试
 

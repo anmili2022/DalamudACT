@@ -1,26 +1,31 @@
-# DalamudACT 0.15.2.5 Release Notes
+# DalamudACT {{VERSION}} Release Notes
 
-- Current release version: `0.15.2.5`
+- Current release version: `{{VERSION}}`
 - This file is used as the GitHub Release body by `.github/workflows/release.yml`.
+- Keep the `{{VERSION}}` placeholder unchanged; the workflow replaces it with the Git tag when publishing.
 
 ## Highlights
 
-- Added a `Lock floating window` option under window settings.
-- When locked, the floating window can no longer be moved or resized.
-- Metric and history table headers are disabled while locked, so the user's current column widths stay in place and can no longer be dragged.
-- All settings sections now default collapsed except for window settings and data/status.
-- The synthetic `零式测试场` sample now contains eight characters for full-party testing.
-- README handoff links now point at the current release handoff entry for maintainers.
+- Reworked the floating stats tables so fixed columns keep their own width memory by semantic slot:
+  - Player
+  - Job
+  - Damage / Heal / Taken total
+  - DPS / HPS / DTPS value
+  - Deaths
+- Hiding a stats column now hides the entire column instead of only hiding its cell content.
+- The share/progress column now stretches to absorb remaining table width, reducing layout distortion when fixed columns are hidden.
+- Added the plugin assembly version to the settings window title so loaded DLL verification is easier during testing.
+- Enforced a 20px minimum width for the deaths column.
 
 ## Notes
 
-- This is a UI and maintainability patch release.
-- Stats calculation behavior is unchanged in this release.
-- `repo.json`, both plugin manifests, and the assembly version are all synchronized to `0.15.2.5`.
+- This patch mainly focuses on floating stats layout, column-width persistence, and release maintenance.
+- The release workflow now substitutes the actual tag version into this file before creating the GitHub Release body.
+- Before the next release, update the highlights/notes in this file so the body matches the new changeset.
 
 ## Post-release checks
 
-1. Confirm GitHub created `DalamudACT 0.15.2.5`.
+1. Confirm GitHub created `DalamudACT {{VERSION}}`.
 2. Confirm the release contains `DalamudACT.zip`.
-3. Confirm the release body renders this file correctly.
-4. Confirm all three `repo.json` download links point to `0.15.2.5`.
+3. Confirm the release body shows the correct version and current highlights.
+4. Confirm the packaged assembly/plugin manifest versions match `{{VERSION}}`.

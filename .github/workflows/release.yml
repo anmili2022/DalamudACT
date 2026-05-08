@@ -103,7 +103,9 @@ jobs:
       - name: Prepare release notes
         shell: pwsh
         run: |
-          Get-Content -Path ./md/RELEASE-NOTES.md -Raw -Encoding UTF8 | Set-Content -Path ./release-notes.md -Encoding utf8
+          $notes = Get-Content -Path ./md/RELEASE-NOTES.md -Raw -Encoding UTF8
+          $notes = $notes.Replace('{{VERSION}}', $env:RELEASE_VERSION)
+          Set-Content -Path ./release-notes.md -Value $notes -Encoding utf8
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2

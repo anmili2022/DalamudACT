@@ -1,28 +1,28 @@
-# DalamudACT {{VERSION}} Release Notes
+# DalamudACT {{VERSION}} 发布说明
 
-- Current release version: `{{VERSION}}`
-- This file is used as the GitHub Release body template by `.github/workflows/release.yml`.
-- Keep the `{{VERSION}}` placeholder unchanged; the workflow replaces it with the actual tag version when publishing.
+- 当前发布版本：`{{VERSION}}`
+- 这个文件由 `.github/workflows/release.yml` 作为 GitHub Release 正文模板使用。
+- 请保留 `{{VERSION}}` 占位符不变；工作流在发布时会把它替换成实际标签版本。
 
-## Highlights
+## 主要更新
 
-- Removed the direct dependency on `PronounModule.ResolvePlaceholder(...)` so runtime signature changes no longer crash the plugin.
-- Reworked `ActionEffect` source resolution to use `sourceId + sourceCharacter`, then aligned it with the unified local actor identity model.
-- Fixed the issue where combat could start normally but live DPS/HPS data stayed empty.
-- The floating stats window now keeps the last encounter visible after combat ends, and clears only when the next combat actually starts.
-- Empty-state messaging now distinguishes between waiting for the next combat and collecting fresh data after a new combat has already started.
-- Unified the plugin assembly version, manifest version, and repo metadata version to `0.15.2.8` so the plugin window and plugin manager show the same version.
-- Verified the local build and in-game data path after the fix.
+- 移除了对 `PronounModule.ResolvePlaceholder(...)` 的直接依赖，运行时签名变化不再导致插件崩溃。
+- 重构了 `ActionEffect` 的来源识别逻辑，改为使用 `sourceId + sourceCharacter`，并与统一后的本地角色身份模型对齐。
+- 修复了“可以正常进入战斗，但实时 DPS/HPS 没有数据”的问题。
+- 悬浮窗现在会在脱战后保留上一场战斗的数据，直到下一次真正进入战斗时才清空。
+- 空状态文案现在会区分“等待下一场战斗”和“已经进入新战斗，正在收集数据”两种情况。
+- 插件程序集版本、清单版本和仓库元数据版本已统一为 `0.15.2.8`，确保插件窗口与插件管理器显示一致。
+- 已验证本地构建与游戏内数据链路均正常。
 
-## Notes
+## 说明
 
-- This release line currently focuses on crash recovery, live combat data recovery, floating-window state behavior, and version alignment.
-- The release workflow now substitutes the actual tag version into this file before creating the GitHub Release body.
-- Before the next release, update the highlights and notes in this file so the generated release body matches the new changeset.
+- 本次版本主要聚焦于崩溃修复、实时战斗数据恢复、悬浮窗状态行为调整和版本统一。
+- 发布工作流会在生成 GitHub Release 正文时自动替换这个文件里的实际版本号。
+- 下一个版本发布前，请继续更新这里的主要更新和说明，让自动生成的 Release 正文与本次变更保持一致。
 
-## Post-release checks
+## 发布后检查
 
-1. Confirm GitHub created `DalamudACT {{VERSION}}`.
-2. Confirm the release contains `DalamudACT.zip`.
-3. Confirm the release body shows the correct version and current highlights.
-4. Confirm the packaged assembly and plugin manifest versions both match `{{VERSION}}`.
+1. 确认 GitHub 已创建 `DalamudACT {{VERSION}}`。
+2. 确认 Release 附带 `DalamudACT.zip`。
+3. 确认 Release 正文里的版本号和主要更新都正确。
+4. 确认打包出来的程序集版本和插件清单版本都与 `{{VERSION}}` 一致。

@@ -45,7 +45,7 @@ README.md
 │  ├─ 下一位维护者第一小时清单
 │  ├─ 最近问题与解决方案整理
 │  └─ 最近问题状态表（维护视角）
-├─ 2026-05-06 发布交接
+├─ 2026-05-09 发布交接
 ├─ 发布 Runbook
 └─ SESSION-HANDOFF
 ```
@@ -118,7 +118,7 @@ README.md
 
 先看：
 
-- [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+- [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 - [发布 Runbook](RELEASE-RUNBOOK.md)
 - [HANDOVER.md](../HANDOVER.md)
 
@@ -184,7 +184,7 @@ README.md
 - `RECENT-ISSUES-STATUS-TABLE.md`：问题状态快表
 - `HANDOVER.md`：完整交接主文档
 - `SESSION-HANDOFF.md`：阶段性会话交接
-- `2026-05-06 发布交接`：发版相关上下文
+- `2026-05-09 发布交接`：发版相关上下文
 
 ---
 

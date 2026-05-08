@@ -265,7 +265,7 @@
 4. [HANDOVER.md](HANDOVER.md)
 5. [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
 6. [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
-7. [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
+7. [2026-05-09 发布交接](md/2026-05-09-RELEASE-HANDOFF.md)
 8. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
 9. 再按需要查看更早记录
 
@@ -292,7 +292,7 @@
   - [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
   - [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
 - 发布相关：
-  - [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
+  - [2026-05-09 发布交接](md/2026-05-09-RELEASE-HANDOFF.md)
   - [发布 Runbook](md/RELEASE-RUNBOOK.md)
 - 历史工作记录：
   - [SESSION-HANDOFF](md/SESSION-HANDOFF.md)

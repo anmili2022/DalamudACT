@@ -7,7 +7,6 @@ using System.Text.Json;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace DalamudACT;
 
@@ -43,6 +42,7 @@ internal sealed class LocalStatsService
     private int selectedHistoricalRecordIndex = -1;
     private DateTime? historicalPreviewExpiresAtUtc;
     private bool latestInCombatHint;
+    private bool suppressStaleDisplayUntilNextCombatStart;
 
     public LocalStatsService(PluginConfiguration config)
     {
@@ -108,6 +108,7 @@ internal sealed class LocalStatsService
             currentEncounter = new EncounterSession();
             partyOutOfCombatSinceUtc = default;
             HistoryTransferStatusText = string.Empty;
+            suppressStaleDisplayUntilNextCombatStart = false;
             StatusText = "等待战斗数据...";
         }
     }
@@ -161,7 +162,7 @@ internal sealed class LocalStatsService
         historicalPreviewExpiresAtUtc = ShouldHistoricalPreviewCountdownLocked()
             ? nowUtc.AddSeconds(Math.Clamp(config.HistoryPreviewSeconds, 1, 30))
             : null;
-        RefreshDisplayCombatDataLocked(nowUtc);
+        RefreshDisplayCombatDataLocked(nowUtc, false);
         UpdateStatusText(nowUtc);
         return true;
     }
@@ -192,7 +193,7 @@ internal sealed class LocalStatsService
         historicalPreviewExpiresAtUtc = nowUtc.AddSeconds(Math.Clamp(config.HistoryPreviewSeconds, 1, 30));
     }
 
-    private void RefreshDisplayCombatDataLocked(DateTime nowUtc)
+    private void RefreshDisplayCombatDataLocked(DateTime nowUtc, bool suppressStaleDisplay)
     {
         if (HasSelectedHistoricalPreviewLocked())
         {
@@ -203,6 +204,12 @@ internal sealed class LocalStatsService
             }
 
             ClearHistoricalPreviewLocked();
+        }
+
+        if (suppressStaleDisplay)
+        {
+            DisplayCombatData = null;
+            return;
         }
 
         DisplayCombatData = CurrentCombatData;
@@ -292,7 +299,7 @@ internal sealed class LocalStatsService
                 HistoryTransferStatusText = importedCount > 0
                     ? $"已导入 {importedCount} 条历史记录，已自动打开最新记录。"
                     : "导入完成，但没有可写入的历史记录。";
-                RefreshDisplayCombatDataLocked(DateTime.UtcNow);
+                RefreshDisplayCombatDataLocked(DateTime.UtcNow, false);
                 UpdateStatusText(DateTime.UtcNow);
             }
             catch (Exception ex)
@@ -435,10 +442,16 @@ internal sealed class LocalStatsService
             else if (currentEncounter.Started)
             {
                 CurrentCombatData = ActxSnapshotFormatter.Build(currentEncounter, isActive: true);
+                suppressStaleDisplayUntilNextCombatStart = false;
             }
 
             EnsureHistoricalPreviewCountdownStartedLocked(nowUtc);
-            RefreshDisplayCombatDataLocked(nowUtc);
+            var shouldSuppressStaleDisplay = suppressStaleDisplayUntilNextCombatStart
+                && inCombat
+                && !currentEncounter.Started
+                && !HasSelectedHistoricalPreviewLocked();
+
+            RefreshDisplayCombatDataLocked(nowUtc, shouldSuppressStaleDisplay);
             UpdateStatusText(nowUtc);
         }
     }
@@ -447,6 +460,12 @@ internal sealed class LocalStatsService
     {
         lock (gate)
             return TryGetTrackedActor(actorId, out _);
+    }
+
+    public bool CanResolveTrackedSource(uint actorId, DateTime nowUtc)
+    {
+        lock (gate)
+            return TryResolveTrackedSource(actorId, nowUtc, out _);
     }
 
     private void PollPartyMemberDeaths(DateTime nowUtc, string zoneName, bool inCombat)
@@ -535,6 +554,7 @@ internal sealed class LocalStatsService
             };
             partyOutOfCombatSinceUtc = default;
             encounterFinalizedVersion++;
+            suppressStaleDisplayUntilNextCombatStart = true;
             return;
         }
 
@@ -563,6 +583,7 @@ internal sealed class LocalStatsService
         };
         partyOutOfCombatSinceUtc = default;
         encounterFinalizedVersion++;
+        suppressStaleDisplayUntilNextCombatStart = true;
     }
 
     private bool TryResolveTrackedSource(uint actorId, DateTime nowUtc, out TrackedActor actor)
@@ -597,25 +618,10 @@ internal sealed class LocalStatsService
     }
 
     private static uint ResolvePartyMemberActorId(Dalamud.Game.ClientState.Party.IPartyMember member)
-    {
-        var gameObjectId = TryGetGameObjectGameObjectId(member.GameObject);
-        if (gameObjectId > 0 && gameObjectId != InvalidActorId)
-            return gameObjectId;
+        => ResolvePartyMemberActorId(member, member.GameObject);
 
-        var objectId = member.ObjectId;
-        if (objectId > 0 && objectId != InvalidActorId)
-            return objectId;
-
-        var entityId = TryGetPropertyActorId(member, "EntityId");
-        if (entityId > 0 && entityId != InvalidActorId)
-            return entityId;
-
-        var gameObjectEntityId = member.GameObject?.EntityId ?? 0;
-        if (gameObjectEntityId > 0 && gameObjectEntityId != InvalidActorId)
-            return gameObjectEntityId;
-
-        return 0;
-    }
+    private static uint ResolvePartyMemberActorId(Dalamud.Game.ClientState.Party.IPartyMember member, IGameObject? gameObject)
+        => GetPartyMemberIdentity(member, gameObject).ResolveActorId();
 
     private bool TryGetTrackedActor(uint actorId, out TrackedActor actor)
     {
@@ -623,7 +629,7 @@ internal sealed class LocalStatsService
         if (actorId is 0 or InvalidActorId)
             return false;
 
-        if (TryGetResolvedPartySlotTrackedActor(actorId, out actor))
+        if (TryGetTrackedPartyBattleCharaActor(actorId, out actor))
             return true;
 
         if (TryGetPartyMemberTrackedActor(actorId, out actor))
@@ -656,7 +662,7 @@ internal sealed class LocalStatsService
         return false;
     }
 
-    private static bool TryGetResolvedPartySlotTrackedActor(uint actorId, out TrackedActor actor)
+    private static bool TryGetTrackedPartyBattleCharaActor(uint actorId, out TrackedActor actor)
     {
         foreach (var battleChara in EnumerateTrackedPartyBattleCharas())
         {
@@ -682,8 +688,9 @@ internal sealed class LocalStatsService
             if (!MatchesBuddyActor(buddy, actorId))
                 continue;
 
-            var canonicalActorId = ResolveBuddyActorId(buddy);
-            var name = buddy.GameObject?.Name.TextValue?.Trim();
+            var gameObject = buddy.GameObject;
+            var canonicalActorId = ResolveBuddyActorId(buddy, gameObject);
+            var name = gameObject?.Name.TextValue?.Trim();
             if (string.IsNullOrWhiteSpace(name))
                 name = FindObjectByActorId(actorId)?.Name.TextValue?.Trim();
 
@@ -700,75 +707,23 @@ internal sealed class LocalStatsService
 
     private static bool MatchesPartyMemberActor(Dalamud.Game.ClientState.Party.IPartyMember member, uint actorId)
     {
-        if (actorId is 0 or InvalidActorId)
-            return false;
-
-        var gameObjectId = TryGetGameObjectGameObjectId(member.GameObject);
-        if (gameObjectId > 0 && gameObjectId != InvalidActorId && gameObjectId == actorId)
-            return true;
-
-        var objectId = member.ObjectId;
-        if (objectId > 0 && objectId != InvalidActorId && objectId == actorId)
-            return true;
-
-        var partyMemberEntityId = TryGetPropertyActorId(member, "EntityId");
-        if (partyMemberEntityId > 0 && partyMemberEntityId != InvalidActorId && partyMemberEntityId == actorId)
-            return true;
-
-        var entityId = member.GameObject?.EntityId ?? 0;
-        if (entityId > 0 && entityId != InvalidActorId && entityId == actorId)
-            return true;
-
-        var partyMemberName = member.Name.TextValue?.Trim();
-        if (string.IsNullOrWhiteSpace(partyMemberName))
-            return false;
-
-        var obj = FindObjectByActorId(actorId);
-        var objectName = obj?.Name.TextValue?.Trim();
-        return !string.IsNullOrWhiteSpace(objectName)
-               && string.Equals(objectName, partyMemberName, StringComparison.Ordinal);
+        var gameObject = member.GameObject;
+        var identity = GetPartyMemberIdentity(member, gameObject);
+        // 这里只按 ID 口径匹配，不再按名字兜底，避免误把队外同名对象算进来。
+        return identity.MatchesActorId(actorId);
     }
 
     private static bool MatchesBuddyActor(IBuddyMember buddy, uint actorId)
     {
-        if (actorId is 0 or InvalidActorId)
-            return false;
-
-        var gameObjectId = TryGetGameObjectGameObjectId(buddy.GameObject);
-        if (gameObjectId > 0 && gameObjectId != InvalidActorId && gameObjectId == actorId)
-            return true;
-
-        var objectId = buddy.ObjectId;
-        if (objectId > 0 && objectId != InvalidActorId && objectId == actorId)
-            return true;
-
-        var entityId = TryGetPropertyActorId(buddy, "EntityId");
-        if (entityId > 0 && entityId != InvalidActorId && entityId == actorId)
-            return true;
-
-        var gameObjectEntityId = buddy.GameObject?.EntityId ?? 0;
-        return gameObjectEntityId > 0
-               && gameObjectEntityId != InvalidActorId
-               && gameObjectEntityId == actorId;
+        var gameObject = buddy.GameObject;
+        var identity = GetBuddyIdentity(buddy, gameObject);
+        return identity.MatchesActorId(actorId);
     }
 
     private static bool MatchesBattleCharaActor(IBattleChara battleChara, uint actorId)
     {
-        if (actorId is 0 or InvalidActorId)
-            return false;
-
-        var canonicalActorId = ResolveBattleCharaActorId(battleChara);
-        if (canonicalActorId > 0 && canonicalActorId != InvalidActorId && canonicalActorId == actorId)
-            return true;
-
-        var entityId = battleChara.EntityId;
-        if (entityId > 0 && entityId != InvalidActorId && entityId == actorId)
-            return true;
-
-        var objectId = TryGetGameObjectObjectId(battleChara);
-        return objectId > 0
-               && objectId != InvalidActorId
-               && objectId == actorId;
+        var identity = GetGameObjectIdentity(battleChara);
+        return identity.MatchesActorId(actorId);
     }
 
     private static IGameObject? FindObjectByActorId(uint actorId)
@@ -785,9 +740,8 @@ internal sealed class LocalStatsService
             if (obj == null)
                 continue;
 
-            var gameObjectId = TryGetGameObjectGameObjectId(obj);
-            var objectId = TryGetGameObjectObjectId(obj);
-            if (gameObjectId == actorId || objectId == actorId || obj.EntityId == actorId)
+            var identity = GetGameObjectIdentity(obj);
+            if (identity.MatchesActorId(actorId))
                 return obj;
         }
 
@@ -796,19 +750,7 @@ internal sealed class LocalStatsService
 
     private static uint ResolveBattleCharaActorId(IBattleChara battleChara)
     {
-        var gameObjectId = TryGetGameObjectGameObjectId(battleChara);
-        if (gameObjectId > 0 && gameObjectId != InvalidActorId)
-            return gameObjectId;
-
-        var objectId = TryGetGameObjectObjectId(battleChara);
-        if (objectId > 0 && objectId != InvalidActorId)
-            return objectId;
-
-        var entityId = battleChara.EntityId;
-        if (entityId > 0 && entityId != InvalidActorId)
-            return entityId;
-
-        return 0;
+        return GetGameObjectIdentity(battleChara).ResolveActorId();
     }
 
     private static TrackedActor? CreateTrackedActor(IBattleChara battleChara, uint fallbackActorId)
@@ -830,18 +772,12 @@ internal sealed class LocalStatsService
     {
         var seen = new HashSet<ulong>();
 
-        for (var slot = 1; slot <= 8; slot++)
-        {
-            var battleChara = ResolvePartySlotBattleChara(slot);
-            if (battleChara == null || !TryMarkUniqueBattleChara(battleChara, seen))
-                continue;
-
-            yield return battleChara;
-        }
-
         foreach (var member in DalamudApi.PartyList)
         {
-            if (member.GameObject is not IBattleChara battleChara || !TryMarkUniqueBattleChara(battleChara, seen))
+            // 不再依赖 PronounModule.ResolvePlaceholder。
+            // 旧版构建在新版运行时这里会触发 MissingMethodException，优先保证稳定性。
+            var battleChara = ResolvePartyMemberBattleChara(member);
+            if (battleChara == null || !TryMarkUniqueBattleChara(battleChara, seen))
                 continue;
 
             yield return battleChara;
@@ -849,24 +785,30 @@ internal sealed class LocalStatsService
 
         foreach (var buddy in DalamudApi.BuddyList)
         {
-            if (buddy.GameObject is not IBattleChara battleChara || !TryMarkUniqueBattleChara(battleChara, seen))
+            var battleChara = ResolveBuddyBattleChara(buddy);
+            if (battleChara == null || !TryMarkUniqueBattleChara(battleChara, seen))
                 continue;
 
             yield return battleChara;
         }
     }
 
-    private static unsafe IBattleChara? ResolvePartySlotBattleChara(int slot)
+    private static IBattleChara? ResolvePartyMemberBattleChara(Dalamud.Game.ClientState.Party.IPartyMember member)
     {
-        var framework = Framework.Instance();
-        if (framework == null || framework->UIModule == null)
-            return null;
+        var gameObject = member.GameObject;
+        if (gameObject is IBattleChara battleChara)
+            return battleChara;
 
-        var gameObject = framework->UIModule->GetPronounModule()->ResolvePlaceholder($"<{slot}>", 0, 0);
-        if (gameObject == null || gameObject->EntityId is 0 or InvalidActorId)
-            return null;
+        return TryResolveBattleCharaFromIdentity(GetPartyMemberIdentity(member, gameObject));
+    }
 
-        return DalamudApi.ObjectTable.SearchByEntityId(gameObject->EntityId) as IBattleChara;
+    private static IBattleChara? ResolveBuddyBattleChara(IBuddyMember buddy)
+    {
+        var gameObject = buddy.GameObject;
+        if (gameObject is IBattleChara battleChara)
+            return battleChara;
+
+        return TryResolveBattleCharaFromIdentity(GetBuddyIdentity(buddy, gameObject));
     }
 
     private static bool TryMarkUniqueBattleChara(IBattleChara battleChara, ISet<ulong> seen)
@@ -883,7 +825,8 @@ internal sealed class LocalStatsService
 
         try
         {
-            return Convert.ToUInt64(battleChara.GameObjectId, CultureInfo.InvariantCulture);
+            var gameObjectId = TryGetGameObjectId(battleChara);
+            return gameObjectId != 0 ? gameObjectId : battleChara.EntityId;
         }
         catch
         {
@@ -892,51 +835,74 @@ internal sealed class LocalStatsService
     }
 
     private static uint ResolveBuddyActorId(IBuddyMember buddy)
+        => ResolveBuddyActorId(buddy, buddy.GameObject);
+
+    private static uint ResolveBuddyActorId(IBuddyMember buddy, IGameObject? gameObject)
     {
-        var gameObjectId = TryGetGameObjectGameObjectId(buddy.GameObject);
-        if (gameObjectId > 0 && gameObjectId != InvalidActorId)
-            return gameObjectId;
-
-        var objectId = buddy.ObjectId;
-        if (objectId > 0 && objectId != InvalidActorId)
-            return objectId;
-
-        var entityId = TryGetPropertyActorId(buddy, "EntityId");
-        if (entityId > 0 && entityId != InvalidActorId)
-            return entityId;
-
-        var gameObjectEntityId = buddy.GameObject?.EntityId ?? 0;
-        if (gameObjectEntityId > 0 && gameObjectEntityId != InvalidActorId)
-            return gameObjectEntityId;
-
-        return 0;
+        return GetBuddyIdentity(buddy, gameObject).ResolveActorId();
     }
 
-    private static uint TryGetGameObjectGameObjectId(IGameObject? gameObject)
+    private static ulong TryGetGameObjectId(IGameObject? gameObject)
     {
         if (gameObject == null)
-            return 0;
+            return 0UL;
 
         try
         {
-            return TryConvertActorId(gameObject.GameObjectId);
+            return Convert.ToUInt64(gameObject.GameObjectId, CultureInfo.InvariantCulture);
         }
         catch
         {
-            return 0;
+            return 0UL;
         }
     }
 
-    private static uint TryGetGameObjectObjectId(IGameObject gameObject)
+    private static ActorIdentity GetGameObjectIdentity(IGameObject? gameObject)
     {
-        try
+        var gameObjectId = TryGetGameObjectId(gameObject);
+        // ActionEffectHandler 这条统计链路里拿到的是低 32 位 ID。
+        // 因此内部 actorId 口径继续保留 uint，但对象回查优先使用完整的 ulong GameObjectId。
+        var actorId = gameObjectId == 0 ? 0 : unchecked((uint)(gameObjectId & uint.MaxValue));
+        var objectId = gameObject?.EntityId ?? 0;
+        var entityId = gameObject?.EntityId ?? 0;
+        return new ActorIdentity(gameObjectId, actorId, objectId, entityId);
+    }
+
+    private static ActorIdentity GetPartyMemberIdentity(Dalamud.Game.ClientState.Party.IPartyMember member, IGameObject? gameObject)
+    {
+        var gameObjectIdentity = GetGameObjectIdentity(gameObject);
+        var objectId = member.ObjectId;
+        var entityId = TryGetPropertyActorId(member, "EntityId");
+        return new ActorIdentity(
+            gameObjectIdentity.GameObjectId,
+            gameObjectIdentity.ActorId,
+            objectId,
+            entityId != 0 ? entityId : gameObjectIdentity.EntityId);
+    }
+
+    private static ActorIdentity GetBuddyIdentity(IBuddyMember buddy, IGameObject? gameObject)
+    {
+        var gameObjectIdentity = GetGameObjectIdentity(gameObject);
+        var objectId = buddy.ObjectId;
+        var entityId = TryGetPropertyActorId(buddy, "EntityId");
+        return new ActorIdentity(
+            gameObjectIdentity.GameObjectId,
+            gameObjectIdentity.ActorId,
+            objectId,
+            entityId != 0 ? entityId : gameObjectIdentity.EntityId);
+    }
+
+    private static IBattleChara? TryResolveBattleCharaFromIdentity(ActorIdentity identity)
+    {
+        if (identity.GameObjectId != 0)
         {
-            return TryGetPropertyActorId(gameObject, "ObjectId");
+            var objectTableMatch = DalamudApi.ObjectTable.SearchById(identity.GameObjectId) as IBattleChara;
+            if (objectTableMatch != null)
+                return objectTableMatch;
         }
-        catch
-        {
-            return 0;
-        }
+
+        var actorId = identity.ResolveActorId();
+        return actorId is 0 or InvalidActorId ? null : FindObjectByActorId(actorId) as IBattleChara;
     }
 
     private static uint TryGetPropertyActorId(object? instance, string propertyName)
@@ -970,10 +936,19 @@ internal sealed class LocalStatsService
         }
     }
 
+    private static ActorIdentity GetLocalPlayerIdentity()
+    {
+        var gameObjectId = DalamudApi.GetLocalPlayerGameObjectId();
+        var actorId = gameObjectId == 0 ? 0 : unchecked((uint)(gameObjectId & uint.MaxValue));
+        var objectId = DalamudApi.GetLocalPlayerObjectId();
+        var entityId = DalamudApi.GetLocalPlayerEntityId();
+        return new ActorIdentity(gameObjectId, actorId, objectId, entityId);
+    }
+
     private static bool TryGetLocalPlayerTrackedActor(uint actorId, out TrackedActor actor)
     {
-        var localPlayerActorId = DalamudApi.GetLocalPlayerActorId();
-        if (localPlayerActorId is 0 or InvalidActorId || localPlayerActorId != actorId)
+        var identity = GetLocalPlayerIdentity();
+        if (!identity.MatchesActorId(actorId))
         {
             actor = default;
             return false;
@@ -987,7 +962,8 @@ internal sealed class LocalStatsService
         }
 
         var jobId = DalamudApi.GetLocalPlayerClassJobId();
-        actor = new TrackedActor(actorId, name.Trim(), jobId, ResolveJobName(jobId));
+        var canonicalActorId = identity.ResolveActorId();
+        actor = new TrackedActor(canonicalActorId is 0 or InvalidActorId ? actorId : canonicalActorId, name.Trim(), jobId, ResolveJobName(jobId));
         return true;
     }
 
@@ -1031,9 +1007,15 @@ internal sealed class LocalStatsService
             return;
         }
 
+        if (latestInCombatHint && suppressStaleDisplayUntilNextCombatStart)
+        {
+            StatusText = "已进入战斗，正在收集新战斗数据...";
+            return;
+        }
+
         if (DisplayCombatData?.Msg?.Encounter != null)
         {
-            StatusText = "等待新的战斗...";
+            StatusText = "上一场战斗已结束，等待下一场战斗...";
             return;
         }
 
@@ -1723,6 +1705,33 @@ internal sealed class LocalStatsService
         public DateTime ExportedAtUtc { get; set; }
 
         public List<HistoricalCombatData> Records { get; set; } = new();
+    }
+
+    private readonly record struct ActorIdentity(ulong GameObjectId, uint ActorId, uint ObjectId, uint EntityId)
+    {
+        public uint ResolveActorId()
+        {
+            if (ActorId > 0 && ActorId != InvalidActorId)
+                return ActorId;
+
+            if (ObjectId > 0 && ObjectId != InvalidActorId)
+                return ObjectId;
+
+            if (EntityId > 0 && EntityId != InvalidActorId)
+                return EntityId;
+
+            return 0;
+        }
+
+        public bool MatchesActorId(uint actorId)
+        {
+            if (actorId is 0 or InvalidActorId)
+                return false;
+
+            return (ActorId > 0 && ActorId != InvalidActorId && ActorId == actorId)
+                   || (ObjectId > 0 && ObjectId != InvalidActorId && ObjectId == actorId)
+                   || (EntityId > 0 && EntityId != InvalidActorId && EntityId == actorId);
+        }
     }
 
     private readonly record struct OwnerCacheEntry(uint OwnerId, DateTime UpdatedAtUtc);

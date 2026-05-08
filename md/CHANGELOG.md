@@ -2,7 +2,7 @@
 
 说明：
 
-- 当前包元数据版本为 `0.15.2.7`
+- 当前包元数据版本为 `0.15.2.8`
 - 未发布改动会先写在 `未发布` 部分
 - 更早的开发背景可继续查看：
   - `md/SESSION-HANDOFF.md`
@@ -10,13 +10,19 @@
   - `md/2026-05-06.md`
 
 ## Unreleased
+### 本轮稳定性修复与版本统一
+
+- 移除对 `PronounModule.ResolvePlaceholder("<1>..<8>")` 的直接依赖，避免运行时签名变化导致的崩溃。
+- 将 `ActionEffect` 来源识别改为 `sourceId + sourceCharacter` 双路径回表，并与 `LocalStatsService` 的统一身份模型对齐。
+- 统一插件程序集版本与元数据版本到 `0.15.2.8`，避免插件窗口与插件管理界面显示不同版本号。
+- 本地实测确认：进入战斗后可以恢复正常出数。
 
 - release notes template now replaces the `{{VERSION}}` placeholder with the actual tag version during formal releases
 - repository release-notes template was refreshed to avoid reusing stale version text in future GitHub Releases
 
-Current metadata version: `0.15.2.7`
+Current metadata version: `0.15.2.8`
 
-## 0.15.2.7 - 2026-05-08
+## 0.15.2.8 - 2026-05-09
 
 ### Floating stats table columns
 
@@ -30,6 +36,8 @@ Current metadata version: `0.15.2.7`
 - settings window title now shows the loaded plugin assembly version
 - main window keeps version text visible for build verification during testing
 - historical record preview now supports automatic return to live DPS after the configured timeout
+- the floating window keeps the last encounter visible after combat ends, then clears when the next combat actually begins
+- status text and empty-state hints now distinguish between "waiting for the next combat" and "collecting fresh combat data"
 
 ### Release and maintenance
 

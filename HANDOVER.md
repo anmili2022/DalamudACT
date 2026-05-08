@@ -33,19 +33,9 @@
 
 - 工作目录：`E:\git\DalamudACT`
 - 当前分支：`main`
-- 当前 HEAD：`431aad4`
-- 当前交接现场是脏工作区，接手前请先执行 `git status --short`，以当前输出为准。
-- 当前这批未提交修改主要集中在：
-  - `DalamudACT/Configuration/PluginConfiguration.cs` / `DalamudACT/UI/StatsPanel.cs`
-    - 共享列显示合并
-    - 统计页与历史页列宽写入配置文件
-  - `DalamudACT/UI/MainWindow.cs` / `DalamudACT/UI/SettingsWindow.cs` / `DalamudACT/UI/FloatingStatsWindow.cs`
-    - 主窗口与设置窗口卡片式 UI
-    - 悬浮窗锁定、列配置摘要与交互补充
-  - `DalamudACT/Stats/LocalStatsService.cs` / `DalamudACT/Plugin/ACT.cs` / `DalamudACT/DalamudApi.cs` / `DalamudACT/UI/StatsModels.cs`
-    - 历史预览流、统计与显示联动的配套调整
-  - `README.md` / `md/USAGE.md` / `md/README-SUMMARY.md` / `md/MAINTAINER-HOME.md`
-    - 文档补充、共享列说明与外部接口文档入口
+- 当前 HEAD：`fc352b4`
+- 当前交接现场仍是脏工作区，接手前请先执行 `git status --short`，以当前输出为准。
+- 当前工作区里只剩一个未跟踪文件：`1.txt`（用途待确认）。
 - 更早之前的战斗跟踪实验，已经在形成这个快照前回滚到干净基线。
 - 最近一次已验证的本地构建：
   - `dotnet build E:\git\DalamudACT\DalamudACT.sln`
@@ -157,7 +147,7 @@
 
 仓库里已经体现出的近期改动如下：
 
-- `0.15.2.7`
+- `0.15.2.8`
   - fixed stats table width memory and hidden-column layout behavior
   - changed hidden stats columns to hide the whole column
   - enforced a `20px` minimum width for the deaths column
@@ -344,7 +334,7 @@ git -C E:\git\DalamudACT push origin $ver
 - `.github/workflows/test_release.yml`：仅用于 testing tag 流程
 - `.github/workflows/build.yml`：分支 / 类 nightly 构建流程
 
-这台机器曾经出现过必须关闭 tag 签名才能继续发版的情况。如果 tag 签名阻塞发布，请看 [md/RELEASE-RUNBOOK.md](md/RELEASE-RUNBOOK.md) 和 [md/2026-05-06-RELEASE-HANDOFF.md](md/2026-05-06-RELEASE-HANDOFF.md)。
+这台机器曾经出现过必须关闭 tag 签名才能继续发版的情况。如果 tag 签名阻塞发布，请看 [md/RELEASE-RUNBOOK.md](md/RELEASE-RUNBOOK.md) 和 [md/2026-05-09-RELEASE-HANDOFF.md](md/2026-05-09-RELEASE-HANDOFF.md)。
 
 <a id="handover-reading-order"></a>
 ## 接手先看什么
@@ -357,7 +347,7 @@ git -C E:\git\DalamudACT push origin $ver
 4. [下一位维护者第一小时清单](md/MAINTAINER-FIRST-HOUR-CHECKLIST.md)
 5. [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
 6. [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
-7. [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
+7. [2026-05-09 发布交接](md/2026-05-09-RELEASE-HANDOFF.md)
 8. [发布 Runbook](md/RELEASE-RUNBOOK.md)
 9. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
 10. [更新记录](md/CHANGELOG.md)
@@ -379,3 +369,22 @@ git -C E:\git\DalamudACT push origin $ver
 - 首个成功的分支构建运行号是 `25427744876`。
 - 已验证成功的正式发布 workflow 运行号是 `25427944539`。
 - 更细的逐日记录已经保存在 `md/` 目录下；本文件的定位是维护入口摘要，而不是替代那些详细记录。
+
+## 2026-05-09 补充：本轮稳定性修复与版本统一
+
+- 已修复“进战斗但不出数据”的问题，当前实战链路已恢复出数。
+- 已移除对 `PronounModule.ResolvePlaceholder("<1>..<8>")` 的直接依赖，避免运行时签名变化再次触发崩溃。
+- 已把 `ActionEffect` 来源识别收口到 `sourceId + sourceCharacter` 的组合判断，并与 `LocalStatsService` 的统一身份模型对齐。
+- 已把悬浮窗显示行为改为：脱战后保留上一场数据，在下一次进入战斗时再先清空并等待新战斗数据。
+- 已把状态文案进一步细化：脱战保留旧数据时显示“等待下一场战斗”，重新进战斗但尚未出第一条数据时显示“正在收集新战斗数据”。
+- 已将版本号统一到 `0.15.2.8`：
+  - `DalamudACT/DalamudACT.csproj`
+  - `Data/DalamudACT.json`
+  - `DalamudACT/DalamudACT.json`
+  - `repo.json`
+- 当前可直接用的本地产物仍是：
+  - `output\DalamudACT.dll`
+- 后续继续实测建议：
+  1. 单人 / NPC 同行战斗
+  2. 普通 4/8 人队伍
+  3. Buddy / 宠物 / 召唤物归属

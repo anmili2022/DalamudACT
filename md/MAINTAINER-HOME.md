@@ -60,13 +60,10 @@
 
 - 工作目录：`E:\git\DalamudACT`
 - 当前分支：`main`
-- 当前 HEAD：`431aad4`
-- 当前工作区：**脏工作区**
+- 当前 HEAD：`fc352b4`
+- 当前工作区：**有未跟踪文件 `1.txt`**
 - 接手前请先执行 `git status --short`，以当前输出为准
-- 当前未提交修改主要集中在：
-  - 共享列显示合并与列宽配置持久化
-  - 主窗口 / 设置窗口卡片式 UI 与配置摘要
-  - 历史预览流、悬浮窗交互与相关文档补充
+- 当前工作区里只剩一个未跟踪文件 `1.txt`，用途待确认。
 - 最近一次已验证本地构建：
 
 ```powershell
@@ -76,15 +73,9 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 - 最近一次记录结果：`0 warnings / 0 errors`
 - 当前可信产物路径：`E:\git\DalamudACT\output\DalamudACT.dll`
 
-当前这批修改涉及的重点代码 / 文档入口：
+当前这批修改涉及的重点内容：
 
-- `DalamudACT/Configuration/PluginConfiguration.cs`
-- `DalamudACT/UI/StatsPanel.cs`
-- `DalamudACT/UI/SettingsWindow.cs`
-- `DalamudACT/UI/MainWindow.cs`
-- `README.md`
-- `md/USAGE.md`
-- `HANDOVER.md`
+- `1.txt`（未跟踪，待确认用途）
 
 ---
 
@@ -114,7 +105,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 3. [最近问题与解决方案整理](RECENT-ISSUES-SUMMARY.md)
 4. [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
 5. [HANDOVER.md](../HANDOVER.md)
-6. [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+6. [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 
 ---
 
@@ -194,7 +185,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 
 优先看：
 
-1. [2026-05-06 工作记录](2026-05-06.md)
+1. [2026-05-09 工作记录](2026-05-09.md)
 2. [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
 3. `DalamudACT/Stats/LocalStatsService.cs`
 4. `DalamudACT/UI/StatsPanel.cs`
@@ -206,7 +197,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 
 优先看：
 
-1. [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+1. [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 2. [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md)
 3. `repo.json`
 4. `.github/workflows/build.yml`
@@ -222,10 +213,10 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 - [下一位维护者第一小时清单](MAINTAINER-FIRST-HOUR-CHECKLIST.md)
 - [最近问题与解决方案整理](RECENT-ISSUES-SUMMARY.md)
 - [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
-- [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+- [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 - [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md)
 - [SESSION-HANDOFF.md](SESSION-HANDOFF.md)
-- [2026-05-06 工作记录](2026-05-06.md)
+- [2026-05-09 工作记录](2026-05-09.md)
 - [2026-05-05 工作记录](2026-05-05.md)
 
 ---
@@ -270,8 +261,8 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 
 特别要记住：
 
-- 当前工作区是**脏工作区**
-- 当前未提交修改主要在恢复**历史预览流**
+- 当前工作区仍有一个未跟踪文件 `1.txt`
+- 这个文件当前未纳入仓库，接手前建议先确认其用途
 - 正式发布时，如果 tag 签名阻塞，要优先使用：
 
 ```powershell

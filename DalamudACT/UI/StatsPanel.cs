@@ -85,9 +85,7 @@ internal static class StatsPanel
             var history = statsService.HistoricalRecords;
             var toggleNoCombatCollapseRequested = false;
             var historyRecordClicked = false;
-            ImGui.TextDisabled(history.Count > 0
-                ? "当前没有实时战斗数据，可点击下方历史记录查看。"
-                : "等待战斗数据...");
+            DrawNoCombatPlaceholder(statsService, history.Count > 0);
 
             toggleNoCombatCollapseRequested = config.ShowDpsTab && ImGui.IsItemClicked();
 
@@ -124,7 +122,7 @@ internal static class StatsPanel
                 if (hasCombatData)
                     DrawDpsTab(combatData!, config);
                 else
-                    ImGui.TextDisabled("等待战斗数据...");
+                    DrawNoCombatPlaceholder(statsService, hasHistory: false);
             }
 
             ImGui.EndTabItem();
@@ -160,7 +158,7 @@ internal static class StatsPanel
                 }
                 else
                 {
-                    ImGui.TextDisabled("等待战斗数据...");
+                    DrawNoCombatPlaceholder(statsService, hasHistory: false);
                 }
             }
 
@@ -197,7 +195,7 @@ internal static class StatsPanel
                 }
                 else
                 {
-                    ImGui.TextDisabled("等待战斗数据...");
+                    DrawNoCombatPlaceholder(statsService, hasHistory: false);
                 }
             }
 
@@ -213,7 +211,7 @@ internal static class StatsPanel
                 if (hasCombatData)
                     DrawOverviewTab(combatData!, config);
                 else
-                    ImGui.TextDisabled("等待战斗数据...");
+                    DrawNoCombatPlaceholder(statsService, hasHistory: false);
             }
 
             ImGui.EndTabItem();
@@ -229,6 +227,16 @@ internal static class StatsPanel
 
         ImGui.EndTabBar();
         return new StatsPanelDrawResult(activeTab, toggleDpsCollapseRequested, openSettingsRequested, false);
+    }
+
+    private static void DrawNoCombatPlaceholder(LocalStatsService statsService, bool hasHistory)
+    {
+        ImGui.TextDisabled(statsService.StatusText);
+
+        if (!hasHistory || statsService.StatusText.Contains("正在收集新战斗数据", StringComparison.Ordinal))
+            return;
+
+        ImGui.TextDisabled("可点击下方历史记录查看。");
     }
 
     private static void DrawDpsTab(CombatDataWrapper combatData, PluginConfiguration config)

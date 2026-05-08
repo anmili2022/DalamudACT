@@ -1,5 +1,6 @@
 using System;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -167,8 +168,56 @@ public sealed class ACT : IDalamudPlugin
     private static bool IsCritical(ActionEffectHandler.Effect effect)
         => (effect.Param0 & 0x20) != 0;
 
-    private static bool LooksLikeBattleNpc(uint actorId)
-        => actorId is > 0x40000000 and not InvalidActorId;
+    private static bool IsUsableActorId(uint actorId)
+        => actorId is not 0 and not InvalidActorId;
+
+    private static uint NormalizeEventActorId(uint actorId)
+        => IsUsableActorId(actorId) ? actorId : 0;
+
+    private static uint NormalizeEventActorId(GameObjectId actorId)
+    {
+        var low32 = unchecked((uint)(actorId & uint.MaxValue));
+        return NormalizeEventActorId(low32);
+    }
+
+    private static uint TryGetActorIdFromGameObject(IGameObject? gameObject)
+    {
+        if (gameObject == null)
+            return 0;
+
+        var actorId = unchecked((uint)(gameObject.GameObjectId & uint.MaxValue));
+        if (IsUsableActorId(actorId))
+            return actorId;
+
+        if (IsUsableActorId(gameObject.EntityId))
+            return gameObject.EntityId;
+
+        return 0;
+    }
+
+    private uint ResolveTrackedSourceActorId(uint sourceId, nint sourceCharacterAddress, DateTime nowUtc, out bool canResolveTrackedSource)
+    {
+        var normalizedSourceId = NormalizeEventActorId(sourceId);
+        if (normalizedSourceId != 0 && statsService.CanResolveTrackedSource(normalizedSourceId, nowUtc))
+        {
+            canResolveTrackedSource = true;
+            return normalizedSourceId;
+        }
+
+        if (sourceCharacterAddress != nint.Zero)
+        {
+            var sourceObject = DalamudApi.ObjectTable.CreateObjectReference(sourceCharacterAddress);
+            var sourceObjectActorId = TryGetActorIdFromGameObject(sourceObject);
+            if (sourceObjectActorId != 0 && statsService.CanResolveTrackedSource(sourceObjectActorId, nowUtc))
+            {
+                canResolveTrackedSource = true;
+                return sourceObjectActorId;
+            }
+        }
+
+        canResolveTrackedSource = false;
+        return normalizedSourceId;
+    }
 
     private unsafe void ReceiveAbilityEffect(
         uint sourceId,
@@ -181,33 +230,37 @@ public sealed class ACT : IDalamudPlugin
         receiveAbilityHook!.Original(sourceId, sourceCharacter, pos, effectHeader, effectArray, effectTrail);
 
         if (effectHeader->NumTargets > 0)
-            HandleAbility(effectHeader, effectArray, effectTrail, sourceId);
+            HandleAbility(effectHeader, effectArray, effectTrail, sourceId, sourceCharacter);
     }
 
     private unsafe void HandleAbility(
         ActionEffectHandler.Header* header,
         ActionEffectHandler.TargetEffects* effects,
         GameObjectId* targets,
-        uint sourceId)
+        uint sourceId,
+        nint sourceCharacterAddress)
     {
         var nowUtc = DateTime.UtcNow;
         var zoneName = GetPlaceName();
         var actionId = header->SpellId != 0 ? (uint)header->SpellId : header->ActionId;
         var actionName = GetActionName(actionId);
         var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
+        var sourceActorId = ResolveTrackedSourceActorId(sourceId, sourceCharacterAddress, nowUtc, out var sourceCanResolveToTrackedActor);
 
-        var hasBattleNpc = LooksLikeBattleNpc(sourceId);
-        var hasTrackedPlayer = statsService.IsTrackedActor(sourceId);
-        var hasRelevantEffect = false;
+        var hasTrackedParticipant = sourceCanResolveToTrackedActor;
+        var hasRelevantTrackedEffect = false;
 
         for (var targetIndex = 0; targetIndex < header->NumTargets; targetIndex++)
         {
-            var targetId = (uint)(targets[targetIndex] & uint.MaxValue);
+            var targetId = NormalizeEventActorId(targets[targetIndex]);
             if (targetId == 0)
                 continue;
 
-            hasBattleNpc |= LooksLikeBattleNpc(targetId);
-            hasTrackedPlayer |= statsService.IsTrackedActor(targetId);
+            var targetIsTrackedActor = statsService.IsTrackedActor(targetId);
+            hasTrackedParticipant |= targetIsTrackedActor;
+
+            if (!sourceCanResolveToTrackedActor && !targetIsTrackedActor)
+                continue;
 
             for (var effectIndex = 0; effectIndex < 8; effectIndex++)
             {
@@ -220,35 +273,35 @@ public sealed class ACT : IDalamudPlugin
                     case LocalActionEffectType.BlockedDamage:
                     case LocalActionEffectType.ParriedDamage:
                     {
-                        hasRelevantEffect = true;
+                        hasRelevantTrackedEffect = true;
                         var amount = DecodeAmount(effect);
                         if (amount > 0)
-                            statsService.RecordDamage(sourceId, targetId, actionName, amount, IsCritical(effect), nowUtc, zoneName);
+                            statsService.RecordDamage(sourceActorId, targetId, actionName, amount, IsCritical(effect), nowUtc, zoneName);
                         break;
                     }
                     case LocalActionEffectType.Heal:
                     {
-                        hasRelevantEffect = true;
+                        hasRelevantTrackedEffect = true;
                         var amount = DecodeAmount(effect);
                         if (amount > 0)
-                            statsService.RecordHeal(sourceId, targetId, amount, IsCritical(effect), nowUtc, zoneName);
+                            statsService.RecordHeal(sourceActorId, targetId, amount, IsCritical(effect), nowUtc, zoneName);
                         break;
                     }
                     case LocalActionEffectType.Miss:
-                        hasRelevantEffect = true;
-                        statsService.RecordFailure(sourceId, isMiss: true, nowUtc, zoneName);
+                        hasRelevantTrackedEffect = true;
+                        statsService.RecordFailure(sourceActorId, isMiss: true, nowUtc, zoneName);
                         break;
                     case LocalActionEffectType.FullResist:
                     case LocalActionEffectType.Invulnerable:
                     case LocalActionEffectType.PartialInvulnerable:
-                        hasRelevantEffect = true;
-                        statsService.RecordFailure(sourceId, isMiss: false, nowUtc, zoneName);
+                        hasRelevantTrackedEffect = true;
+                        statsService.RecordFailure(sourceActorId, isMiss: false, nowUtc, zoneName);
                         break;
                 }
             }
         }
 
-        if (hasRelevantEffect || hasBattleNpc || (hasTrackedPlayer && inCombatNow))
+        if (hasTrackedParticipant && (hasRelevantTrackedEffect || inCombatNow))
             statsService.RecordEncounterActivity(zoneName, nowUtc);
     }
 

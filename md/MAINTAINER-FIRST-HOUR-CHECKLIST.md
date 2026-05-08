@@ -23,14 +23,10 @@
 
 - 仓库目录：`E:\git\DalamudACT`
 - 当前分支：`main`
-- 当前 HEAD：`431aad4`
-- 当前工作区是**脏工作区**
+- 当前 HEAD：`fc352b4`
+- 当前工作区有一个未跟踪文件 `1.txt`
 - 接手前先执行 `git status --short`，以当前输出为准
-- 当前未提交修改主要集中在：
-  - 共享列显示合并
-  - 统计页 / 历史页列宽配置持久化
-  - `锁定悬浮窗口`、`历史记录预览时长（秒）`、主窗口 / 设置窗口卡片式 UI 与配置摘要
-  - 历史预览流与相关文档补充
+- 当前工作区里只剩一个未跟踪文件 `1.txt`，用途待确认。
 - 最近一次已验证本地构建：
 
 ```powershell
@@ -56,7 +52,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 1. [HANDOVER.md](../HANDOVER.md)
 2. [最近问题与解决方案整理](RECENT-ISSUES-SUMMARY.md)
 3. [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
-4. [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+4. [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 
 这一轮先不要深读所有工作记录，先回答 4 个问题：
 
@@ -78,16 +74,8 @@ git -C E:\git\DalamudACT rev-parse --short HEAD
 
 重点确认：
 
-- 当前 HEAD 是否还是交接记录里的 `431aad4`
-- 当前脏文件是否仍主要集中在下面这些位置附近：
-  - `DalamudACT/Configuration/PluginConfiguration.cs`
-  - `DalamudACT/UI/MainWindow.cs`
-  - `DalamudACT/Stats/LocalStatsService.cs`
-  - `DalamudACT/UI/SettingsWindow.cs`
-  - `DalamudACT/UI/StatsPanel.cs`
-  - `README.md`
-  - `md/USAGE.md`
-  - `HANDOVER.md`
+- 当前 HEAD 是否仍与交接记录和当前文档一致
+- 当前工作区是否仍只有这个未跟踪文件 `1.txt`
 
 如果现场和交接记录差异很大，先别急着改代码，先判断：
 
@@ -189,7 +177,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 
 适合这种情况：
 
-- 你主要在接“历史预览流 + 共享列 + 列宽记忆 + 卡片式 UI”这批未提交工作
+- 你主要在接“历史预览流 + 共享列 + 列宽记忆 + 卡片式 UI”这批已落地、但仍需继续验证的改动
 - 你想继续补交互、显示、配置持久化和文档同步行为
 
 优先关注：
@@ -216,7 +204,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 
 先看：
 
-1. [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+1. [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 2. `repo.json`
 3. `.github/workflows/build.yml`
 4. `.github/workflows/release.yml`

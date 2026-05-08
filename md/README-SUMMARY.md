@@ -87,4 +87,4 @@
 - 详细使用说明：[`md/USAGE.md`](USAGE.md)
 - 更新记录：[`md/CHANGELOG.md`](CHANGELOG.md)
 - 维护交接入口：[`../HANDOVER.md`](../HANDOVER.md)
-- 发布交接：[`2026-05-06-RELEASE-HANDOFF.md`](2026-05-06-RELEASE-HANDOFF.md)
+- 发布交接：[`2026-05-09-RELEASE-HANDOFF.md`](2026-05-09-RELEASE-HANDOFF.md)

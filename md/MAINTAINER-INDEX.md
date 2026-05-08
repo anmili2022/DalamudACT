@@ -30,7 +30,7 @@
 
 5. [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
 6. [HANDOVER.md](../HANDOVER.md)
-7. [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+7. [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 8. [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md)
 9. [SESSION-HANDOFF.md](SESSION-HANDOFF.md)
 
@@ -53,7 +53,7 @@
 1. [最近问题与解决方案整理](RECENT-ISSUES-SUMMARY.md)
 2. [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
 3. [SESSION-HANDOFF.md](SESSION-HANDOFF.md)
-4. [2026-05-06 工作记录](2026-05-06.md)
+4. [2026-05-09 工作记录](2026-05-09.md)
 5. [2026-05-05 工作记录](2026-05-05.md)
 
 ### 3. 要排查运行时崩溃、兼容、出数问题
@@ -77,7 +77,7 @@
 优先看：
 
 1. [最近问题状态表（维护视角）](RECENT-ISSUES-STATUS-TABLE.md)
-2. [2026-05-06 工作记录](2026-05-06.md)
+2. [2026-05-09 工作记录](2026-05-09.md)
 3. `DalamudACT/Stats/LocalStatsService.cs`
 4. `DalamudACT/UI/StatsPanel.cs`
 5. `DalamudACT/UI/MainWindow.cs`
@@ -108,7 +108,7 @@
 
 优先看：
 
-1. [2026-05-06 发布交接](2026-05-06-RELEASE-HANDOFF.md)
+1. [2026-05-09 发布交接](2026-05-09-RELEASE-HANDOFF.md)
 2. [RELEASE-RUNBOOK.md](RELEASE-RUNBOOK.md)
 3. [HANDOVER.md](../HANDOVER.md)
 4. `repo.json`
@@ -136,14 +136,10 @@
 
 - 工作目录：`E:\git\DalamudACT`
 - 当前分支：`main`
-- 当前 HEAD：`431aad4`
-- 当前工作区：**脏工作区**
+- 当前 HEAD：`fc352b4`
+- 当前工作区：**有未跟踪文件 `1.txt`**
 - 接手前先执行 `git status --short`，以当前输出为准
-- 这批未提交修改当前主要集中在：
-  - 共享列显示合并
-  - 统计页 / 历史页列宽配置持久化
-  - 主窗口 / 设置窗口卡片式 UI 与配置摘要
-  - 历史预览流与相关文档补充
+- 这批未提交内容当前只剩一个未跟踪文件 `1.txt`，用途待确认。
 - 最近一次已验证构建命令：
 
 ```powershell
@@ -177,7 +173,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 - 不要一上来就做 `git reset --hard`
 - 不要把旧失败 GitHub Actions 任务直接 `Re-run jobs`
 - 不要一次性恢复所有高风险 Hook
-- 不要忽略当前工作区是脏工作区这一事实
+- 不要忽略当前工作区仍有未跟踪文件 `1.txt` 这一事实
 - 不要把旧的 `bin/Release/*` 当作当前可信产物路径
 
 ---

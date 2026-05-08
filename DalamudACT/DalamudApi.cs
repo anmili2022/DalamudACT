@@ -41,10 +41,32 @@ public sealed class DalamudApi
                ?? name?.ToString();
     }
 
-    public static uint GetLocalPlayerActorId()
+    public static ulong GetLocalPlayerGameObjectId()
     {
         var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
-        return TryGetUInt32Property(localPlayer, "EntityId", "ObjectId");
+        return TryGetUInt64Property(localPlayer, "GameObjectId");
+    }
+
+    public static uint GetLocalPlayerEntityId()
+    {
+        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        return TryGetUInt32Property(localPlayer, "EntityId");
+    }
+
+    public static uint GetLocalPlayerObjectId()
+        => GetLocalPlayerEntityId();
+
+    public static uint GetLocalPlayerActorId()
+    {
+        var gameObjectId = GetLocalPlayerGameObjectId();
+        if (gameObjectId != 0)
+            return unchecked((uint)(gameObjectId & uint.MaxValue));
+
+        var entityId = GetLocalPlayerEntityId();
+        if (entityId != 0)
+            return entityId;
+
+        return GetLocalPlayerObjectId();
     }
 
     public static uint GetLocalPlayerClassJobId()
@@ -66,6 +88,18 @@ public sealed class DalamudApi
         return 0;
     }
 
+    private static ulong TryGetUInt64Property(object? instance, params string[] propertyNames)
+    {
+        foreach (var propertyName in propertyNames)
+        {
+            var value = GetPropertyValue(instance, propertyName);
+            if (TryConvertToUInt64(value, out var result))
+                return result;
+        }
+
+        return 0UL;
+    }
+
     private static object? GetPropertyValue(object? instance, string propertyName)
         => instance?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(instance);
 
@@ -80,6 +114,26 @@ public sealed class DalamudApi
             }
 
             result = Convert.ToUInt32(value, CultureInfo.InvariantCulture);
+            return true;
+        }
+        catch
+        {
+            result = 0;
+            return false;
+        }
+    }
+
+    private static bool TryConvertToUInt64(object? value, out ulong result)
+    {
+        try
+        {
+            if (value == null)
+            {
+                result = 0;
+                return false;
+            }
+
+            result = Convert.ToUInt64(value, CultureInfo.InvariantCulture);
             return true;
         }
         catch

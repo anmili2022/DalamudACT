@@ -237,3 +237,110 @@ git -C E:\git\DalamudACT show HEAD:<path>
 ```
 
 - 当前产物以 `output\DalamudACT.dll` 为准
+
+## 2026-05-09 补充：战斗数据恢复与版本号统一
+
+### 本轮现象
+
+- 插件不再崩溃，但用户进入战斗后界面仍停留在“等待战斗数据...”。
+- 插件窗口标题显示 `v0.15.2.7`，而插件管理界面右侧显示 `v0.15.2.5`，出现双版本号。
+
+### 本轮确认
+
+- `ActionEffect` Hook 已成功安装；`dalamud.log` 中没有出现：
+  - `Failed to install the ActionEffect hook`
+  - `live DPS data will be unavailable`
+- 问题不在 Hook 安装失败，而在于事件来源识别与跟踪对象匹配不稳定。
+
+### 本轮修复
+
+1. **移除高风险的 PronounModule 队伍槽位解析**
+   - 不再依赖 `PronounModule.ResolvePlaceholder("<1>..<8>")`
+   - 改为基于 `PartyList / BuddyList / ObjectTable` 解析可跟踪对象
+   - 目的：避免 `MissingMethodException` / 运行时签名变化再次导致崩溃
+
+2. **统一对象身份模型**
+   - 在 `LocalStatsService.cs` 中引入统一身份口径：
+     - `GameObjectId (ulong)`
+     - `ActorId (uint, low32)`
+     - `ObjectId`
+     - `EntityId`
+   - 所有匹配与回查逻辑统一走 `ActorIdentity`
+   - 去掉残留的“按名字兜底匹配”，避免误把队外同名对象算进来
+
+3. **补强本地玩家识别**
+   - `DalamudApi.cs` 新增：
+     - `GetLocalPlayerGameObjectId()`
+     - `GetLocalPlayerEntityId()`
+     - `GetLocalPlayerObjectId()`
+   - `TryGetLocalPlayerTrackedActor(...)` 改为按多 ID 口径匹配，而不是只拿单一 `EntityId/ObjectId`
+
+4. **补强事件来源识别**
+   - `ACT.cs` 中对 `ActionEffect` 事件来源不再只信任 `sourceId`
+   - 现在优先尝试：
+     - `sourceId`
+     - 若不足以解析为 tracked source，再使用 `sourceCharacter` 地址回表创建对象引用并提取 ID
+   - 单人 / NPC 同行 / 非标准队伍场景下，这一步对恢复实时出数很关键
+
+5. **收紧战斗活动判定**
+   - 只让与“自己 / 当前队伍 / 可归属来源”有关的 `ActionEffect` 推动 encounter activity
+   - 避免附近无关战斗把当前遭遇误开战或误续战
+
+### 本轮结果
+
+- 用户侧已确认：**进入战斗后已经开始出数据**。
+- 说明当前 `ActionEffect -> tracked source/target -> LocalStatsService` 这条主链路已经打通。
+- 已把悬浮窗显示行为改为：脱战后保留上一场数据，在下一次进入战斗时再先清空并等待新战斗数据。
+- 已把状态文案进一步细化：脱战保留旧数据时显示“等待下一场战斗”，重新进战斗但尚未出第一条数据时显示“正在收集新战斗数据”。
+
+### 版本号分裂原因与处理
+
+- 窗口标题版本来自程序集版本：
+  - `DalamudACT/DalamudACT.csproj`
+  - 当时为 `0.15.2.8`
+- 插件管理界面版本来自插件元数据：
+  - `Data/DalamudACT.json`
+  - `DalamudACT/DalamudACT.json`
+  - `repo.json`
+  - 当时仍停留在 `0.15.2.5`
+
+已统一为：
+
+- `0.15.2.8`
+
+同步文件：
+
+- `DalamudACT/DalamudACT.csproj`
+- `Data/DalamudACT.json`
+- `DalamudACT/DalamudACT.json`
+- `repo.json`
+
+并同步了 `repo.json` 中的：
+
+- `AssemblyVersion`
+- `TestingAssemblyVersion`
+- `DownloadLinkInstall`
+- `DownloadLinkTesting`
+- `DownloadLinkUpdate`
+
+### 本轮改动的核心文件
+
+- `DalamudACT/Plugin/ACT.cs`
+- `DalamudACT/DalamudApi.cs`
+- `DalamudACT/Stats/LocalStatsService.cs`
+- `Data/DalamudACT.json`
+- `DalamudACT/DalamudACT.json`
+- `repo.json`
+
+### 当前建议
+
+1. 继续在以下场景实测：
+   - 单人 / NPC 同行战斗
+   - 普通 4/8 人队伍
+   - Buddy / 宠物 / 召唤物归属
+2. 目前先保持 `ActorControlSelf / Cast` 关闭，避免为了补功能重新引入不稳定因素
+3. 如后续准备正式发布，再把：
+   - `CHANGELOG`
+   - `RELEASE-NOTES`
+   - Git tag / Release 资源
+   一并同步到 `0.15.2.8`

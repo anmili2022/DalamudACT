@@ -1,6 +1,30 @@
 # DPS统计
 
-最后更新：`2026-05-06`
+最后更新：`2026-05-08`
+
+快速查看：[`README 简洁总结`](md/README-SUMMARY.md)
+
+## 从这里开始
+
+如果你是维护者或接手排查问题，先看这三份：
+
+- [维护首页（单页总览）](md/MAINTAINER-HOME.md)
+- [维护文档总览图](md/MAINTAINER-DOC-MAP.md)
+- [HANDOVER.md](HANDOVER.md)
+
+## 目录 / TOC
+
+- [界面预览](#readme-preview)
+- [这是什么](#readme-about)
+- [安装与启用](#readme-install)
+- [当前功能](#readme-features)
+- [统计范围](#readme-scope)
+- [快速开始](#readme-quickstart)
+- [当前限制](#readme-limitations)
+- [常见问题](#readme-faq)
+- [先看哪份文档](#readme-reading-order)
+- [文档入口](#readme-docs)
+- [构建状态](#readme-build)
 
 `DPS统计` 是一个直接在游戏内显示战斗统计的 Dalamud 插件。
 
@@ -11,12 +35,14 @@
 - 只统计自己和当前队伍里的队友
 - 支持点击历史记录回看那一场战斗的数据
 
+<a id="readme-preview"></a>
 ## 界面预览
 
 ![悬浮面板 DPS 页截图](md/images/usage-floating-dps.png)
 
 ![设置窗口截图](md/images/usage-settings-window.png)
 
+<a id="readme-about"></a>
 ## 这是什么
 
 当前版本的 `DPS统计` 已经不是早期那种依赖外部数据源的面板壳。
@@ -29,6 +55,7 @@
 
 换句话说，如果你只是想在游戏里简单看输出、承伤和历史记录，这个插件就是朝这个方向做的。
 
+<a id="readme-install"></a>
 ## 安装与启用
 
 ### 普通使用
@@ -58,12 +85,6 @@
 
 - `E:\git\DalamudACT\output\DalamudACT.dll`
 
-## Maintenance / 交接入口
-
-- [HANDOVER.md](HANDOVER.md) ← 维护交接总入口
-- [2026-05-06 Release Handoff (0.15.2.5)](md/2026-05-06-RELEASE-HANDOFF.md)
-- [Release Runbook](md/RELEASE-RUNBOOK.md)
-
 ### 第一次建议这样用
 
 第一次打开后，推荐先这样设置：
@@ -71,8 +92,10 @@
 - 先打开悬浮面板
 - 先只保留 `DPS` 页
 - 如果现在没有战斗，先用 `导入测试数据` 看效果
-- 如果字太挤，再去设置里调整列宽、行高和透明度
+- 如果想先把表格变简洁，可以在共享的 `页面列显示` 里先只保留 `玩家 / 伤害 / 秒伤`
+- 如果字太挤，再去设置里调整列宽、行高和透明度；统计页和历史页的列宽会自动记忆到配置文件，并在下次打开插件时恢复
 
+<a id="readme-features"></a>
 ## 当前功能
 
 ### 主要页面
@@ -98,11 +121,22 @@
 ### DPS 页面
 
 - 支持显示或隐藏以下列：
+  - `玩家`
   - `职业`
   - `伤害量`
   - `秒伤`
   - `死亡`
 - 表格底部会显示 `总DPS` 汇总行
+- `DPS / HPS / 承伤` 三个统计页现在共用一组列显示设置：
+  - `玩家列`
+  - `职业列`
+  - `伤害列`
+  - `秒伤列`
+  - `死亡列`
+  - `显示人数`
+- 其中：
+  - `伤害列` 在 `DPS / HPS / 承伤` 中分别对应 `伤害量 / 治疗量 / 承伤量`
+  - `秒伤列` 在 `DPS / HPS / 承伤` 中分别对应 `秒伤 / 秒疗 / 秒承伤`
 - 伤害量使用中文单位显示，例如：
   - `9.68万`
   - `1.25亿`
@@ -128,12 +162,17 @@
 
 - 可调整主窗口透明度
 - 可调整悬浮面板透明度
+- 可锁定悬浮窗口，避免误拖动和误改大小
 - 可单独设置战斗结束判定方式
 - 可控制显示哪些页签
-- 可控制 `DPS` 页面显示哪些列
+- 可通过一组共享列设置同时控制 `DPS / HPS / 承伤` 的玩家、职业、伤害、秒伤、死亡和显示人数
+- 切换列显示时不会重置当前列宽
+- 统计页与历史记录页的可拖拽列宽会写入配置文件，并在下次打开插件时恢复
+- 可一键重置统计页 / 历史页的列宽记忆
 - 可调整列宽和行高
 - 可切换单色 / 职业主题色两种占比条风格
 
+<a id="readme-scope"></a>
 ## 统计范围
 
 当前版本只统计：
@@ -147,6 +186,7 @@
 - 召唤物 / 宠物造成的伤害会归到它们的主人头上
 - 队伍外的其他玩家不会进入统计
 
+<a id="readme-quickstart"></a>
 ## 快速开始
 
 如果你是第一次使用，推荐这样上手：
@@ -161,6 +201,7 @@
 
 - [使用说明](md/USAGE.md)
 
+<a id="readme-limitations"></a>
 ## 当前限制
 
 当前版本优先保证“稳定能用”，所以还有一些能力仍在继续完善：
@@ -178,6 +219,7 @@
 
 那现在已经可以正常使用。
 
+<a id="readme-faq"></a>
 ## 常见问题
 
 ### 1. 面板显示“等待战斗数据...”
@@ -207,6 +249,7 @@
 
 新的实时战斗开始后，界面会自动切回实时数据。
 
+<a id="readme-reading-order"></a>
 ## 先看哪份文档
 
 如果你只是想正常使用插件，建议按下面顺序看：
@@ -216,16 +259,22 @@
 
 如果你是继续接手开发或排查问题，建议优先看：
 
-1. [HANDOVER.md](HANDOVER.md)
-2. [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
-3. [2026-05-06 工作记录](md/2026-05-06.md)
-4. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
-5. 再按需要查看更早记录
+1. [维护首页（单页总览）](md/MAINTAINER-HOME.md)
+2. [维护入口索引](md/MAINTAINER-INDEX.md)
+3. [下一位维护者第一小时清单](md/MAINTAINER-FIRST-HOUR-CHECKLIST.md)
+4. [HANDOVER.md](HANDOVER.md)
+5. [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
+6. [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
+7. [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
+8. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
+9. 再按需要查看更早记录
 
+<a id="readme-docs"></a>
 ## 文档入口
 
 用户文档：
 
+- [README 简洁总结](md/README-SUMMARY.md)
 - [使用说明](md/USAGE.md)
 - [发布说明](md/RELEASE-NOTES.md)
 - [更新记录](md/CHANGELOG.md)
@@ -233,19 +282,42 @@
 
 开发 / 交接文档：
 
-- [HANDOVER.md](HANDOVER.md)
-- [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
-- [2026-05-06 工作记录](md/2026-05-06.md)
-- [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
-- [2026-05-05 工作记录](md/2026-05-05.md)
-- [2026-05-04 工作记录](md/2026-05-04.md)
+- 主入口：
+  - [维护首页（单页总览）](md/MAINTAINER-HOME.md)
+  - [维护文档总览图](md/MAINTAINER-DOC-MAP.md)
+  - [维护入口索引](md/MAINTAINER-INDEX.md)
+  - [下一位维护者第一小时清单](md/MAINTAINER-FIRST-HOUR-CHECKLIST.md)
+  - [HANDOVER.md](HANDOVER.md)
+- 问题与状态：
+  - [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
+  - [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
+- 发布相关：
+  - [2026-05-06 发布交接](md/2026-05-06-RELEASE-HANDOFF.md)
+  - [发布 Runbook](md/RELEASE-RUNBOOK.md)
+- 历史工作记录：
+  - [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
+  - [2026-05-06 工作记录](md/2026-05-06.md)
+  - [2026-05-05 工作记录](md/2026-05-05.md)
+  - [2026-05-04 工作记录](md/2026-05-04.md)
 
+开发时常用的外部接口文档：
+
+- Dalamud 文档首页：<https://dalamud.dev/>
+- Dalamud API 参考：<https://dalamud.dev/api/>
+- Lumina.Excel 仓库：<https://github.com/NotAdam/Lumina.Excel>
+
+适用场景补充：
+
+- 查 `PluginService`、窗口/UI、命令、状态、`IDataManager` 等接口时，优先看 Dalamud 文档 / API。
+- 查 `GetExcelSheet<T>()`、`ExcelSheet<T>`、`Lumina.Excel.Sheets.*` 等表数据读取时，优先看 `Lumina.Excel`。
+
+<a id="readme-build"></a>
 ## 构建状态
 
 当前工作区最近一次已验证构建命令：
 
 ```powershell
-dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Debug
+dotnet build E:\git\DalamudACT\DalamudACT.sln
 ```
 
 最近一次结果：
@@ -256,8 +328,3 @@ dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Debug
 产物位置：
 
 - `E:\git\DalamudACT\output\DalamudACT.dll`
-## Handoff / 交接入口
-
-- [HANDOVER.md](HANDOVER.md)
-- [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
-- [2026-05-06 Release Handoff](md/2026-05-06-RELEASE-HANDOFF.md)

@@ -2,18 +2,40 @@
 
 说明：
 
-- 当前包元数据版本为 `0.15.2.3`
+- 当前包元数据版本为 `0.15.2.7`
 - 未发布改动会先写在 `未发布` 部分
 - 更早的开发背景可继续查看：
   - `md/SESSION-HANDOFF.md`
   - `md/2026-05-05.md`
   - `md/2026-05-06.md`
 
-## 未发布
+## Unreleased
 
-- 暂无
+- release notes template now replaces the `{{VERSION}}` placeholder with the actual tag version during formal releases
+- repository release-notes template was refreshed to avoid reusing stale version text in future GitHub Releases
 
-Current metadata version: `0.15.2.5`
+Current metadata version: `0.15.2.7`
+
+## 0.15.2.7 - 2026-05-08
+
+### Floating stats table columns
+
+- fixed column-width persistence so widths are stored by semantic slot instead of current visual order
+- hiding a stats column now hides the entire column, not just cell content
+- the share column now stretches to fill remaining width after fixed columns are shown or hidden
+- enforced a `20px` minimum width for the deaths column
+
+### UI and interaction
+
+- settings window title now shows the loaded plugin assembly version
+- main window keeps version text visible for build verification during testing
+- historical record preview now supports automatic return to live DPS after the configured timeout
+
+### Release and maintenance
+
+- `0.15.2.7` formal tag release completed successfully
+- the `latest` build/release automation path was re-verified successfully
+- release-notes maintenance was improved so future formal releases do not reuse stale version bodies
 
 ## 0.15.2.5 - 2026-05-06
 

@@ -6,6 +6,13 @@ using Dalamud.Plugin;
 
 namespace DalamudACT;
 
+/// <summary>
+/// Dalamud 服务注入与兼容访问层。
+/// 相关参考：
+/// - https://dalamud.dev/
+/// - https://dalamud.dev/api/
+/// 调整 PluginService、IDataManager、IClientState、IFramework 等接口前，先对照上述文档。
+/// </summary>
 public sealed class DalamudApi
 {
     public static void Initialize(IDalamudPluginInterface pluginInterface)

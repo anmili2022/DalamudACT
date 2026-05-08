@@ -11,6 +11,14 @@ using Action = Lumina.Excel.Sheets.Action;
 
 namespace DalamudACT;
 
+/// <summary>
+/// 插件主入口，负责 Dalamud 生命周期、Hook 安装和 Lumina 表数据读取。
+/// 相关参考：
+/// - https://dalamud.dev/
+/// - https://dalamud.dev/api/
+/// - https://github.com/NotAdam/Lumina.Excel
+/// 调整 Hook、IDataManager、GetExcelSheet&lt;T&gt;() 或 ExcelSheet&lt;T&gt; 相关逻辑前，先对照这些文档。
+/// </summary>
 public sealed class ACT : IDalamudPlugin
 {
     private const uint InvalidActorId = 0xE0000000;
@@ -33,6 +41,7 @@ public sealed class ACT : IDalamudPlugin
         this.pluginInterface = pluginInterface;
 
         DalamudApi.Initialize(pluginInterface);
+        // TerritoryType / Action 表通过 Dalamud 的 IDataManager 读取，底层 sheet API 由 Lumina.Excel 提供。
         territorySheet = DalamudApi.GameData.GetExcelSheet<TerritoryType>()!;
         actionSheet = DalamudApi.GameData.GetExcelSheet<Action>()!;
 

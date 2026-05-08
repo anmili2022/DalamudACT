@@ -5,6 +5,13 @@ using Dalamud.Interface.Windowing;
 
 namespace DalamudACT;
 
+/// <summary>
+/// 悬浮统计窗口封装，基于 Dalamud.Interface.Windowing.Window 管理悬浮面板大小、折叠态与活动页签。
+/// 相关参考：
+/// - https://dalamud.dev/
+/// - https://dalamud.dev/api/
+/// 调整 Window 生命周期、窗口标志、折叠行为或绘制入口前，先对照 Dalamud 文档。
+/// </summary>
 internal sealed class FloatingStatsWindow : Window
 {
     private const ImGuiWindowFlags BaseWindowFlags =

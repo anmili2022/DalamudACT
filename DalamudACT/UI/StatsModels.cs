@@ -86,6 +86,9 @@ internal sealed class Combatant
     [JsonPropertyName("ENCHPS")]
     public string? EncHpsText { get; set; }
 
+    [JsonPropertyName("healed-*")]
+    public string? HealedText { get; set; }
+
     [JsonPropertyName("DTPS")]
     public string? DtpsText { get; set; }
 

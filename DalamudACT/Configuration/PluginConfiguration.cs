@@ -46,10 +46,17 @@ public sealed class ThemeBarColorSetting
     }
 }
 
+/// <summary>
+/// 插件持久化配置对象，基于 Dalamud 的 IPluginConfiguration 保存窗口状态、统计显示项、配色与兼容迁移逻辑。
+/// 相关参考：
+/// - https://dalamud.dev/
+/// - https://dalamud.dev/api/
+/// 调整配置字段、版本迁移或 Save/Initialize 流程前，先对照 Dalamud 文档。
+/// </summary>
 [Serializable]
 public sealed class PluginConfiguration : IPluginConfiguration
 {
-    public int Version { get; set; } = 15;
+    public int Version { get; set; } = 23;
 
     public float WindowOpacity = 0.92f;
     public float FloatingStatsOpacity = 0.72f;
@@ -57,19 +64,37 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public bool LockFloatingStatsWindow = false;
     public CombatEndRule CombatEndRule = CombatEndRule.PartyList;
     public int EncounterTimeoutSeconds = 30;
+    public int HistoryPreviewSeconds = 8;
 
     public bool ShowDpsTab = true;
     public bool ShowHpsTab = true;
     public bool ShowTakenTab = true;
     public bool ShowOverviewTab = true;
     public bool ShowHistoryTab = true;
+    public bool ShowDpsPlayerColumn = true;
     public bool ShowDpsJobColumn = true;
     public bool ShowDpsDamageColumn = true;
     public bool ShowDpsValueColumn = true;
     public bool ShowDpsDeathsColumn = true;
+    public bool ShowHpsPlayerColumn = true;
+    public bool ShowHpsJobColumn = true;
+    public bool ShowHpsHealColumn = true;
+    public bool ShowHpsValueColumn = true;
+    public bool ShowTakenPlayerColumn = true;
+    public bool ShowTakenJobColumn = true;
+    public bool ShowTakenDamageColumn = true;
+    public bool ShowTakenValueColumn = true;
     public int DpsVisibleCount = 8;
     public float FloatingStatsPlayerColumnMinWidth = 0f;
     public float FloatingStatsMetricColumnWidth = 88f;
+    public float FloatingStatsPlayerColumnWidth = 0f;
+    public float FloatingStatsJobColumnWidth = 0f;
+    public float FloatingStatsDamageColumnWidth = 0f;
+    public float FloatingStatsValueColumnWidth = 0f;
+    public float FloatingStatsDeathsColumnWidth = 0f;
+    public float HistoryStartTimeColumnWidth = 0f;
+    public float HistoryEndTimeColumnWidth = 0f;
+    public float HistoryDurationColumnWidth = 0f;
     public float FloatingStatsRowHeight = 0f;
 
     public StatsBarColorMode BarColorMode = StatsBarColorMode.Theme;
@@ -95,9 +120,20 @@ public sealed class PluginConfiguration : IPluginConfiguration
         WindowOpacity = Math.Clamp(WindowOpacity, 0.2f, 1f);
         FloatingStatsOpacity = Math.Clamp(FloatingStatsOpacity, 0f, 1f);
         EncounterTimeoutSeconds = Math.Clamp(EncounterTimeoutSeconds, 5, 180);
+        HistoryPreviewSeconds = Math.Clamp(HistoryPreviewSeconds <= 0 ? 8 : HistoryPreviewSeconds, 1, 30);
         DpsVisibleCount = Math.Clamp(DpsVisibleCount, 1, 24);
         FloatingStatsPlayerColumnMinWidth = Math.Clamp(FloatingStatsPlayerColumnMinWidth, 0f, 360f);
         FloatingStatsMetricColumnWidth = Math.Clamp(FloatingStatsMetricColumnWidth, 48f, 220f);
+        FloatingStatsPlayerColumnWidth = Math.Clamp(FloatingStatsPlayerColumnWidth, 0f, 2000f);
+        FloatingStatsJobColumnWidth = Math.Clamp(FloatingStatsJobColumnWidth, 0f, 2000f);
+        FloatingStatsDamageColumnWidth = Math.Clamp(FloatingStatsDamageColumnWidth, 0f, 2000f);
+        FloatingStatsValueColumnWidth = Math.Clamp(FloatingStatsValueColumnWidth, 0f, 2000f);
+        FloatingStatsDeathsColumnWidth = Math.Clamp(FloatingStatsDeathsColumnWidth, 0f, 2000f);
+        if (FloatingStatsDeathsColumnWidth > 0f && FloatingStatsDeathsColumnWidth < 20f)
+            FloatingStatsDeathsColumnWidth = 20f;
+        HistoryStartTimeColumnWidth = Math.Clamp(HistoryStartTimeColumnWidth, 0f, 2000f);
+        HistoryEndTimeColumnWidth = Math.Clamp(HistoryEndTimeColumnWidth, 0f, 2000f);
+        HistoryDurationColumnWidth = Math.Clamp(HistoryDurationColumnWidth, 0f, 2000f);
         FloatingStatsRowHeight = Math.Clamp(FloatingStatsRowHeight, 0f, 60f);
 
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
@@ -128,6 +164,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         if (Version < 6)
         {
+            ShowDpsPlayerColumn = true;
             ShowDpsJobColumn = true;
             ShowDpsDamageColumn = true;
             ShowDpsValueColumn = true;
@@ -142,6 +179,52 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         if (Version < 15)
             LockFloatingStatsWindow = false;
+
+        if (Version < 16)
+            HistoryPreviewSeconds = 8;
+
+        if (Version < 17)
+            ShowDpsPlayerColumn = true;
+
+        if (Version < 18)
+        {
+            ShowHpsPlayerColumn = true;
+            ShowHpsJobColumn = true;
+            ShowHpsValueColumn = true;
+            ShowTakenPlayerColumn = true;
+            ShowTakenJobColumn = true;
+            ShowTakenValueColumn = true;
+        }
+
+        if (Version < 19)
+            ShowTakenDamageColumn = true;
+
+        if (Version < 20)
+            ShowHpsHealColumn = true;
+
+        if (Version < 21)
+        {
+            ShowDpsPlayerColumn = ShowDpsPlayerColumn || ShowHpsPlayerColumn || ShowTakenPlayerColumn;
+            ShowDpsJobColumn = ShowDpsJobColumn || ShowHpsJobColumn || ShowTakenJobColumn;
+            ShowDpsDamageColumn = ShowDpsDamageColumn || ShowHpsHealColumn || ShowTakenDamageColumn;
+            ShowDpsValueColumn = ShowDpsValueColumn || ShowHpsValueColumn || ShowTakenValueColumn;
+        }
+
+        if (Version < 22)
+        {
+            FloatingStatsPlayerColumnWidth = 0f;
+            FloatingStatsJobColumnWidth = 0f;
+            FloatingStatsDamageColumnWidth = 0f;
+            FloatingStatsValueColumnWidth = 0f;
+            FloatingStatsDeathsColumnWidth = 0f;
+        }
+
+        if (Version < 23)
+        {
+            HistoryStartTimeColumnWidth = 0f;
+            HistoryEndTimeColumnWidth = 0f;
+            HistoryDurationColumnWidth = 0f;
+        }
 
         if (Version < 11)
             DpsVisibleCount = 8;
@@ -168,10 +251,11 @@ public sealed class PluginConfiguration : IPluginConfiguration
         if (Version < 10)
             MigrateThemeBarColorsToSkylineDefaults();
 
+        SyncSharedColumnSettings();
         EnsureThemeBarColors();
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = 15;
+        Version = Math.Max(Version, 23);
     }
 
     public bool HasAnyVisibleStatsTab()
@@ -222,18 +306,36 @@ public sealed class PluginConfiguration : IPluginConfiguration
         ShowDemoPanel = true;
         CombatEndRule = CombatEndRule.PartyList;
         EncounterTimeoutSeconds = 30;
+        HistoryPreviewSeconds = 8;
         ShowDpsTab = true;
         ShowHpsTab = true;
         ShowTakenTab = true;
         ShowOverviewTab = true;
         ShowHistoryTab = true;
+        ShowDpsPlayerColumn = true;
         ShowDpsJobColumn = true;
         ShowDpsDamageColumn = true;
         ShowDpsValueColumn = true;
         ShowDpsDeathsColumn = true;
+        ShowHpsPlayerColumn = true;
+        ShowHpsJobColumn = true;
+        ShowHpsHealColumn = true;
+        ShowHpsValueColumn = true;
+        ShowTakenPlayerColumn = true;
+        ShowTakenJobColumn = true;
+        ShowTakenDamageColumn = true;
+        ShowTakenValueColumn = true;
         DpsVisibleCount = 8;
         FloatingStatsPlayerColumnMinWidth = 0f;
         FloatingStatsMetricColumnWidth = 88f;
+        FloatingStatsPlayerColumnWidth = 0f;
+        FloatingStatsJobColumnWidth = 0f;
+        FloatingStatsDamageColumnWidth = 0f;
+        FloatingStatsValueColumnWidth = 0f;
+        FloatingStatsDeathsColumnWidth = 0f;
+        HistoryStartTimeColumnWidth = 0f;
+        HistoryEndTimeColumnWidth = 0f;
+        HistoryDurationColumnWidth = 0f;
         FloatingStatsRowHeight = 0f;
         BarColorMode = StatsBarColorMode.Theme;
         SingleBarColorR = 0.25f;
@@ -244,6 +346,37 @@ public sealed class PluginConfiguration : IPluginConfiguration
     }
 
     public void Save() => pluginInterface?.SavePluginConfig(this);
+
+    public void SyncSharedColumnSettings()
+    {
+        ShowHpsPlayerColumn = ShowDpsPlayerColumn;
+        ShowTakenPlayerColumn = ShowDpsPlayerColumn;
+
+        ShowHpsJobColumn = ShowDpsJobColumn;
+        ShowTakenJobColumn = ShowDpsJobColumn;
+
+        ShowHpsHealColumn = ShowDpsDamageColumn;
+        ShowTakenDamageColumn = ShowDpsDamageColumn;
+
+        ShowHpsValueColumn = ShowDpsValueColumn;
+        ShowTakenValueColumn = ShowDpsValueColumn;
+    }
+
+    public void ResetSharedMetricColumnWidths()
+    {
+        FloatingStatsPlayerColumnWidth = 0f;
+        FloatingStatsJobColumnWidth = 0f;
+        FloatingStatsDamageColumnWidth = 0f;
+        FloatingStatsValueColumnWidth = 0f;
+        FloatingStatsDeathsColumnWidth = 0f;
+    }
+
+    public void ResetHistoryColumnWidths()
+    {
+        HistoryStartTimeColumnWidth = 0f;
+        HistoryEndTimeColumnWidth = 0f;
+        HistoryDurationColumnWidth = 0f;
+    }
 
     private void EnsureThemeBarColors()
     {

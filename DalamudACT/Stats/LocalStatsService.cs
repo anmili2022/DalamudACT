@@ -11,6 +11,13 @@ using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace DalamudACT;
 
+/// <summary>
+/// 本地战斗统计核心，负责跟踪队伍成员、聚合伤害/治疗/承伤、生成历史记录和历史预览。
+/// 相关参考：
+/// - https://dalamud.dev/
+/// - https://dalamud.dev/api/
+/// 调整 ObjectTable、PartyList、BuddyList、BattleChara / GameObject 相关访问逻辑前，先对照 Dalamud 文档。
+/// </summary>
 internal sealed class LocalStatsService
 {
     private const uint InvalidActorId = 0xE0000000;
@@ -34,6 +41,8 @@ internal sealed class LocalStatsService
     private DateTime partyOutOfCombatSinceUtc;
     private int encounterFinalizedVersion;
     private int selectedHistoricalRecordIndex = -1;
+    private DateTime? historicalPreviewExpiresAtUtc;
+    private bool latestInCombatHint;
 
     public LocalStatsService(PluginConfiguration config)
     {
@@ -95,7 +104,7 @@ internal sealed class LocalStatsService
             partyMemberHpCache.Clear();
             CurrentCombatData = null;
             DisplayCombatData = null;
-            selectedHistoricalRecordIndex = -1;
+            ClearHistoricalPreviewLocked();
             currentEncounter = new EncounterSession();
             partyOutOfCombatSinceUtc = default;
             HistoryTransferStatusText = string.Empty;
@@ -120,7 +129,7 @@ internal sealed class LocalStatsService
             partyMemberHpCache.Clear();
             CurrentCombatData = firstSnapshot;
             DisplayCombatData = firstSnapshot;
-            selectedHistoricalRecordIndex = -1;
+            ClearHistoricalPreviewLocked();
             currentEncounter = new EncounterSession
             {
                 ZoneName = CurrentCombatData.Msg?.Encounter?.CurrentZoneName ?? "零式测试场",
@@ -132,17 +141,79 @@ internal sealed class LocalStatsService
     }
 
     public bool LoadHistoricalRecord(int index)
+        => PreviewHistoricalRecord(index);
+
+    public bool PreviewHistoricalRecord(int index)
     {
+        var nowUtc = DateTime.UtcNow;
         lock (gate)
         {
-            if ((uint)index >= (uint)historicalRecords.Count)
-                return false;
-
-            selectedHistoricalRecordIndex = index;
-            DisplayCombatData = historicalRecords[index].Snapshot;
-            UpdateStatusText();
-            return true;
+            return PreviewHistoricalRecordLocked(index, nowUtc);
         }
+    }
+
+    private bool PreviewHistoricalRecordLocked(int index, DateTime nowUtc)
+    {
+        if ((uint)index >= (uint)historicalRecords.Count)
+            return false;
+
+        selectedHistoricalRecordIndex = index;
+        historicalPreviewExpiresAtUtc = ShouldHistoricalPreviewCountdownLocked()
+            ? nowUtc.AddSeconds(Math.Clamp(config.HistoryPreviewSeconds, 1, 30))
+            : null;
+        RefreshDisplayCombatDataLocked(nowUtc);
+        UpdateStatusText(nowUtc);
+        return true;
+    }
+
+    private void ClearHistoricalPreviewLocked()
+    {
+        selectedHistoricalRecordIndex = -1;
+        historicalPreviewExpiresAtUtc = null;
+    }
+
+    private bool HasSelectedHistoricalPreviewLocked()
+        => (uint)selectedHistoricalRecordIndex < (uint)historicalRecords.Count;
+
+    private bool ShouldHistoricalPreviewCountdownLocked()
+        => latestInCombatHint || currentEncounter.Started;
+
+    private void EnsureHistoricalPreviewCountdownStartedLocked(DateTime nowUtc)
+    {
+        if (!HasSelectedHistoricalPreviewLocked())
+            return;
+
+        if (historicalPreviewExpiresAtUtc.HasValue)
+            return;
+
+        if (!ShouldHistoricalPreviewCountdownLocked())
+            return;
+
+        historicalPreviewExpiresAtUtc = nowUtc.AddSeconds(Math.Clamp(config.HistoryPreviewSeconds, 1, 30));
+    }
+
+    private void RefreshDisplayCombatDataLocked(DateTime nowUtc)
+    {
+        if (HasSelectedHistoricalPreviewLocked())
+        {
+            if (!historicalPreviewExpiresAtUtc.HasValue || nowUtc < historicalPreviewExpiresAtUtc.Value)
+            {
+                DisplayCombatData = historicalRecords[selectedHistoricalRecordIndex].Snapshot;
+                return;
+            }
+
+            ClearHistoricalPreviewLocked();
+        }
+
+        DisplayCombatData = CurrentCombatData;
+    }
+
+    private int GetHistoricalPreviewRemainingSeconds(DateTime nowUtc)
+    {
+        if (!historicalPreviewExpiresAtUtc.HasValue)
+            return 0;
+
+        return Math.Max(0, (int)Math.Ceiling((historicalPreviewExpiresAtUtc.Value - nowUtc).TotalSeconds));
     }
 
     public void ExportHistoricalRecords()
@@ -171,7 +242,7 @@ internal sealed class LocalStatsService
                 File.WriteAllText(exportPath, json);
                 TrySelectLatestHistoricalRecord();
                 HistoryTransferStatusText = $"已导出 {historicalRecords.Count} 条历史记录到 {exportPath}";
-                UpdateStatusText();
+                UpdateStatusText(DateTime.UtcNow);
             }
             catch (Exception ex)
             {
@@ -216,12 +287,13 @@ internal sealed class LocalStatsService
                 if (importedCount > 0)
                     TrySelectLatestHistoricalRecord();
                 else
-                    selectedHistoricalRecordIndex = -1;
+                    ClearHistoricalPreviewLocked();
 
                 HistoryTransferStatusText = importedCount > 0
                     ? $"已导入 {importedCount} 条历史记录，已自动打开最新记录。"
                     : "导入完成，但没有可写入的历史记录。";
-                UpdateStatusText();
+                RefreshDisplayCombatDataLocked(DateTime.UtcNow);
+                UpdateStatusText(DateTime.UtcNow);
             }
             catch (Exception ex)
             {
@@ -350,6 +422,7 @@ internal sealed class LocalStatsService
 
         lock (gate)
         {
+            latestInCombatHint = inCombat;
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
             PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, inCombat);
             var allPartyMembersOutOfCombat = AreAllPartyMembersOutOfCombat(inCombat);
@@ -362,11 +435,11 @@ internal sealed class LocalStatsService
             else if (currentEncounter.Started)
             {
                 CurrentCombatData = ActxSnapshotFormatter.Build(currentEncounter, isActive: true);
-                DisplayCombatData = CurrentCombatData;
-                selectedHistoricalRecordIndex = -1;
             }
 
-            UpdateStatusText();
+            EnsureHistoricalPreviewCountdownStartedLocked(nowUtc);
+            RefreshDisplayCombatDataLocked(nowUtc);
+            UpdateStatusText(nowUtc);
         }
     }
 
@@ -466,8 +539,6 @@ internal sealed class LocalStatsService
         }
 
         CurrentCombatData = ActxSnapshotFormatter.Build(currentEncounter, isActive: false);
-        DisplayCombatData = CurrentCombatData;
-        selectedHistoricalRecordIndex = -1;
 
         var history = new HistoricalCombatData(
             currentEncounter.ZoneName,
@@ -939,18 +1010,24 @@ internal sealed class LocalStatsService
     private static string NormalizeZoneName(string? zoneName)
         => string.IsNullOrWhiteSpace(zoneName) ? "未知区域" : zoneName.Trim();
 
-    private void UpdateStatusText()
+    private void UpdateStatusText(DateTime nowUtc)
     {
-        if (currentEncounter.Started)
+        if (HasSelectedHistoricalPreviewLocked())
         {
-            StatusText = $"战斗中: {currentEncounter.ZoneName} {ActxSnapshotFormatter.FormatDuration(currentEncounter.DurationSeconds)}";
+            var selected = historicalRecords[selectedHistoricalRecordIndex];
+            if (historicalPreviewExpiresAtUtc.HasValue && nowUtc < historicalPreviewExpiresAtUtc.Value)
+            {
+                StatusText = $"预览历史记录: {selected.ZoneName} {selected.Duration}（剩余 {GetHistoricalPreviewRemainingSeconds(nowUtc)} 秒）";
+                return;
+            }
+
+            StatusText = $"预览历史记录: {selected.ZoneName} {selected.Duration}（未进入战斗，预览无限）";
             return;
         }
 
-        if ((uint)selectedHistoricalRecordIndex < (uint)historicalRecords.Count)
+        if (currentEncounter.Started)
         {
-            var selected = historicalRecords[selectedHistoricalRecordIndex];
-            StatusText = $"查看历史记录: {selected.ZoneName} {selected.Duration}";
+            StatusText = $"战斗中: {currentEncounter.ZoneName} {ActxSnapshotFormatter.FormatDuration(currentEncounter.DurationSeconds)}";
             return;
         }
 
@@ -998,9 +1075,7 @@ internal sealed class LocalStatsService
         if (historicalRecords.Count == 0)
             return false;
 
-        selectedHistoricalRecordIndex = historicalRecords.Count - 1;
-        DisplayCombatData = historicalRecords[selectedHistoricalRecordIndex].Snapshot;
-        return true;
+        return PreviewHistoricalRecordLocked(historicalRecords.Count - 1, DateTime.UtcNow);
     }
 
     private void SortHistoricalRecords()
@@ -1539,6 +1614,8 @@ internal sealed class LocalStatsService
         string damageTakenText,
         Dictionary<string, Combatant> combatants)
     {
+        PopulateDerivedTestCombatantMetrics(combatants, durationText);
+
         return new CombatDataWrapper
         {
             Type = "broadcast",
@@ -1566,6 +1643,42 @@ internal sealed class LocalStatsService
         };
     }
 
+    private static void PopulateDerivedTestCombatantMetrics(
+        Dictionary<string, Combatant> combatants,
+        string durationText)
+    {
+        var durationSeconds = ParseDurationTextToSeconds(durationText);
+        if (durationSeconds <= 0d)
+            return;
+
+        foreach (var combatant in combatants.Values)
+        {
+            if (!string.IsNullOrWhiteSpace(combatant.HealedText))
+                continue;
+
+            if (!double.TryParse(combatant.EncHpsText, NumberStyles.Float, CultureInfo.InvariantCulture, out var hps)
+                || hps <= 0d)
+            {
+                continue;
+            }
+
+            var totalHealed = (long)Math.Round(hps * durationSeconds, MidpointRounding.AwayFromZero);
+            combatant.HealedText = CreateDamageString(totalHealed, useSuffix: true, useDecimals: true);
+        }
+    }
+
+    private static double ParseDurationTextToSeconds(string? durationText)
+    {
+        if (string.IsNullOrWhiteSpace(durationText))
+            return 0d;
+
+        return TimeSpan.TryParseExact(durationText, @"mm\:ss", CultureInfo.InvariantCulture, out var mmss)
+            ? mmss.TotalSeconds
+            : TimeSpan.TryParseExact(durationText, @"hh\:mm\:ss", CultureInfo.InvariantCulture, out var hhmmss)
+                ? hhmmss.TotalSeconds
+                : 0d;
+    }
+
     private static Combatant CreateTestCombatant(
         string name,
         string job,
@@ -1579,7 +1692,8 @@ internal sealed class LocalStatsService
         string critHitsText,
         string toHitText,
         string damageTakenText,
-        string deathsText)
+        string deathsText,
+        string? healedText = null)
     {
         return new Combatant
         {
@@ -1589,6 +1703,7 @@ internal sealed class LocalStatsService
             DamageText = damageText,
             EncDpsText = encDpsText,
             EncHpsText = encHpsText,
+            HealedText = healedText,
             DtpsText = dtpsText,
             MaxHitText = maxHitText,
             HitsText = hitsText,
@@ -1912,6 +2027,7 @@ internal sealed class LocalStatsService
                     DamageText = CreateDamageString(combatant.Damage, useSuffix: true, useDecimals: true),
                     EncDpsText = encDps.ToString("0", CultureInfo.InvariantCulture),
                     EncHpsText = encHps.ToString("0", CultureInfo.InvariantCulture),
+                    HealedText = CreateDamageString(combatant.Healed, useSuffix: true, useDecimals: true),
                     DtpsText = dtps.ToString("0", CultureInfo.InvariantCulture),
                     MaxHitText = combatant.MaxHitValue > 0
                         ? $"{SafeActionName(combatant.MaxHitActionName)}-{CreateDamageString(combatant.MaxHitValue, useSuffix: true, useDecimals: true)}"
@@ -1969,29 +2085,30 @@ internal sealed class LocalStatsService
         private static string SafeActionName(string? actionName)
             => string.IsNullOrWhiteSpace(actionName) ? "未知技能" : actionName;
 
-        private static string CreateDamageString(long damage, bool useSuffix, bool useDecimals)
-        {
-            const long trillion = 1_000_000_000_000L;
-            const long hundredMillion = 100_000_000L;
-            const long tenThousand = 10_000L;
-
-            if (!useSuffix)
-                return damage.ToString(CultureInfo.InvariantCulture);
-
-            var abs = Math.Abs(damage);
-            if (abs >= trillion)
-                return FormatChineseDamageUnit(damage, trillion, "兆", useDecimals ? "0.00" : "0.#");
-
-            if (abs >= hundredMillion)
-                return FormatChineseDamageUnit(damage, hundredMillion, "亿", useDecimals ? "0.00" : "0.#");
-
-            if (abs >= tenThousand)
-                return FormatChineseDamageUnit(damage, tenThousand, "万", useDecimals ? "0.00" : "0.#");
-
-            return damage.ToString(CultureInfo.InvariantCulture);
-        }
-
-        private static string FormatChineseDamageUnit(long value, long unitBase, string unit, string numericFormat)
-            => (value / (double)unitBase).ToString(numericFormat, CultureInfo.InvariantCulture) + unit;
     }
+
+    private static string CreateDamageString(long damage, bool useSuffix, bool useDecimals)
+    {
+        const long trillion = 1_000_000_000_000L;
+        const long hundredMillion = 100_000_000L;
+        const long tenThousand = 10_000L;
+
+        if (!useSuffix)
+            return damage.ToString(CultureInfo.InvariantCulture);
+
+        var abs = Math.Abs(damage);
+        if (abs >= trillion)
+            return FormatChineseDamageUnit(damage, trillion, "兆", useDecimals ? "0.00" : "0.#");
+
+        if (abs >= hundredMillion)
+            return FormatChineseDamageUnit(damage, hundredMillion, "亿", useDecimals ? "0.00" : "0.#");
+
+        if (abs >= tenThousand)
+            return FormatChineseDamageUnit(damage, tenThousand, "万", useDecimals ? "0.00" : "0.#");
+
+        return damage.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private static string FormatChineseDamageUnit(long value, long unitBase, string unit, string numericFormat)
+        => (value / (double)unitBase).ToString(numericFormat, CultureInfo.InvariantCulture) + unit;
 }

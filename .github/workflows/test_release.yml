@@ -80,7 +80,7 @@ jobs:
             -DestinationPath ${{ env.REPO_NAME }}.zip `
             -Force
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           path: |
             ./output/DalamudACT.dll

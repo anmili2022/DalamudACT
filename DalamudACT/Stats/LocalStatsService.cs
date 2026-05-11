@@ -7,6 +7,7 @@ using System.Text.Json;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 
 namespace DalamudACT;
 
@@ -2758,8 +2759,7 @@ internal sealed class LocalStatsService
 
     private static TrackedActorKind ResolvePartyMemberTrackedActorKind(Dalamud.Game.ClientState.Party.IPartyMember member, IGameObject? gameObject)
     {
-        var objectKind = gameObject?.ObjectKind;
-        if (objectKind == ObjectKind.Player)
+        if (gameObject is IPlayerCharacter)
             return TrackedActorKind.Player;
 
         var name = member.Name.TextValue?.Trim();
@@ -2773,7 +2773,7 @@ internal sealed class LocalStatsService
         return gameObject switch
         {
             null => TrackedActorKind.Unknown,
-            { ObjectKind: ObjectKind.Player } => TrackedActorKind.Player,
+            IPlayerCharacter => TrackedActorKind.Player,
             IBattleNpc battleNpc => (battleNpc.StatusFlags & StatusFlags.Hostile) != 0
                 ? TrackedActorKind.HostileNpc
                 : TrackedActorKind.FriendlyNpc,

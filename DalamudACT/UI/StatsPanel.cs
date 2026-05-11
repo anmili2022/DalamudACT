@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 
 namespace DalamudACT;
@@ -990,7 +991,7 @@ internal static class StatsPanel
         if (gameObject == null)
             return FloatingCombatantKind.Unknown;
 
-        if (gameObject.ObjectKind == ObjectKind.Player)
+        if (gameObject is IPlayerCharacter)
             return FloatingCombatantKind.Player;
 
         if (gameObject is not IBattleNpc battleNpc)

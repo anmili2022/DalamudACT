@@ -26,6 +26,7 @@ public sealed class DalamudApi
     [PluginService] public static Dalamud.Plugin.Services.IGameInteropProvider Interop { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IObjectTable ObjectTable { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IPluginLog Log { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.IChatGui ChatGui { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IPartyList PartyList { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IBuddyList BuddyList { get; private set; } = null!;
 
@@ -34,7 +35,7 @@ public sealed class DalamudApi
 
     public static string? GetLocalPlayerName()
     {
-        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        var localPlayer = GetLocalPlayerObject();
         var name = GetPropertyValue(localPlayer, "Name");
 
         return GetPropertyValue(name, "TextValue") as string
@@ -43,18 +44,21 @@ public sealed class DalamudApi
 
     public static ulong GetLocalPlayerGameObjectId()
     {
-        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        var localPlayer = GetLocalPlayerObject();
         return TryGetUInt64Property(localPlayer, "GameObjectId");
     }
 
     public static uint GetLocalPlayerEntityId()
     {
-        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        var localPlayer = GetLocalPlayerObject();
         return TryGetUInt32Property(localPlayer, "EntityId");
     }
 
     public static uint GetLocalPlayerObjectId()
-        => GetLocalPlayerEntityId();
+    {
+        var localPlayer = GetLocalPlayerObject();
+        return TryGetUInt32Property(localPlayer, "ObjectId", "EntityId");
+    }
 
     public static uint GetLocalPlayerActorId()
     {
@@ -71,9 +75,24 @@ public sealed class DalamudApi
 
     public static uint GetLocalPlayerClassJobId()
     {
-        var localPlayer = GetPropertyValue(ClientState, "LocalPlayer");
+        var localPlayer = GetLocalPlayerObject();
         var classJob = GetPropertyValue(localPlayer, "ClassJob");
         return TryGetUInt32Property(classJob, "RowId");
+    }
+
+    public static uint GetLocalPlayerMaxHp()
+    {
+        var localPlayer = GetLocalPlayerObject();
+        return TryGetUInt32Property(localPlayer, "MaxHp");
+    }
+
+    private static object? GetLocalPlayerObject()
+    {
+        var objectTableLocalPlayer = GetPropertyValue(ObjectTable, "LocalPlayer");
+        if (objectTableLocalPlayer != null)
+            return objectTableLocalPlayer;
+
+        return GetPropertyValue(ClientState, "LocalPlayer");
     }
 
     private static uint TryGetUInt32Property(object? instance, params string[] propertyNames)

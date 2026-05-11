@@ -4,8 +4,8 @@
         "Name": "DPS统计",
         "Description": "一个基于本地 ACTX 风格统计口径的 Dalamud 战斗统计插件，直接在游戏内显示队伍 DPS、HPS、承伤、概览和战斗历史，不依赖外部网页面板。\nLocal ACTX-style combat meter for Dalamud. Displays party DPS, HPS, damage taken, overview summaries, and encounter history directly in game without relying on an external web overlay.",
         "InternalName": "DalamudACT",
-        "AssemblyVersion": "0.15.2.8",
-        "TestingAssemblyVersion": "0.15.2.8",
+        "AssemblyVersion": "0.15.2.9",
+        "TestingAssemblyVersion": "0.15.2.9",
         "RepoUrl": "https://github.com/anmili2022/DalamudACT",
         "ApplicableVersion": "any",
         "DalamudApiLevel": 15,
@@ -19,10 +19,10 @@
         ],
         "IsHide": false,
         "IsTestingExclusive": false,
-        "DownloadLinkInstall": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.8/DalamudACT.zip",
-        "DownloadLinkTesting": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.8/DalamudACT.zip",
-        "DownloadLinkUpdate": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.8/DalamudACT.zip",
+        "DownloadLinkInstall": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.9/DalamudACT.zip",
+        "DownloadLinkTesting": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.9/DalamudACT.zip",
+        "DownloadLinkUpdate": "https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.9/DalamudACT.zip",
         "DownloadCount": 0,
-        "LastUpdated": "1778260549"
+        "LastUpdated": "1778519142"
     }
 ]

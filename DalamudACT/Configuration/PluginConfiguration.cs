@@ -19,6 +19,14 @@ public enum CombatEndRule
     PartyListWithDelay = 1,
 }
 
+public enum FloatingStatsParticipantDisplayMode
+{
+    Auto = 0,
+    PlayersOnly = 1,
+    PlayersAndFriendlyNpc = 2,
+    PlayersAndHostileNpc = 3,
+}
+
 [Serializable]
 public sealed class ThemeBarColorSetting
 {
@@ -56,15 +64,20 @@ public sealed class ThemeBarColorSetting
 [Serializable]
 public sealed class PluginConfiguration : IPluginConfiguration
 {
-    public int Version { get; set; } = 23;
+    public int Version { get; set; } = 28;
 
     public float WindowOpacity = 0.92f;
     public float FloatingStatsOpacity = 0.72f;
     public bool ShowStatsPanel = true;
     public bool LockFloatingStatsWindow = false;
+    public FloatingStatsParticipantDisplayMode FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
+    public int HostileNpcMinHpMultiplier = 10;
+    public bool HighlightNpcRows = true;
     public CombatEndRule CombatEndRule = CombatEndRule.PartyList;
     public int EncounterTimeoutSeconds = 30;
     public int HistoryPreviewSeconds = 8;
+    public int CombatTimelineMaxEntries = 500;
+    public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
 
     public bool ShowDpsTab = true;
     public bool ShowHpsTab = true;
@@ -121,6 +134,9 @@ public sealed class PluginConfiguration : IPluginConfiguration
         FloatingStatsOpacity = Math.Clamp(FloatingStatsOpacity, 0f, 1f);
         EncounterTimeoutSeconds = Math.Clamp(EncounterTimeoutSeconds, 5, 180);
         HistoryPreviewSeconds = Math.Clamp(HistoryPreviewSeconds <= 0 ? 8 : HistoryPreviewSeconds, 1, 30);
+        CombatTimelineMaxEntries = CombatTimelineMaxEntries < 0
+            ? 500
+            : Math.Clamp(CombatTimelineMaxEntries, 0, 50000);
         DpsVisibleCount = Math.Clamp(DpsVisibleCount, 1, 24);
         FloatingStatsPlayerColumnMinWidth = Math.Clamp(FloatingStatsPlayerColumnMinWidth, 0f, 360f);
         FloatingStatsMetricColumnWidth = Math.Clamp(FloatingStatsMetricColumnWidth, 48f, 220f);
@@ -138,6 +154,11 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
             CombatEndRule = CombatEndRule.PartyList;
+
+        if (!Enum.IsDefined(typeof(FloatingStatsParticipantDisplayMode), FloatingStatsParticipantDisplayMode))
+            FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
+
+        HostileNpcMinHpMultiplier = Math.Clamp(HostileNpcMinHpMultiplier <= 0 ? 10 : HostileNpcMinHpMultiplier, 1, 100);
 
         SingleBarColorR = Math.Clamp(SingleBarColorR, 0f, 1f);
         SingleBarColorG = Math.Clamp(SingleBarColorG, 0f, 1f);
@@ -226,6 +247,24 @@ public sealed class PluginConfiguration : IPluginConfiguration
             HistoryDurationColumnWidth = 0f;
         }
 
+        if (Version < 24)
+            EnableDebugLog = LogHelper.DefaultEnableDebugLog;
+
+        if (Version < 25)
+            CombatTimelineMaxEntries = 500;
+
+        if (Version < 26)
+            FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
+
+        if (Version < 27 && !Enum.IsDefined(typeof(FloatingStatsParticipantDisplayMode), FloatingStatsParticipantDisplayMode))
+            FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
+
+        if (Version < 28)
+        {
+            HostileNpcMinHpMultiplier = 10;
+            HighlightNpcRows = true;
+        }
+
         if (Version < 11)
             DpsVisibleCount = 8;
 
@@ -253,9 +292,10 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         SyncSharedColumnSettings();
         EnsureThemeBarColors();
+        LogHelper.EnableDebugLog = EnableDebugLog;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 23);
+        Version = Math.Max(Version, 28);
     }
 
     public bool HasAnyVisibleStatsTab()
@@ -303,10 +343,15 @@ public sealed class PluginConfiguration : IPluginConfiguration
         FloatingStatsOpacity = 0.72f;
         ShowStatsPanel = true;
         LockFloatingStatsWindow = false;
+        FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
+        HostileNpcMinHpMultiplier = 10;
+        HighlightNpcRows = true;
         ShowDemoPanel = true;
         CombatEndRule = CombatEndRule.PartyList;
         EncounterTimeoutSeconds = 30;
         HistoryPreviewSeconds = 8;
+        CombatTimelineMaxEntries = 500;
+        EnableDebugLog = LogHelper.DefaultEnableDebugLog;
         ShowDpsTab = true;
         ShowHpsTab = true;
         ShowTakenTab = true;
@@ -343,6 +388,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         SingleBarColorB = 1f;
         SingleBarColorA = 0.9f;
         ResetThemeBarColors();
+        LogHelper.EnableDebugLog = EnableDebugLog;
     }
 
     public void Save() => pluginInterface?.SavePluginConfig(this);

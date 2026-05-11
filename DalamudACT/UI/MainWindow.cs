@@ -8,7 +8,8 @@ namespace DalamudACT;
 
 internal sealed class MainWindow : Window
 {
-    private static readonly string PluginVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString() ?? "unknown";
+    private static readonly string PluginVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString() ?? "未知版本";
+    private const int MaxRecentSummaryItems = 4;
     private const ImGuiTableFlags SummaryTableFlags =
         ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoSavedSettings;
 
@@ -16,19 +17,22 @@ internal sealed class MainWindow : Window
     private readonly LocalStatsService statsService;
     private readonly Action openSettings;
     private readonly Action toggleFloatingStatsPanel;
+    private readonly Action openCombatTimelineWindow;
 
     public MainWindow(
         PluginConfiguration config,
         LocalStatsService statsService,
         Action openSettings,
-        Action toggleFloatingStatsPanel)
+        Action toggleFloatingStatsPanel,
+        Action openCombatTimelineWindow)
         : base("DPS统计", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         this.config = config;
         this.statsService = statsService;
         this.openSettings = openSettings;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
-        Size = new Vector2(640f, 460f);
+        this.openCombatTimelineWindow = openCombatTimelineWindow;
+        Size = new Vector2(640f, 600f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
 
@@ -46,8 +50,8 @@ internal sealed class MainWindow : Window
         DrawCard(
             "##main_quick_actions_card",
             "快速操作",
-            "常用入口集中在这里，可快速打开设置页或显示/隐藏悬浮统计面板。",
-            5.8f,
+            "常用入口集中在这里，可快速打开设置页、战斗流水窗口，或显示/隐藏悬浮统计面板。",
+            6.6f,
             DrawQuickActions);
 
         ImGui.Spacing();
@@ -57,6 +61,14 @@ internal sealed class MainWindow : Window
             "查看当前本地统计的数据来源、插件状态和战斗结束判定。",
             8.8f,
             DrawRuntimeSummary);
+
+        ImGui.Spacing();
+        DrawCard(
+            "##main_recent_status_card",
+            "最近状态摘要",
+            "快速查看最近几条信息 / 警告 / 错误日志，无需切到设置页即可了解刚发生的操作与异常。",
+            8.2f,
+            DrawRecentStatusSummary);
 
         ImGui.Spacing();
         DrawCard(
@@ -73,7 +85,7 @@ internal sealed class MainWindow : Window
             ImGuiTableFlags.SizingStretchSame
             | ImGuiTableFlags.NoSavedSettings;
 
-        if (ImGui.BeginTable("##main_action_grid", 2, flags))
+        if (ImGui.BeginTable("##main_action_grid", 3, flags))
         {
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
@@ -81,6 +93,10 @@ internal sealed class MainWindow : Window
                 openSettings();
 
             ImGui.TableSetColumnIndex(1);
+            if (ImGui.Button("打开战斗流水", new Vector2(-1f, 0f)))
+                openCombatTimelineWindow();
+
+            ImGui.TableSetColumnIndex(2);
             if (ImGui.Button(GetFloatingStatsButtonLabel(), new Vector2(-1f, 0f)))
                 toggleFloatingStatsPanel();
 
@@ -100,6 +116,7 @@ internal sealed class MainWindow : Window
         DrawRow("统计来源", statsService.DataSourceText);
         DrawRow("战斗结束判定", BuildCombatEndSummary(config));
         DrawRow("悬浮面板", BuildFloatingPanelSummary(config));
+        DrawRow("悬浮对象", BuildFloatingParticipantSummary(config));
         DrawRow("当前状态", statsService.StatusText);
         ImGui.EndTable();
     }
@@ -116,6 +133,13 @@ internal sealed class MainWindow : Window
         DrawRow("统计页列宽记忆", BuildMetricWidthSummary(config));
         DrawRow("历史页列宽记忆", BuildHistoryWidthSummary(config));
         ImGui.EndTable();
+    }
+
+    private void DrawRecentStatusSummary()
+    {
+        LogUiHelper.DrawRecentLogToolbar();
+        ImGui.Spacing();
+        LogUiHelper.DrawRecentLogList(MaxRecentSummaryItems);
     }
 
     private void DrawCard(string id, string title, string description, float heightInLines, Action drawContent)
@@ -181,6 +205,20 @@ internal sealed class MainWindow : Window
         var visibleText = config.ShowStatsPanel ? "已开启" : "已关闭";
         var lockText = config.LockFloatingStatsWindow ? "已锁定" : "可拖动";
         return $"{visibleText} / {lockText}";
+    }
+
+    private static string BuildFloatingParticipantSummary(PluginConfiguration config)
+    {
+        var modeText = config.FloatingStatsParticipantDisplayMode switch
+        {
+            FloatingStatsParticipantDisplayMode.PlayersOnly => "仅玩家",
+            FloatingStatsParticipantDisplayMode.PlayersAndFriendlyNpc => "玩家 + 友方 NPC",
+            FloatingStatsParticipantDisplayMode.PlayersAndHostileNpc => "玩家 + 敌方 NPC",
+            _ => "智能（多人仅玩家 / 单人可含友方 NPC）",
+        };
+
+        var highlightText = config.HighlightNpcRows ? "NPC高亮开" : "NPC高亮关";
+        return $"{modeText} / 门槛 {config.HostileNpcMinHpMultiplier}x / {highlightText}";
     }
 
     private static string BuildColumnSummary(PluginConfiguration config)

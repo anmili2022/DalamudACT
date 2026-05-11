@@ -14,23 +14,26 @@ namespace DalamudACT;
 /// </summary>
 internal sealed class SettingsWindow : Window
 {
-    private static readonly string PluginVersion = typeof(SettingsWindow).Assembly.GetName().Version?.ToString() ?? "unknown";
+    private static readonly string PluginVersion = typeof(SettingsWindow).Assembly.GetName().Version?.ToString() ?? "未知版本";
     private readonly PluginConfiguration config;
     private readonly LocalStatsService statsService;
     private readonly Action openMainWindow;
     private readonly Action toggleFloatingStatsPanel;
+    private readonly Action openCombatTimelineWindow;
 
     public SettingsWindow(
         PluginConfiguration config,
         LocalStatsService statsService,
         Action openMainWindow,
-        Action toggleFloatingStatsPanel)
+        Action toggleFloatingStatsPanel,
+        Action openCombatTimelineWindow)
         : base($"DPS统计 设置 v{PluginVersion}###SettingsWindow")
     {
         this.config = config;
         this.statsService = statsService;
         this.openMainWindow = openMainWindow;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
+        this.openCombatTimelineWindow = openCombatTimelineWindow;
         Size = new Vector2(620f, 760f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
@@ -48,6 +51,10 @@ internal sealed class SettingsWindow : Window
         ImGui.SameLine();
         if (ImGui.Button(GetFloatingStatsButtonLabel()))
             toggleFloatingStatsPanel();
+
+        ImGui.SameLine();
+        if (ImGui.Button("打开战斗流水"))
+            openCombatTimelineWindow();
 
         ImGui.Spacing();
 
@@ -196,6 +203,14 @@ internal sealed class SettingsWindow : Window
 
                 ImGui.TextDisabled("玩家列最小宽度和表格行高设置为 0 时会使用自动值。");
             });
+
+        ImGui.Spacing();
+        DrawSettingCard(
+            "##floating_participant_card",
+            "悬浮对象显示",
+            "控制悬浮窗统计列表中显示玩家、友方 NPC 与敌方 NPC 的组合。",
+            11.6f,
+            DrawFloatingParticipantModeSection);
     }
 
     private void DrawColumnsSection()
@@ -347,6 +362,14 @@ internal sealed class SettingsWindow : Window
 
         ImGui.Spacing();
         DrawSettingCard(
+            "##maintenance_logging_card",
+            "日志与调试",
+            "控制是否输出调试（Debug）/详细（Verbose）级别日志，便于排查问题；普通信息 / 警告 / 错误日志不受影响。",
+            16.8f,
+            DrawLoggingSection);
+
+        ImGui.Spacing();
+        DrawSettingCard(
             "##maintenance_status_card",
             "历史预览与状态",
             "控制历史记录预览时长，并查看当前历史文件路径、数据源和插件状态信息。",
@@ -369,6 +392,29 @@ internal sealed class SettingsWindow : Window
                 ImGui.TextDisabled(statsService.DataSourceText);
                 ImGui.TextDisabled(statsService.StatusText);
             });
+    }
+
+    private void DrawLoggingSection()
+    {
+        var enableDebugLog = config.EnableDebugLog;
+        if (ImGui.Checkbox("启用调试日志", ref enableDebugLog))
+        {
+            config.EnableDebugLog = enableDebugLog;
+            LogHelper.EnableDebugLog = enableDebugLog;
+            config.Save();
+            LogHelper.Info("设置", enableDebugLog ? "已从设置中启用调试日志。" : "已从设置中关闭调试日志。");
+        }
+
+        ImGui.TextDisabled("开启后，会把调试（Debug）与详细（Verbose）日志写入 Dalamud 插件日志。");
+        ImGui.TextDisabled($"当前状态：{(config.EnableDebugLog ? "已开启" : "已关闭")}");
+
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.TextUnformatted("最近日志摘要");
+
+        ImGui.SameLine();
+        LogUiHelper.DrawRecentLogToolbar();
+        LogUiHelper.DrawRecentLogList();
     }
 
     private string GetFloatingStatsButtonLabel()
@@ -489,6 +535,7 @@ internal sealed class SettingsWindow : Window
             StatsPanel.RequestMetricColumnWidthReset();
             StatsPanel.RequestHistoryColumnWidthReset();
             config.Save();
+            LogHelper.PrintWithModule("设置", "恢复默认", "已恢复插件默认配置，并重置统计页与历史页列宽记忆。");
         }
         ImGui.TableSetColumnIndex(1);
         ImGui.TextDisabled("恢复配置默认值");
@@ -503,6 +550,7 @@ internal sealed class SettingsWindow : Window
             config.ResetSharedMetricColumnWidths();
             StatsPanel.RequestMetricColumnWidthReset();
             config.Save();
+            LogHelper.PrintWithModule("设置", "列宽记忆", "已重置统计页列宽记忆。");
         }
 
         ImGui.SameLine();
@@ -511,6 +559,7 @@ internal sealed class SettingsWindow : Window
             config.ResetHistoryColumnWidths();
             StatsPanel.RequestHistoryColumnWidthReset();
             config.Save();
+            LogHelper.PrintWithModule("设置", "列宽记忆", "已重置历史页列宽记忆。");
         }
     }
 
@@ -539,6 +588,59 @@ internal sealed class SettingsWindow : Window
         DrawSemanticRow("显示人数", "限制显示条目数", "限制显示条目数", "限制显示条目数");
 
         ImGui.EndTable();
+    }
+
+    private void DrawFloatingParticipantModeSection()
+    {
+        var currentMode = config.FloatingStatsParticipantDisplayMode;
+
+        if (ImGui.RadioButton("智能：多人仅玩家，单人可含友方 NPC", currentMode == FloatingStatsParticipantDisplayMode.Auto))
+        {
+            config.FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
+            currentMode = config.FloatingStatsParticipantDisplayMode;
+            config.Save();
+        }
+
+        if (ImGui.RadioButton("仅玩家", currentMode == FloatingStatsParticipantDisplayMode.PlayersOnly))
+        {
+            config.FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.PlayersOnly;
+            currentMode = config.FloatingStatsParticipantDisplayMode;
+            config.Save();
+        }
+
+        if (ImGui.RadioButton("玩家 + 友方 NPC", currentMode == FloatingStatsParticipantDisplayMode.PlayersAndFriendlyNpc))
+        {
+            config.FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.PlayersAndFriendlyNpc;
+            currentMode = config.FloatingStatsParticipantDisplayMode;
+            config.Save();
+        }
+
+        if (ImGui.RadioButton("玩家 + 敌方 NPC", currentMode == FloatingStatsParticipantDisplayMode.PlayersAndHostileNpc))
+        {
+            config.FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.PlayersAndHostileNpc;
+            currentMode = config.FloatingStatsParticipantDisplayMode;
+            config.Save();
+        }
+
+        ImGui.Spacing();
+        var hostileNpcMinHpMultiplier = config.HostileNpcMinHpMultiplier;
+        if (ImGui.SliderInt("敌方 NPC 最低血量倍率", ref hostileNpcMinHpMultiplier, 1, 100, "%d x"))
+        {
+            config.HostileNpcMinHpMultiplier = hostileNpcMinHpMultiplier;
+            config.Save();
+        }
+
+        var highlightNpcRows = config.HighlightNpcRows;
+        if (ImGui.Checkbox("高亮 NPC 行", ref highlightNpcRows))
+        {
+            config.HighlightNpcRows = highlightNpcRows;
+            config.Save();
+        }
+
+        ImGui.TextDisabled("说明：友方 NPC 包括信赖/NPC 队友、Buddy、幻体等可识别的友方对象。");
+        ImGui.TextDisabled("“玩家 + 敌方 NPC” 模式下会隐藏友方 NPC，只保留玩家与敌方对象。");
+        ImGui.TextDisabled("敌方 NPC 只有在最大生命值达到本地玩家最大生命值指定倍率后，才会进入悬浮统计。");
+        ImGui.TextDisabled("关闭“高亮 NPC 行”后，NPC 会回退到普通条形配色与默认文本颜色。");
     }
 
     private static void DrawSemanticRow(string setting, string dps, string hps, string taken)

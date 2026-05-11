@@ -71,6 +71,9 @@ internal sealed class Combatant
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
+    [JsonPropertyName("participantKind")]
+    public string? ParticipantKind { get; set; }
+
     [JsonPropertyName("Job")]
     public string? Job { get; set; }
 
@@ -115,6 +118,9 @@ internal sealed class Combatant
 
     [JsonPropertyName("deaths")]
     public string? DeathsText { get; set; }
+
+    [JsonPropertyName("dotDamage-*")]
+    public string? DotDamageText { get; set; } = "0";
 }
 
 internal sealed record HistoricalCombatData(

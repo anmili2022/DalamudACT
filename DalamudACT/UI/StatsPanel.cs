@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.Types;
 
 namespace DalamudACT;
 
@@ -49,8 +51,25 @@ internal readonly record struct StatsPanelDrawResult(
 /// </summary>
 internal static class StatsPanel
 {
+    private enum FloatingCombatantKind
+    {
+        Unknown,
+        Player,
+        FriendlyNpc,
+        HostileNpc,
+    }
+
+    private readonly record struct DisplayCombatantRow(Combatant Combatant, FloatingCombatantKind Kind);
+
+    private const uint InvalidActorId = 0xE0000000;
     private const float MinimumDeathsColumnWidth = 20f;
     private static readonly Vector4 FrameBackgroundColor = new(0.10f, 0.10f, 0.10f, 0.65f);
+    private static readonly Vector4 FriendlyNpcBarColor = new(0.34f, 0.78f, 0.49f, 0.92f);
+    private static readonly Vector4 HostileNpcBarColor = new(0.95f, 0.40f, 0.25f, 0.92f);
+    private static readonly Vector4 FriendlyNpcTextColor = new(0.72f, 1.00f, 0.78f, 1.00f);
+    private static readonly Vector4 HostileNpcTextColor = new(1.00f, 0.72f, 0.60f, 1.00f);
+    private static readonly Vector4 FriendlyNpcRowBackgroundColor = new(0.08f, 0.26f, 0.10f, 0.22f);
+    private static readonly Vector4 HostileNpcRowBackgroundColor = new(0.36f, 0.10f, 0.08f, 0.28f);
     private static bool isResizingMetricColumns;
     private static int metricTableResetVersion;
     private static int historyTableResetVersion;
@@ -241,39 +260,57 @@ internal static class StatsPanel
 
     private static void DrawDpsTab(CombatDataWrapper combatData, PluginConfiguration config)
     {
-        var totalDps = combatData.Msg!.Combatant.Values
-            .Where(static c => !string.IsNullOrWhiteSpace(c.Name))
+        var visibleRows = GetVisibleCombatantRows(combatData, config);
+        var nonHostileCombatants = visibleRows
+            .Where(static row => row.Kind != FloatingCombatantKind.HostileNpc)
+            .Select(static row => row.Combatant)
+            .OrderByDescending(static combatant => ParseMetric(combatant.EncDpsText))
+            .ThenBy(static combatant => combatant.Name, StringComparer.Ordinal)
+            .ToList();
+        var hostileCombatants = visibleRows
+            .Where(static row => row.Kind == FloatingCombatantKind.HostileNpc)
+            .Select(static row => row.Combatant)
+            .OrderByDescending(static combatant => ParseMetric(combatant.EncDpsText))
+            .ThenBy(static combatant => combatant.Name, StringComparer.Ordinal)
+            .ToList();
+        var orderedVisibleCombatants = nonHostileCombatants
+            .Concat(hostileCombatants)
+            .ToList();
+
+        var totalDps = nonHostileCombatants
             .Sum(static c => ParseMetric(c.EncDpsText));
-        var totalDamage = combatData.Msg.Encounter?.DamageText ?? "0";
-        var totalDeaths = combatData.Msg.Combatant.Values
-            .Where(static c => !string.IsNullOrWhiteSpace(c.Name))
+        var totalDamage = FormatCompactAmount(nonHostileCombatants.Sum(static c => ParseLocalizedAmount(c.DamageText)));
+        var totalDeaths = nonHostileCombatants
             .Sum(static c => ParseCount(c.DeathsText));
 
         DrawMetricTab(
             id: "dps",
-            valueColumnLabel: "秒伤",
+            valueColumnLabel: "\u79d2\u4f24",
             combatData: combatData,
             config: config,
+            sourceRows: orderedVisibleCombatants,
             selector: static c => ParseMetric(c.EncDpsText),
             textSelector: static c => c.EncDpsText ?? "0",
-            tooltipPrimaryLabel: "伤害量",
+            tooltipPrimaryLabel: "\u4f24\u5bb3\u91cf",
             tooltipPrimaryTextSelector: static c => c.DamageText ?? "0",
-            tooltipRateLabel: "秒伤",
+            tooltipRateLabel: "\u79d2\u4f24",
             tooltipRateTextSelector: static c => c.EncDpsText ?? "0",
             showPlayerColumn: config.ShowDpsPlayerColumn,
             showJobColumn: config.ShowDpsJobColumn,
             showDamageColumn: config.ShowDpsDamageColumn,
-            damageColumnLabel: "伤害量",
+            damageColumnLabel: "\u4f24\u5bb3\u91cf",
             damageTextSelector: static c => c.DamageText ?? "0",
             showValueColumn: config.ShowDpsValueColumn,
             showDeathsColumn: config.ShowDpsDeathsColumn,
             maxRows: config.DpsVisibleCount,
             showSummaryRow: true,
-            summaryName: "总DPS",
-            summaryJob: "全队",
+            summaryName: "\u603bDPS",
+            summaryJob: "\u5168\u961f",
             summaryDamageText: totalDamage,
             summaryValueText: FormatMetricValue(totalDps),
-            summaryDeathsText: totalDeaths.ToString(CultureInfo.InvariantCulture));
+            summaryDeathsText: totalDeaths.ToString(CultureInfo.InvariantCulture),
+            keepSourceOrder: true,
+            summaryRowInsertIndex: nonHostileCombatants.Count);
     }
 
     private static void DrawMetricTab(
@@ -283,10 +320,11 @@ internal static class StatsPanel
         PluginConfiguration config,
         Func<Combatant, double> selector,
         Func<Combatant, string> textSelector,
-        string tooltipPrimaryLabel = "伤害量",
+        string tooltipPrimaryLabel = "\u4f24\u5bb3\u91cf",
         Func<Combatant, string>? tooltipPrimaryTextSelector = null,
-        string tooltipRateLabel = "秒伤",
+        string tooltipRateLabel = "\u79d2\u4f24",
         Func<Combatant, string>? tooltipRateTextSelector = null,
+        IReadOnlyList<Combatant>? sourceRows = null,
         bool showPlayerColumn = true,
         bool showJobColumn = true,
         bool showDamageColumn = false,
@@ -300,19 +338,23 @@ internal static class StatsPanel
         string summaryJob = "",
         string? summaryDamageText = null,
         string? summaryValueText = null,
-        string? summaryDeathsText = null)
+        string? summaryDeathsText = null,
+        bool keepSourceOrder = false,
+        int? summaryRowInsertIndex = null)
     {
         if (!ImGui.BeginChild($"##metric_{id}_scroll", new Vector2(0f, 0f), false))
             return;
 
-        var allRows = combatData.Msg!.Combatant.Values
-            .Where(static c => !string.IsNullOrWhiteSpace(c.Name))
-            .OrderByDescending(selector)
-            .ToList();
+        var sourceCombatants = sourceRows ?? GetVisibleCombatants(combatData, config);
+        var allRows = keepSourceOrder
+            ? sourceCombatants.ToList()
+            : sourceCombatants
+                .OrderByDescending(selector)
+                .ToList();
 
         if (allRows.Count == 0)
         {
-            ImGui.TextDisabled("没有可显示的数据。");
+            ImGui.TextDisabled("\u6ca1\u6709\u53ef\u663e\u793a\u7684\u6570\u636e\u3002");
             ImGui.EndChild();
             return;
         }
@@ -322,8 +364,11 @@ internal static class StatsPanel
             : allRows;
         var maxValue = allRows.Max(selector);
         var totalValue = allRows.Sum(selector);
+        var effectiveSummaryRowInsertIndex = showSummaryRow
+            ? Math.Clamp(summaryRowInsertIndex ?? rows.Count, 0, rows.Count)
+            : rows.Count;
         var playerColumnWidth = ResolvePlayerColumnWidth(rows, showSummaryRow ? summaryName : null, config);
-        var jobColumnWidth = ResolveMetricColumnWidth(config.FloatingStatsJobColumnWidth, config, 88f, "职业");
+        var jobColumnWidth = ResolveMetricColumnWidth(config.FloatingStatsJobColumnWidth, config, 88f, "\u804c\u4e1a");
         var damageColumnWidth = ResolveMetricColumnWidth(config.FloatingStatsDamageColumnWidth, config, 88f, damageColumnLabel);
         var fixedColumnWidth = ResolveMetricColumnWidth(config.FloatingStatsValueColumnWidth, config, 88f, valueColumnLabel);
         var deathColumnWidth = ResolveDeathColumnWidth(config.FloatingStatsDeathsColumnWidth, config);
@@ -354,7 +399,7 @@ internal static class StatsPanel
             visibleColumns.Add(new VisibleMetricColumn(
                 MetricColumnSlot.Player,
                 nextColumnIndex++,
-                "玩家",
+                "\u73a9\u5bb6",
                 playerColumnWidth,
                 ImGuiTableColumnFlags.WidthFixed));
         }
@@ -365,7 +410,7 @@ internal static class StatsPanel
             visibleColumns.Add(new VisibleMetricColumn(
                 MetricColumnSlot.Job,
                 nextColumnIndex++,
-                "职业",
+                "\u804c\u4e1a",
                 jobColumnWidth,
                 ImGuiTableColumnFlags.WidthFixed));
         }
@@ -398,7 +443,7 @@ internal static class StatsPanel
             visibleColumns.Add(new VisibleMetricColumn(
                 MetricColumnSlot.Deaths,
                 nextColumnIndex++,
-                "死",
+                "\u6b7b",
                 deathColumnWidth,
                 ImGuiTableColumnFlags.WidthFixed));
         }
@@ -407,7 +452,7 @@ internal static class StatsPanel
         visibleColumns.Add(new VisibleMetricColumn(
             MetricColumnSlot.Share,
             shareColumnIndex,
-            "占比",
+            "\u5360\u6bd4",
             1f,
             ImGuiTableColumnFlags.WidthStretch | ImGuiTableColumnFlags.NoResize));
 
@@ -437,14 +482,43 @@ internal static class StatsPanel
             ref measuredValueColumnWidth,
             ref measuredDeathsColumnWidth);
 
-        foreach (var combatant in rows)
+        for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
         {
+            if (showSummaryRow && rowIndex == effectiveSummaryRowInsertIndex)
+            {
+                DrawMetricSummaryRow(
+                    rowHeight,
+                    showPlayerColumn,
+                    playerColumnIndex,
+                    summaryName,
+                    showJobColumn,
+                    jobColumnIndex,
+                    summaryJob,
+                    showDamageColumn,
+                    damageColumnIndex,
+                    summaryDamageText,
+                    showValueColumn,
+                    valueColumnIndex,
+                    summaryValueText,
+                    showDeathsColumn,
+                    deathsColumnIndex,
+                    summaryDeathsText,
+                    shareColumnIndex);
+            }
+
+            var combatant = rows[rowIndex];
             var value = selector(combatant);
             var maxRatio = maxValue > 0 ? value / maxValue : 0d;
             var totalRatio = totalValue > 0 ? value / totalValue : 0d;
             var barColor = ResolveBarColor(combatant, config);
+            var hasCustomTextColor = TryResolveCombatantTextColor(combatant, config, out var rowTextColor);
 
             TableNextRow(rowHeight);
+            if (TryResolveCombatantRowBackgroundColor(combatant, config, out var rowBackgroundColor))
+                ImGui.TableSetBgColor(ImGuiTableBgTarget.RowBg0, ImGui.GetColorU32(rowBackgroundColor));
+
+            if (hasCustomTextColor)
+                ImGui.PushStyleColor(ImGuiCol.Text, rowTextColor);
 
             if (showPlayerColumn)
             {
@@ -487,44 +561,31 @@ internal static class StatsPanel
                 tooltipRateLabel,
                 tooltipRateTextSelector?.Invoke(combatant));
             ImGui.PopStyleColor(2);
+
+            if (hasCustomTextColor)
+                ImGui.PopStyleColor();
         }
 
-        if (showSummaryRow)
+        if (showSummaryRow && effectiveSummaryRowInsertIndex >= rows.Count)
         {
-            TableNextRow(rowHeight);
-
-            if (showPlayerColumn)
-            {
-                ImGui.TableSetColumnIndex(playerColumnIndex!.Value);
-                ImGui.TextUnformatted(summaryName);
-            }
-
-            if (showJobColumn)
-            {
-                ImGui.TableSetColumnIndex(jobColumnIndex!.Value);
-                ImGui.TextUnformatted(summaryJob);
-            }
-
-            if (showDamageColumn)
-            {
-                ImGui.TableSetColumnIndex(damageColumnIndex!.Value);
-                ImGui.TextUnformatted(string.IsNullOrWhiteSpace(summaryDamageText) ? "0" : summaryDamageText);
-            }
-
-            if (showValueColumn)
-            {
-                ImGui.TableSetColumnIndex(valueColumnIndex!.Value);
-                ImGui.TextUnformatted(string.IsNullOrWhiteSpace(summaryValueText) ? "0" : summaryValueText);
-            }
-
-            if (showDeathsColumn)
-            {
-                ImGui.TableSetColumnIndex(deathsColumnIndex!.Value);
-                ImGui.TextUnformatted(string.IsNullOrWhiteSpace(summaryDeathsText) ? "0" : summaryDeathsText);
-            }
-
-            ImGui.TableSetColumnIndex(shareColumnIndex);
-            ImGui.TextUnformatted(string.Empty);
+            DrawMetricSummaryRow(
+                rowHeight,
+                showPlayerColumn,
+                playerColumnIndex,
+                summaryName,
+                showJobColumn,
+                jobColumnIndex,
+                summaryJob,
+                showDamageColumn,
+                damageColumnIndex,
+                summaryDamageText,
+                showValueColumn,
+                valueColumnIndex,
+                summaryValueText,
+                showDeathsColumn,
+                deathsColumnIndex,
+                summaryDeathsText,
+                shareColumnIndex);
         }
 
         PersistMetricColumnWidths(
@@ -550,6 +611,61 @@ internal static class StatsPanel
         ImGui.EndChild();
     }
 
+    private static void DrawMetricSummaryRow(
+        float rowHeight,
+        bool showPlayerColumn,
+        int? playerColumnIndex,
+        string summaryName,
+        bool showJobColumn,
+        int? jobColumnIndex,
+        string summaryJob,
+        bool showDamageColumn,
+        int? damageColumnIndex,
+        string? summaryDamageText,
+        bool showValueColumn,
+        int? valueColumnIndex,
+        string? summaryValueText,
+        bool showDeathsColumn,
+        int? deathsColumnIndex,
+        string? summaryDeathsText,
+        int shareColumnIndex)
+    {
+        TableNextRow(rowHeight);
+
+        if (showPlayerColumn)
+        {
+            ImGui.TableSetColumnIndex(playerColumnIndex!.Value);
+            ImGui.TextUnformatted(summaryName);
+        }
+
+        if (showJobColumn)
+        {
+            ImGui.TableSetColumnIndex(jobColumnIndex!.Value);
+            ImGui.TextUnformatted(summaryJob);
+        }
+
+        if (showDamageColumn)
+        {
+            ImGui.TableSetColumnIndex(damageColumnIndex!.Value);
+            ImGui.TextUnformatted(string.IsNullOrWhiteSpace(summaryDamageText) ? "0" : summaryDamageText);
+        }
+
+        if (showValueColumn)
+        {
+            ImGui.TableSetColumnIndex(valueColumnIndex!.Value);
+            ImGui.TextUnformatted(string.IsNullOrWhiteSpace(summaryValueText) ? "0" : summaryValueText);
+        }
+
+        if (showDeathsColumn)
+        {
+            ImGui.TableSetColumnIndex(deathsColumnIndex!.Value);
+            ImGui.TextUnformatted(string.IsNullOrWhiteSpace(summaryDeathsText) ? "0" : summaryDeathsText);
+        }
+
+        ImGui.TableSetColumnIndex(shareColumnIndex);
+        ImGui.TextUnformatted(string.Empty);
+    }
+
     private static void DrawOverviewTab(CombatDataWrapper combatData, PluginConfiguration config)
     {
         if (!ImGui.BeginChild("##overview_scroll", new Vector2(0f, 0f), false))
@@ -572,7 +688,7 @@ internal static class StatsPanel
         }
 
         ImGui.Separator();
-        foreach (var combatant in combatData.Msg.Combatant.Values.Where(static c => !string.IsNullOrWhiteSpace(c.Name)))
+        foreach (var combatant in GetVisibleCombatants(combatData, config))
         {
             var header = string.IsNullOrWhiteSpace(combatant.Job)
                 ? combatant.Name!
@@ -596,6 +712,7 @@ internal static class StatsPanel
             DrawOverviewRow("格挡率", combatant.BlockPctText, config);
             DrawOverviewRow("招架率", combatant.ParryPctText, config);
             DrawOverviewRow("死亡", combatant.DeathsText, config);
+            DrawOverviewRow("DoT总伤害", combatant.DotDamageText, config);
             ImGui.EndTable();
         }
 
@@ -691,10 +808,61 @@ internal static class StatsPanel
 
     private static Vector4 ResolveBarColor(Combatant combatant, PluginConfiguration config)
     {
+        if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
+        {
+            if (kind == FloatingCombatantKind.FriendlyNpc)
+                return FriendlyNpcBarColor;
+
+            if (kind == FloatingCombatantKind.HostileNpc)
+                return HostileNpcBarColor;
+        }
+
         if (config.BarColorMode == StatsBarColorMode.Single)
             return config.GetSingleBarColor();
 
         return config.GetThemeBarColor(combatant.Job);
+    }
+
+    private static bool TryResolveCombatantTextColor(Combatant combatant, PluginConfiguration config, out Vector4 color)
+    {
+        if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
+        {
+            if (kind == FloatingCombatantKind.FriendlyNpc)
+            {
+                color = FriendlyNpcTextColor;
+                return true;
+            }
+
+            if (kind == FloatingCombatantKind.HostileNpc)
+            {
+                color = HostileNpcTextColor;
+                return true;
+            }
+        }
+
+        color = default;
+        return false;
+    }
+
+    private static bool TryResolveCombatantRowBackgroundColor(Combatant combatant, PluginConfiguration config, out Vector4 color)
+    {
+        if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
+        {
+            if (kind == FloatingCombatantKind.FriendlyNpc)
+            {
+                color = FriendlyNpcRowBackgroundColor;
+                return true;
+            }
+
+            if (kind == FloatingCombatantKind.HostileNpc)
+            {
+                color = HostileNpcRowBackgroundColor;
+                return true;
+            }
+        }
+
+        color = default;
+        return false;
     }
 
     private static string JoinPair(string? left, string? right)
@@ -761,6 +929,208 @@ internal static class StatsPanel
             ? parsed
             : 0;
     }
+
+    private static IReadOnlyList<Combatant> GetVisibleCombatants(CombatDataWrapper combatData, PluginConfiguration config)
+        => GetVisibleCombatantRows(combatData, config)
+            .Select(static row => row.Combatant)
+            .ToList();
+
+    private static IReadOnlyList<DisplayCombatantRow> GetVisibleCombatantRows(CombatDataWrapper combatData, PluginConfiguration config)
+    {
+        var combatants = combatData.Msg?.Combatant;
+        if (combatants == null || combatants.Count == 0)
+            return Array.Empty<DisplayCombatantRow>();
+
+        var rows = combatants
+            .Where(static pair => !string.IsNullOrWhiteSpace(pair.Value.Name))
+            .Select(static pair => new DisplayCombatantRow(pair.Value, ResolveFloatingCombatantKind(pair.Value, ParseCombatantActorId(pair.Key))))
+            .ToList();
+
+        var playerCount = rows.Count(static row => row.Kind == FloatingCombatantKind.Player);
+        rows = config.FloatingStatsParticipantDisplayMode switch
+        {
+            FloatingStatsParticipantDisplayMode.PlayersOnly => rows
+                .Where(static row => row.Kind != FloatingCombatantKind.FriendlyNpc && row.Kind != FloatingCombatantKind.HostileNpc)
+                .ToList(),
+            FloatingStatsParticipantDisplayMode.PlayersAndFriendlyNpc => rows
+                .Where(static row => row.Kind != FloatingCombatantKind.HostileNpc)
+                .ToList(),
+            FloatingStatsParticipantDisplayMode.PlayersAndHostileNpc => rows
+                .Where(static row => row.Kind != FloatingCombatantKind.FriendlyNpc)
+                .ToList(),
+            _ when playerCount >= 2 => rows
+                .Where(static row => row.Kind != FloatingCombatantKind.FriendlyNpc && row.Kind != FloatingCombatantKind.HostileNpc)
+                .ToList(),
+            _ => rows
+                .Where(static row => row.Kind != FloatingCombatantKind.HostileNpc)
+                .ToList(),
+        };
+
+        return rows;
+    }
+
+    private static FloatingCombatantKind ResolveFloatingCombatantKind(Combatant combatant, uint actorId)
+    {
+        if (TryParseFloatingCombatantKind(combatant.ParticipantKind, out var metadataKind))
+            return metadataKind;
+
+        if (actorId is 0 or InvalidActorId)
+            return FloatingCombatantKind.Unknown;
+
+        var localPlayerActorIds = new[]
+        {
+            NormalizeActorId(DalamudApi.GetLocalPlayerActorId()),
+            NormalizeActorId(DalamudApi.GetLocalPlayerObjectId()),
+            NormalizeActorId(DalamudApi.GetLocalPlayerEntityId()),
+        };
+        if (localPlayerActorIds.Any(id => id != 0 && id == actorId))
+            return FloatingCombatantKind.Player;
+
+        var gameObject = FindObjectByActorId(actorId);
+        if (gameObject == null)
+            return FloatingCombatantKind.Unknown;
+
+        if (gameObject.ObjectKind == ObjectKind.Player)
+            return FloatingCombatantKind.Player;
+
+        if (gameObject is not IBattleNpc battleNpc)
+            return FloatingCombatantKind.Unknown;
+
+        return (battleNpc.StatusFlags & StatusFlags.Hostile) != 0
+            ? FloatingCombatantKind.HostileNpc
+            : FloatingCombatantKind.FriendlyNpc;
+    }
+
+    private static bool TryParseFloatingCombatantKind(string? participantKind, out FloatingCombatantKind kind)
+    {
+        kind = participantKind switch
+        {
+            "player" => FloatingCombatantKind.Player,
+            "friendlyNpc" => FloatingCombatantKind.FriendlyNpc,
+            "hostileNpc" => FloatingCombatantKind.HostileNpc,
+            _ => FloatingCombatantKind.Unknown,
+        };
+
+        return kind != FloatingCombatantKind.Unknown;
+    }
+
+    private static uint ParseCombatantActorId(string? combatantKey)
+    {
+        if (string.IsNullOrWhiteSpace(combatantKey))
+            return 0;
+
+        var separatorIndex = combatantKey.LastIndexOf('#');
+        if (separatorIndex < 0 || separatorIndex >= combatantKey.Length - 1)
+            return 0;
+
+        var actorText = combatantKey[(separatorIndex + 1)..];
+        return uint.TryParse(actorText, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var actorId)
+            ? NormalizeActorId(actorId)
+            : 0;
+    }
+
+    private static IGameObject? FindObjectByActorId(uint actorId)
+    {
+        foreach (var gameObject in DalamudApi.ObjectTable)
+        {
+            if (MatchesObjectActorId(gameObject, actorId))
+                return gameObject;
+        }
+
+        return null;
+    }
+
+    private static bool MatchesObjectActorId(IGameObject? gameObject, uint actorId)
+    {
+        if (gameObject == null || actorId is 0 or InvalidActorId)
+            return false;
+
+        var gameObjectLow32 = gameObject.GameObjectId == 0
+            ? 0
+            : NormalizeActorId(unchecked((uint)(gameObject.GameObjectId & uint.MaxValue)));
+        if (gameObjectLow32 != 0 && gameObjectLow32 == actorId)
+            return true;
+
+        var objectId = TryGetReflectedActorId(gameObject, "ObjectId");
+        if (objectId != 0 && objectId == actorId)
+            return true;
+
+        var entityId = NormalizeActorId(gameObject.EntityId);
+        return entityId != 0 && entityId == actorId;
+    }
+
+    private static uint TryGetReflectedActorId(object? instance, string propertyName)
+    {
+        if (instance == null)
+            return 0;
+
+        try
+        {
+            var property = instance.GetType().GetProperty(propertyName);
+            var rawValue = property?.GetValue(instance);
+            return rawValue == null ? 0 : NormalizeActorId(Convert.ToUInt32(rawValue, CultureInfo.InvariantCulture));
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static uint NormalizeActorId(uint actorId)
+        => actorId is 0 or InvalidActorId ? 0 : actorId;
+
+    private static long ParseLocalizedAmount(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return 0L;
+
+        var text = value.Trim();
+        if (text is "---" or "--")
+            return 0L;
+
+        long multiplier = 1L;
+        if (text.EndsWith("兆", StringComparison.Ordinal))
+        {
+            multiplier = 1_000_000_000_000L;
+            text = text[..^1];
+        }
+        else if (text.EndsWith("亿", StringComparison.Ordinal))
+        {
+            multiplier = 100_000_000L;
+            text = text[..^1];
+        }
+        else if (text.EndsWith("万", StringComparison.Ordinal))
+        {
+            multiplier = 10_000L;
+            text = text[..^1];
+        }
+
+        text = text.Replace(",", string.Empty, StringComparison.Ordinal);
+        if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            return 0L;
+
+        return (long)Math.Round(parsed * multiplier, MidpointRounding.AwayFromZero);
+    }
+
+    private static string FormatCompactAmount(long value)
+    {
+        const long trillion = 1_000_000_000_000L;
+        const long hundredMillion = 100_000_000L;
+        const long tenThousand = 10_000L;
+
+        var abs = Math.Abs(value);
+        if (abs >= trillion)
+            return FormatChineseUnit(value, trillion, "兆");
+        if (abs >= hundredMillion)
+            return FormatChineseUnit(value, hundredMillion, "亿");
+        if (abs >= tenThousand)
+            return FormatChineseUnit(value, tenThousand, "万");
+
+        return value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private static string FormatChineseUnit(long value, long unitBase, string unit)
+        => (value / (double)unitBase).ToString("0.00", CultureInfo.InvariantCulture) + unit;
 
     private static void DrawCombatantBarTooltip(
         Combatant combatant,

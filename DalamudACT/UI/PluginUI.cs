@@ -11,22 +11,27 @@ internal sealed class PluginUI : IDisposable
     private readonly MainWindow mainWindow;
     private readonly SettingsWindow settingsWindow;
     private readonly FloatingStatsWindow floatingStatsWindow;
+    private readonly CombatTimelineWindow combatTimelineWindow;
+    private bool windowDrawFaulted;
 
     public PluginUI(PluginConfiguration config, LocalStatsService statsService)
     {
         this.config = config;
 
-        mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow);
-        settingsWindow = new SettingsWindow(config, statsService, OpenMainWindow, ToggleFloatingStatsWindow);
+        mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
+        settingsWindow = new SettingsWindow(config, statsService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
+        combatTimelineWindow = new CombatTimelineWindow(config, statsService);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);
         AddWindow(windowSystem, floatingStatsWindow);
+        AddWindow(windowSystem, combatTimelineWindow);
 
         mainWindow.IsOpen = false;
         settingsWindow.IsOpen = false;
         floatingStatsWindow.IsOpen = config.ShowStatsPanel;
+        combatTimelineWindow.IsOpen = false;
     }
 
     public void Draw()
@@ -34,7 +39,19 @@ internal sealed class PluginUI : IDisposable
         if (floatingStatsWindow.IsOpen != config.ShowStatsPanel)
             floatingStatsWindow.IsOpen = config.ShowStatsPanel;
 
-        windowSystem.Draw();
+        try
+        {
+            windowSystem.Draw();
+            windowDrawFaulted = false;
+        }
+        catch (Exception ex)
+        {
+            if (!windowDrawFaulted)
+            {
+                windowDrawFaulted = true;
+                LogHelper.Error("界面", ex, "插件窗口绘制失败，已拦截异常以避免影响游戏。");
+            }
+        }
 
         if (config.ShowStatsPanel != floatingStatsWindow.IsOpen)
         {
@@ -52,6 +69,8 @@ internal sealed class PluginUI : IDisposable
     public void Dispose() => windowSystem.RemoveAllWindows();
 
     private void OpenSettingsWindow() => settingsWindow.IsOpen = true;
+
+    private void OpenCombatTimelineWindow() => combatTimelineWindow.IsOpen = true;
 
     private void ToggleFloatingStatsWindow()
     {

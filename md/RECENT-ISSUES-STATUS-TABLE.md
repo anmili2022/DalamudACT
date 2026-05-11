@@ -67,8 +67,8 @@
 |---|---|---|
 | `Cast` Hook 恢复 | 当前仍处于禁用状态 | 在确认 `ActionEffect` 主链路稳定后，先单独恢复并单独测试 |
 | `ActorControlSelf` Hook 恢复 | 当前仍处于禁用状态 | 在 `Cast` 验证通过后，再单独恢复并重新校验签名与调用约定 |
-| DoT 归因补齐 | 当前仍不完整 | 等高风险 Hook 恢复策略稳定后再补 |
-| HoT 归因补齐 | 当前仍不完整 | 与 DoT 一样放在后续恢复阶段 |
+| DoT 归因补齐 | 已落地静态白名单表 | 继续补漏项并观察是否还需要更细的状态映射 |
+| HoT 归因补齐 | 当前仍未展开 | 与 DoT 分开处理，先不要混在同一轮恢复里 |
 | Death 链路进一步补齐 | 当前已有兼容替代实现，但仍不是最终完整形态 | 在稳定基础上再补更细粒度逻辑 |
 | 遭遇生命周期补强逻辑 | 一些依赖旧 Hook 的补强逻辑仍关闭 | 最后再处理，避免过早引入稳定性风险 |
 
@@ -80,7 +80,35 @@
 |---|---|
 | 当前工作区状态 | `HANDOVER.md` 提到当前工作区是脏工作区；当前未提交修改除历史预览流外，还包含共享列显示、列宽持久化、卡片式 UI 与文档补充 |
 | 构建基线 | 最近验证通过的产物路径是 `E:\\git\\DalamudACT\\output\\DalamudACT.dll` |
+| DoT 当前方向 | 已切换为“静态表 + 目标状态确认”，不再靠技能名字猜测 |
 | 发布时不要直接重跑旧失败任务 | 如果 workflow 已变更，应使用 `workflow_dispatch` 并指定准确 tag |
 | 恢复高风险 Hook 的原则 | 不要一次性全部恢复；每个 Hook 独立 `try/catch`、独立日志、失败即降级 |
 | 查当前这批 UI / 配置改动优先看哪里 | 优先看 `MainWindow.cs`、`SettingsWindow.cs`、`StatsPanel.cs`、`PluginConfiguration.cs`，再对照 `README.md` / `md/USAGE.md` |
 | 接手优先阅读顺序 | `HANDOVER.md` → `md/RECENT-ISSUES-SUMMARY.md` → `md/RECENT-ISSUES-STATUS-TABLE.md` → `md/2026-05-06-RELEASE-HANDOFF.md` |
+
+---
+
+## 2026-05-10 补充：单人解限 / NPC 队友 / 幻体副本
+
+### 已确认进展
+
+| 问题 / 事项 | 当前状态 | 关键文件 / 备注 |
+|---|---|---|
+| 单人解限场景下本地玩家身份全 0，导致完全无数据 | **已部分解决**。玩家自己的统计链路已经恢复，用户已确认玩家技能会进入战斗流水，DPS 面板也能看到玩家自己一行 | `DalamudACT/DalamudApi.cs`、`DalamudACT/Plugin/ACT.cs` |
+| 战斗流水里的角色筛选交互不便 | **已解决**。角色筛选已改成下拉框 | `DalamudACT/UI/CombatTimelineWindow.cs` |
+| 最近日志摘要无法直接承载关键调试信息 | **已解决**。新增 `LogHelper.DebugRecent(...)`，并补了调试级别的 UI 样式 | `DalamudACT/LogHelper.cs`、`DalamudACT/UI/LogUiHelper.cs` |
+| 单人解限 / 信赖 / NPC 队友副本下缺少现场诊断信息 | **已解决**。已经补齐未命中 tracked actor、进战无流水、友方对象纳入缓存等调试日志 | `DalamudACT/Plugin/ACT.cs`、`DalamudACT/Stats/LocalStatsService.cs` |
+
+### 待用户复测
+
+| 项目 | 当前情况 | 建议验证方式 |
+|---|---|---|
+| 幻体是否能单独成行 | **待复测**。最新补丁已经允许按 `actorId + 名字` 直接把 `XX的幻体` 纳入 tracked actor，但截至交接时还没有新的现场反馈 | 让用户复测当前 `output\\DalamudACT.dll`，重点关注最近日志中是否出现 `已纳入可跟踪友方对象` / `已按事件身份纳入可跟踪友方对象` |
+| 战斗结束判定是否恢复正常 | **待复测**。已经收紧 combat-end 参与对象范围，避免对象表中的无关友方 BattleNpc 长时间拖住 encounter | 让用户在明确脱战后继续观察是否正常结算；如仍不结束，继续补 `AreAllPartyMembersOutOfCombat(...)` 相关现场日志 |
+
+### 当前仍未闭环的最高优先级问题
+
+| 问题 | 当前判断 | 下一步建议 |
+|---|---|---|
+| 日志里能看到 `桑克瑞德的幻体 / 阿尔菲诺的幻体 / 阿莉塞的幻体`，但仍不显示单独行 | 问题已明显收敛到“**事件现场可见，但未成功注册为 tracked actor**”这一层；最新代码已开始直接按事件身份收编 | 如果仍不成行，优先继续检查 `TryGetTrackedActor(...)` 到 `EncounterSession.EnsureCombatant(...)` 之间的 actorId 口径是否还存在错位 |
+| 有进入战斗，但没有结束战斗 | 旧实现很可能把对象表里过宽范围的友方 NPC 也纳入了脱战判定；当前代码已开始收紧，但仍需现场验证 | 如果继续复现，先打印到底是谁一直保持 `InCombat`，再决定是否继续收紧枚举范围 |

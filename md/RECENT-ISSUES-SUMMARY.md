@@ -791,3 +791,136 @@ git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a <version> -m "DalamudACT <v
 同时也要明确：
 
 当前版本仍然是**稳定优先、能力逐步恢复**的阶段，还不是所有统计链路都已经完全补齐的终态版本。
+
+---
+
+## 2026-05-10 补充：单人解限 / NPC 队友 / 幻体副本排查
+
+### 1. 现象是怎么一步步收敛的
+
+本轮用户反馈的现象分成两个阶段：
+
+第一阶段：
+
+- 单人解限进入副本时完全没有数据；
+- 单人解限或跟 NPC 队友进入副本时也没有数据；
+- 调试日志里本地玩家相关 ID 一度全部为 `0`。
+
+第二阶段：
+
+- 修复本地玩家身份获取后，玩家自己的数据已经恢复；
+- 但 NPC 幻体仍然没有单独成行；
+- 用户多次贴回的日志稳定显示：
+  - `sourceObjectName=桑克瑞德的幻体`
+  - `sourceObjectName=阿尔菲诺的幻体`
+  - `sourceObjectName=阿莉塞的幻体`
+  - 同时 `sourceTracked=False`
+- 这说明问题已经不再是“事件完全拿不到”，而是“**事件拿到了，但没有把幻体成功注册成 tracked actor**”。
+
+### 2. 本轮最关键的判断变化
+
+本轮真正的定位进展，不在于新增了多少日志，而在于把问题明确收敛到了两层：
+
+1. **玩家链路问题**
+   - 在某些单人解限 / 副本场景里，`ClientState.LocalPlayer` 相关 ID 不可靠；
+   - 改成优先从 `ObjectTable.LocalPlayer` 取值后，玩家自己的统计链路恢复。
+
+2. **幻体链路问题**
+   - 幻体对象在事件现场是“可见”的；
+   - 名字可见、EntityId / ObjectId 也能拿到；
+   - 但它们没有被顺利纳入 `tracked actor` 集合，导致既不成行，也不会被 encounter 统计链路认可。
+
+### 3. 本轮补丁的核心思路
+
+为了应对“对象看得见、名字拿得到、但包装不稳定”的情况，本轮在 `LocalStatsService` 里引入了：
+
+- `observedFriendlyActorCache`
+- `ObserveFriendlyCombatantFromGameObject(...)`
+- `ObserveFriendlyCombatantIdentity(...)`
+- `TryCreateObservedFriendlyActor(...)`
+- `LooksLikeDutyCompanionName(...)`
+
+目前重点覆盖：
+
+- `XX的幻体`
+
+这类对象。
+
+最新一版补丁进一步把逻辑推进到了：
+
+- 如果 `GameObject -> IBattleChara` 这条路收编失败；
+- 但事件现场已经拿到 `actorId + name`；
+- 且名字像 `XX的幻体`；
+- 那就直接按“事件身份”收编，而不是继续卡在对象包装完整性上。
+
+对应改动主要落在：
+
+- `DalamudACT/Plugin/ACT.cs`
+- `DalamudACT/Stats/LocalStatsService.cs`
+
+### 4. 为什么战斗结束问题要和幻体问题一起看
+
+用户最后还反馈了：
+
+- 有进入战斗；
+- 但不会结束战斗。
+
+这很可能不是完全独立的问题，而是和“哪些对象被视为需要参与脱战判断”有关。
+
+也就是说：
+
+- 如果对象表里某些友方 BattleNpc被过宽地纳入了 combat-end 判定；
+- 它们又长时间保持 `InCombat`；
+- encounter 就会一直拖住不结算。
+
+因此本轮同步收紧了：
+
+- `AreAllPartyMembersOutOfCombat(...)`
+
+背后参与判断的对象范围，只优先统计真正相关的：
+
+- 本地玩家；
+- 队伍成员；
+- Buddy；
+- 已经被观察缓存纳入的相关友方对象；
+- 带队伍标记的对象。
+
+### 5. 截至目前的最好结论
+
+截至 2026-05-10 收工前，可以比较明确地说：
+
+- “玩家自己完全无数据”的问题，已经有实测反馈证明修通；
+- “幻体事件明明可见但不单独成行”的问题，已经被收敛到 **tracked actor 注册** 这一层；
+- 最新补丁已经开始直接按 `actorId + 幻体名字` 注册友方对象；
+- “进入战斗但不结束”的问题，也已经开始从 combat-end 判定对象范围这一层进行收缩；
+- 但这两条最新补丁，都还差**最后一轮用户现场复测**才能算闭环。
+
+---
+
+## 2026-05-11 补充：DoT 规则收紧
+
+### 当前已经明确的规则
+
+- 只统计真正会在目标身上形成持续伤害状态，并在状态存续期间持续结算的效果；
+- 目标进入无法选中状态后，应停止后续 DoT 结算；
+- 不再用技能名字猜 DoT；
+- `箭毒II` 和 `注药III` 已明确不应再被当成 DoT。
+
+### 下一步实现方向
+
+- 为 21 个职业建立静态表；
+- 每个职业只保留 1~2 个明确的 DoT 候选；
+- 以 `actionId` 作为主键做白名单过滤；
+- `LooksLikeDamageOverTimeDescription(...)` 这类文本启发式只保留作兜底，不再作为主判据。
+
+### 当前进度更新
+
+- 上述静态白名单表已经开始落地到代码里，新增了 `DalamudACT/Stats/PlayerDotCatalog.cs`；
+- 现阶段 DoT 归因入口已经先按 `actionId / statusId` 做硬过滤；
+- 后续主要工作变成“补漏”和“实测是否还有误判”。
+
+### 当前接手建议
+
+- 先看 `md/2026-05-11.md`；
+- 再看 `md/README-SUMMARY.md` 里最新的状态补充；
+- 如果要动代码，优先收紧 `LocalStatsService.cs` 里的 DoT 归因入口，而不是继续扩大自动识别范围。

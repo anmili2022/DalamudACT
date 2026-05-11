@@ -1,4 +1,4 @@
-# README 简洁总结
+﻿# README 简洁总结
 
 > 基于根目录 `README.md` 的快速摘要，适合先了解项目再决定是否继续阅读全文。
 
@@ -88,3 +88,13 @@
 - 更新记录：[`md/CHANGELOG.md`](CHANGELOG.md)
 - 维护交接入口：[`../HANDOVER.md`](../HANDOVER.md)
 - 发布交接：[`2026-05-09-RELEASE-HANDOFF.md`](2026-05-09-RELEASE-HANDOFF.md)
+- 最新工作记录：[`md/2026-05-11.md`](2026-05-11.md)
+
+## 2026-05-11 状态补充：DoT 收尾已落地
+
+- 这次 DoT 方向已经从“建表 + 目标状态确认”进一步收口为“状态驱动 + 3 秒轮询补 tick”。
+- 玩家施放已知 DoT 技能后，会先记录挂载候选；目标身上出现对应 debuff 后才进入活跃 DoT 状态。
+- 后续 DoT tick 由 `LocalStatsService.PollActivePlayerDots(...)` 统一推进，目标不可选中时停止结算。
+- DoT 暴击现在按普通技能那套暴击率模拟，不再直接依赖事件包里的 tick 暴击字段。
+- `PlayerDotCatalog.cs` 仍然是当前的静态白名单入口，白名单外的技能不会进入 DoT 链路。
+- 本轮已经重新构建验证通过：`dotnet build E:\git\DalamudACT\DalamudACT.sln`，结果为 `0 warnings / 0 errors`。

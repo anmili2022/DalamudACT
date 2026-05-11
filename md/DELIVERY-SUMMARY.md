@@ -1,4 +1,4 @@
-# DPS统计 结项汇总
+﻿# DPS统计 结项汇总
 
 这份文档适合：
 
@@ -258,3 +258,85 @@ DPS统计：伤害量列、历史记录回看与文档整理
 - [发布说明](RELEASE-NOTES.md)
 - [2026-05-06 工作记录](2026-05-06.md)
 - [SESSION-HANDOFF](SESSION-HANDOFF.md)
+
+## 2026-05-10 补充：单人解限 / NPC 队友 / 幻体副本排查
+
+### 这次主要补了什么
+
+本轮并不是一次正式发布整理，而是一次围绕现场问题的持续排查补记，重点集中在：
+
+1. 修复单人解限副本中玩家自己完全无数据的问题；
+2. 继续推进 NPC 队友 / 信赖 / 幻体对象的独立统计；
+3. 把战斗流水角色筛选改成更直观的下拉框；
+4. 为“有进入战斗，但没有结束战斗”的问题补充诊断与交接材料。
+
+### 本轮关键代码变化
+
+- `DalamudACT/DalamudApi.cs`
+  - 本地玩家身份获取优先改为 `ObjectTable.LocalPlayer`，再回退 `ClientState.LocalPlayer`
+- `DalamudACT/UI/CombatTimelineWindow.cs`
+  - 战斗流水角色筛选改成下拉框
+- `DalamudACT/LogHelper.cs`
+  - 新增 `DebugRecent(...)`，允许把关键调试日志也写入最近日志摘要
+- `DalamudACT/UI/LogUiHelper.cs`
+  - 补齐调试日志级别的 UI 样式
+- `DalamudACT/Plugin/ACT.cs`
+  - 补强未命中 tracked actor 的调试日志
+  - 在 source / target 两侧接入友方对象动态观察逻辑
+- `DalamudACT/Stats/LocalStatsService.cs`
+  - 引入 `observedFriendlyActorCache`
+  - 新增按 `actorId + name` 直接收编 `XX的幻体` 的逻辑
+  - 收紧 combat-end 判定的参与对象范围
+
+### 到收工前已经确认的结果
+
+- 玩家自己的统计链路已经恢复；
+- 战斗流水中可以看到玩家自己的技能；
+- DPS 面板中可以看到玩家自己一行；
+- 战斗流水筛选下拉框已完成；
+- 最近日志摘要已经能承载关键调试信息。
+
+### 还没有闭环的部分
+
+- 幻体 NPC 是否已经能稳定单独成行，仍待用户最后一轮复测；
+- combat-end 收紧后，战斗是否已经能正常结束，也仍待用户现场确认。
+
+### 接手人最该先做什么
+
+1. 让用户用当前 `output\\DalamudACT.dll` 再测一次带幻体 / NPC 队友的副本；
+2. 重点观察最近日志中是否出现：
+   - `已纳入可跟踪友方对象`
+   - `已按事件身份纳入可跟踪友方对象`
+3. 如果日志出现但仍不成行，优先继续检查 tracked actor 注册与 actorId 口径；
+4. 如果已经成行但仍不结束战斗，继续定位到底是谁一直保持 `InCombat`。
+## 2026-05-11 补充：DoT 状态驱动收尾
+
+### 这次主要补了什么
+
+本轮围绕 DoT 统计做了最后一轮收口，核心目标是把原先偏事件驱动的 DoT 统计改成状态驱动：
+
+1. 玩家施放已知 DoT 技能后，先记录挂载候选；
+2. 目标身上出现对应 debuff 后，纳入活跃 DoT 状态；
+3. 后续由 `LocalStatsService.PollActivePlayerDots(...)` 按 3 秒节奏自动补 tick；
+4. 目标不可选中时停止后续 DoT 结算；
+5. DoT 暴击改为沿用普通技能暴击率模拟逻辑。
+
+### 本轮关键代码变化
+
+- `DalamudACT/Plugin/ACT.cs`
+  - 已知 DoT 技能只负责记录应用种子，不再把 DoT tick 当成事件流里的独立记账路径。
+- `DalamudACT/Stats/LocalStatsService.cs`
+  - 新增状态轮询补 tick 逻辑、DoT 状态活跃管理、3 秒 tick 节奏控制、暴击模拟与伤害估算。
+- `DalamudACT/Stats/PlayerDotCatalog.cs`
+  - 作为静态白名单使用，按 `actionId / statusId` 收口 DoT 候选。
+
+### 构建验证
+
+- 已验证构建命令：`dotnet build E:\git\DalamudACT\DalamudACT.sln`
+- 结果：`0 warnings / 0 errors`
+
+### 当前仍建议继续观察的点
+
+- 进游戏现场验证几个典型 DoT 职业是否稳定；
+- 再核对一遍 `PlayerDotCatalog.cs` 是否还缺白名单；
+- 注意工作区里还有未跟踪文件 `1.txt`，不要误删。

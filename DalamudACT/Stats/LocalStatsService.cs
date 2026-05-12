@@ -1111,9 +1111,13 @@ internal sealed class LocalStatsService
             return false;
 
         var rawSourceActorId = ResolveStatusSourceActorId(status);
+        var hasRawSourceActorId = rawSourceActorId is > 0 and not InvalidActorId;
         if (!TryResolveTrackedSource(rawSourceActorId, nowUtc, out var source) || source.Kind != TrackedActorKind.Player)
         {
-            if (!preferredSourceActorId.HasValue
+            // Only fall back to the event-derived source when the status itself has no usable source.
+            // If the status already points to someone else, do not reassign that DoT to self or party.
+            if (hasRawSourceActorId
+                || !preferredSourceActorId.HasValue
                 || !TryResolveTrackedSource(preferredSourceActorId.Value, nowUtc, out source)
                 || source.Kind != TrackedActorKind.Player)
             {
@@ -2419,8 +2423,6 @@ internal sealed class LocalStatsService
         if (TryGetFriendlyBattleNpcTrackedActor(actorId, out actor))
             return true;
 
-        if (TryGetPartyFlagTrackedActor(actorId, out actor))
-            return true;
 
         return TryGetLocalPlayerTrackedActor(actorId, out actor);
     }
@@ -2434,8 +2436,6 @@ internal sealed class LocalStatsService
         if (gameObject is IBattleChara battleChara && TryGetTrackedBattleCharaActor(battleChara, out actor))
             return true;
 
-        if (gameObject is IBattleChara flaggedBattleChara && TryCreatePartyFlagTrackedActor(flaggedBattleChara, out actor))
-            return true;
 
         var identity = GetGameObjectIdentity(gameObject);
         if (identity.ResolveActorId() is var actorId && actorId != 0 && TryGetLocalPlayerTrackedActor(actorId, out actor))
@@ -2463,8 +2463,6 @@ internal sealed class LocalStatsService
         if (battleCharaActorId != 0 && TryGetLocalPlayerTrackedActor(battleCharaActorId, out actor))
             return true;
 
-        if (TryCreatePartyFlagTrackedActor(battleChara, out actor))
-            return true;
 
         actor = default;
         return false;
@@ -2607,26 +2605,6 @@ internal sealed class LocalStatsService
         return (ulong)battleNpc.MaxHp >= (ulong)localPlayerMaxHp * (ulong)multiplier;
     }
 
-    private static bool TryGetPartyFlagTrackedActor(uint actorId, out TrackedActor actor)
-    {
-        foreach (var obj in DalamudApi.ObjectTable)
-        {
-            if (obj is not IBattleChara battleChara)
-                continue;
-
-            if (!MatchesBattleCharaActor(battleChara, actorId))
-                continue;
-
-            if (!TryCreatePartyFlagTrackedActor(battleChara, out actor))
-                continue;
-
-            return true;
-        }
-
-        actor = default;
-        return false;
-    }
-
     private static bool MatchesPartyMemberActor(Dalamud.Game.ClientState.Party.IPartyMember member, uint actorId)
     {
         var gameObject = member.GameObject;
@@ -2646,34 +2624,6 @@ internal sealed class LocalStatsService
     {
         var identity = GetGameObjectIdentity(battleChara);
         return identity.MatchesActorId(actorId);
-    }
-
-    private static bool TryCreatePartyFlagTrackedActor(IBattleChara battleChara, out TrackedActor actor)
-    {
-        if (!IsPartyFlagBattleChara(battleChara))
-        {
-            actor = default;
-            return false;
-        }
-
-        var trackedActor = CreateTrackedActor(battleChara, ResolveBattleCharaActorId(battleChara));
-        if (trackedActor == null)
-        {
-            actor = default;
-            return false;
-        }
-
-        actor = trackedActor.Value;
-        return true;
-    }
-
-    private static bool IsPartyFlagBattleChara(IBattleChara battleChara)
-    {
-        var statusFlags = battleChara.StatusFlags;
-        if ((statusFlags & StatusFlags.PartyMember) == 0)
-            return false;
-
-        return (statusFlags & StatusFlags.Hostile) == 0;
     }
 
     private static bool AreSameGameObject(IGameObject? left, IGameObject? right)
@@ -2816,7 +2766,9 @@ internal sealed class LocalStatsService
             if (obj is not IBattleChara battleChara)
                 continue;
 
-            if ((!IsPartyFlagBattleChara(battleChara) && !IsFriendlyTrackedBattleNpc(battleChara)) || !TryMarkUniqueBattleChara(battleChara, seen))
+            // Do not treat ObjectTable PartyMember flags as authoritative party membership here.
+            // In 24-man duties, alliance members may look friendly and cause out-of-party DoT attribution.
+            if (!IsFriendlyTrackedBattleNpc(battleChara) || !TryMarkUniqueBattleChara(battleChara, seen))
                 continue;
 
             yield return battleChara;
@@ -3147,8 +3099,6 @@ internal sealed class LocalStatsService
                 return true;
         }
 
-        if (IsPartyFlagBattleChara(battleChara))
-            return true;
 
         if (battleChara is not IBattleNpc battleNpc)
             return true;

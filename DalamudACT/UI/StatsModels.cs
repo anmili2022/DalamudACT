@@ -104,6 +104,9 @@ internal sealed class Combatant
     [JsonPropertyName("crithits")]
     public string? CritHitsText { get; set; }
 
+    [JsonPropertyName("critdirecthits")]
+    public string? CritDirectHitsText { get; set; }
+
     [JsonPropertyName("tohit")]
     public string? ToHitText { get; set; }
 

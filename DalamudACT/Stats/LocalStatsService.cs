@@ -429,6 +429,7 @@ internal sealed class LocalStatsService
         string actionName,
         long amount,
         bool critical,
+        bool directHit,
         DateTime timeUtc,
         string zoneName)
     {
@@ -448,7 +449,7 @@ internal sealed class LocalStatsService
 
             if (TryResolveCombatantSource(sourceId, timeUtc, out var source, out var resolvedSourceIsFriendly))
             {
-                currentEncounter.RecordOutgoingDamage(source, actionName, amount, critical, timeUtc);
+                currentEncounter.RecordOutgoingDamage(source, actionName, amount, critical, directHit, timeUtc);
                 loggedSourceName = source.Name;
                 shouldAppendTimelineEntry = true;
                 sourceIsFriendly = resolvedSourceIsFriendly;
@@ -773,7 +774,7 @@ internal sealed class LocalStatsService
                 var wasStarted = currentEncounter.Started;
                 var resolvedCritical = ResolvePlayerDotCritical(source.ActorId, dotState, critical);
 
-                currentEncounter.RecordOutgoingDamage(source, encounterActionName, amount, resolvedCritical, timeUtc, isDotDamage: true);
+                currentEncounter.RecordOutgoingDamage(source, encounterActionName, amount, resolvedCritical, false, timeUtc, isDotDamage: true);
                 AppendEncounterStartIfNeededLocked(wasStarted, timeUtc);
                 AppendCombatTimelineEntryLocked(
                     timeUtc,
@@ -1356,7 +1357,7 @@ internal sealed class LocalStatsService
             if (resolvedCritical)
                 amount = Math.Max(amount + 1L, (long)Math.Round(amount * SimulatedDotCriticalMultiplier));
 
-            currentEncounter.RecordOutgoingDamage(source, encounterActionName, amount, resolvedCritical, tickTimeUtc, isDotDamage: true);
+            currentEncounter.RecordOutgoingDamage(source, encounterActionName, amount, resolvedCritical, false, tickTimeUtc, isDotDamage: true);
             AppendEncounterStartIfNeededLocked(wasStarted, tickTimeUtc);
             AppendCombatTimelineEntryLocked(
                 tickTimeUtc,
@@ -3949,6 +3950,7 @@ internal sealed class LocalStatsService
             MaxHitText = maxHitText,
             HitsText = hitsText,
             CritHitsText = critHitsText,
+            CritDirectHitsText = "0",
             ToHitText = toHitText,
             DamageTakenText = damageTakenText,
             BlockPctText = "--",
@@ -4178,11 +4180,12 @@ internal sealed class LocalStatsService
             string actionName,
             long amount,
             bool critical,
+            bool directHit,
             DateTime timeUtc,
             bool isDotDamage = false)
         {
             MarkActivity(timeUtc);
-            EnsureCombatant(source).NoteOutgoingDamage(actionName, amount, critical, timeUtc, isDotDamage);
+            EnsureCombatant(source).NoteOutgoingDamage(actionName, amount, critical, directHit, timeUtc, isDotDamage);
         }
 
         public void RecordIncomingDamage(TrackedActor target, long amount, DateTime timeUtc)
@@ -4266,6 +4269,8 @@ internal sealed class LocalStatsService
 
         public int CritHits { get; private set; }
 
+        public int CritDirectHits { get; private set; }
+
         public int Misses { get; private set; }
 
         public int HitFailed { get; private set; }
@@ -4311,7 +4316,7 @@ internal sealed class LocalStatsService
                 Kind = actor.Kind;
         }
 
-        public void NoteOutgoingDamage(string actionName, long amount, bool critical, DateTime timeUtc, bool isDotDamage)
+        public void NoteOutgoingDamage(string actionName, long amount, bool critical, bool directHit, DateTime timeUtc, bool isDotDamage)
         {
             Touch(timeUtc);
             Damage += amount;
@@ -4321,6 +4326,8 @@ internal sealed class LocalStatsService
             Hits++;
             if (critical)
                 CritHits++;
+            if (critical && directHit)
+                CritDirectHits++;
 
             if (amount > MaxHitValue)
             {
@@ -4445,6 +4452,7 @@ internal sealed class LocalStatsService
                         : "--",
                     HitsText = combatant.Hits.ToString(CultureInfo.InvariantCulture),
                     CritHitsText = combatant.CritHits.ToString(CultureInfo.InvariantCulture),
+                    CritDirectHitsText = combatant.CritDirectHits.ToString(CultureInfo.InvariantCulture),
                     ToHitText = toHit.ToString("F", CultureInfo.InvariantCulture),
                     DamageTakenText = CreateDamageString(combatant.DamageTaken, useSuffix: true, useDecimals: true),
                     BlockPctText = "--",

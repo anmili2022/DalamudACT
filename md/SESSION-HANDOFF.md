@@ -1,5 +1,27 @@
 # SESSION HANDOFF
 
+## 2026-05-13 交接补充：设置页压缩 / Ikegami 设置区收尾
+
+- 本轮详细交接已另存：`md/2026-05-13-settings-window-handoff.md`
+- 本轮主要围绕 `DalamudACT/UI/SettingsWindow.cs` 持续压设置页空白，而不是继续改悬浮窗正文绘制。
+- 已完成的关键点：
+  - `DrawSettingCard(...)` 改成按实际内容高度自适应；
+  - `样式分享码` 区域不再受固定卡片高度裁切影响；
+  - `DrawHelpMarker(...)` / `DrawCompactHelp(...)` 已用于压缩说明文字；
+  - Ikegami 设置区曾经出现的 `????` 文案已恢复成正常中文；
+  - 滑条 / 下拉框 / checkbox 统一为“标题在上、控件在下”；
+  - `透明度`、`Footer 与字号` 已压成 3 列紧凑布局。
+- 这轮最关键的判断：
+  - `样式分享码` 看起来像乱码，主要不是字符串坏了，而是高度不足导致的裁切 / 重叠 / 挤压。
+- 本轮最近一次构建仍通过：
+  - `dotnet build E:\git\DalamudACT\DalamudACT.sln`
+  - `0 warnings / 0 errors`
+- 如果下一个会话继续沿设置页方向推进，建议优先：
+  - 继续压 `尺寸与对齐`
+  - 继续缩短各组底部帮助说明
+  - 必要时再统一其它设置区的“标题在上、控件在下”样式
+- 当前工作区仍然是脏的，`1.txt` 仍然不要误删。
+
 ## 2026-05-11 交接补充：DoT 状态驱动收尾
 
 - 本轮已经把玩家 DoT 主链路改成“状态驱动 + 3 秒轮询补 tick”。
@@ -1204,3 +1226,7 @@ dotnet build E:\git\DalamudACT\DalamudACT.sln
 
 - `M md/RELEASE-NOTES.md`
 - `M md/USAGE.md`
+## 2026-05-12 补充：ikegami 悬浮窗样式交接
+- 本轮 ikegami 样式专项交接已单独整理：`md/2026-05-12-ikegami-handoff.md`
+- 新会话如果要继续做悬浮窗样式，请优先阅读这份文档。
+- 当前最新视觉基准以 `md/images/ikegami-preview.html` 为准，不要再以旧 PNG 或旧卡片布局为准。

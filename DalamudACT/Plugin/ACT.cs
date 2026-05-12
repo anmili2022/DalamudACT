@@ -450,7 +450,7 @@ public sealed class ACT : IDalamudPlugin
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
                             hasRelevantTrackedEffect = true;
-                            statsService.RecordDamage(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), nowUtc, zoneName);
+                            statsService.RecordDamage(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), IsDirectHit(effect), nowUtc, zoneName);
                             break;
                         }
 

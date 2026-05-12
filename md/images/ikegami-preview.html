@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DalamudACT ikegami 预览</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page-bg-1: #0f172a;
+      --page-bg-2: #1e293b;
+      --panel-bg: rgba(8, 11, 18, 0.62);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --muted: rgba(255, 255, 255, 0.70);
+      --text: #ffffff;
+      --shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+      --tile-width: 154px;
+      --tile-height: 104px;
+      --name-height: 20px;
+      --header-height: 34px;
+      --footer-height: 24px;
+      --gap: 8px;
+      --radius: 9px;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 15% 18%, rgba(46, 204, 113, 0.25), transparent 23%),
+        radial-gradient(circle at 68% 32%, rgba(59, 130, 246, 0.22), transparent 28%),
+        radial-gradient(circle at 85% 82%, rgba(168, 85, 247, 0.20), transparent 26%),
+        linear-gradient(135deg, var(--page-bg-1), var(--page-bg-2));
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .stage {
+      width: 1180px;
+      min-height: 300px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0)),
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.12), transparent 35%),
+        linear-gradient(180deg, rgba(8, 11, 18, 0.2), rgba(8, 11, 18, 0.4));
+      padding: 18px 16px 12px;
+    }
+
+    .stage::before,
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .stage::before {
+      background:
+        radial-gradient(circle at 7% 78%, rgba(32, 201, 151, 0.18), transparent 14%),
+        radial-gradient(circle at 93% 66%, rgba(45, 212, 191, 0.16), transparent 16%),
+        radial-gradient(circle at 48% 100%, rgba(56, 189, 248, 0.16), transparent 16%);
+      mix-blend-mode: screen;
+    }
+
+    .stage::after {
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 24px, 24px 100%;
+      opacity: 0.14;
+    }
+
+    .preview-title {
+      position: relative;
+      z-index: 1;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.68);
+      margin-bottom: 10px;
+    }
+
+    .overlay {
+      position: relative;
+      z-index: 1;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 10px 10px 8px;
+    }
+
+    .strip {
+      display: flex;
+      gap: var(--gap);
+      align-items: flex-start;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+    }
+
+    .strip::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .strip::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+    }
+
+    .tile {
+      flex: 0 0 var(--tile-width);
+      width: var(--tile-width);
+    }
+
+    .tile__name {
+      height: var(--name-height);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      padding: 0 2px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.94);
+      line-height: 1;
+    }
+
+    .tile__job {
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.96);
+      font-size: 10px;
+      flex: 0 0 18px;
+    }
+
+    .tile__label {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tile__panel {
+      height: calc(var(--tile-height) - var(--name-height));
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      overflow: visible;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tile__header {
+      position: relative;
+      height: var(--header-height);
+      background: var(--accent, #334155);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+      cursor: default;
+    }
+
+    .tile__value {
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .tile__tooltip {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 8px);
+      transform: translateX(-50%) translateY(-4px);
+      min-width: 126px;
+      padding: 8px 9px;
+      border-radius: 8px;
+      background: rgba(5, 8, 14, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.34);
+      font-size: 11px;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.92);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 140ms ease, transform 140ms ease;
+      z-index: 10;
+      text-shadow: none;
+    }
+
+    .tile__tooltip::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -5px;
+      width: 10px;
+      height: 10px;
+      background: rgba(5, 8, 14, 0.96);
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .tile__header:hover .tile__tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .tile__tipline {
+      white-space: nowrap;
+    }
+
+    .tile__body {
+      flex: 1;
+      padding: 8px 9px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .tile__line {
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+    }
+
+    .tile__footer {
+      height: var(--footer-height);
+      background: rgba(6, 8, 14, 0.78);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.92);
+      border-bottom-left-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+    }
+
+    .encounter {
+      margin-top: 10px;
+      background: rgba(5, 8, 14, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 9px;
+      min-height: 32px;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 6px 10px;
+      font-size: 12px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .encounter__time {
+      color: #7dd3fc;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .encounter__zone {
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: rgba(255, 255, 255, 0.90);
+    }
+
+    .encounter__summary {
+      white-space: nowrap;
+      color: rgba(255, 255, 255, 0.96);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .encounter__actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .encounter__actions span {
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.58);
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="preview-title">DalamudACT · ikegami overlay HTML 预览</div>
+    <div class="overlay">
+      <div class="strip" id="strip"></div>
+      <div class="encounter">
+        <div class="encounter__time">00:15</div>
+        <div class="encounter__zone">永远之暗歼灭战</div>
+        <div class="encounter__summary">103930 DPS</div>
+        <div class="encounter__actions">
+          <span>↔</span>
+          <span>⚙</span>
+        </div>
+      </div>
+    </div>
+    <div class="hint">说明：总 DPS 汇总卡已移除；占比不显示；总伤、暴击率、命中率改为悬浮在色块上的 tooltip。</div>
+  </div>
+
+  <script>
+    const data = [
+      { icon: "骑", name: "阿菲基 (YOU)", value: "26163 DPS", accent: "#7f8ea9", line1: "普拉之心 - 136519", tip1: "总伤：39.2万", tip2: "暴击率：28.4%", tip3: "命中率：97.1%" },
+      { icon: "赤", name: "赤暴君 (YOU)", value: "16465 DPS", accent: "#cf3459", line1: "魔回刺 - 61875", tip1: "总伤：24.7万", tip2: "暴击率：31.8%", tip3: "命中率：96.8%" },
+      { icon: "龙", name: "雅修特拉 (YOU)", value: "14782 DPS", accent: "#7b63d1", line1: "苍穹龙炎 - 59603", tip1: "总伤：22.1万", tip2: "暴击率：26.9%", tip3: "命中率：97.6%" },
+      { icon: "召", name: "斯菲因 (YOU)", value: "13500 DPS", accent: "#3a8d4f", line1: "王眼震压 - 55003", tip1: "总伤：20.2万", tip2: "暴击率：24.7%", tip3: "命中率：98.1%" },
+      { icon: "学", name: "古拉哈哈提亚 (YOU)", value: "11148 DPS", accent: "#3152b8", line1: "葬送剑 - 40085", tip1: "总伤：16.7万", tip2: "暴击率：19.4%", tip3: "命中率：96.4%" },
+      { icon: "武", name: "乌克拉玛特 (YOU)", value: "10955 DPS", accent: "#b9372f", line1: "狮鹫的臂铠 - 26867", tip1: "总伤：16.4万", tip2: "暴击率：18.6%", tip3: "命中率：95.9%" },
+      { icon: "白", name: "阿尔菲诺 (YOU)", value: "5952 DPS", accent: "#2f9fd3", line1: "注药III - 24536", tip1: "总伤：8.9万", tip2: "暴击率：14.8%", tip3: "命中率：98.9%" },
+      { icon: "舞", name: "可露儿 (YOU)", value: "4967 DPS", accent: "#88982e", line1: "神圣之白 - 79006", tip1: "总伤：7.4万", tip2: "暴击率：12.5%", tip3: "命中率：99.1%" }
+    ];
+
+    const strip = document.getElementById("strip");
+
+    for (const item of data) {
+      const tile = document.createElement("article");
+      tile.className = "tile";
+      tile.style.setProperty("--accent", item.accent);
+      tile.innerHTML = `
+        <div class="tile__name">
+          <span class="tile__job">${item.icon}</span>
+          <span class="tile__label">${item.name}</span>
+        </div>
+        <div class="tile__panel">
+          <div class="tile__header">
+            <div class="tile__value">${item.value}</div>
+            <div class="tile__tooltip">
+              <div class="tile__tipline">${item.tip1}</div>
+              <div class="tile__tipline">${item.tip2}</div>
+              <div class="tile__tipline">${item.tip3}</div>
+            </div>
+          </div>
+          <div class="tile__body">
+            <div class="tile__line">${item.line1}</div>
+          </div>
+          <div class="tile__footer">DPS · 实时</div>
+        </div>
+      `;
+      strip.appendChild(tile);
+    }
+  </script>
+</body>
+</html>

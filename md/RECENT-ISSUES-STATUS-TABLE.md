@@ -1,6 +1,6 @@
 # 最近问题状态表（维护视角）
 
-更新时间：`2026-05-08`
+更新时间：`2026-05-12`
 
 用途：给继续接手维护的人快速判断哪些问题**已解决**、哪些还需要**实测验证**、哪些仍然**未完成**。
 
@@ -33,6 +33,8 @@
 | 悬浮窗页签交互不完整 | 已补齐左键折叠/展开、右键开关设置窗口 | `DalamudACT/UI/FloatingStatsWindow.cs`、`DalamudACT/UI/PluginUI.cs`、`DalamudACT/UI/StatsPanel.cs` |
 | 悬浮窗容易误移动/误缩放/误改列宽 | 已新增 `锁定悬浮窗口`；锁定后不可移动、缩放，表头拖拽禁用 | `DalamudACT/UI/SettingsWindow.cs`、`DalamudACT/UI/StatsPanel.cs`、相关配置文件 |
 | 悬浮表格配置项不足 | 已新增玩家列最小宽度、固定列宽、表格行高等设置 | `DalamudACT/Configuration/PluginConfiguration.cs`、`DalamudACT/UI/SettingsWindow.cs` |
+| 主题色调色板缺少全局透明度控制 | 已新增 `主题色透明度` 全局滑杆；单职业颜色编辑改为只调 `RGB`，透明度统一由全局值控制 | `DalamudACT/Configuration/PluginConfiguration.cs`、`DalamudACT/UI/SettingsWindow.cs` |
+| 治疗职业主题色区分度不足 | 已按确认结果定稿并同步默认主题色：`白魔法师 #D8DDE6`、`占星术士 #B76E79`、`学者 #66AA96`、`贤者 #7FA8E8` | `DalamudACT/UI/JobThemePalette.cs` |
 | `DPS` 页缺少 `伤害量` 列 | 已新增可配置显示/隐藏的 `伤害量` 列，总计行与 tooltip 同步补齐 | `DalamudACT/UI/StatsPanel.cs`、`DalamudACT/UI/SettingsWindow.cs` |
 | `DPS / HPS / 承伤` 三页列显示分散、设置语义不统一 | 已合并为共享的 `页面列显示`；统一控制 `玩家 / 职业 / 伤害 / 秒伤 / 死亡 / 显示人数`，并明确三个页签中的列语义 | `DalamudACT/Configuration/PluginConfiguration.cs`、`DalamudACT/UI/SettingsWindow.cs`、`DalamudACT/UI/StatsPanel.cs` |
 | 切换列显示会打乱列宽，重开插件后布局无法恢复 | 已将统计页与历史页列宽写入配置文件；切换列显示不再重置当前列宽，并提供重置列宽记忆入口 | `DalamudACT/Configuration/PluginConfiguration.cs`、`DalamudACT/UI/SettingsWindow.cs`、`DalamudACT/UI/StatsPanel.cs` |
@@ -67,6 +69,7 @@
 |---|---|---|
 | `Cast` Hook 恢复 | 当前仍处于禁用状态 | 在确认 `ActionEffect` 主链路稳定后，先单独恢复并单独测试 |
 | `ActorControlSelf` Hook 恢复 | 当前仍处于禁用状态 | 在 `Cast` 验证通过后，再单独恢复并重新校验签名与调用约定 |
+| 悬浮窗展示模式切换 | 已确定下一步方向，但尚未开始实现；计划把入口放进 `悬浮面板显示项目`，并用展示模式切换替换当前 `表格布局参数`，保留当前样式并新增 `ikegami` 样式 | 明天优先从 `PluginConfiguration.cs`、`SettingsWindow.cs`、`FloatingStatsWindow.cs`、`StatsPanel.cs` 入手，先补模式枚举和配置，再接 UI 与渲染切换 |
 | DoT 归因补齐 | 已落地静态白名单表 | 继续补漏项并观察是否还需要更细的状态映射 |
 | HoT 归因补齐 | 当前仍未展开 | 与 DoT 分开处理，先不要混在同一轮恢复里 |
 | Death 链路进一步补齐 | 当前已有兼容替代实现，但仍不是最终完整形态 | 在稳定基础上再补更细粒度逻辑 |
@@ -78,8 +81,9 @@
 
 | 提醒项 | 说明 |
 |---|---|
-| 当前工作区状态 | `HANDOVER.md` 提到当前工作区是脏工作区；当前未提交修改除历史预览流外，还包含共享列显示、列宽持久化、卡片式 UI 与文档补充 |
+| 当前工作区状态 | `HANDOVER.md` 提到当前工作区是脏工作区；当前未提交修改除既有 UI / 配置整理外，还包含主题色透明度、治疗职业默认主题色与相关文档补充 |
 | 构建基线 | 最近验证通过的产物路径是 `E:\\git\\DalamudACT\\output\\DalamudACT.dll` |
+| 主题色配置迁移版本 | 当前主题色相关配置迁移已补到 `PluginConfiguration.Version = 35`，默认治疗职业主题色已随迁移同步更新 |
 | DoT 当前方向 | 已切换为“静态表 + 目标状态确认”，不再靠技能名字猜测 |
 | 发布时不要直接重跑旧失败任务 | 如果 workflow 已变更，应使用 `workflow_dispatch` 并指定准确 tag |
 | 恢复高风险 Hook 的原则 | 不要一次性全部恢复；每个 Hook 独立 `try/catch`、独立日志、失败即降级 |

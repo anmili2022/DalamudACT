@@ -71,6 +71,18 @@ internal static class StatsPanel
     private static readonly Vector4 HostileNpcTextColor = new(1.00f, 0.72f, 0.60f, 1.00f);
     private static readonly Vector4 FriendlyNpcRowBackgroundColor = new(0.08f, 0.26f, 0.10f, 0.22f);
     private static readonly Vector4 HostileNpcRowBackgroundColor = new(0.36f, 0.10f, 0.08f, 0.28f);
+    private static readonly Vector4 IkegamiCardBackgroundColor = new(1.00f, 1.00f, 1.00f, 0.035f);
+    private static readonly Vector4 IkegamiNameBackgroundColor = new(1.00f, 1.00f, 1.00f, 0.06f);
+    private static readonly Vector4 IkegamiBodyBackgroundColor = new(0.00f, 0.00f, 0.00f, 0.14f);
+    private static readonly Vector4 IkegamiContentBackgroundColor = new(0.07f, 0.09f, 0.14f, 0.78f);
+    private static readonly Vector4 IkegamiCardBorderColor = new(1.00f, 1.00f, 1.00f, 0.12f);
+    private static readonly Vector4 IkegamiHeaderTextColor = new(1.00f, 1.00f, 1.00f, 0.98f);
+    private static readonly Vector4 IkegamiMutedTextColor = new(1.00f, 1.00f, 1.00f, 0.88f);
+    private static readonly Vector4 IkegamiFooterBackgroundColor = new(0.05f, 0.07f, 0.11f, 0.75f);
+    private static readonly Vector4 IkegamiEncounterTimeTextColor = new(0.49f, 0.83f, 0.99f, 1.00f);
+    private const float IkegamiCardSpacing = 8f;
+    private const float IkegamiNameBottomSpacing = 1f;
+    private const float IkegamiEncounterFooterHeight = 24f;
     private static bool isResizingMetricColumns;
     private static int metricTableResetVersion;
     private static int historyTableResetVersion;
@@ -122,8 +134,19 @@ internal static class StatsPanel
                 toggleNoCombatCollapseRequested);
         }
 
+        var ikegamiTabFontScale = config.FloatingStatsDisplayStyle == FloatingStatsDisplayStyle.Ikegami
+            ? Math.Clamp(config.FloatingStatsIkegamiTabFontScale, 0.6f, 2.0f)
+            : 1f;
+        if (ikegamiTabFontScale != 1f)
+            ImGui.SetWindowFontScale(ikegamiTabFontScale);
+
         if (!ImGui.BeginTabBar("##stats_tabs"))
+        {
+            if (ikegamiTabFontScale != 1f)
+                ImGui.SetWindowFontScale(1f);
+
             return new StatsPanelDrawResult(previousActiveTab, false, false, false);
+        }
 
         var activeTab = previousActiveTab;
         var toggleDpsCollapseRequested = false;
@@ -246,6 +269,8 @@ internal static class StatsPanel
         }
 
         ImGui.EndTabBar();
+        if (ikegamiTabFontScale != 1f)
+            ImGui.SetWindowFontScale(1f);
         return new StatsPanelDrawResult(activeTab, toggleDpsCollapseRequested, openSettingsRequested, false);
     }
 
@@ -343,6 +368,100 @@ internal static class StatsPanel
         bool keepSourceOrder = false,
         int? summaryRowInsertIndex = null)
     {
+        switch (config.FloatingStatsDisplayStyle)
+        {
+            case FloatingStatsDisplayStyle.Ikegami:
+                DrawIkegamiMetricTab(
+                    id,
+                    valueColumnLabel,
+                    combatData,
+                    config,
+                    selector,
+                    textSelector,
+                    tooltipPrimaryLabel,
+                    tooltipPrimaryTextSelector,
+                    tooltipRateLabel,
+                    tooltipRateTextSelector,
+                    sourceRows,
+                    showPlayerColumn,
+                    showJobColumn,
+                    showDamageColumn,
+                    damageColumnLabel,
+                    damageTextSelector,
+                    showValueColumn,
+                    showDeathsColumn,
+                    maxRows,
+                    showSummaryRow,
+                    summaryName,
+                    summaryJob,
+                    summaryDamageText,
+                    summaryValueText,
+                    summaryDeathsText,
+                    keepSourceOrder,
+                    summaryRowInsertIndex);
+                return;
+            default:
+                DrawClassicMetricTab(
+                    id,
+                    valueColumnLabel,
+                    combatData,
+                    config,
+                    selector,
+                    textSelector,
+                    tooltipPrimaryLabel,
+                    tooltipPrimaryTextSelector,
+                    tooltipRateLabel,
+                    tooltipRateTextSelector,
+                    sourceRows,
+                    showPlayerColumn,
+                    showJobColumn,
+                    showDamageColumn,
+                    damageColumnLabel,
+                    damageTextSelector,
+                    showValueColumn,
+                    showDeathsColumn,
+                    maxRows,
+                    showSummaryRow,
+                    summaryName,
+                    summaryJob,
+                    summaryDamageText,
+                    summaryValueText,
+                    summaryDeathsText,
+                    keepSourceOrder,
+                    summaryRowInsertIndex);
+                return;
+        }
+    }
+
+    private static void DrawClassicMetricTab(
+        string id,
+        string valueColumnLabel,
+        CombatDataWrapper combatData,
+        PluginConfiguration config,
+        Func<Combatant, double> selector,
+        Func<Combatant, string> textSelector,
+        string tooltipPrimaryLabel = "\u4f24\u5bb3\u91cf",
+        Func<Combatant, string>? tooltipPrimaryTextSelector = null,
+        string tooltipRateLabel = "\u79d2\u4f24",
+        Func<Combatant, string>? tooltipRateTextSelector = null,
+        IReadOnlyList<Combatant>? sourceRows = null,
+        bool showPlayerColumn = true,
+        bool showJobColumn = true,
+        bool showDamageColumn = false,
+        string damageColumnLabel = "",
+        Func<Combatant, string>? damageTextSelector = null,
+        bool showValueColumn = true,
+        bool showDeathsColumn = false,
+        int? maxRows = null,
+        bool showSummaryRow = false,
+        string summaryName = "",
+        string summaryJob = "",
+        string? summaryDamageText = null,
+        string? summaryValueText = null,
+        string? summaryDeathsText = null,
+        bool keepSourceOrder = false,
+        int? summaryRowInsertIndex = null)
+    {
         if (!ImGui.BeginChild($"##metric_{id}_scroll", new Vector2(0f, 0f), false))
             return;
 
@@ -357,6 +476,7 @@ internal static class StatsPanel
         {
             ImGui.TextDisabled("\u6ca1\u6709\u53ef\u663e\u793a\u7684\u6570\u636e\u3002");
             ImGui.EndChild();
+            ImGui.PopStyleColor();
             return;
         }
 
@@ -375,6 +495,7 @@ internal static class StatsPanel
         var deathColumnWidth = ResolveDeathColumnWidth(config.FloatingStatsDeathsColumnWidth, config);
         var rowHeight = ResolveRowHeight(config);
         var layoutSignature = BuildMetricLayoutSignature(
+            config.FloatingStatsDisplayStyle,
             showPlayerColumn,
             showJobColumn,
             showDamageColumn,
@@ -667,6 +788,804 @@ internal static class StatsPanel
         ImGui.TextUnformatted(string.Empty);
     }
 
+    private static void DrawIkegamiMetricTab(
+        string id,
+        string valueColumnLabel,
+        CombatDataWrapper combatData,
+        PluginConfiguration config,
+        Func<Combatant, double> selector,
+        Func<Combatant, string> textSelector,
+        string tooltipPrimaryLabel = "\u4f24\u5bb3\u91cf",
+        Func<Combatant, string>? tooltipPrimaryTextSelector = null,
+        string tooltipRateLabel = "\u79d2\u4f24",
+        Func<Combatant, string>? tooltipRateTextSelector = null,
+        IReadOnlyList<Combatant>? sourceRows = null,
+        bool showPlayerColumn = true,
+        bool showJobColumn = true,
+        bool showDamageColumn = false,
+        string damageColumnLabel = "",
+        Func<Combatant, string>? damageTextSelector = null,
+        bool showValueColumn = true,
+        bool showDeathsColumn = false,
+        int? maxRows = null,
+        bool showSummaryRow = false,
+        string summaryName = "",
+        string summaryJob = "",
+        string? summaryDamageText = null,
+        string? summaryValueText = null,
+        string? summaryDeathsText = null,
+        bool keepSourceOrder = false,
+        int? summaryRowInsertIndex = null)
+    {
+        var ikegamiContentBackgroundAlpha = Math.Clamp(config.FloatingStatsIkegamiContentBackgroundAlpha, 0f, 1f);
+        var metricScrollFlags = config.FloatingStatsIkegamiShowVerticalScrollbar ? ImGuiWindowFlags.None : ImGuiWindowFlags.NoScrollbar;
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, WithAlphaMultiplier(IkegamiContentBackgroundColor, ikegamiContentBackgroundAlpha));
+        if (!ImGui.BeginChild($"##metric_{id}_scroll", new Vector2(0f, 0f), false, metricScrollFlags))
+        {
+            ImGui.PopStyleColor();
+            return;
+        }
+
+        var sourceCombatants = sourceRows ?? GetVisibleCombatants(combatData, config);
+        var allRows = keepSourceOrder
+            ? sourceCombatants.ToList()
+            : sourceCombatants
+                .OrderByDescending(selector)
+                .ToList();
+
+        if (allRows.Count == 0)
+        {
+            ImGui.TextDisabled("\u6ca1\u6709\u53ef\u663e\u793a\u7684\u6570\u636e\u3002");
+            ImGui.EndChild();
+            ImGui.PopStyleColor();
+            return;
+        }
+
+        var rows = maxRows.HasValue
+            ? allRows.Take(Math.Max(maxRows.Value, 1)).ToList()
+            : allRows;
+        var totalValue = allRows.Sum(selector);
+        var totalValueText = !string.IsNullOrWhiteSpace(summaryValueText)
+            ? summaryValueText
+            : FormatMetricValue(totalValue);
+        var footerMetricText = ResolveIkegamiFooterMetricText(id, valueColumnLabel, totalValueText);
+        var ikegamiPanelRaise = Math.Clamp(config.FloatingStatsIkegamiPanelRaise, 0f, 60f);
+        var ikegamiDetailRaise = Math.Clamp(config.FloatingStatsIkegamiDetailRaise, 0f, 60f);
+        var ikegamiFooterRaise = Math.Clamp(config.FloatingStatsIkegamiFooterRaise, 0f, 80f);
+        var ikegamiShowScrollbar = config.FloatingStatsIkegamiShowScrollbar;
+        var ikegamiShowMaxHitDetail = config.FloatingStatsIkegamiShowMaxHitDetail;
+        var ikegamiShowNameLine = config.FloatingStatsIkegamiShowNameLine;
+        var ikegamiBoxWidth = Math.Clamp(config.FloatingStatsIkegamiBoxWidth, 1f, 260f);
+        var ikegamiBoxHeight = Math.Clamp(config.FloatingStatsIkegamiBoxHeight, 1f, 140f);
+        var ikegamiNameHeight = Math.Clamp(config.FloatingStatsIkegamiNameHeight, 16f, 40f);
+        var ikegamiHeaderHeight = Math.Clamp(config.FloatingStatsIkegamiHeaderHeight, 20f, 80f);
+        ikegamiHeaderHeight = Math.Min(ikegamiHeaderHeight, Math.Max(1f, ikegamiBoxHeight));
+        var ikegamiHeaderLeftPadding = Math.Clamp(config.FloatingStatsIkegamiHeaderLeftPadding, 0f, 32f);
+        var ikegamiDetailLeftPadding = Math.Clamp(config.FloatingStatsIkegamiDetailLeftPadding, 0f, 32f);
+        var ikegamiNameLeftPadding = Math.Clamp(config.FloatingStatsIkegamiNameLeftPadding, 0f, 40f);
+        var ikegamiNameRightPadding = Math.Clamp(config.FloatingStatsIkegamiNameRightPadding, 0f, 40f);
+        var ikegamiJobBadgeSize = Math.Clamp(config.FloatingStatsIkegamiJobBadgeSize, 12f, 36f);
+        var ikegamiNameAlpha = Math.Clamp(config.FloatingStatsIkegamiNameAlpha, 0f, 1f);
+        var ikegamiNameBackgroundAlpha = Math.Clamp(config.FloatingStatsIkegamiNameBackgroundAlpha, 0f, 1f);
+        var ikegamiHeaderAlpha = Math.Clamp(config.FloatingStatsIkegamiHeaderAlpha, 0f, 1f);
+        var ikegamiPanelBackgroundAlpha = Math.Clamp(config.FloatingStatsIkegamiPanelBackgroundAlpha, 0f, 1f);
+        var ikegamiBodyAlpha = Math.Clamp(config.FloatingStatsIkegamiBodyAlpha, 0f, 1f);
+        var ikegamiBodyBackgroundAlpha = Math.Clamp(config.FloatingStatsIkegamiBodyBackgroundAlpha, 0f, 1f);
+        var ikegamiFooterAlpha = Math.Clamp(config.FloatingStatsIkegamiFooterAlpha, 0f, 1f);
+        var ikegamiFooterHeight = Math.Clamp(config.FloatingStatsIkegamiFooterHeight, 18f, 48f);
+        var ikegamiFooterTimeZoneSpacing = Math.Clamp(config.FloatingStatsIkegamiFooterTimeZoneSpacing, 0f, 32f);
+        var ikegamiFooterRightPadding = Math.Clamp(config.FloatingStatsIkegamiFooterRightPadding, 0f, 40f);
+        var ikegamiNameFontScale = Math.Clamp(config.FloatingStatsIkegamiNameFontScale, 0.6f, 2.0f);
+        var ikegamiHeaderFontScale = Math.Clamp(config.FloatingStatsIkegamiHeaderFontScale, 0.6f, 2.0f);
+        var ikegamiBodyFontScale = Math.Clamp(config.FloatingStatsIkegamiBodyFontScale, 0.6f, 2.0f);
+        var ikegamiFooterFontScale = Math.Clamp(config.FloatingStatsIkegamiFooterFontScale, 0.6f, 2.0f);
+        var ikegamiTooltipFontScale = Math.Clamp(config.FloatingStatsIkegamiTooltipFontScale, 0.6f, 2.0f);
+        var ikegamiBoxAlignment = Enum.IsDefined(typeof(IkegamiBoxAlignment), config.FloatingStatsIkegamiBoxAlignment)
+            ? config.FloatingStatsIkegamiBoxAlignment
+            : IkegamiBoxAlignment.Left;
+        var ikegamiCardHeight = (ikegamiShowNameLine ? ikegamiNameHeight + IkegamiNameBottomSpacing : 0f) + ikegamiBoxHeight;
+        var stripHeight = ikegamiCardHeight + (ikegamiShowScrollbar ? ImGui.GetStyle().ScrollbarSize + 1f : 1f);
+        var stripFlags = ikegamiShowScrollbar
+            ? ImGuiWindowFlags.HorizontalScrollbar
+            : ImGuiWindowFlags.NoScrollbar;
+        var footerAlignedContentWidth = Math.Max(
+            0f,
+            Math.Max(
+                ImGui.GetContentRegionAvail().X,
+                ImGui.GetWindowWidth() - (ImGui.GetStyle().WindowPadding.X * 2f)));
+
+        if (ImGui.BeginChild(
+                $"##ikegami_strip_{id}",
+                new Vector2(0f, stripHeight),
+                false,
+                stripFlags))
+        {
+            var stripStartX = ImGui.GetCursorPosX();
+            var stripAvailableWidth = footerAlignedContentWidth > 0f
+                ? footerAlignedContentWidth
+                : Math.Max(
+                    0f,
+                    Math.Max(
+                        ImGui.GetContentRegionAvail().X,
+                        ImGui.GetWindowWidth() - (ImGui.GetStyle().WindowPadding.X * 2f)));
+            var totalStripWidth = rows.Count > 0
+                ? (rows.Count * ikegamiBoxWidth) + ((rows.Count - 1) * IkegamiCardSpacing)
+                : 0f;
+            var stripOffsetX = ResolveIkegamiStripOffset(ikegamiBoxAlignment, stripAvailableWidth, totalStripWidth);
+            if (stripOffsetX > 0f)
+                ImGui.SetCursorPosX(stripStartX + stripOffsetX);
+
+            for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
+            {
+                var combatant = rows[rowIndex];
+                var barColor = ResolveBarColor(combatant, config);
+                var hasCustomTextColor = TryResolveCombatantTextColor(combatant, config, out var rowTextColor);
+                var primaryLabel = combatant.Name ?? string.Empty;
+                var secondaryLabel = string.IsNullOrWhiteSpace(combatant.Job) ? null : combatant.Job;
+                var jobBadgeText = ResolveIkegamiJobBadgeText(combatant);
+                var detailText = ResolveIkegamiDetailText(
+                    id,
+                    combatant,
+                    showJobColumn,
+                    showDamageColumn,
+                    damageColumnLabel,
+                    damageTextSelector?.Invoke(combatant),
+                    showDeathsColumn);
+                if (id == "dps" && !ikegamiShowMaxHitDetail)
+                    detailText = null;
+
+                DrawIkegamiMetricCard(
+                    $"{id}_{rowIndex}",
+                    showJobColumn ? jobBadgeText : string.Empty,
+                    ResolveIkegamiTitle(primaryLabel, secondaryLabel, showPlayerColumn, showJobColumn),
+                    detailText,
+                    ResolveIkegamiHeaderMetricText(
+                        jobBadgeText,
+                        textSelector(combatant),
+                        ResolveIkegamiPrimaryMetricSuffix(id, valueColumnLabel)),
+                    ikegamiBoxWidth,
+                    ikegamiCardHeight,
+                    ikegamiShowNameLine,
+                    ikegamiNameHeight,
+                    ikegamiBoxHeight,
+                    ikegamiHeaderHeight,
+                    ikegamiHeaderLeftPadding,
+                    ikegamiDetailLeftPadding,
+                    ikegamiNameLeftPadding,
+                    ikegamiNameRightPadding,
+                    ikegamiJobBadgeSize,
+                    ikegamiPanelRaise,
+                    ikegamiDetailRaise,
+                    barColor,
+                    TryResolveCombatantRowBackgroundColor(combatant, config, out var rowBackgroundColor)
+                        ? rowBackgroundColor
+                        : IkegamiCardBackgroundColor,
+                    ikegamiNameAlpha,
+                    ikegamiNameBackgroundAlpha,
+                    ikegamiHeaderAlpha,
+                    ikegamiPanelBackgroundAlpha,
+                    ikegamiBodyAlpha,
+                    ikegamiBodyBackgroundAlpha,
+                    ikegamiNameFontScale,
+                    ikegamiHeaderFontScale,
+                    ikegamiBodyFontScale,
+                    hasCustomTextColor,
+                    rowTextColor,
+                    id == "dps"
+                        ? () => DrawIkegamiDpsTooltip(combatant, ikegamiTooltipFontScale)
+                        : () => DrawIkegamiMetricTooltip(
+                            combatant,
+                            tooltipPrimaryLabel,
+                            tooltipPrimaryTextSelector?.Invoke(combatant),
+                            tooltipRateLabel,
+                            tooltipRateTextSelector?.Invoke(combatant),
+                            ikegamiTooltipFontScale));
+
+                if (rowIndex < rows.Count - 1)
+                    ImGui.SameLine(0f, IkegamiCardSpacing);
+            }
+
+            ImGui.EndChild();
+        }
+
+        ImGui.SetCursorPosY(Math.Max(0f, ImGui.GetCursorPosY() - ikegamiFooterRaise));
+        DrawIkegamiEncounterFooter(
+            id,
+            combatData,
+            footerMetricText,
+            footerAlignedContentWidth,
+            ikegamiFooterAlpha,
+            ikegamiFooterHeight,
+            ikegamiFooterTimeZoneSpacing,
+            ikegamiFooterRightPadding,
+            ikegamiFooterFontScale);
+
+        ImGui.EndChild();
+        ImGui.PopStyleColor();
+    }
+
+    private static void DrawIkegamiMetricCard(
+        string id,
+        string badgeText,
+        string title,
+        string? detailText,
+        string primaryMetricDisplayText,
+        float boxWidth,
+        float cardHeight,
+        bool showNameLine,
+        float nameHeight,
+        float boxHeight,
+        float headerHeight,
+        float headerLeftPadding,
+        float detailLeftPadding,
+        float nameLeftPadding,
+        float nameRightPadding,
+        float jobBadgeSize,
+        float panelRaise,
+        float detailRaise,
+        Vector4 barColor,
+        Vector4 backgroundColor,
+        float nameAlpha,
+        float nameBackgroundAlpha,
+        float headerAlpha,
+        float panelBackgroundAlpha,
+        float bodyAlpha,
+        float bodyBackgroundAlpha,
+        float nameFontScale,
+        float headerFontScale,
+        float bodyFontScale,
+        bool hasCustomTextColor,
+        Vector4 rowTextColor,
+        Action drawTooltip)
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+        if (ImGui.BeginChild(
+                $"##ikegami_card_{id}",
+                new Vector2(boxWidth, cardHeight),
+                false,
+                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+        {
+            if (showNameLine)
+            {
+                DrawIkegamiNameLine(
+                id,
+                badgeText,
+                    title,
+                    nameHeight,
+                    nameAlpha,
+                    nameBackgroundAlpha,
+                    nameLeftPadding,
+                    nameRightPadding,
+                    jobBadgeSize,
+                    nameFontScale,
+                    hasCustomTextColor,
+                    rowTextColor);
+
+                ImGui.Dummy(new Vector2(0f, IkegamiNameBottomSpacing));
+            }
+
+            if (panelRaise > 0f)
+                ImGui.SetCursorPosY(Math.Max(0f, ImGui.GetCursorPosY() - panelRaise));
+
+            ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 7f);
+            ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 1f);
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, WithAlphaMultiplier(backgroundColor, panelBackgroundAlpha));
+            ImGui.PushStyleColor(ImGuiCol.Border, IkegamiCardBorderColor);
+            if (ImGui.BeginChild(
+                    $"##ikegami_card_panel_{id}",
+                    new Vector2(-1f, boxHeight),
+                    true,
+                    ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 7f);
+                ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0f);
+                ImGui.PushStyleColor(ImGuiCol.ChildBg, WithAlphaMultiplier(barColor, headerAlpha));
+                if (ImGui.BeginChild(
+                        $"##ikegami_card_header_{id}",
+                        new Vector2(-1f, headerHeight),
+                        false,
+                        ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+                {
+                    if (headerFontScale != 1f)
+                        ImGui.SetWindowFontScale(headerFontScale);
+
+                    ImGui.PushStyleColor(ImGuiCol.Text, IkegamiHeaderTextColor);
+                    ImGui.SetCursorPosY(Math.Max(0f, ((headerHeight - ImGui.GetTextLineHeight()) * 0.5f) - 1f));
+                    DrawLeftAlignedTextLine(primaryMetricDisplayText, headerLeftPadding);
+                    ImGui.PopStyleColor();
+
+                    if (headerFontScale != 1f)
+                        ImGui.SetWindowFontScale(1f);
+                }
+
+                ImGui.EndChild();
+                drawTooltip();
+                ImGui.PopStyleColor();
+                ImGui.PopStyleVar(2);
+
+                var bodyHeight = Math.Max(0f, boxHeight - headerHeight);
+                if (!string.IsNullOrWhiteSpace(detailText) && bodyHeight > 0f)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.ChildBg, WithAlphaMultiplier(IkegamiBodyBackgroundColor, bodyBackgroundAlpha));
+                    if (ImGui.BeginChild(
+                            $"##ikegami_card_body_{id}",
+                            new Vector2(-1f, bodyHeight),
+                            false,
+                            ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+                    {
+                        if (bodyFontScale != 1f)
+                            ImGui.SetWindowFontScale(bodyFontScale);
+
+                        var bodyTextY = Math.Max(0f, ((bodyHeight - ImGui.GetTextLineHeight()) * 0.5f) - 1f) - detailRaise;
+                        var bodyTextColor = hasCustomTextColor ? rowTextColor : IkegamiMutedTextColor;
+                        ImGui.PushStyleColor(ImGuiCol.Text, WithAlphaMultiplier(bodyTextColor, bodyAlpha));
+                        ImGui.SetCursorPos(new Vector2(detailLeftPadding, Math.Max(0f, bodyTextY)));
+                        ImGui.TextUnformatted(detailText);
+                        ImGui.PopStyleColor();
+
+                        if (bodyFontScale != 1f)
+                            ImGui.SetWindowFontScale(1f);
+                    }
+
+                    ImGui.EndChild();
+                    ImGui.PopStyleColor();
+                }
+            }
+
+            ImGui.EndChild();
+            ImGui.PopStyleColor(2);
+            ImGui.PopStyleVar(2);
+        }
+
+        ImGui.EndChild();
+        ImGui.PopStyleVar();
+    }
+
+    private static string ResolveIkegamiTitle(
+        string? primaryLabel,
+        string? secondaryLabel,
+        bool showPlayerColumn,
+        bool showJobColumn)
+    {
+        if (showPlayerColumn && !string.IsNullOrWhiteSpace(primaryLabel))
+            return primaryLabel!;
+
+        if (showJobColumn && !string.IsNullOrWhiteSpace(secondaryLabel))
+            return secondaryLabel!;
+
+        if (!string.IsNullOrWhiteSpace(primaryLabel))
+            return primaryLabel!;
+
+        return string.IsNullOrWhiteSpace(secondaryLabel) ? "-" : secondaryLabel!;
+    }
+
+    private static float ResolveIkegamiStripOffset(
+        IkegamiBoxAlignment alignment,
+        float availableWidth,
+        float totalWidth)
+    {
+        if (availableWidth <= 0f || totalWidth <= 0f || totalWidth >= availableWidth)
+            return 0f;
+
+        var remainingWidth = availableWidth - totalWidth;
+        return alignment switch
+        {
+            IkegamiBoxAlignment.Center => remainingWidth * 0.5f,
+            IkegamiBoxAlignment.Right => remainingWidth,
+            _ => 0f,
+        };
+    }
+
+    private static string? ResolveIkegamiSubtitle(
+        string? primaryLabel,
+        string? secondaryLabel,
+        bool showPlayerColumn,
+        bool showJobColumn,
+        bool showDamageColumn,
+        string damageColumnLabel,
+        string? damageText,
+        bool showDeathsColumn,
+        string? deathsText)
+    {
+        var segments = new List<string>(4);
+
+        if (showPlayerColumn && showJobColumn && !string.IsNullOrWhiteSpace(secondaryLabel))
+            segments.Add(secondaryLabel!);
+        else if (!showPlayerColumn && showJobColumn && !string.IsNullOrWhiteSpace(primaryLabel))
+            segments.Add(primaryLabel!);
+
+        if (showDamageColumn && !string.IsNullOrWhiteSpace(damageText))
+            segments.Add($"{damageColumnLabel} {damageText}");
+
+        if (showDeathsColumn)
+            segments.Add($"死亡 {FormatEmptyAsZero(deathsText)}");
+
+        return segments.Count > 0 ? string.Join(" · ", segments) : null;
+    }
+
+    private static string? ResolveIkegamiDetailText(
+        string id,
+        Combatant combatant,
+        bool showJobColumn,
+        bool showDamageColumn,
+        string damageColumnLabel,
+        string? damageText,
+        bool showDeathsColumn)
+    {
+        _ = showJobColumn;
+        _ = showDeathsColumn;
+        return ResolveIkegamiPrimaryDetailText(id, combatant, showDamageColumn, damageColumnLabel, damageText);
+    }
+
+    private static string ResolveIkegamiJobBadgeText(Combatant combatant)
+    {
+        if (!string.IsNullOrWhiteSpace(combatant.Job))
+            return combatant.Job![0].ToString();
+
+        if (TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
+        {
+            return kind switch
+            {
+                FloatingCombatantKind.FriendlyNpc => "友",
+                FloatingCombatantKind.HostileNpc => "敌",
+                _ => "?"
+            };
+        }
+
+        return "?";
+    }
+
+    private static string ResolveIkegamiPrimaryMetricSuffix(string id, string valueColumnLabel)
+        => id switch
+        {
+            "dps" => "DPS",
+            "hps" => "HPS",
+            "taken" => "DTPS",
+            _ => valueColumnLabel,
+        };
+
+    private static string ResolveIkegamiPrimaryMetricText(
+        string? valueText,
+        string metricSuffix)
+    {
+        var metricText = FormatEmptyAsFallback(valueText, "0");
+        return string.IsNullOrWhiteSpace(metricSuffix)
+            ? metricText
+            : $"{metricText} {metricSuffix}";
+    }
+
+    private static string ResolveIkegamiHeaderMetricText(
+        string? badgeText,
+        string? valueText,
+        string metricSuffix)
+    {
+        var metricText = ResolveIkegamiPrimaryMetricText(valueText, metricSuffix);
+        return string.IsNullOrWhiteSpace(badgeText)
+            ? metricText
+            : $"[{badgeText}] - {metricText}";
+    }
+
+    private static string ResolveIkegamiFooterMetricText(string id, string valueColumnLabel, string totalValueText)
+    {
+        var metricSuffix = ResolveIkegamiPrimaryMetricSuffix(id, valueColumnLabel);
+        return string.IsNullOrWhiteSpace(metricSuffix)
+            ? totalValueText
+            : $"{totalValueText} {metricSuffix}";
+    }
+
+    private static string? ResolveIkegamiSummaryDetailText(
+        string id,
+        CombatDataWrapper combatData,
+        bool showDamageColumn,
+        string damageColumnLabel,
+        string? summaryDamageText)
+    {
+        var encounter = combatData.Msg?.Encounter;
+        var maxHit = JoinPair(encounter?.MaxHitText, encounter?.MaxHitValueText);
+        if (id == "dps" && maxHit != "--")
+            return maxHit;
+
+        if (showDamageColumn && !string.IsNullOrWhiteSpace(summaryDamageText))
+            return $"{damageColumnLabel} {summaryDamageText}";
+
+        return maxHit == "--" ? null : maxHit;
+    }
+
+    private static string? ResolveIkegamiPrimaryDetailText(
+        string id,
+        Combatant combatant,
+        bool showDamageColumn,
+        string damageColumnLabel,
+        string? damageText)
+    {
+        if (id == "dps")
+        {
+            if (!string.IsNullOrWhiteSpace(combatant.MaxHitText) && combatant.MaxHitText != "--")
+                return combatant.MaxHitText;
+
+            return null;
+        }
+
+        if (showDamageColumn && !string.IsNullOrWhiteSpace(damageText))
+            return $"{damageColumnLabel} {damageText}";
+
+        if (!string.IsNullOrWhiteSpace(combatant.MaxHitText) && combatant.MaxHitText != "--")
+            return combatant.MaxHitText;
+
+        return null;
+    }
+
+    private static void DrawIkegamiEncounterFooter(
+        string id,
+        CombatDataWrapper combatData,
+        string footerMetricText,
+        float alignedContentWidth,
+        float footerAlpha,
+        float footerHeight,
+        float footerTimeZoneSpacing,
+        float footerRightPadding,
+        float footerFontScale)
+    {
+        const float IkegamiFooterWidth = 380f;
+        var encounter = combatData.Msg?.Encounter;
+        var durationText = encounter?.DurationText ?? "00:00";
+        var zoneName = encounter?.CurrentZoneName ?? "Unknown";
+        var rightText = footerMetricText;
+        var startX = ImGui.GetCursorPosX();
+        var availableWidth = alignedContentWidth > 0f
+            ? alignedContentWidth
+            : Math.Max(1f, ImGui.GetContentRegionAvail().X);
+        var footerWidth = Math.Min(IkegamiFooterWidth, availableWidth);
+        var footerOffsetX = Math.Max(0f, (availableWidth - footerWidth) * 0.5f);
+        if (footerOffsetX > 0f)
+            ImGui.SetCursorPosX(startX + footerOffsetX);
+
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 4f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 0f);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, WithAlphaMultiplier(IkegamiFooterBackgroundColor, footerAlpha));
+        if (ImGui.BeginChild(
+                $"##ikegami_footer_{id}",
+                new Vector2(footerWidth, footerHeight),
+                true,
+                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+        {
+            if (footerFontScale != 1f)
+                ImGui.SetWindowFontScale(footerFontScale);
+
+            if (ImGui.BeginTable(
+                    $"##ikegami_footer_table_{id}",
+                    2,
+                    ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings))
+            {
+                ImGui.TableSetupColumn("##left", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.TableSetupColumn("##right", ImGuiTableColumnFlags.WidthFixed, Math.Max(ImGui.CalcTextSize(rightText).X + footerRightPadding + 4f, 84f));
+                ImGui.TableNextRow();
+                ImGui.TableSetColumnIndex(0);
+                ImGui.PushStyleColor(ImGuiCol.Text, WithAlphaMultiplier(IkegamiEncounterTimeTextColor, footerAlpha));
+                ImGui.TextUnformatted(durationText);
+                ImGui.PopStyleColor();
+                ImGui.SameLine(0f, footerTimeZoneSpacing);
+                ImGui.PushStyleColor(ImGuiCol.Text, WithAlphaMultiplier(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], footerAlpha));
+                ImGui.TextUnformatted(zoneName);
+                ImGui.PopStyleColor();
+                ImGui.TableSetColumnIndex(1);
+                ImGui.PushStyleColor(ImGuiCol.Text, WithAlphaMultiplier(ImGui.GetStyle().Colors[(int)ImGuiCol.Text], footerAlpha));
+                DrawRightAlignedTextLine(rightText, footerRightPadding);
+                ImGui.PopStyleColor();
+                ImGui.EndTable();
+            }
+
+            if (footerFontScale != 1f)
+                ImGui.SetWindowFontScale(1f);
+        }
+
+        ImGui.EndChild();
+        ImGui.PopStyleColor();
+        ImGui.PopStyleVar(2);
+    }
+
+    private static void DrawIkegamiJobBadge(string badgeText, float alpha, float badgeSize)
+    {
+        var drawList = ImGui.GetWindowDrawList();
+        var min = ImGui.GetCursorScreenPos();
+        var size = new Vector2(badgeSize, badgeSize);
+        var max = min + size;
+        var background = WithAlphaMultiplier(new Vector4(1f, 1f, 1f, 0.12f), alpha);
+        var border = WithAlphaMultiplier(new Vector4(1f, 1f, 1f, 0.35f), alpha);
+        var rounding = MathF.Min(5f, badgeSize * 0.25f);
+        drawList.AddRectFilled(min, max, ImGui.GetColorU32(background), rounding);
+        drawList.AddRect(min, max, ImGui.GetColorU32(border), rounding);
+        var textSize = ImGui.CalcTextSize(badgeText);
+        var textPos = new Vector2(
+            min.X + Math.Max(0f, (size.X - textSize.X) * 0.5f),
+            min.Y + Math.Max(0f, (size.Y - textSize.Y) * 0.5f) - 1f);
+        drawList.AddText(textPos, ImGui.GetColorU32(WithAlphaMultiplier(IkegamiHeaderTextColor, alpha)), badgeText);
+        ImGui.Dummy(size);
+    }
+
+    private static void DrawIkegamiNameLine(
+        string id,
+        string badgeText,
+        string title,
+        float nameHeight,
+        float alpha,
+        float backgroundAlpha,
+        float leftPadding,
+        float rightPadding,
+        float jobBadgeSize,
+        float fontScale,
+        bool hasCustomTextColor,
+        Vector4 rowTextColor)
+    {
+        var resolvedTitle = string.IsNullOrWhiteSpace(title) ? "-" : title;
+        var textColor = WithAlphaMultiplier(hasCustomTextColor ? rowTextColor : IkegamiHeaderTextColor, alpha);
+        var hasBadge = !string.IsNullOrWhiteSpace(badgeText);
+        var columnCount = hasBadge ? 2 : 1;
+        var startX = ImGui.GetCursorPosX();
+        var startY = ImGui.GetCursorPosY();
+        var availableWidth = ImGui.GetContentRegionAvail().X;
+        var innerWidth = Math.Max(1f, availableWidth - leftPadding - rightPadding);
+        ImGui.SetCursorPosX(startX + leftPadding);
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, Vector2.Zero);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, WithAlphaMultiplier(IkegamiNameBackgroundColor, backgroundAlpha));
+        if (!ImGui.BeginChild(
+                $"##ikegami_name_wrap_{id}",
+                new Vector2(innerWidth, nameHeight),
+                false,
+                ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
+        {
+            ImGui.PopStyleColor();
+            ImGui.PopStyleVar();
+            ImGui.SetCursorPos(new Vector2(startX, startY + nameHeight));
+            return;
+        }
+
+        if (fontScale != 1f)
+            ImGui.SetWindowFontScale(fontScale);
+
+        if (!ImGui.BeginTable(
+                $"##ikegami_name_{id}",
+                columnCount,
+                ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings))
+        {
+            if (fontScale != 1f)
+                ImGui.SetWindowFontScale(1f);
+            ImGui.EndChild();
+            ImGui.PopStyleColor();
+            ImGui.PopStyleVar();
+            ImGui.PushStyleColor(ImGuiCol.Text, textColor);
+            ImGui.TextUnformatted(resolvedTitle);
+            ImGui.PopStyleColor();
+            ImGui.SetCursorPos(new Vector2(startX, startY + nameHeight));
+            return;
+        }
+
+        if (hasBadge)
+            ImGui.TableSetupColumn("##badge", ImGuiTableColumnFlags.WidthFixed, jobBadgeSize + 4f);
+
+        ImGui.TableSetupColumn("##label", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableNextRow();
+
+        if (hasBadge)
+        {
+            ImGui.TableSetColumnIndex(0);
+            DrawIkegamiJobBadge(badgeText, alpha, jobBadgeSize);
+            ImGui.TableSetColumnIndex(1);
+        }
+        else
+        {
+            ImGui.TableSetColumnIndex(0);
+        }
+
+        ImGui.PushStyleColor(ImGuiCol.Text, textColor);
+        ImGui.SetCursorPosY(Math.Max(0f, ((nameHeight - ImGui.GetTextLineHeight()) * 0.5f) - 1f));
+        ImGui.TextUnformatted(resolvedTitle);
+        ImGui.PopStyleColor();
+        ImGui.EndTable();
+        if (fontScale != 1f)
+            ImGui.SetWindowFontScale(1f);
+        ImGui.EndChild();
+        ImGui.PopStyleColor();
+        ImGui.PopStyleVar();
+        ImGui.SetCursorPos(new Vector2(startX, startY + nameHeight));
+    }
+
+    private static void DrawCenteredTextLine(string text)
+    {
+        var currentX = ImGui.GetCursorPosX();
+        var availableWidth = ImGui.GetContentRegionAvail().X;
+        var textWidth = ImGui.CalcTextSize(text).X;
+        ImGui.SetCursorPosX(currentX + Math.Max(0f, (availableWidth - textWidth) * 0.5f));
+        ImGui.TextUnformatted(text);
+    }
+
+    private static Vector4 WithAlphaMultiplier(Vector4 color, float alphaMultiplier)
+        => new(color.X, color.Y, color.Z, Math.Clamp(color.W * alphaMultiplier, 0f, 1f));
+
+    private static void DrawLeftAlignedTextLine(string text, float leftPadding)
+    {
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + Math.Max(0f, leftPadding));
+        ImGui.TextUnformatted(text);
+    }
+
+    private static void DrawRightAlignedTextLine(string text, float rightPadding)
+    {
+        var currentX = ImGui.GetCursorPosX();
+        var availableWidth = ImGui.GetContentRegionAvail().X;
+        var textWidth = ImGui.CalcTextSize(text).X;
+        var targetX = currentX + Math.Max(0f, availableWidth - textWidth - rightPadding);
+        ImGui.SetCursorPosX(targetX);
+        ImGui.TextUnformatted(text);
+    }
+
+    private static void DrawIkegamiMetricTooltip(
+        Combatant combatant,
+        string tooltipPrimaryLabel,
+        string? tooltipPrimaryText,
+        string tooltipRateLabel,
+        string? tooltipRateText,
+        float tooltipFontScale)
+    {
+        if (!ImGui.IsItemHovered())
+            return;
+
+        ImGui.BeginTooltip();
+        if (tooltipFontScale != 1f)
+            ImGui.SetWindowFontScale(tooltipFontScale);
+        ImGui.TextUnformatted($"{tooltipPrimaryLabel}: {FormatEmptyAsFallback(tooltipPrimaryText, "0")}");
+        ImGui.TextUnformatted($"{tooltipRateLabel}: {FormatEmptyAsFallback(tooltipRateText, "0")}");
+        var maxHitText = ResolveCombatantTooltipMaxHitText(combatant);
+        if (!string.IsNullOrWhiteSpace(maxHitText))
+            ImGui.TextUnformatted($"最高伤害：{maxHitText}");
+        if (tooltipFontScale != 1f)
+            ImGui.SetWindowFontScale(1f);
+        ImGui.EndTooltip();
+    }
+
+    private static void DrawIkegamiDpsTooltip(Combatant combatant, float tooltipFontScale)
+    {
+        if (!ImGui.IsItemHovered())
+            return;
+
+        ImGui.BeginTooltip();
+        if (tooltipFontScale != 1f)
+            ImGui.SetWindowFontScale(tooltipFontScale);
+        ImGui.TextUnformatted($"总伤：{FormatEmptyAsFallback(combatant.DamageText, "0")}");
+        ImGui.TextUnformatted($"暴击率：{ResolveCombatantCritRateText(combatant)}");
+        ImGui.TextUnformatted($"直爆率：{ResolveCombatantCritDirectRateText(combatant)}");
+        var maxHitText = ResolveCombatantTooltipMaxHitText(combatant);
+        if (!string.IsNullOrWhiteSpace(maxHitText))
+            ImGui.TextUnformatted($"最高伤害：{maxHitText}");
+        if (tooltipFontScale != 1f)
+            ImGui.SetWindowFontScale(1f);
+        ImGui.EndTooltip();
+    }
+
+    private static string ResolveCombatantCritRateText(Combatant combatant)
+    {
+        var totalHits = ParseCount(combatant.HitsText);
+        if (totalHits <= 0)
+            return "0%";
+
+        var critHits = ParseCount(combatant.CritHitsText);
+        var critRate = Math.Clamp((critHits / (double)totalHits) * 100d, 0d, 100d);
+        return $"{critRate:0.0}%";
+    }
+
+    private static string ResolveCombatantCritDirectRateText(Combatant combatant)
+    {
+        if (string.IsNullOrWhiteSpace(combatant.CritDirectHitsText))
+            return "--";
+
+        var totalHits = ParseCount(combatant.HitsText);
+        if (totalHits <= 0)
+            return "0%";
+
+        var critDirectHits = ParseCount(combatant.CritDirectHitsText);
+        var critDirectRate = Math.Clamp((critDirectHits / (double)totalHits) * 100d, 0d, 100d);
+        return $"{critDirectRate:0.0}%";
+    }
+
     private static void DrawOverviewTab(CombatDataWrapper combatData, PluginConfiguration config)
     {
         if (!ImGui.BeginChild("##overview_scroll", new Vector2(0f, 0f), false))
@@ -876,6 +1795,12 @@ internal static class StatsPanel
 
         return $"{left} ({right})";
     }
+
+    private static string FormatEmptyAsZero(string? value)
+        => FormatEmptyAsFallback(value, "0");
+
+    private static string FormatEmptyAsFallback(string? value, string fallback)
+        => string.IsNullOrWhiteSpace(value) ? fallback : value;
 
     private static bool DrawHistoryCell(string? value, int index, LocalStatsService statsService)
     {
@@ -1149,7 +2074,18 @@ internal static class StatsPanel
         ImGui.TextUnformatted($"{primaryLabel}: {FallbackText(primaryValue, "0")}");
         ImGui.TextUnformatted($"{rateLabel}: {FallbackText(rateValue, "0")}");
         ImGui.TextUnformatted($"死亡: {FallbackText(combatant.DeathsText, "0")}");
+        var maxHitText = ResolveCombatantTooltipMaxHitText(combatant);
+        if (!string.IsNullOrWhiteSpace(maxHitText))
+            ImGui.TextUnformatted($"最高伤害: {maxHitText}");
         ImGui.EndTooltip();
+    }
+
+    private static string? ResolveCombatantTooltipMaxHitText(Combatant combatant)
+    {
+        if (string.IsNullOrWhiteSpace(combatant.MaxHitText) || combatant.MaxHitText == "--")
+            return null;
+
+        return combatant.MaxHitText;
     }
 
     private static string FormatMetricValue(double value)
@@ -1159,12 +2095,13 @@ internal static class StatsPanel
         => string.IsNullOrWhiteSpace(value) ? fallback : value;
 
     private static string BuildMetricLayoutSignature(
+        FloatingStatsDisplayStyle displayStyle,
         bool showPlayerColumn,
         bool showJobColumn,
         bool showDamageColumn,
         bool showValueColumn,
         bool showDeathsColumn)
-        => $"{(showPlayerColumn ? 'p' : '-')}{(showJobColumn ? 'j' : '-')}{(showDamageColumn ? 'd' : '-')}{(showValueColumn ? 'v' : '-')}{(showDeathsColumn ? 'x' : '-')}";
+        => $"{(int)displayStyle}:{(showPlayerColumn ? 'p' : '-')}{(showJobColumn ? 'j' : '-')}{(showDamageColumn ? 'd' : '-')}{(showValueColumn ? 'v' : '-')}{(showDeathsColumn ? 'x' : '-')}";
 
     private static string BuildMetricTableId(string id, string layoutSignature, int resetVersion)
         => $"##metric_{id}_{layoutSignature}_{resetVersion}";

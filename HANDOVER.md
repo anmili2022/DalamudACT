@@ -1,3 +1,70 @@
+## 2026-05-13 交接补充：设置页压缩 / Ikegami 设置区收尾
+
+- 本轮详细交接已单独整理：`md/2026-05-13-settings-window-handoff.md`
+- 这一轮重点不在 `StatsPanel.cs` 主渲染，而在：
+  - `DalamudACT/UI/SettingsWindow.cs`
+  - 持续压缩设置页空白
+  - 修复 Ikegami 设置区标签被挤没
+  - 修复 `样式分享码` 区域因卡片高度不足造成的裁切/挤压
+- 当前 `DrawSettingCard(...)` 已改成按实际内容高度自适应，不再用固定最大行数卡死；
+- Ikegami 设置区目前已经完成：
+  - 正常中文文案恢复
+  - 标签上置
+  - checkbox 状态提示
+  - `透明度` / `Footer 与字号` 3 列紧凑布局
+- 本轮多次重新构建均通过，最近一次仍是：
+  - `dotnet build E:\git\DalamudACT\DalamudACT.sln`
+  - `0 warnings / 0 errors`
+- 如果下一个会话继续沿这条线做，建议优先继续压：
+  - `尺寸与对齐`
+  - 各组底部帮助说明文字
+- 当前工作区仍然是脏的，`1.txt` 仍然不要误删。
+
+## 2026-05-12 交接补充：悬浮窗展示模式下一步方向
+
+- 今天先记需求，不在这一轮继续实现，明天再开工。
+- 下一步准备做一个 **悬浮窗展示模式切换**：
+  - 配置入口放到 `悬浮面板显示项目` 里；
+  - 用它替换当前的 `表格布局参数` 配置入口；
+  - 当前现有样式作为其中一种展示模式保留；
+  - 新增另一种展示模式：`ikegami` 样式。
+- 这一轮的目标更偏向“展示模式切换”，不是继续堆叠表格布局微调项。
+- 明天实现时优先关注的文件：
+  - `DalamudACT/UI/SettingsWindow.cs`
+  - `DalamudACT/UI/FloatingStatsWindow.cs`
+  - `DalamudACT/UI/StatsPanel.cs`
+  - `DalamudACT/Configuration/PluginConfiguration.cs`
+- 建议实现顺序：
+  1. 先补配置项与枚举，明确“当前样式 / ikegami 样式”两种模式；
+  2. 再把设置入口放进 `悬浮面板显示项目`；
+  3. 最后替换现有 `表格布局参数` 相关 UI，并补一次预览验证。
+
+## 2026-05-12 交接补充：治疗职业主题色定稿
+
+- 这轮已经把治疗职业主题色按用户确认结果同步进插件默认值：
+  - `白魔法师`：`珍珠白银`（`#D8DDE6`）
+  - `占星术士`：`玫瑰灰红`（`#B76E79`）
+  - `学者`：`妖精薄荷`（`#66AA96`）
+  - `贤者`：`冰晶蓝`（`#7FA8E8`）
+- 主题色模式现在支持：
+  - 在设置窗口的 `主题色调色板` 中统一调 `主题色透明度`
+  - 按职业单独调 RGB
+  - 一键 `恢复默认主题色`
+- 当前主题色透明度默认值为：`0.75`
+- 相关代码位置：
+  - `DalamudACT/UI/JobThemePalette.cs`
+  - `DalamudACT/Configuration/PluginConfiguration.cs`
+  - `DalamudACT/UI/SettingsWindow.cs`
+- 这轮已补配置迁移：
+  - 配置版本已提升到 `35`
+  - 如果用户当前还是上一轮默认治疗配色，会自动迁移到这次确认后的 4 个治疗职业默认色
+- 相关用户文档已同步：
+  - `README.md`
+  - `md/USAGE.md`
+- 本地构建已再次通过：
+  - `dotnet build E:\git\DalamudACT\DalamudACT.sln`
+  - 结果：`0 warnings / 0 errors`
+
 ## 2026-05-11 交接补充：DoT 状态驱动收尾
 
 - 这次已经把玩家 DoT 的主链路改成“状态驱动 + 3 秒轮询补 tick”：
@@ -619,3 +686,8 @@ git -C E:\git\DalamudACT push origin $ver
 
 - `M md/RELEASE-NOTES.md`
 - `M md/USAGE.md`
+
+## 2026-05-12 补充：ikegami 悬浮窗样式交接
+- 本轮 ikegami 样式专项交接已单独整理：`md/2026-05-12-ikegami-handoff.md`
+- 新会话如果要继续做悬浮窗样式，请优先阅读这份文档。
+- 当前最新视觉基准以 `md/images/ikegami-preview.html` 为准，不要再以旧 PNG 或旧卡片布局为准。

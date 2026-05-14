@@ -24,6 +24,10 @@ internal sealed class FloatingStatsWindow : Window
     private const float IkegamiExpandedWindowHeight = 126f;
     private const float IkegamiCollapsedWindowWidth = 220f;
     private const float IkegamiCollapsedWindowHeight = 42f;
+    private const float MinimalExpandedWindowWidth = 360f;
+    private const float MinimalExpandedWindowHeight = 300f;
+    private const float MinimalCollapsedWindowWidth = 220f;
+    private const float MinimalCollapsedWindowHeight = 42f;
     private const float SavedWindowSizeMax = 4000f;
     private const float SavedWindowSizeEpsilon = 0.5f;
 
@@ -106,6 +110,9 @@ internal sealed class FloatingStatsWindow : Window
         if (drawResult.OpenSettingsRequested)
             toggleSettingsWindow();
 
+        if (!SupportsCollapsedTabBar(config.FloatingStatsDisplayStyle))
+            return;
+
         if (collapseToTabBar && activeTab != StatsPanelTabId.Dps)
         {
             collapseToTabBar = false;
@@ -132,6 +139,14 @@ internal sealed class FloatingStatsWindow : Window
 
     private void InitializeStartupLayout()
     {
+        if (!SupportsCollapsedTabBar(config.FloatingStatsDisplayStyle))
+        {
+            activeTab = config.ShowDpsTab ? StatsPanelTabId.Dps : ResolvePreferredLiveTab();
+            collapseToTabBar = false;
+            applyStartupCollapsedSize = false;
+            return;
+        }
+
         if (!config.ShowDpsTab)
         {
             activeTab = ResolvePreferredLiveTab();
@@ -146,6 +161,14 @@ internal sealed class FloatingStatsWindow : Window
     private void ApplyDisplayStyleLayoutChange(FloatingStatsDisplayStyle currentStyle)
     {
         var targetExpandedSize = GetExpandedWindowSize(currentStyle);
+
+        if (!SupportsCollapsedTabBar(currentStyle))
+        {
+            collapseToTabBar = false;
+            expandedWindowSize = targetExpandedSize;
+            ImGui.SetWindowSize(expandedWindowSize, ImGuiCond.Always);
+            return;
+        }
 
         if (collapseToTabBar)
         {
@@ -167,6 +190,10 @@ internal sealed class FloatingStatsWindow : Window
                 config.FloatingStatsIkegamiWindowWidth,
                 config.FloatingStatsIkegamiWindowHeight,
                 fallback),
+            FloatingStatsDisplayStyle.Minimal => ResolveSavedExpandedWindowSize(
+                config.FloatingStatsMinimalWindowWidth,
+                config.FloatingStatsMinimalWindowHeight,
+                fallback),
             _ => ResolveSavedExpandedWindowSize(
                 config.FloatingStatsClassicWindowWidth,
                 config.FloatingStatsClassicWindowHeight,
@@ -178,6 +205,7 @@ internal sealed class FloatingStatsWindow : Window
         => style switch
         {
             FloatingStatsDisplayStyle.Ikegami => new Vector2(IkegamiExpandedWindowWidth, IkegamiExpandedWindowHeight),
+            FloatingStatsDisplayStyle.Minimal => new Vector2(MinimalExpandedWindowWidth, MinimalExpandedWindowHeight),
             _ => new Vector2(ClassicExpandedWindowWidth, ClassicExpandedWindowHeight),
         };
 
@@ -185,6 +213,7 @@ internal sealed class FloatingStatsWindow : Window
         => style switch
         {
             FloatingStatsDisplayStyle.Ikegami => new Vector2(IkegamiCollapsedWindowWidth, IkegamiCollapsedWindowHeight),
+            FloatingStatsDisplayStyle.Minimal => new Vector2(MinimalCollapsedWindowWidth, MinimalCollapsedWindowHeight),
             _ => new Vector2(ClassicCollapsedWindowWidth, ClassicCollapsedWindowHeight),
         };
 
@@ -211,6 +240,12 @@ internal sealed class FloatingStatsWindow : Window
                 return UpdateSavedExpandedWindowSize(
                     ref config.FloatingStatsIkegamiWindowWidth,
                     ref config.FloatingStatsIkegamiWindowHeight,
+                    width,
+                    height);
+            case FloatingStatsDisplayStyle.Minimal:
+                return UpdateSavedExpandedWindowSize(
+                    ref config.FloatingStatsMinimalWindowWidth,
+                    ref config.FloatingStatsMinimalWindowHeight,
                     width,
                     height);
             default:
@@ -243,6 +278,9 @@ internal sealed class FloatingStatsWindow : Window
 
     private static bool NearlyEqual(float left, float right)
         => Math.Abs(left - right) <= SavedWindowSizeEpsilon;
+
+    private static bool SupportsCollapsedTabBar(FloatingStatsDisplayStyle style)
+        => style != FloatingStatsDisplayStyle.Minimal;
 
     private StatsPanelTabId ResolvePreferredLiveTab()
     {

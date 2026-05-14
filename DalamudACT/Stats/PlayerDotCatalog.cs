@@ -21,7 +21,7 @@ internal static class PlayerDotCatalog
     public static readonly IReadOnlyList<PlayerDotJobEntry> Entries =
     [
         Job("骑士",
-            Skill("厄运流转", [23], [248])),
+            Skill("厄运流转", [23], [248], seedPotency: 140, dotTickPotency: 30)),
         Job("战士"),
         Job("暗黑骑士"),
         Job("绝枪战士",
@@ -29,35 +29,71 @@ internal static class PlayerDotCatalog
             Skill("弓形冲波", [16159], [1838], seedPotency: 150, dotTickPotency: 60)),
 
         Job("白魔法师",
-            Skill("疾风", [121], [143]),
-            Skill("烈风", [132], [144]),
-            Skill("天辉", [16532], [1871, 2035], seedPotency: 85, dotTickPotency: 85)),
+            Skill("疾风", [121], [143], disableAverageFallback: true),
+            Skill("烈风", [132], [144], disableAverageFallback: true),
+            Skill("天辉", [16532], [1871, 2035], seedPotency: 85, dotTickPotency: 85, disableAverageFallback: true)),
         Job("学者",
-            Skill("毒菌", [17864], [179]),
-            Skill("猛毒菌", [17865], [189]),
-            Skill("蛊毒法", [16540, 29233], [1895, 2039, 3089], dotTickPotency: 85,
+            Skill("毒菌", [17864], [179], dotTickPotency: 20, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("毁坏", [17870], potency: 150),
+                ]),
+            Skill("猛毒菌", [17865], [189], dotTickPotency: 40, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("毁坏", [17870], potency: 150),
+                ]),
+            Skill("蛊毒法", [16540, 29233], [1895, 2039, 3089], dotTickPotency: 85, disableAverageFallback: true,
                 anchors:
                 [
                     Anchor("极炎法", [25865, 29231], potency: 320),
                 ]),
-            Skill("埋伏之毒", [37012], [3883], dotTickPotency: 3000)),
+            Skill("埋伏之毒", [37012], [3883], dotTickPotency: 140, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("极炎法", [25865, 29231], potency: 320),
+                ])),
         Job("占星术士",
-            Skill("烧灼", [3599], [838]),
-            Skill("炽灼", [3608], [843]),
-            Skill("焚灼", [16554, 17806], [1881, 2041], dotTickPotency: 70,
+            Skill("烧灼", [3599], [838], dotTickPotency: 50, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("凶星", [3596], potency: 150),
+                ]),
+            // 炽灼会先与凶星配套，后续再升级到灾星；等级同步场景里两档都可能出现。
+            Skill("炽灼", [3608], [843], dotTickPotency: 60, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("凶星", [3596], potency: 150),
+                    Anchor("灾星", [3598], potency: 160),
+                ]),
+            Skill("焚灼", [16554, 17806], [1881, 2041], dotTickPotency: 70, disableAverageFallback: true,
                 anchors:
                 [
                     Anchor("落陷凶星", [25871, 29242], potency: 270),
                 ])),
         Job("贤者",
-            Skill("均衡注药", [24293], [2616]),
-            Skill("均衡注药II", [24308], [2864]),
-            Skill("均衡注药III", [24314, 29257], [3108, 3897, 3976], dotTickPotency: 90,
+            // 均衡注药本体不造成直伤，客户端动作描述里也不会稳定暴露威力；
+            // 这里显式补齐低等级/等级同步档位的 DoT 威力与注药锚点，避免直接掉成 0。
+            Skill("均衡注药", [24293], [2614], dotTickPotency: 30, disableAverageFallback: true,
                 anchors:
                 [
-                    Anchor("注药III", [24312, 27822, 29256], potency: 380),
+                    Anchor("注药", [24283], potency: 180),
                 ]),
-            Skill("均衡失衡", [37032], [3897, 3976])),
+            Skill("均衡注药II", [24308], [2615], dotTickPotency: 60, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("注药II", [24306], potency: 320),
+                ]),
+            // 兼容低等级/旧版本日志中的贤者 DoT 技能 ID：
+            // - 0x8C29 = 均衡注药III
+            // - 0x9221 = 注药III（用于锚点估伤）
+            // - 0x5EE9 = 失衡
+            Skill("均衡注药III", [24314, 29257, 35881], [2616, 2864, 3108, 3976], dotTickPotency: 90, disableAverageFallback: true,
+                anchors:
+                [
+                    Anchor("注药III", [24312, 27822, 29256, 37409], potency: 380),
+                ]),
+            Skill("均衡失衡", [24297, 37032], [3897], disableAverageFallback: true)),
 
         Job("武僧"),
         Job("龙骑士",
@@ -138,8 +174,9 @@ internal static class PlayerDotCatalog
         IReadOnlyCollection<uint> statusIds,
         int? seedPotency = null,
         int? dotTickPotency = null,
+        bool disableAverageFallback = false,
         IReadOnlyList<PlayerDotAnchorEntry>? anchors = null)
-        => new(skillName, actionIds, statusIds, seedPotency, dotTickPotency, anchors ?? []);
+        => new(skillName, actionIds, statusIds, seedPotency, dotTickPotency, disableAverageFallback, anchors ?? []);
 
     private static PlayerDotAnchorEntry Anchor(string anchorName, IReadOnlyCollection<uint> actionIds, int potency)
         => new(anchorName, actionIds, potency);
@@ -153,6 +190,7 @@ internal sealed record PlayerDotSkillEntry(
     IReadOnlyCollection<uint> StatusIds,
     int? SeedPotency,
     int? DotTickPotency,
+    bool DisableAverageFallback,
     IReadOnlyList<PlayerDotAnchorEntry> Anchors)
 {
     public bool TryGetPotencyRatio(out double ratio)

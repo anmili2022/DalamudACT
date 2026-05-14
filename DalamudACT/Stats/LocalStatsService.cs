@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Text.Json;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
+using Lumina.Excel;
+using Lumina.Excel.Sheets;
 
 namespace DalamudACT;
 
@@ -29,13 +32,46 @@ internal sealed class LocalStatsService
     private static readonly TimeSpan PlayerDotTickInterval = TimeSpan.FromSeconds(3);
     private static readonly TimeSpan PlayerDotTickJitterAllowance = TimeSpan.FromMilliseconds(250);
     // 2.5 秒对 DoT 来说太短：状态确认和首跳补算容易在种子过期后才命中，
-    // 结果就会退回到 1000 这类兜底值。这里放宽到 8 秒，覆盖首跳前后的观察窗口。
-    private static readonly TimeSpan PlayerDotRecentActionTtl = TimeSpan.FromSeconds(8);
+    // 结果就会退回到粗糙兜底。这里放宽到 35 秒，尽量覆盖完整的 30 秒 DoT 观察窗口，
+    // 避免白魔 / 贤者这类长 DoT 在后续状态刷新时拿不到同技能样本。
+    private static readonly TimeSpan PlayerDotRecentActionTtl = TimeSpan.FromSeconds(35);
     private static readonly TimeSpan PlayerDotStatusGracePeriod = TimeSpan.FromSeconds(1.0);
     private static readonly TimeSpan PlayerDotDebugLogThrottle = TimeSpan.FromSeconds(1.0);
+    private static readonly TimeSpan WildfireStatusGracePeriod = TimeSpan.FromMilliseconds(350);
+    private static readonly TimeSpan WildfireDetonationTimingAllowance = TimeSpan.FromMilliseconds(600);
     private const double ObservedPlayerDotCriticalHitMultiplier = 1.6d;
     private const double ObservedPlayerDotDirectHitMultiplier = 1.25d;
     private const double SimulatedDotCriticalMultiplier = ObservedPlayerDotCriticalHitMultiplier;
+    private static readonly Regex ActionDescriptionPotencyRegex = new(
+        @"(?:威力|Potency)\s*[：:]\s*(?<potency>\d+)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex ActionDescriptionDotPotencyRegex = new(
+        @"(?:持续伤害|damage over time|継続ダメージ)[\s\S]{0,160}?(?:威力|Potency)\s*[：:]\s*(?<potency>\d+)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private const uint WildfireActionId = 2878;
+    private const uint WildfireStatusId = 0x35D;
+    private const int WildfirePotencyPerWeaponskill = 240;
+    private const int WildfireMaxWeaponskillCount = 6;
+    // ACT 把野火最终结算记成 24|DoT|35D，实测口径接近同等威力直伤估算值的 1/3。
+    // 如果直接拿武器技直伤样本按威力比例换算，会稳定高估约 1.5k~2k。
+    private const double WildfireDotLikeDamageScale = 1d / 3d;
+    private static readonly IReadOnlyDictionary<uint, int> WildfireAnchorPotencies = new Dictionary<uint, int>
+    {
+        { 2866, 140 },  // 分裂弹
+        { 2868, 210 },  // 独头弹（连击）
+        { 2872, 240 },  // 热弹
+        { 2873, 270 },  // 狙击弹（连击）
+        { 7410, 200 },  // 热冲击
+        { 7411, 220 },  // 热分裂弹
+        { 7412, 320 },  // 热独头弹（连击）
+        { 7413, 420 },  // 热狙击弹（连击）
+        { 16498, 660 }, // 钻头
+        { 16500, 660 }, // 空气锚
+        { 25788, 660 }, // 回转飞锯
+        { 36978, 240 }, // 烈焰弹 / Blazing Shot
+        { 36981, 660 }, // 掘地飞轮 / Excavator
+        { 36982, 900 }, // 全金属爆发 / Full Metal Field
+    };
     private static readonly JsonSerializerOptions HistoryJsonOptions = new()
     {
         WriteIndented = true,
@@ -50,8 +86,12 @@ internal sealed class LocalStatsService
     private readonly Dictionary<uint, uint> partyMemberHpCache = new();
     private readonly List<RecentHostilePlayerAction> recentHostilePlayerActions = new();
     private readonly Dictionary<PlayerDotKey, ActivePlayerDotState> activePlayerDots = new();
+    private readonly Dictionary<PlayerWildfireKey, ActiveWildfireState> activeWildfires = new();
     private readonly Dictionary<uint, bool> dotStatusClassificationCache = new();
+    private readonly Dictionary<uint, ActionDescriptionDotPotencyEntry> actionDescriptionDotPotencyCache = new();
+    private readonly HashSet<uint> actionDescriptionDotPotencyCacheMisses = new();
     private readonly PluginConfiguration config;
+    private readonly ExcelSheet<ActionTransient>? actionTransientSheet;
 
     private EncounterSession currentEncounter = new();
     private DateTime lastOwnerWarmupUtc;
@@ -69,6 +109,15 @@ internal sealed class LocalStatsService
     public LocalStatsService(PluginConfiguration config)
     {
         this.config = config;
+
+        try
+        {
+            actionTransientSheet = DalamudApi.GameData.GetExcelSheet<ActionTransient>();
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("统计", ex, "读取 ActionTransient 表失败，部分低级 DoT 可能无法自动解析威力。");
+        }
     }
 
     public CombatDataWrapper? CurrentCombatData { get; private set; }
@@ -137,7 +186,10 @@ internal sealed class LocalStatsService
             partyMemberHpCache.Clear();
             recentHostilePlayerActions.Clear();
             activePlayerDots.Clear();
+            activeWildfires.Clear();
             dotStatusClassificationCache.Clear();
+            actionDescriptionDotPotencyCache.Clear();
+            actionDescriptionDotPotencyCacheMisses.Clear();
             CurrentCombatData = null;
             DisplayCombatData = null;
             ClearHistoricalPreviewLocked();
@@ -171,7 +223,10 @@ internal sealed class LocalStatsService
             partyMemberHpCache.Clear();
             recentHostilePlayerActions.Clear();
             activePlayerDots.Clear();
+            activeWildfires.Clear();
             dotStatusClassificationCache.Clear();
+            actionDescriptionDotPotencyCache.Clear();
+            actionDescriptionDotPotencyCacheMisses.Clear();
             combatTimelineEntries.Clear();
             CurrentCombatData = firstSnapshot;
             DisplayCombatData = firstSnapshot;
@@ -392,13 +447,10 @@ internal sealed class LocalStatsService
             if (obj.EntityId is 0 or <= 0x40000000)
                 continue;
 
-            if (!ShouldResolveOwnerForObject(obj))
+            if (!TryGetResolvableOwnerId(obj, out var ownerId))
                 continue;
 
-            if (obj.OwnerId is 0 or InvalidActorId)
-                continue;
-
-            entries.Add((obj.EntityId, obj.OwnerId));
+            entries.Add((obj.EntityId, ownerId));
         }
 
         if (entries.Count == 0)
@@ -689,13 +741,14 @@ internal sealed class LocalStatsService
                     return;
 
                 TrimRecentHostilePlayerActionsLocked(timeUtc);
+                var normalizedActionName = NormalizeActionName(actionName);
 
                 var matchedAction = recentHostilePlayerActions
                     .Where(action =>
                         AreEquivalentActorIds(action.Source.ActorId, source.ActorId)
                         && AreEquivalentActorIds(action.TargetActorId, targetId)
                         && action.ActionId == actionId
-                        && string.Equals(action.ActionName, NormalizeActionName(actionName), StringComparison.Ordinal)
+                        && string.Equals(action.ActionName, normalizedActionName, StringComparison.Ordinal)
                         && timeUtc - action.ObservedAtUtc <= PlayerDotRecentActionTtl)
                     .OrderByDescending(action => action.ObservedAtUtc)
                     .FirstOrDefault();
@@ -705,7 +758,8 @@ internal sealed class LocalStatsService
                     matchedAction.ObservedDamageAmount = amount;
                     matchedAction.ObservedCritical = critical;
                     matchedAction.ObservedDirectHit = directHit;
-                    RefreshActivePlayerDotEstimatedDamageLocked(source.ActorId, targetId, actionId, NormalizeActionName(actionName), amount, critical, directHit, timeUtc);
+                    NoteWildfireWeaponskillContributionLocked(source.ActorId, targetId, actionId, normalizedActionName, amount, critical, directHit, timeUtc);
+                    RefreshActivePlayerDotEstimatedDamageLocked(source.ActorId, targetId, actionId, normalizedActionName, amount, critical, directHit, timeUtc);
                     return;
                 }
 
@@ -713,14 +767,15 @@ internal sealed class LocalStatsService
                     source,
                     targetId,
                     actionId,
-                    NormalizeActionName(actionName),
+                    normalizedActionName,
                     timeUtc)
                 {
                     ObservedDamageAmount = amount,
                     ObservedCritical = critical,
                     ObservedDirectHit = directHit,
                 });
-                RefreshActivePlayerDotEstimatedDamageLocked(source.ActorId, targetId, actionId, NormalizeActionName(actionName), amount, critical, directHit, timeUtc);
+                NoteWildfireWeaponskillContributionLocked(source.ActorId, targetId, actionId, normalizedActionName, amount, critical, directHit, timeUtc);
+                RefreshActivePlayerDotEstimatedDamageLocked(source.ActorId, targetId, actionId, normalizedActionName, amount, critical, directHit, timeUtc);
             }
             catch (Exception ex)
             {
@@ -845,6 +900,7 @@ internal sealed class LocalStatsService
             if (!inCombat && !currentEncounter.Started)
             {
                 activePlayerDots.Clear();
+                activeWildfires.Clear();
                 return;
             }
 
@@ -854,6 +910,7 @@ internal sealed class LocalStatsService
             lastPlayerDotStatusPollUtc = nowUtc;
             var targetActorIds = activePlayerDots.Keys
                 .Select(static key => key.TargetActorId)
+                .Concat(activeWildfires.Keys.Select(static key => key.TargetActorId))
                 .Concat(recentHostilePlayerActions.Select(static action => action.TargetActorId))
                 .Where(static actorId => actorId is not 0 and not InvalidActorId)
                 .Distinct()
@@ -861,6 +918,7 @@ internal sealed class LocalStatsService
             if (targetActorIds.Count == 0)
             {
                 TrimInactivePlayerDotsLocked(nowUtc);
+                TrimInactiveWildfiresLocked(nowUtc);
                 return;
             }
 
@@ -871,17 +929,20 @@ internal sealed class LocalStatsService
                     if (!TryGetHostileBattleTarget(targetActorId, out var hostileBattleNpc))
                     {
                         RemoveActivePlayerDotsForTargetLocked(targetActorId);
+                        RemoveActiveWildfiresForTargetLocked(targetActorId);
                         continue;
                     }
 
                     if (!hostileBattleNpc.IsTargetable)
                     {
                         RemoveActivePlayerDotsForTargetLocked(targetActorId);
+                        RemoveActiveWildfiresForTargetLocked(targetActorId);
                         continue;
                     }
 
                     var preferredRecentActions = recentHostilePlayerActions
                         .Where(action => AreEquivalentActorIds(action.TargetActorId, targetActorId))
+                        .Where(action => PlayerDotCatalog.IsKnownPlayerDotAction(action.ActionId))
                         .OrderByDescending(action => action.ObservedAtUtc)
                         .GroupBy(action => action.Source.ActorId)
                         .Select(static group => group.First())
@@ -902,10 +963,13 @@ internal sealed class LocalStatsService
                                 preferredActionName: recentAction.ActionName);
                         }
                     }
+
+                    CaptureActiveWildfiresForHostileTargetLocked(hostileBattleNpc, nowUtc);
                 }
                 catch (Exception ex)
                 {
                     RemoveActivePlayerDotsForTargetLocked(targetActorId);
+                    RemoveActiveWildfiresForTargetLocked(targetActorId);
                     LogHelper.Error(
                         "统计",
                         ex,
@@ -916,6 +980,7 @@ internal sealed class LocalStatsService
             try
             {
                 SimulateActivePlayerDotTicksLocked(nowUtc);
+                TryRecordPendingWildfireDetonationsLocked(nowUtc);
             }
             catch (Exception ex)
             {
@@ -928,6 +993,7 @@ internal sealed class LocalStatsService
             try
             {
                 TrimInactivePlayerDotsLocked(nowUtc);
+                TrimInactiveWildfiresLocked(nowUtc);
             }
             catch (Exception ex)
             {
@@ -988,11 +1054,13 @@ internal sealed class LocalStatsService
                             && (string.IsNullOrWhiteSpace(normalizedPreferredActionName)
                                 || string.Equals(state.ActionName, normalizedPreferredActionName, StringComparison.Ordinal)
                                 || string.Equals(state.StatusName, normalizedPreferredActionName, StringComparison.Ordinal));
+                        if (state.ActionId != 0)
+                            existing.ActionId = state.ActionId;
                         existing.ActionName = ResolvePreferredDotActionName(existing.ActionName, state.ActionName, state.StatusName);
                         existing.StatusName = string.IsNullOrWhiteSpace(state.StatusName) ? existing.StatusName : state.StatusName;
                         existing.LastSeenUtc = nowUtc;
                         existing.RemainingTimeSeconds = state.RemainingTimeSeconds;
-                        if (existing.SkillEntry == null && state.SkillEntry != null)
+                        if (state.SkillEntry != null)
                             existing.SkillEntry = state.SkillEntry;
                         if (state.EstimatedTickDamage > 0
                             && (state.EstimatedTickDamageFromObservedSeed
@@ -1110,6 +1178,11 @@ internal sealed class LocalStatsService
         if (statusId == 0 || !IsPlayerDamageOverTimeStatus(status))
             return false;
 
+        var rawStatusName = TryGetStatusGameDataText(status, "Name");
+        var statusName = string.IsNullOrWhiteSpace(rawStatusName)
+            ? string.Empty
+            : NormalizeActionName(rawStatusName);
+
         var rawSourceActorId = ResolveStatusSourceActorId(status);
         var hasRawSourceActorId = rawSourceActorId is > 0 and not InvalidActorId;
         if (!TryResolveTrackedSource(rawSourceActorId, nowUtc, out var source) || source.Kind != TrackedActorKind.Player)
@@ -1118,6 +1191,7 @@ internal sealed class LocalStatsService
             // If the status already points to someone else, do not reassign that DoT to self or party.
             if (hasRawSourceActorId
                 || !preferredSourceActorId.HasValue
+                || !PreferredPlayerDotFallbackMatchesStatus(statusId, statusName, preferredActionId, preferredActionName)
                 || !TryResolveTrackedSource(preferredSourceActorId.Value, nowUtc, out source)
                 || source.Kind != TrackedActorKind.Player)
             {
@@ -1128,31 +1202,30 @@ internal sealed class LocalStatsService
         if (source.Kind != TrackedActorKind.Player)
             return false;
 
-        var actionId = preferredActionId.HasValue
+        var preferredSourceMatchesResolvedSource = preferredSourceActorId.HasValue
+            && AreEquivalentActorIds(preferredSourceActorId.Value, source.ActorId);
+
+        var actionId = preferredSourceMatchesResolvedSource && preferredActionId.HasValue
             ? preferredActionId.Value
             : ResolveRecentPlayerDotActionIdLocked(source.ActorId, targetActorId, nowUtc);
 
-        var actionName = preferredSourceActorId.HasValue
-                         && preferredSourceActorId.Value == source.ActorId
+        var actionName = preferredSourceMatchesResolvedSource
                          && !string.IsNullOrWhiteSpace(preferredActionName)
             ? NormalizeActionName(preferredActionName)
             : ResolveRecentPlayerDotActionNameLocked(source.ActorId, targetActorId, nowUtc);
 
-        var rawStatusName = TryGetStatusGameDataText(status, "Name");
-        var statusName = string.IsNullOrWhiteSpace(rawStatusName)
-            ? string.Empty
-            : NormalizeActionName(rawStatusName);
         if (string.IsNullOrWhiteSpace(actionName))
             actionName = !string.IsNullOrWhiteSpace(statusName)
                 ? statusName
                 : "\u672A\u77E5\u6301\u7EED\u4F24\u5BB3";
 
         var statusPotency = TryGetStatusGameDataInt(status, "ParamModifier");
-        var catalogSkill = PlayerDotCatalog.ResolveSkill(actionId, statusId);
+        var catalogSkill = PlayerDotCatalog.GetSkillByStatusId(statusId)
+                           ?? PlayerDotCatalog.GetSkillByActionId(actionId);
         actionId = ResolvePreferredPlayerDotActionId(actionId, catalogSkill);
         actionName = ResolvePreferredPlayerDotActionName(actionName, statusName, catalogSkill);
         var recentAction = ResolveRecentPlayerDotObservedActionLocked(source.ActorId, targetActorId, actionName, nowUtc, catalogSkill);
-        var estimatedTickDamage = ResolvePlayerDotEstimatedTickDamageLocked(source, targetActorId, actionName, statusPotency, nowUtc, catalogSkill);
+        var estimatedTickDamage = ResolvePlayerDotEstimatedTickDamageLocked(source, targetActorId, actionId, actionName, statusPotency, nowUtc, catalogSkill);
         var estimatedTickDamageFromObservedSeed = recentAction?.ObservedDamageAmount > 0;
 
         key = new PlayerDotKey(targetActorId, source.ActorId, statusId);
@@ -1192,6 +1265,7 @@ internal sealed class LocalStatsService
         if (!hostileTarget.IsTargetable)
         {
             RemoveActivePlayerDotsForTargetLocked(canonicalTargetActorId);
+            RemoveActiveWildfiresForTargetLocked(canonicalTargetActorId);
             return false;
         }
 
@@ -1285,6 +1359,324 @@ internal sealed class LocalStatsService
             activePlayerDots.Remove(key);
     }
 
+    private void RemoveActiveWildfiresForTargetLocked(uint targetActorId)
+    {
+        if (targetActorId is 0 or InvalidActorId || activeWildfires.Count == 0)
+            return;
+
+        var staleKeys = activeWildfires.Keys
+            .Where(key => AreEquivalentActorIds(key.TargetActorId, targetActorId))
+            .ToList();
+        foreach (var key in staleKeys)
+            activeWildfires.Remove(key);
+    }
+
+    private void CaptureActiveWildfiresForHostileTargetLocked(IBattleNpc hostileTarget, DateTime nowUtc)
+    {
+        var targetActorId = ResolveBattleCharaActorId(hostileTarget);
+        if (targetActorId is 0 or InvalidActorId)
+            return;
+
+        var seenKeys = new HashSet<PlayerWildfireKey>();
+        foreach (var status in EnumerateStatusEntries(hostileTarget))
+        {
+            try
+            {
+                if (!TryCreateOrRefreshActiveWildfireStateLocked(status, targetActorId, nowUtc, out var key))
+                    continue;
+
+                seenKeys.Add(key);
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Debug(
+                    "统计",
+                    ex,
+                    $"读取野火状态条目失败：targetId=0x{targetActorId:X8}。");
+            }
+        }
+
+        var disappearedStates = activeWildfires.Values
+            .Where(state =>
+                AreEquivalentActorIds(state.Key.TargetActorId, targetActorId)
+                && !seenKeys.Contains(state.Key))
+            .ToList();
+        foreach (var state in disappearedStates)
+        {
+            if (state.DetonationRecorded
+                || !hostileTarget.IsTargetable
+                || nowUtc - state.LastSeenUtc < WildfireStatusGracePeriod)
+                continue;
+
+            _ = TryRecordWildfireDetonationLocked(state, nowUtc);
+        }
+    }
+
+    private bool TryCreateOrRefreshActiveWildfireStateLocked(object status, uint targetActorId, DateTime nowUtc, out PlayerWildfireKey key)
+    {
+        key = default;
+
+        var statusId = GetStatusId(status);
+        if (statusId != WildfireStatusId)
+            return false;
+
+        var rawSourceActorId = ResolveStatusSourceActorId(status);
+        if (!TryResolveTrackedSource(rawSourceActorId, nowUtc, out var source) || source.Kind != TrackedActorKind.Player)
+            return false;
+
+        var statusName = TryGetStatusGameDataText(status, "Name");
+        var actionName = string.IsNullOrWhiteSpace(statusName)
+            ? "野火"
+            : NormalizeActionName(statusName);
+        var remainingTimeSeconds = Math.Max(0f, GetStatusRemainingTime(status));
+        var stackCount = ResolveWildfireStackCount(status);
+
+        key = new PlayerWildfireKey(targetActorId, source.ActorId, statusId);
+        if (activeWildfires.TryGetValue(key, out var existing))
+        {
+            var isRefresh = remainingTimeSeconds > existing.RemainingTimeSeconds + 0.5f
+                            || nowUtc - existing.ExpectedDetonationUtc > WildfireStatusGracePeriod;
+            if (isRefresh)
+                existing.Reset(source, actionName, nowUtc, remainingTimeSeconds, stackCount);
+            else
+                existing.Refresh(source, actionName, nowUtc, remainingTimeSeconds, stackCount);
+
+            return true;
+        }
+
+        activeWildfires[key] = new ActiveWildfireState(
+            key,
+            source,
+            actionName,
+            nowUtc,
+            remainingTimeSeconds,
+            stackCount);
+        return true;
+    }
+
+    private int ResolveWildfireStackCount(object status)
+    {
+        var rawStackCount = TryGetStatusParam(status);
+        if (rawStackCount <= 0)
+            return 0;
+
+        return Math.Clamp(rawStackCount, 0, WildfireMaxWeaponskillCount);
+    }
+
+    private void NoteWildfireWeaponskillContributionLocked(
+        uint sourceActorId,
+        uint targetActorId,
+        uint actionId,
+        string actionName,
+        long observedDamageAmount,
+        bool critical,
+        bool directHit,
+        DateTime timeUtc)
+    {
+        if (activeWildfires.Count == 0
+            || observedDamageAmount <= 0
+            || !WildfireAnchorPotencies.TryGetValue(actionId, out var potency))
+            return;
+
+        var matchingStates = activeWildfires.Values
+            .Where(state =>
+                !state.DetonationRecorded
+                && AreEquivalentActorIds(state.Key.SourceActorId, sourceActorId)
+                && AreEquivalentActorIds(state.Key.TargetActorId, targetActorId)
+                && timeUtc <= state.ExpectedDetonationUtc + WildfireDetonationTimingAllowance)
+            .ToList();
+        foreach (var state in matchingStates)
+            state.NoteWeaponskillContribution(actionId, actionName, observedDamageAmount, potency, critical, directHit, timeUtc);
+    }
+
+    private void TryRecordPendingWildfireDetonationsLocked(DateTime nowUtc)
+    {
+        if (activeWildfires.Count == 0)
+            return;
+
+        var dueStates = activeWildfires.Values
+            .Where(state =>
+                !state.DetonationRecorded
+                && state.EffectiveStackCount > 0
+                && nowUtc + WildfireDetonationTimingAllowance >= state.ExpectedDetonationUtc)
+            .ToList();
+        foreach (var state in dueStates)
+        {
+            var detonationTimeUtc = state.ExpectedDetonationUtc <= nowUtc
+                ? state.ExpectedDetonationUtc
+                : nowUtc;
+            _ = TryRecordWildfireDetonationLocked(state, detonationTimeUtc);
+        }
+    }
+
+    private bool TryRecordWildfireDetonationLocked(ActiveWildfireState state, DateTime timeUtc)
+    {
+        if (state.DetonationRecorded)
+            return false;
+
+        var stackCount = state.EffectiveStackCount;
+        if (stackCount <= 0)
+            return false;
+
+        var amount = EstimateWildfireDamageLocked(state, stackCount, timeUtc);
+        if (amount <= 0)
+            return false;
+
+        var loggedTargetName = ResolveCombatTimelineTargetName(state.Key.TargetActorId, timeUtc);
+        var encounterActionName = NormalizeActionName(state.ActionName);
+        var wildfireActionText = FormatActionNameWithId(encounterActionName, WildfireActionId);
+        var wasStarted = currentEncounter.Started;
+        var contributionSummary = BuildWildfireContributionSummary(state);
+
+        currentEncounter.RecordOutgoingDamage(state.Source, encounterActionName, amount, false, false, timeUtc);
+        AppendEncounterStartIfNeededLocked(wasStarted, timeUtc);
+        AppendCombatTimelineEntryLocked(
+            timeUtc,
+            CombatTimelineEntryKind.Damage,
+            $"{state.Source.Name} 使用{wildfireActionText} 攻击 {loggedTargetName}，造成 {CreateDamageString(amount, useSuffix: true, useDecimals: true)} 伤害（模拟：{contributionSummary}）。",
+            state.Source.Name,
+            loggedTargetName,
+            actorIsFriendly: true,
+            targetIsFriendly: false,
+            actionText: wildfireActionText);
+
+        state.DetonationRecorded = true;
+        return true;
+    }
+
+    private long EstimateWildfireDamageLocked(ActiveWildfireState state, int stackCount, DateTime nowUtc)
+    {
+        if (stackCount <= 0)
+            return 0L;
+
+        if (TryEstimateWildfireDamageFromContributionSamplesLocked(state, stackCount, out var contributionEstimatedDamage))
+            return contributionEstimatedDamage;
+
+        if (!TryResolveWildfireAnchorActionLocked(state.Key.SourceActorId, state.Key.TargetActorId, nowUtc, out var observedDamageAmount, out var anchorPotency))
+            return 0L;
+
+        var wildfirePotency = stackCount * WildfirePotencyPerWeaponskill;
+        if (wildfirePotency <= 0 || anchorPotency <= 0)
+            return 0L;
+
+        return Math.Max(1L, (long)Math.Round(
+            observedDamageAmount
+            * (wildfirePotency / (double)anchorPotency)
+            * WildfireDotLikeDamageScale));
+    }
+
+    private bool TryEstimateWildfireDamageFromContributionSamplesLocked(ActiveWildfireState state, int stackCount, out long estimatedDamage)
+    {
+        estimatedDamage = 0L;
+        if (stackCount <= 0)
+            return false;
+
+        var normalizedDamagePerPotencySamples = state.ContributionSamples
+            .Where(sample => sample.Potency > 0 && sample.ObservedDamageAmount > 0)
+            .Select(static sample => sample.GetNormalizedDamagePerPotency())
+            .Where(value => value > 0d)
+            .OrderBy(value => value)
+            .ToList();
+        if (normalizedDamagePerPotencySamples.Count == 0)
+            return false;
+
+        var effectiveSamples = normalizedDamagePerPotencySamples.Count >= 3
+            ? normalizedDamagePerPotencySamples.Skip(1).Take(normalizedDamagePerPotencySamples.Count - 2).ToList()
+            : normalizedDamagePerPotencySamples;
+        if (effectiveSamples.Count == 0)
+            effectiveSamples = normalizedDamagePerPotencySamples;
+
+        var wildfirePotency = stackCount * WildfirePotencyPerWeaponskill;
+        if (wildfirePotency <= 0)
+            return false;
+
+        var averageDamagePerPotency = effectiveSamples.Average();
+        if (averageDamagePerPotency <= 0d)
+            return false;
+
+        estimatedDamage = Math.Max(1L, (long)Math.Round(
+            averageDamagePerPotency
+            * wildfirePotency
+            * WildfireDotLikeDamageScale));
+        return estimatedDamage > 0L;
+    }
+
+    private static string BuildWildfireContributionSummary(ActiveWildfireState state)
+    {
+        var stackCount = state.EffectiveStackCount;
+        if (state.ContributionSamples.Count == 0)
+            return $"层数 {stackCount}，无有效样本";
+
+        var groupedSamples = state.ContributionSamples
+            .GroupBy(static sample => sample.ActionName)
+            .OrderByDescending(static group => group.Count())
+            .ThenBy(static group => group.Key, StringComparer.Ordinal)
+            .Take(3)
+            .Select(static group => $"{group.Key}×{group.Count()}");
+        return $"层数 {stackCount}，样本 {string.Join("、", groupedSamples)}";
+    }
+
+    private bool TryResolveWildfireAnchorActionLocked(uint sourceActorId, uint targetActorId, DateTime nowUtc, out long observedDamageAmount, out int anchorPotency)
+    {
+        observedDamageAmount = 0L;
+        anchorPotency = 0;
+
+        static bool TryResolveAnchorPotency(RecentHostilePlayerAction action, out int potency)
+            => WildfireAnchorPotencies.TryGetValue(action.ActionId, out potency);
+
+        var targetMatch = recentHostilePlayerActions
+            .Where(action =>
+                AreEquivalentActorIds(action.Source.ActorId, sourceActorId)
+                && AreEquivalentActorIds(action.TargetActorId, targetActorId)
+                && action.ObservedDamageAmount > 0
+                && nowUtc - action.ObservedAtUtc <= PlayerDotRecentActionTtl
+                && TryResolveAnchorPotency(action, out _))
+            .OrderByDescending(action => action.ObservedAtUtc)
+            .FirstOrDefault();
+        if (targetMatch != null && TryResolveAnchorPotency(targetMatch, out anchorPotency))
+        {
+            observedDamageAmount = targetMatch.ObservedDamageAmount;
+            return true;
+        }
+
+        var sourceOnlyMatch = recentHostilePlayerActions
+            .Where(action =>
+                AreEquivalentActorIds(action.Source.ActorId, sourceActorId)
+                && action.ObservedDamageAmount > 0
+                && nowUtc - action.ObservedAtUtc <= PlayerDotRecentActionTtl
+                && TryResolveAnchorPotency(action, out _))
+            .OrderByDescending(action => action.ObservedAtUtc)
+            .FirstOrDefault();
+        if (sourceOnlyMatch != null && TryResolveAnchorPotency(sourceOnlyMatch, out anchorPotency))
+        {
+            observedDamageAmount = sourceOnlyMatch.ObservedDamageAmount;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void TrimInactiveWildfiresLocked(DateTime nowUtc)
+    {
+        if (activeWildfires.Count == 0)
+            return;
+
+        var staleKeys = activeWildfires
+            .Where(pair =>
+            {
+                var state = pair.Value;
+                if (state.DetonationRecorded)
+                    return nowUtc - state.LastSeenUtc > PlayerDotStatusGracePeriod;
+
+                return nowUtc - state.LastSeenUtc > PlayerDotStatusGracePeriod
+                       && nowUtc - state.ExpectedDetonationUtc > PlayerDotStatusGracePeriod;
+            })
+            .Select(pair => pair.Key)
+            .ToList();
+        foreach (var key in staleKeys)
+            activeWildfires.Remove(key);
+    }
+
     private void TrimRecentHostilePlayerActionsLocked(DateTime nowUtc)
         => recentHostilePlayerActions.RemoveAll(action => nowUtc - action.ObservedAtUtc > PlayerDotRecentActionTtl);
 
@@ -1348,10 +1740,14 @@ internal sealed class LocalStatsService
         {
             var amount = dotState.EstimatedTickDamage;
             if (amount <= 0)
-                amount = ResolvePlayerDotEstimatedTickDamageLocked(source, dotState.Key.TargetActorId, dotState.ActionName, dotState.StatusPotency, tickTimeUtc, dotState.SkillEntry);
+            {
+                amount = ResolvePlayerDotEstimatedTickDamageLocked(source, dotState.Key.TargetActorId, dotState.ActionId, dotState.ActionName, dotState.StatusPotency, tickTimeUtc, dotState.SkillEntry);
+                if (amount > 0)
+                    dotState.EstimatedTickDamage = amount;
+            }
 
             if (amount <= 0)
-                amount = 1;
+                return false;
 
             var loggedTargetName = ResolveCombatTimelineTargetName(dotState.Key.TargetActorId, tickTimeUtc);
             var encounterActionName = NormalizeActionName(dotState.ActionName);
@@ -1443,7 +1839,7 @@ internal sealed class LocalStatsService
             var sourceAverageDamage = ResolveObservedAverageDamage(state.Source.ActorId);
             var estimatedTickDamage = observedDamage > 0
                 ? EstimatePlayerDotTickDamageFromObservedDamage(observedDamage, actionId, observedCritical, observedDirectHit, sourceAverageDamage, state.SkillEntry)
-                : ResolvePlayerDotEstimatedTickDamageLocked(state.Source, targetId, state.ActionName, state.StatusPotency, nowUtc, state.SkillEntry);
+                : ResolvePlayerDotEstimatedTickDamageLocked(state.Source, targetId, state.ActionId, state.ActionName, state.StatusPotency, nowUtc, state.SkillEntry);
 
             if (estimatedTickDamage > 0)
             {
@@ -1453,7 +1849,7 @@ internal sealed class LocalStatsService
         }
     }
 
-    private static long EstimatePlayerDotTickDamageFromObservedDamage(
+    private long EstimatePlayerDotTickDamageFromObservedDamage(
         long observedDamage,
         uint observedActionId,
         bool observedCritical,
@@ -1464,8 +1860,18 @@ internal sealed class LocalStatsService
         if (observedDamage <= 0)
             return 0L;
 
+        var observedActionMatchesSkill = MatchesPlayerDotObservedAction(skillEntry, observedActionId);
+
         if (TryEstimatePlayerDotTickDamageFromPotencyRatio(observedDamage, observedActionId, observedCritical, observedDirectHit, skillEntry, out var potencyEstimatedTickDamage))
             return potencyEstimatedTickDamage;
+
+        if ((skillEntry == null || observedActionMatchesSkill)
+            && !ShouldDisableAverageFallback(skillEntry)
+            && TryEstimatePlayerDotTickDamageFromAveragePotencyRatio(sourceAverageDamage, skillEntry, out var averagePotencyEstimatedTickDamage))
+            return averagePotencyEstimatedTickDamage;
+
+        if (skillEntry != null)
+            return 0L;
 
         var divisor = observedCritical ? 4d : 3d;
         if (observedDirectHit)
@@ -1482,7 +1888,7 @@ internal sealed class LocalStatsService
         return Math.Max(1L, estimatedFromObserved);
     }
 
-    private static bool TryEstimatePlayerDotTickDamageFromPotencyRatio(
+    private bool TryEstimatePlayerDotTickDamageFromPotencyRatio(
         long observedDamage,
         uint observedActionId,
         bool observedCritical,
@@ -1497,8 +1903,15 @@ internal sealed class LocalStatsService
         double potencyRatio;
         if (skillEntry.ActionIds.Contains(observedActionId))
         {
-            if (!skillEntry.TryGetPotencyRatio(out potencyRatio))
+            if (!TryResolvePlayerDotPotencyRatio(observedActionId, skillEntry, out potencyRatio))
                 return false;
+        }
+        else if (skillEntry.StatusIds.Contains(observedActionId))
+        {
+            if (!skillEntry.DotTickPotency.HasValue || skillEntry.DotTickPotency.Value <= 0)
+                return false;
+
+            potencyRatio = 1d;
         }
         else
         {
@@ -1574,11 +1987,50 @@ internal sealed class LocalStatsService
         DateTime nowUtc,
         PlayerDotSkillEntry? skillEntry)
     {
+        if (skillEntry != null)
+        {
+            var skillAction = ResolveRecentPlayerDotSkillActionLocked(sourceActorId, targetActorId, actionName, nowUtc, skillEntry);
+            if (skillAction?.ObservedDamageAmount > 0)
+                return skillAction;
+
+            return ResolveRecentPlayerDotAnchorActionLocked(sourceActorId, targetActorId, nowUtc, skillEntry);
+        }
+
         var recentAction = ResolveRecentPlayerDotActionLocked(sourceActorId, targetActorId, actionName, nowUtc);
         if (recentAction?.ObservedDamageAmount > 0)
             return recentAction;
 
         return ResolveRecentPlayerDotAnchorActionLocked(sourceActorId, targetActorId, nowUtc, skillEntry);
+    }
+
+    private RecentHostilePlayerAction? ResolveRecentPlayerDotSkillActionLocked(
+        uint sourceActorId,
+        uint targetActorId,
+        string actionName,
+        DateTime nowUtc,
+        PlayerDotSkillEntry skillEntry)
+    {
+        var normalizedActionName = NormalizeActionName(actionName);
+        var recentActions = recentHostilePlayerActions
+            .Where(action =>
+                AreEquivalentActorIds(action.Source.ActorId, sourceActorId)
+                && AreEquivalentActorIds(action.TargetActorId, targetActorId)
+                && nowUtc - action.ObservedAtUtc <= PlayerDotRecentActionTtl);
+
+        var actionIdMatch = recentActions
+            .Where(action => skillEntry.ActionIds.Contains(action.ActionId) || skillEntry.StatusIds.Contains(action.ActionId))
+            .OrderByDescending(action => action.ObservedAtUtc)
+            .FirstOrDefault();
+        if (actionIdMatch != null)
+            return actionIdMatch;
+
+        if (IsUnknownActionName(normalizedActionName))
+            return null;
+
+        return recentActions
+            .Where(action => string.Equals(action.ActionName, normalizedActionName, StringComparison.Ordinal))
+            .OrderByDescending(action => action.ObservedAtUtc)
+            .FirstOrDefault();
     }
 
     private RecentHostilePlayerAction? ResolveRecentPlayerDotAnchorActionLocked(
@@ -1634,6 +2086,7 @@ internal sealed class LocalStatsService
     private long ResolvePlayerDotEstimatedTickDamageLocked(
         TrackedActor source,
         uint targetActorId,
+        uint actionId,
         string actionName,
         int statusPotency,
         DateTime nowUtc,
@@ -1646,17 +2099,23 @@ internal sealed class LocalStatsService
 
         if (recentAction?.ObservedDamageAmount > 0)
         {
-            return EstimatePlayerDotTickDamageFromObservedDamage(
+            var estimatedFromObservedDamage = EstimatePlayerDotTickDamageFromObservedDamage(
                 recentAction.ObservedDamageAmount,
                 recentAction.ActionId,
                 recentAction.ObservedCritical == true,
                 recentAction.ObservedDirectHit == true,
                 sourceAverageDamage,
                 skillEntry);
+            if (estimatedFromObservedDamage > 0)
+                return estimatedFromObservedDamage;
         }
 
-        if (TryEstimatePlayerDotTickDamageFromAveragePotencyRatio(sourceAverageDamage, skillEntry, out var averagePotencyEstimatedTickDamage))
+        if (!ShouldDisableAverageFallback(skillEntry)
+            && TryEstimatePlayerDotTickDamageFromAveragePotencyRatio(sourceAverageDamage, skillEntry, out var averagePotencyEstimatedTickDamage))
             return averagePotencyEstimatedTickDamage;
+
+        if (skillEntry != null)
+            return 0L;
 
         if (sourceAverageDamage > 0)
             return Math.Max(1L, (long)Math.Round(sourceAverageDamage / 3d));
@@ -1665,6 +2124,106 @@ internal sealed class LocalStatsService
             return Math.Max(1L, Math.Max(500L, statusPotency * 100L));
 
         return 500L;
+    }
+
+    private static bool MatchesPlayerDotObservedAction(PlayerDotSkillEntry? skillEntry, uint observedActionId)
+    {
+        if (skillEntry == null || observedActionId == 0)
+            return false;
+
+        if (skillEntry.ActionIds.Contains(observedActionId) || skillEntry.StatusIds.Contains(observedActionId))
+            return true;
+
+        return skillEntry.Anchors.Any(anchor => anchor.ActionIds.Contains(observedActionId));
+    }
+
+    private static bool ShouldDisableAverageFallback(PlayerDotSkillEntry? skillEntry)
+        => skillEntry?.DisableAverageFallback == true;
+
+    private bool TryResolvePlayerDotPotencyRatio(uint observedActionId, PlayerDotSkillEntry? skillEntry, out double potencyRatio)
+    {
+        potencyRatio = 0d;
+        if (skillEntry == null)
+            return false;
+
+        if (skillEntry.TryGetPotencyRatio(out potencyRatio))
+            return potencyRatio > 0d;
+
+        var preferredActionId = skillEntry.GetPreferredActionId(observedActionId);
+        if (preferredActionId == 0)
+            return false;
+
+        if (!TryGetActionDescriptionDotPotencies(preferredActionId, out var actionDotPotency))
+            return false;
+
+        if (actionDotPotency.SeedPotency <= 0 || actionDotPotency.DotTickPotency <= 0)
+            return false;
+
+        potencyRatio = actionDotPotency.DotTickPotency / (double)actionDotPotency.SeedPotency;
+        return potencyRatio > 0d;
+    }
+
+    private bool TryGetActionDescriptionDotPotencies(uint actionId, out ActionDescriptionDotPotencyEntry entry)
+    {
+        entry = default;
+        if (actionId == 0)
+            return false;
+
+        if (actionDescriptionDotPotencyCache.TryGetValue(actionId, out entry))
+            return true;
+
+        if (actionDescriptionDotPotencyCacheMisses.Contains(actionId))
+            return false;
+
+        if (actionTransientSheet == null)
+        {
+            actionDescriptionDotPotencyCacheMisses.Add(actionId);
+            return false;
+        }
+
+        try
+        {
+            var actionTransient = actionTransientSheet.GetRow(actionId);
+            var description = actionTransient.Description.ToString();
+            if (TryParseActionDescriptionDotPotencies(description, out var seedPotency, out var dotTickPotency))
+            {
+                entry = new ActionDescriptionDotPotencyEntry(actionId, seedPotency, dotTickPotency);
+                actionDescriptionDotPotencyCache[actionId] = entry;
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("统计", ex, $"解析动作说明中的 DoT 威力失败：actionId=0x{actionId:X8}。");
+        }
+
+        actionDescriptionDotPotencyCacheMisses.Add(actionId);
+        return false;
+    }
+
+    private static bool TryParseActionDescriptionDotPotencies(string? description, out int seedPotency, out int dotTickPotency)
+    {
+        seedPotency = 0;
+        dotTickPotency = 0;
+        if (string.IsNullOrWhiteSpace(description))
+            return false;
+
+        var normalizedDescription = description.Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+        if (normalizedDescription.Length == 0)
+            return false;
+
+        var dotMatch = ActionDescriptionDotPotencyRegex.Match(normalizedDescription);
+        if (!dotMatch.Success || !int.TryParse(dotMatch.Groups["potency"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out dotTickPotency) || dotTickPotency <= 0)
+            return false;
+
+        var directMatch = ActionDescriptionPotencyRegex.Match(normalizedDescription);
+        if (!directMatch.Success || !int.TryParse(directMatch.Groups["potency"].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out seedPotency) || seedPotency <= 0)
+        {
+            dotTickPotency = 0;
+            return false;
+        }
+
+        return true;
     }
 
     private long ResolveObservedAverageDamage(uint sourceActorId)
@@ -1811,6 +2370,34 @@ internal sealed class LocalStatsService
         return "\u672A\u77E5\u6301\u7EED\u4F24\u5BB3";
     }
 
+    private static bool PreferredPlayerDotFallbackMatchesStatus(
+        uint statusId,
+        string statusName,
+        uint? preferredActionId,
+        string? preferredActionName)
+    {
+        if (!preferredActionId.HasValue || !PlayerDotCatalog.IsKnownPlayerDotAction(preferredActionId.Value))
+            return false;
+
+        var preferredSkill = PlayerDotCatalog.GetSkillByActionId(preferredActionId.Value);
+        if (preferredSkill == null)
+            return false;
+
+        if (preferredSkill.StatusIds.Contains(statusId))
+            return true;
+
+        if (string.IsNullOrWhiteSpace(statusName))
+            return false;
+
+        var normalizedPreferredActionName = string.IsNullOrWhiteSpace(preferredActionName)
+            ? string.Empty
+            : NormalizeActionName(preferredActionName);
+        var normalizedPreferredSkillName = NormalizeActionName(preferredSkill.SkillName);
+
+        return string.Equals(statusName, normalizedPreferredActionName, StringComparison.Ordinal)
+               || string.Equals(statusName, normalizedPreferredSkillName, StringComparison.Ordinal);
+    }
+
     private bool IsPlayerDamageOverTimeStatus(object status)
     {
         var statusId = GetStatusId(status);
@@ -1926,6 +2513,19 @@ internal sealed class LocalStatsService
 
     private static uint GetStatusId(object status)
         => TryConvertActorId(GetReflectedStatusValue(status, "StatusId"));
+
+    private static int TryGetStatusParam(object status)
+    {
+        try
+        {
+            var rawValue = GetReflectedStatusValue(status, "Param");
+            return rawValue == null ? 0 : Convert.ToInt32(rawValue);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
 
     private static float GetStatusRemainingTime(object status)
     {
@@ -2316,6 +2916,7 @@ internal sealed class LocalStatsService
             observedFriendlyActorCache.Clear();
             recentHostilePlayerActions.Clear();
             activePlayerDots.Clear();
+            activeWildfires.Clear();
             partyOutOfCombatSinceUtc = default;
             lastPlayerDotStatusPollUtc = default;
             encounterFinalizedVersion++;
@@ -2357,6 +2958,7 @@ internal sealed class LocalStatsService
         observedFriendlyActorCache.Clear();
         recentHostilePlayerActions.Clear();
         activePlayerDots.Clear();
+        activeWildfires.Clear();
         partyOutOfCombatSinceUtc = default;
         lastPlayerDotStatusPollUtc = default;
         encounterFinalizedVersion++;
@@ -2382,18 +2984,46 @@ internal sealed class LocalStatsService
             return InvalidActorId;
 
         var obj = FindObjectByActorId(actorId);
-        if (obj != null
-            && ShouldResolveOwnerForObject(obj)
-            && obj.OwnerId is > 0 and not InvalidActorId)
+        if (TryGetResolvableOwnerId(obj, out var ownerActorId))
         {
-            ownerCache[actorId] = new OwnerCacheEntry(obj.OwnerId, nowUtc);
-            return obj.OwnerId;
+            ownerCache[actorId] = new OwnerCacheEntry(ownerActorId, nowUtc);
+            return ownerActorId;
         }
 
         if (ownerCache.TryGetValue(actorId, out var cached) && nowUtc - cached.UpdatedAtUtc <= OwnerCacheTtl)
             return cached.OwnerId;
 
         return InvalidActorId;
+    }
+
+    // 除了 Pet / Buddy / 陆行鸟，还要兼容带 OwnerId 的玩家额外来源，
+    // 例如：英雄的掠影、礼仪之铃、后式自走人偶。
+    private bool TryGetResolvableOwnerId(IGameObject? gameObject, out uint ownerId)
+    {
+        ownerId = InvalidActorId;
+        if (gameObject == null)
+            return false;
+
+        if (gameObject.OwnerId is 0 or InvalidActorId)
+            return false;
+
+        if (ShouldResolveOwnerForObject(gameObject))
+        {
+            ownerId = gameObject.OwnerId;
+            return true;
+        }
+
+        if (gameObject is not IBattleNpc battleNpc)
+            return false;
+
+        if ((battleNpc.StatusFlags & StatusFlags.Hostile) != 0)
+            return false;
+
+        if (!TryGetTrackedActor(gameObject.OwnerId, out _))
+            return false;
+
+        ownerId = gameObject.OwnerId;
+        return true;
     }
 
     private static uint ResolvePartyMemberActorId(Dalamud.Game.ClientState.Party.IPartyMember member)
@@ -2427,7 +3057,7 @@ internal sealed class LocalStatsService
         return TryGetLocalPlayerTrackedActor(actorId, out actor);
     }
 
-    private static bool TryGetTrackedActor(IGameObject? gameObject, out TrackedActor actor)
+    private bool TryGetTrackedActor(IGameObject? gameObject, out TrackedActor actor)
     {
         actor = default;
         if (gameObject == null)
@@ -2444,7 +3074,7 @@ internal sealed class LocalStatsService
         return false;
     }
 
-    private static bool TryGetTrackedBattleCharaActor(IBattleChara battleChara, out TrackedActor actor)
+    private bool TryGetTrackedBattleCharaActor(IBattleChara battleChara, out TrackedActor actor)
     {
         foreach (var trackedBattleChara in EnumerateTrackedPartyBattleCharas())
         {
@@ -2494,7 +3124,7 @@ internal sealed class LocalStatsService
         return false;
     }
 
-    private static bool TryGetTrackedPartyBattleCharaActor(uint actorId, out TrackedActor actor)
+    private bool TryGetTrackedPartyBattleCharaActor(uint actorId, out TrackedActor actor)
     {
         foreach (var battleChara in EnumerateTrackedPartyBattleCharas())
         {
@@ -2542,7 +3172,7 @@ internal sealed class LocalStatsService
         return false;
     }
 
-    private static bool TryGetFriendlyBattleNpcTrackedActor(uint actorId, out TrackedActor actor)
+    private bool TryGetFriendlyBattleNpcTrackedActor(uint actorId, out TrackedActor actor)
     {
         foreach (var obj in DalamudApi.ObjectTable)
         {
@@ -2733,7 +3363,7 @@ internal sealed class LocalStatsService
         };
     }
 
-    private static IEnumerable<IBattleChara> EnumerateTrackedPartyBattleCharas()
+    private IEnumerable<IBattleChara> EnumerateTrackedPartyBattleCharas()
     {
         var seen = new HashSet<ulong>();
 
@@ -2957,7 +3587,7 @@ internal sealed class LocalStatsService
         return true;
     }
 
-    private static bool IsFriendlyTrackedBattleNpc(IBattleChara battleChara)
+    private bool IsFriendlyTrackedBattleNpc(IBattleChara battleChara)
     {
         if (battleChara is not IBattleNpc battleNpc)
             return false;
@@ -2966,13 +3596,13 @@ internal sealed class LocalStatsService
         if ((statusFlags & StatusFlags.Hostile) != 0)
             return false;
 
-        if (ShouldResolveOwnerForObject(battleNpc) && battleNpc.OwnerId is > 0 and not InvalidActorId)
+        if (TryGetResolvableOwnerId(battleNpc, out _))
             return false;
 
         return HasFriendlyBattleNpcIndicators(battleNpc);
     }
 
-    private static bool TryCreateObservedFriendlyActor(IGameObject? gameObject, out TrackedActor actor)
+    private bool TryCreateObservedFriendlyActor(IGameObject? gameObject, out TrackedActor actor)
     {
         actor = default;
         IBattleChara? battleChara = gameObject as IBattleChara;
@@ -2988,7 +3618,7 @@ internal sealed class LocalStatsService
         if ((battleChara.StatusFlags & StatusFlags.Hostile) != 0)
             return false;
 
-        if (ShouldResolveOwnerForObject(battleChara) && battleChara.OwnerId is > 0 and not InvalidActorId)
+        if (TryGetResolvableOwnerId(battleChara, out _))
             return false;
 
         if (battleChara is IBattleNpc battleNpc && !HasFriendlyBattleNpcIndicators(battleNpc))
@@ -3966,6 +4596,56 @@ internal sealed class LocalStatsService
     }
 
     private readonly record struct OwnerCacheEntry(uint OwnerId, DateTime UpdatedAtUtc);
+    private readonly record struct ActionDescriptionDotPotencyEntry(uint ActionId, int SeedPotency, int DotTickPotency);
+
+    private sealed class WildfireContributionSample
+    {
+        public WildfireContributionSample(
+            uint actionId,
+            string actionName,
+            int potency,
+            long observedDamageAmount,
+            bool observedCritical,
+            bool observedDirectHit,
+            DateTime observedAtUtc)
+        {
+            ActionId = actionId;
+            ActionName = string.IsNullOrWhiteSpace(actionName)
+                ? $"技能 {actionId}"
+                : actionName;
+            Potency = potency;
+            ObservedDamageAmount = observedDamageAmount;
+            ObservedCritical = observedCritical;
+            ObservedDirectHit = observedDirectHit;
+            ObservedAtUtc = observedAtUtc;
+        }
+
+        public uint ActionId { get; set; }
+
+        public string ActionName { get; }
+
+        public int Potency { get; }
+
+        public long ObservedDamageAmount { get; }
+
+        public bool ObservedCritical { get; }
+
+        public bool ObservedDirectHit { get; }
+
+        public DateTime ObservedAtUtc { get; }
+
+        public double GetNormalizedDamagePerPotency()
+        {
+            if (ObservedDamageAmount <= 0 || Potency <= 0)
+                return 0d;
+
+            var normalizedDamage = ObservedDamageAmount / (ObservedCritical ? ObservedPlayerDotCriticalHitMultiplier : 1d);
+            if (ObservedDirectHit)
+                normalizedDamage /= ObservedPlayerDotDirectHitMultiplier;
+
+            return normalizedDamage / Potency;
+        }
+    }
 
     private sealed class RecentHostilePlayerAction
     {
@@ -3987,7 +4667,7 @@ internal sealed class LocalStatsService
 
         public uint TargetActorId { get; }
 
-        public uint ActionId { get; }
+        public uint ActionId { get; set; }
 
         public string ActionName { get; }
 
@@ -4001,6 +4681,7 @@ internal sealed class LocalStatsService
     }
 
     private readonly record struct PlayerDotKey(uint TargetActorId, uint SourceActorId, uint StatusId);
+    private readonly record struct PlayerWildfireKey(uint TargetActorId, uint SourceActorId, uint StatusId);
 
     private enum TrackedActorKind
     {
@@ -4048,7 +4729,7 @@ internal sealed class LocalStatsService
 
         public TrackedActor Source { get; }
 
-        public uint ActionId { get; }
+        public uint ActionId { get; set; }
 
         public string ActionName { get; set; }
 
@@ -4073,6 +4754,104 @@ internal sealed class LocalStatsService
         public int TickCount { get; set; }
 
         public float NextTickRemainingTimeSeconds { get; set; }
+    }
+
+    private sealed class ActiveWildfireState
+    {
+        private readonly List<WildfireContributionSample> contributionSamples = new();
+
+        public ActiveWildfireState(
+            PlayerWildfireKey key,
+            TrackedActor source,
+            string actionName,
+            DateTime firstSeenUtc,
+            float remainingTimeSeconds,
+            int stackCount)
+        {
+            Key = key;
+            Source = source;
+            ActionName = actionName;
+            FirstSeenUtc = firstSeenUtc;
+            Refresh(source, actionName, firstSeenUtc, remainingTimeSeconds, stackCount);
+        }
+
+        public PlayerWildfireKey Key { get; }
+
+        public TrackedActor Source { get; private set; }
+
+        public string ActionName { get; private set; }
+
+        public DateTime FirstSeenUtc { get; private set; }
+
+        public DateTime LastSeenUtc { get; private set; }
+
+        public float RemainingTimeSeconds { get; private set; }
+
+        public DateTime ExpectedDetonationUtc { get; private set; }
+
+        public int LastKnownStackCount { get; private set; }
+
+        public int ObservedWeaponskillCount { get; private set; }
+
+        public bool DetonationRecorded { get; set; }
+
+        public IReadOnlyList<WildfireContributionSample> ContributionSamples => contributionSamples;
+
+        public int EffectiveStackCount
+            => Math.Clamp(Math.Max(LastKnownStackCount, ObservedWeaponskillCount), 0, WildfireMaxWeaponskillCount);
+
+        public void Reset(TrackedActor source, string actionName, DateTime nowUtc, float remainingTimeSeconds, int stackCount)
+        {
+            FirstSeenUtc = nowUtc;
+            LastKnownStackCount = 0;
+            ObservedWeaponskillCount = 0;
+            DetonationRecorded = false;
+            contributionSamples.Clear();
+            Refresh(source, actionName, nowUtc, remainingTimeSeconds, stackCount);
+        }
+
+        public void Refresh(TrackedActor source, string actionName, DateTime nowUtc, float remainingTimeSeconds, int stackCount)
+        {
+            Source = source;
+            ActionName = actionName;
+            LastSeenUtc = nowUtc;
+            RemainingTimeSeconds = Math.Max(0f, remainingTimeSeconds);
+            ExpectedDetonationUtc = nowUtc + TimeSpan.FromSeconds(RemainingTimeSeconds);
+            LastKnownStackCount = Math.Clamp(Math.Max(LastKnownStackCount, stackCount), 0, WildfireMaxWeaponskillCount);
+        }
+
+        public void NoteWeaponskillContribution(
+            uint actionId,
+            string actionName,
+            long observedDamageAmount,
+            int potency,
+            bool critical,
+            bool directHit,
+            DateTime observedAtUtc)
+        {
+            if (actionId == 0 || observedDamageAmount <= 0 || potency <= 0)
+                return;
+
+            var duplicateSample = contributionSamples.Any(sample =>
+                sample.ActionId == actionId
+                && sample.ObservedAtUtc == observedAtUtc);
+            if (duplicateSample)
+                return;
+
+            if (contributionSamples.Count < WildfireMaxWeaponskillCount)
+            {
+                contributionSamples.Add(new WildfireContributionSample(
+                    actionId,
+                    actionName,
+                    potency,
+                    observedDamageAmount,
+                    critical,
+                    directHit,
+                    observedAtUtc));
+            }
+
+            ObservedWeaponskillCount = Math.Clamp(ObservedWeaponskillCount + 1, 0, WildfireMaxWeaponskillCount);
+        }
     }
 
     private sealed class EncounterSession

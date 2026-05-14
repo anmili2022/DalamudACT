@@ -37,6 +37,7 @@ public enum FloatingStatsDisplayStyle
 {
     Classic = 0,
     Ikegami = 1,
+    Minimal = 2,
 }
 
 public enum IkegamiBoxAlignment
@@ -86,6 +87,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public const float DefaultThemeBarOpacity = 0.75f;
     private const string FloatingClassicSettingsFileName = "floating-stats-classic.json";
     private const string FloatingIkegamiSettingsFileName = "floating-stats-ikegami.json";
+    private const string FloatingMinimalSettingsFileName = "floating-stats-minimal.json";
     private const string FloatingStyleExportsDirectoryName = "floating-style-exports";
     private const string FloatingStyleShareCodePrefix = "DACTSTYLE1";
     private static readonly JsonSerializerOptions FloatingStyleJsonOptions = new()
@@ -101,13 +103,13 @@ public sealed class PluginConfiguration : IPluginConfiguration
     private static readonly FieldInfo[] PersistentFieldInfos = typeof(PluginConfiguration)
         .GetFields(BindingFlags.Public | BindingFlags.Instance);
 
-    public int Version { get; set; } = 43;
+    public int Version { get; set; } = 50;
 
-    public float WindowOpacity = 0.92f;
+    public float WindowOpacity = 1f;
     public float FloatingStatsOpacity = 0.72f;
     public bool ShowStatsPanel = true;
     public bool LockFloatingStatsWindow = false;
-    public FloatingStatsDisplayStyle FloatingStatsDisplayStyle = FloatingStatsDisplayStyle.Classic;
+    public FloatingStatsDisplayStyle FloatingStatsDisplayStyle = FloatingStatsDisplayStyle.Minimal;
     public FloatingStatsParticipantDisplayMode FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
     public int HostileNpcMinHpMultiplier = 10;
     public bool HighlightNpcRows = true;
@@ -123,68 +125,90 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public bool ShowOverviewTab = true;
     public bool ShowHistoryTab = true;
     public bool ShowDpsPlayerColumn = true;
-    public bool ShowDpsJobColumn = true;
-    public bool ShowDpsDamageColumn = true;
+    public bool ShowDpsJobColumn = false;
+    public bool ShowDpsDamageColumn = false;
     public bool ShowDpsValueColumn = true;
     public bool ShowDpsDeathsColumn = true;
     public bool ShowHpsPlayerColumn = true;
-    public bool ShowHpsJobColumn = true;
-    public bool ShowHpsHealColumn = true;
+    public bool ShowHpsJobColumn = false;
+    public bool ShowHpsHealColumn = false;
     public bool ShowHpsValueColumn = true;
     public bool ShowTakenPlayerColumn = true;
-    public bool ShowTakenJobColumn = true;
-    public bool ShowTakenDamageColumn = true;
+    public bool ShowTakenJobColumn = false;
+    public bool ShowTakenDamageColumn = false;
     public bool ShowTakenValueColumn = true;
-    public int DpsVisibleCount = 8;
+    public int DpsVisibleCount = 9;
     public float FloatingStatsPlayerColumnMinWidth = 0f;
-    public float FloatingStatsMetricColumnWidth = 88f;
-    public float FloatingStatsPlayerColumnWidth = 0f;
-    public float FloatingStatsJobColumnWidth = 0f;
-    public float FloatingStatsDamageColumnWidth = 0f;
-    public float FloatingStatsValueColumnWidth = 0f;
-    public float FloatingStatsDeathsColumnWidth = 0f;
-    public float HistoryStartTimeColumnWidth = 0f;
-    public float HistoryEndTimeColumnWidth = 0f;
-    public float HistoryDurationColumnWidth = 0f;
+    public float FloatingStatsMetricColumnWidth = 48f;
+    public float FloatingStatsPlayerColumnWidth = 62f;
+    public float FloatingStatsJobColumnWidth = 44f;
+    public float FloatingStatsDamageColumnWidth = 73f;
+    public float FloatingStatsValueColumnWidth = 48f;
+    public float FloatingStatsDeathsColumnWidth = 24f;
+    public float HistoryStartTimeColumnWidth = 100f;
+    public float HistoryEndTimeColumnWidth = 100f;
+    public float HistoryDurationColumnWidth = 100f;
     public float FloatingStatsRowHeight = 0f;
-    public float FloatingStatsIkegamiPanelRaise = 10f;
-    public float FloatingStatsIkegamiDetailRaise = 10f;
-    public float FloatingStatsIkegamiFooterRaise = 30f;
-    public bool FloatingStatsIkegamiShowScrollbar = true;
-    public float FloatingStatsIkegamiBoxWidth = 154f;
-    public float FloatingStatsIkegamiBoxHeight = 74f;
+    public float FloatingStatsIkegamiPanelRaise = 7f;
+    public float FloatingStatsIkegamiDetailRaise = 5f;
+    public float FloatingStatsIkegamiFooterRaise = 24f;
+    public bool FloatingStatsIkegamiShowScrollbar = false;
+    public float FloatingStatsIkegamiBoxWidth = 132f;
+    public float FloatingStatsIkegamiBoxHeight = 40f;
     public float FloatingStatsIkegamiNameHeight = 20f;
-    public float FloatingStatsIkegamiHeaderHeight = 32f;
+    public float FloatingStatsIkegamiHeaderHeight = 24f;
     public float FloatingStatsIkegamiHeaderLeftPadding = 8f;
     public float FloatingStatsIkegamiDetailLeftPadding = 8f;
-    public bool FloatingStatsIkegamiShowMaxHitDetail = true;
-    public bool FloatingStatsIkegamiShowVerticalScrollbar = true;
+    public bool FloatingStatsIkegamiShowMaxHitDetail = false;
+    public bool FloatingStatsIkegamiShowVerticalScrollbar = false;
     public bool FloatingStatsIkegamiShowNameLine = true;
     public float FloatingStatsIkegamiNameAlpha = 1f;
     public float FloatingStatsIkegamiHeaderAlpha = 1f;
     public float FloatingStatsIkegamiPanelBackgroundAlpha = 1f;
     public float FloatingStatsIkegamiBodyAlpha = 1f;
     public float FloatingStatsIkegamiFooterAlpha = 1f;
-    public float FloatingStatsIkegamiNameLeftPadding = 0f;
+    public float FloatingStatsIkegamiNameLeftPadding = 40f;
     public float FloatingStatsIkegamiNameRightPadding = 0f;
-    public float FloatingStatsIkegamiJobBadgeSize = 18f;
+    public float FloatingStatsIkegamiJobBadgeSize = 20f;
     public float FloatingStatsIkegamiFooterHeight = 24f;
-    public float FloatingStatsIkegamiFooterTimeZoneSpacing = 10f;
-    public float FloatingStatsIkegamiFooterRightPadding = 4f;
+    public float FloatingStatsIkegamiFooterTimeZoneSpacing = 15f;
+    public float FloatingStatsIkegamiFooterRightPadding = 20f;
     public float FloatingStatsIkegamiNameBackgroundAlpha = 0f;
     public float FloatingStatsIkegamiBodyBackgroundAlpha = 0f;
-    public float FloatingStatsIkegamiContentBackgroundAlpha = 0f;
+    public float FloatingStatsIkegamiContentBackgroundAlpha = 0.3f;
     public float FloatingStatsIkegamiTabFontScale = 1f;
     public float FloatingStatsIkegamiNameFontScale = 1f;
     public float FloatingStatsIkegamiHeaderFontScale = 1f;
     public float FloatingStatsIkegamiBodyFontScale = 1f;
     public float FloatingStatsIkegamiFooterFontScale = 1f;
     public float FloatingStatsIkegamiTooltipFontScale = 1f;
-    public IkegamiBoxAlignment FloatingStatsIkegamiBoxAlignment = IkegamiBoxAlignment.Left;
-    public float FloatingStatsClassicWindowWidth = 0f;
-    public float FloatingStatsClassicWindowHeight = 0f;
-    public float FloatingStatsIkegamiWindowWidth = 0f;
-    public float FloatingStatsIkegamiWindowHeight = 0f;
+    public IkegamiBoxAlignment FloatingStatsIkegamiBoxAlignment = IkegamiBoxAlignment.Center;
+    public bool FloatingStatsMinimalShowHeader = false;
+    public bool FloatingStatsMinimalShowSummaryRow = true;
+    public bool FloatingStatsMinimalShowPlayerColumn = false;
+    public bool FloatingStatsMinimalShowPlayerNameInShareBar = false;
+    public bool FloatingStatsMinimalShowJobInShareBar = true;
+    public bool FloatingStatsMinimalShowDamageInShareBar = false;
+    public bool FloatingStatsMinimalShowDeathsInShareBar = false;
+    public bool FloatingStatsMinimalShowRatioInShareBar = false;
+    public bool FloatingStatsMinimalShowDamageColumn = false;
+    public bool FloatingStatsMinimalShowDeathsColumn = false;
+    public bool FloatingStatsMinimalShowDurationInSummaryBar = true;
+    public bool FloatingStatsMinimalShowTitleInSummaryBar = true;
+    public bool FloatingStatsMinimalShowDpsInSummaryBar = true;
+    public bool FloatingStatsMinimalShowDamageInSummaryBar = false;
+    public bool FloatingStatsMinimalShowDeathsInSummaryBar = false;
+    public float FloatingStatsMinimalRowHeight = 20f;
+    public float FloatingStatsMinimalFontScale = 1f;
+    public float FloatingStatsMinimalPlayerColumnWidth = 51f;
+    public float FloatingStatsMinimalDamageColumnWidth = 88f;
+    public float FloatingStatsMinimalDeathsColumnWidth = 32f;
+    public float FloatingStatsClassicWindowWidth = 300f;
+    public float FloatingStatsClassicWindowHeight = 300f;
+    public float FloatingStatsIkegamiWindowWidth = 1139f;
+    public float FloatingStatsIkegamiWindowHeight = 110f;
+    public float FloatingStatsMinimalWindowWidth = 186f;
+    public float FloatingStatsMinimalWindowHeight = 207f;
 
     public StatsBarColorMode BarColorMode = StatsBarColorMode.Theme;
     public float SingleBarColorR = 0.25f;
@@ -260,10 +284,17 @@ public sealed class PluginConfiguration : IPluginConfiguration
         FloatingStatsIkegamiBodyFontScale = Math.Clamp(FloatingStatsIkegamiBodyFontScale, 0.6f, 2.0f);
         FloatingStatsIkegamiFooterFontScale = Math.Clamp(FloatingStatsIkegamiFooterFontScale, 0.6f, 2.0f);
         FloatingStatsIkegamiTooltipFontScale = Math.Clamp(FloatingStatsIkegamiTooltipFontScale, 0.6f, 2.0f);
+        FloatingStatsMinimalRowHeight = Math.Clamp(FloatingStatsMinimalRowHeight <= 0f ? 20f : FloatingStatsMinimalRowHeight, 1f, 60f);
+        FloatingStatsMinimalFontScale = Math.Clamp(FloatingStatsMinimalFontScale <= 0f ? 0.88f : FloatingStatsMinimalFontScale, 0.6f, 2.0f);
+        FloatingStatsMinimalPlayerColumnWidth = Math.Clamp(FloatingStatsMinimalPlayerColumnWidth <= 0f ? 140f : FloatingStatsMinimalPlayerColumnWidth, 1f, 2000f);
+        FloatingStatsMinimalDamageColumnWidth = Math.Clamp(FloatingStatsMinimalDamageColumnWidth <= 0f ? 88f : FloatingStatsMinimalDamageColumnWidth, 1f, 2000f);
+        FloatingStatsMinimalDeathsColumnWidth = Math.Clamp(FloatingStatsMinimalDeathsColumnWidth <= 0f ? 32f : FloatingStatsMinimalDeathsColumnWidth, 1f, 2000f);
         FloatingStatsClassicWindowWidth = Math.Clamp(FloatingStatsClassicWindowWidth, 0f, 4000f);
         FloatingStatsClassicWindowHeight = Math.Clamp(FloatingStatsClassicWindowHeight, 0f, 4000f);
         FloatingStatsIkegamiWindowWidth = Math.Clamp(FloatingStatsIkegamiWindowWidth, 0f, 4000f);
         FloatingStatsIkegamiWindowHeight = Math.Clamp(FloatingStatsIkegamiWindowHeight, 0f, 4000f);
+        FloatingStatsMinimalWindowWidth = Math.Clamp(FloatingStatsMinimalWindowWidth, 0f, 4000f);
+        FloatingStatsMinimalWindowHeight = Math.Clamp(FloatingStatsMinimalWindowHeight, 0f, 4000f);
 
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
             CombatEndRule = CombatEndRule.PartyList;
@@ -477,6 +508,60 @@ public sealed class PluginConfiguration : IPluginConfiguration
             FloatingStatsIkegamiWindowHeight = 0f;
         }
 
+        if (Version < 44)
+        {
+            FloatingStatsMinimalShowPlayerColumn = true;
+            FloatingStatsMinimalShowDamageColumn = true;
+            FloatingStatsMinimalShowDeathsColumn = true;
+            FloatingStatsMinimalRowHeight = 20f;
+            FloatingStatsMinimalPlayerColumnWidth = 140f;
+            FloatingStatsMinimalDamageColumnWidth = 88f;
+            FloatingStatsMinimalDeathsColumnWidth = 32f;
+            FloatingStatsMinimalWindowWidth = 0f;
+            FloatingStatsMinimalWindowHeight = 0f;
+        }
+
+        if (Version < 45)
+        {
+            FloatingStatsMinimalShowDamageColumn = true;
+            FloatingStatsMinimalPlayerColumnWidth = 140f;
+            FloatingStatsMinimalDamageColumnWidth = 88f;
+            FloatingStatsMinimalDeathsColumnWidth = 32f;
+        }
+
+        if (Version < 46)
+        {
+            FloatingStatsMinimalShowHeader = true;
+        }
+
+        if (Version < 47)
+        {
+            FloatingStatsMinimalShowSummaryRow = true;
+        }
+
+        if (Version < 48)
+        {
+            FloatingStatsMinimalFontScale = 0.88f;
+        }
+
+        if (Version < 49)
+        {
+            FloatingStatsMinimalShowPlayerNameInShareBar = false;
+        }
+
+        if (Version < 50)
+        {
+            FloatingStatsMinimalShowJobInShareBar = true;
+            FloatingStatsMinimalShowDamageInShareBar = false;
+            FloatingStatsMinimalShowDeathsInShareBar = false;
+            FloatingStatsMinimalShowRatioInShareBar = false;
+            FloatingStatsMinimalShowDurationInSummaryBar = true;
+            FloatingStatsMinimalShowTitleInSummaryBar = true;
+            FloatingStatsMinimalShowDpsInSummaryBar = true;
+            FloatingStatsMinimalShowDamageInSummaryBar = false;
+            FloatingStatsMinimalShowDeathsInSummaryBar = false;
+        }
+
         if (Version < 11)
             DpsVisibleCount = 8;
 
@@ -507,7 +592,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         LogHelper.EnableDebugLog = EnableDebugLog;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 43);
+        Version = Math.Max(Version, 50);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();
@@ -557,11 +642,11 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
     public void Reset()
     {
-        WindowOpacity = 0.92f;
+        WindowOpacity = 1f;
         FloatingStatsOpacity = 0.72f;
         ShowStatsPanel = true;
         LockFloatingStatsWindow = false;
-        FloatingStatsDisplayStyle = FloatingStatsDisplayStyle.Classic;
+        FloatingStatsDisplayStyle = FloatingStatsDisplayStyle.Minimal;
         FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
         HostileNpcMinHpMultiplier = 10;
         HighlightNpcRows = true;
@@ -577,68 +662,90 @@ public sealed class PluginConfiguration : IPluginConfiguration
         ShowOverviewTab = true;
         ShowHistoryTab = true;
         ShowDpsPlayerColumn = true;
-        ShowDpsJobColumn = true;
-        ShowDpsDamageColumn = true;
+        ShowDpsJobColumn = false;
+        ShowDpsDamageColumn = false;
         ShowDpsValueColumn = true;
         ShowDpsDeathsColumn = true;
         ShowHpsPlayerColumn = true;
-        ShowHpsJobColumn = true;
-        ShowHpsHealColumn = true;
+        ShowHpsJobColumn = false;
+        ShowHpsHealColumn = false;
         ShowHpsValueColumn = true;
         ShowTakenPlayerColumn = true;
-        ShowTakenJobColumn = true;
-        ShowTakenDamageColumn = true;
+        ShowTakenJobColumn = false;
+        ShowTakenDamageColumn = false;
         ShowTakenValueColumn = true;
-        DpsVisibleCount = 8;
+        DpsVisibleCount = 9;
         FloatingStatsPlayerColumnMinWidth = 0f;
-        FloatingStatsMetricColumnWidth = 88f;
-        FloatingStatsPlayerColumnWidth = 0f;
-        FloatingStatsJobColumnWidth = 0f;
-        FloatingStatsDamageColumnWidth = 0f;
-        FloatingStatsValueColumnWidth = 0f;
-        FloatingStatsDeathsColumnWidth = 0f;
-        HistoryStartTimeColumnWidth = 0f;
-        HistoryEndTimeColumnWidth = 0f;
-        HistoryDurationColumnWidth = 0f;
+        FloatingStatsMetricColumnWidth = 48f;
+        FloatingStatsPlayerColumnWidth = 62f;
+        FloatingStatsJobColumnWidth = 44f;
+        FloatingStatsDamageColumnWidth = 73f;
+        FloatingStatsValueColumnWidth = 48f;
+        FloatingStatsDeathsColumnWidth = 24f;
+        HistoryStartTimeColumnWidth = 100f;
+        HistoryEndTimeColumnWidth = 100f;
+        HistoryDurationColumnWidth = 100f;
         FloatingStatsRowHeight = 0f;
-        FloatingStatsIkegamiPanelRaise = 10f;
-        FloatingStatsIkegamiDetailRaise = 10f;
-        FloatingStatsIkegamiFooterRaise = 30f;
-        FloatingStatsIkegamiShowScrollbar = true;
-        FloatingStatsIkegamiBoxWidth = 154f;
-        FloatingStatsIkegamiBoxHeight = 74f;
+        FloatingStatsIkegamiPanelRaise = 7f;
+        FloatingStatsIkegamiDetailRaise = 5f;
+        FloatingStatsIkegamiFooterRaise = 24f;
+        FloatingStatsIkegamiShowScrollbar = false;
+        FloatingStatsIkegamiBoxWidth = 132f;
+        FloatingStatsIkegamiBoxHeight = 40f;
         FloatingStatsIkegamiNameHeight = 20f;
-        FloatingStatsIkegamiHeaderHeight = 32f;
+        FloatingStatsIkegamiHeaderHeight = 24f;
         FloatingStatsIkegamiHeaderLeftPadding = 8f;
         FloatingStatsIkegamiDetailLeftPadding = 8f;
-        FloatingStatsIkegamiShowMaxHitDetail = true;
-        FloatingStatsIkegamiShowVerticalScrollbar = true;
+        FloatingStatsIkegamiShowMaxHitDetail = false;
+        FloatingStatsIkegamiShowVerticalScrollbar = false;
         FloatingStatsIkegamiShowNameLine = true;
         FloatingStatsIkegamiNameAlpha = 1f;
         FloatingStatsIkegamiHeaderAlpha = 1f;
         FloatingStatsIkegamiPanelBackgroundAlpha = 1f;
         FloatingStatsIkegamiBodyAlpha = 1f;
         FloatingStatsIkegamiFooterAlpha = 1f;
-        FloatingStatsIkegamiNameLeftPadding = 0f;
+        FloatingStatsIkegamiNameLeftPadding = 40f;
         FloatingStatsIkegamiNameRightPadding = 0f;
-        FloatingStatsIkegamiJobBadgeSize = 18f;
+        FloatingStatsIkegamiJobBadgeSize = 20f;
         FloatingStatsIkegamiFooterHeight = 24f;
-        FloatingStatsIkegamiFooterTimeZoneSpacing = 10f;
-        FloatingStatsIkegamiFooterRightPadding = 4f;
+        FloatingStatsIkegamiFooterTimeZoneSpacing = 15f;
+        FloatingStatsIkegamiFooterRightPadding = 20f;
         FloatingStatsIkegamiNameBackgroundAlpha = 0f;
         FloatingStatsIkegamiBodyBackgroundAlpha = 0f;
-        FloatingStatsIkegamiContentBackgroundAlpha = 0f;
+        FloatingStatsIkegamiContentBackgroundAlpha = 0.3f;
         FloatingStatsIkegamiTabFontScale = 1f;
         FloatingStatsIkegamiNameFontScale = 1f;
         FloatingStatsIkegamiHeaderFontScale = 1f;
         FloatingStatsIkegamiBodyFontScale = 1f;
         FloatingStatsIkegamiFooterFontScale = 1f;
         FloatingStatsIkegamiTooltipFontScale = 1f;
-        FloatingStatsIkegamiBoxAlignment = IkegamiBoxAlignment.Left;
-        FloatingStatsClassicWindowWidth = 0f;
-        FloatingStatsClassicWindowHeight = 0f;
-        FloatingStatsIkegamiWindowWidth = 0f;
-        FloatingStatsIkegamiWindowHeight = 0f;
+        FloatingStatsIkegamiBoxAlignment = IkegamiBoxAlignment.Center;
+        FloatingStatsMinimalShowHeader = false;
+        FloatingStatsMinimalShowSummaryRow = true;
+        FloatingStatsMinimalShowPlayerColumn = false;
+        FloatingStatsMinimalShowPlayerNameInShareBar = false;
+        FloatingStatsMinimalShowJobInShareBar = true;
+        FloatingStatsMinimalShowDamageInShareBar = false;
+        FloatingStatsMinimalShowDeathsInShareBar = false;
+        FloatingStatsMinimalShowRatioInShareBar = false;
+        FloatingStatsMinimalShowDamageColumn = false;
+        FloatingStatsMinimalShowDeathsColumn = false;
+        FloatingStatsMinimalShowDurationInSummaryBar = true;
+        FloatingStatsMinimalShowTitleInSummaryBar = true;
+        FloatingStatsMinimalShowDpsInSummaryBar = true;
+        FloatingStatsMinimalShowDamageInSummaryBar = false;
+        FloatingStatsMinimalShowDeathsInSummaryBar = false;
+        FloatingStatsMinimalRowHeight = 20f;
+        FloatingStatsMinimalFontScale = 1f;
+        FloatingStatsMinimalPlayerColumnWidth = 51f;
+        FloatingStatsMinimalDamageColumnWidth = 88f;
+        FloatingStatsMinimalDeathsColumnWidth = 32f;
+        FloatingStatsClassicWindowWidth = 300f;
+        FloatingStatsClassicWindowHeight = 300f;
+        FloatingStatsIkegamiWindowWidth = 1139f;
+        FloatingStatsIkegamiWindowHeight = 110f;
+        FloatingStatsMinimalWindowWidth = 186f;
+        FloatingStatsMinimalWindowHeight = 207f;
         BarColorMode = StatsBarColorMode.Theme;
         SingleBarColorR = 0.25f;
         SingleBarColorG = 0.65f;
@@ -669,6 +776,38 @@ public sealed class PluginConfiguration : IPluginConfiguration
         }
 
         Save();
+    }
+
+    public bool ResetFloatingStyleToDefaults(FloatingStatsDisplayStyle style, out string message)
+    {
+        try
+        {
+            var snapshot = CreateDefaultFloatingStyleSnapshot(style);
+            var path = GetFloatingStyleSettingsPath(style);
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                message = "恢复失败：未能定位样式配置文件。";
+                return false;
+            }
+
+            WriteFloatingStyleSnapshotToPath(snapshot, path);
+
+            if (FloatingStatsDisplayStyle == style)
+            {
+                CopyPersistentFieldsFrom(snapshot);
+                ReinitializeAfterExternalStyleChange();
+                Save();
+            }
+
+            message = $"已恢复 {GetFloatingStyleDisplayName(style)} 样式默认设置。";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Warning("配置", ex, $"恢复 {GetFloatingStyleDisplayName(style)} 样式默认设置失败。");
+            message = $"恢复失败：{ex.Message}";
+            return false;
+        }
     }
 
     public string? GetFloatingStyleSettingsFilePath(FloatingStatsDisplayStyle style)
@@ -931,6 +1070,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         EnsureFloatingStyleSettingsFileExists(FloatingStatsDisplayStyle.Classic);
         EnsureFloatingStyleSettingsFileExists(FloatingStatsDisplayStyle.Ikegami);
+        EnsureFloatingStyleSettingsFileExists(FloatingStatsDisplayStyle.Minimal);
         _ = TryLoadFloatingStyleSettingsFromFile(FloatingStatsDisplayStyle);
     }
 
@@ -993,6 +1133,22 @@ public sealed class PluginConfiguration : IPluginConfiguration
         return snapshot;
     }
 
+    private PluginConfiguration CreateDefaultFloatingStyleSnapshot(FloatingStatsDisplayStyle style)
+    {
+        var snapshot = new PluginConfiguration();
+        snapshot.Reset();
+        snapshot.FloatingStatsDisplayStyle = style;
+
+        if (pluginInterface != null)
+        {
+            snapshot.suppressFloatingStyleSettingsSync = true;
+            snapshot.Initialize(pluginInterface);
+            snapshot.suppressFloatingStyleSettingsSync = false;
+        }
+
+        return snapshot;
+    }
+
     private void CopyPersistentFieldsFrom(PluginConfiguration source)
     {
         Version = source.Version;
@@ -1025,6 +1181,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         var fileName = style switch
         {
             FloatingStatsDisplayStyle.Ikegami => FloatingIkegamiSettingsFileName,
+            FloatingStatsDisplayStyle.Minimal => FloatingMinimalSettingsFileName,
             _ => FloatingClassicSettingsFileName,
         };
 
@@ -1198,6 +1355,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         => style switch
         {
             FloatingStatsDisplayStyle.Ikegami => "ikegami",
+            FloatingStatsDisplayStyle.Minimal => "极简样式",
             _ => "经典表格",
         };
 
@@ -1205,6 +1363,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         => style switch
         {
             FloatingStatsDisplayStyle.Ikegami => "floating-stats-ikegami",
+            FloatingStatsDisplayStyle.Minimal => "floating-stats-minimal",
             _ => "floating-stats-classic",
         };
 
@@ -1212,6 +1371,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         => style switch
         {
             FloatingStatsDisplayStyle.Ikegami => "Ikegami",
+            FloatingStatsDisplayStyle.Minimal => "Minimal",
             _ => "Classic",
         };
 
@@ -1222,6 +1382,13 @@ public sealed class PluginConfiguration : IPluginConfiguration
             || string.Equals(code, "I", StringComparison.OrdinalIgnoreCase))
         {
             style = FloatingStatsDisplayStyle.Ikegami;
+            return true;
+        }
+
+        if (string.Equals(code, "Minimal", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(code, "M", StringComparison.OrdinalIgnoreCase))
+        {
+            style = FloatingStatsDisplayStyle.Minimal;
             return true;
         }
 

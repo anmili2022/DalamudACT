@@ -168,6 +168,18 @@ public sealed class ACT : IDalamudPlugin
         return $"技能 {actionId}";
     }
 
+    private bool IsLimitBreakAction(uint actionId)
+    {
+        if (actionId == 0)
+            return false;
+
+        if (!actionSheet.TryGetRow(actionId, out var actionRow))
+            return false;
+
+        var actionCategoryId = actionRow.ActionCategory.RowId;
+        return actionCategoryId is 9 or 15;
+    }
+
     private static long DecodeAmount(ActionEffectHandler.Effect effect)
         => (uint)effect.Value | ((uint)effect.Param3 << 16);
 
@@ -390,6 +402,7 @@ public sealed class ACT : IDalamudPlugin
         var zoneName = GetPlaceName();
         var actionId = header->SpellId != 0 ? (uint)header->SpellId : header->ActionId;
         var actionName = GetActionName(actionId);
+        var isLimitBreakAction = IsLimitBreakAction(actionId);
         var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
         var sourceActorId = ResolveTrackedSourceActorId(sourceId, sourceCharacterAddress, nowUtc, out var sourceCanResolveToTrackedActor);
         var isKnownPlayerDotAction = PlayerDotCatalog.IsKnownPlayerDotAction(actionId);
@@ -422,6 +435,9 @@ public sealed class ACT : IDalamudPlugin
 
             anyTargetTracked |= targetIsTrackedActor;
             hasTrackedParticipant |= targetIsTrackedActor;
+
+            if (isLimitBreakAction)
+                continue;
 
             if (isKnownPlayerDotAction && sourceCanResolveToTrackedActor && !targetIsTrackedActor)
                 statsService.ObservePotentialPlayerDotApplication(sourceActorId, resolvedTargetActorId, actionId, actionName, nowUtc);

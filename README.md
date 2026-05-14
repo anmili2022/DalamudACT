@@ -1,6 +1,6 @@
 # DPS统计
 
-最后更新：`2026-05-12`
+最后更新：`2026-05-14`
 
 快速查看：[`README 简洁总结`](md/README-SUMMARY.md)
 
@@ -24,6 +24,7 @@
 - [常见问题](#readme-faq)
 - [先看哪份文档](#readme-reading-order)
 - [文档入口](#readme-docs)
+- [离线 DoT 对账工具](#readme-dotreconcile)
 - [构建状态](#readme-build)
 
 `DPS统计` 是一个直接在游戏内显示战斗统计的 Dalamud 插件。
@@ -191,6 +192,9 @@
 
 - 队伍里的 NPC 队友也会进入统计
 - 召唤物 / 宠物造成的伤害会归到它们的主人头上
+- 所有 `LB / 极限技` 不计入玩家伤害统计
+- 已接入白名单的玩家 `DoT` 会优先按技能自身 potency、已观测直伤样本或锚点技能样本反推
+- 对 `白魔 / 学者 / 占星术士 / 贤者` 的 `DoT` 估算当前采用更保守口径，优先避免虚高
 - 队伍外的其他玩家不会进入统计
 
 <a id="readme-quickstart"></a>
@@ -313,10 +317,168 @@
 - Dalamud API 参考：<https://dalamud.dev/api/>
 - Lumina.Excel 仓库：<https://github.com/NotAdam/Lumina.Excel>
 
+开发排查时常用的本机 ACT 日志路径（当前维护环境，已于 `2026-05-13` 确认）：
+
+- ACT 网络日志目录：`D:\ff14act\FFXIVLogs`
+- 常见日志文件名示例：`Network_30109_20260513.log`
+- 如果要对账 `野火`、`DoT`、事件流或和 ACT 核对单场战斗统计，优先先看这里的 `Network_*.log`
+- 当前对账口径里，所有 `LB / 极限技` 都按“不计入玩家伤害”处理
+- 当前对账口径里，`白魔 / 学者 / 占星术士 / 贤者` 的 `DoT` 优先使用技能样本或锚点样本反推，不再优先退回玩家平均伤害兜底
+- 因此在缺少首个有效样本的极少数场景下，`DoT` 首跳可能会比 ACT 更保守；但目标是先压住异常虚高，再继续细化
+
 适用场景补充：
 
 - 查 `PluginService`、窗口/UI、命令、状态、`IDataManager` 等接口时，优先看 Dalamud 文档 / API。
 - 查 `GetExcelSheet<T>()`、`ExcelSheet<T>`、`Lumina.Excel.Sheets.*` 等表数据读取时，优先看 `Lumina.Excel`。
+
+<a id="readme-dotreconcile"></a>
+## 离线 DoT 对账工具
+
+为了减少“每次手工翻 history + ACT 日志做 DoT 对账太慢”的问题，仓库里新增了一个最小版离线工具：
+
+- `tools/DotReconcile`
+
+它的目标不是替代游戏内统计，而是把 DoT 对账先压缩成**几十秒级快筛**。
+
+### 这个工具做什么
+
+它会自动完成下面几件事：
+
+1. 读取插件导出的 `history-records.json`
+2. 选中最新一场战斗，或按副本名筛最近一场
+3. 扫描 ACT 的 `Network_*.log`
+4. 提取 `24|DoT|...` 事件
+5. 按玩家汇总：
+   - 插件 `dotDamage-*`
+   - ACT hostile-only DoT
+   - 差异百分比
+   - `GREEN / YELLOW / RED`
+6. 可选输出每个玩家的 status 聚合明细
+7. 可选导出 `json / csv / status csv`
+
+### 默认对账口径
+
+ACT 侧默认采用：
+
+> **hostile-only DoT**
+
+也就是只统计同时满足以下条件的事件：
+
+1. 行类型是 `24|`
+2. 事件种类是 `DoT`
+3. 时间落在这场战斗窗口内
+4. 目标 `actorId` 以 `4` 开头
+
+额外说明：
+
+- 工具现在会把玩家结果明确标成 **ACT 已归属**：
+  - 也就是只统计 `24|DoT|...` 里 source 还能归到玩家的那部分
+  - 如果日志里出现 `source=target`、`source 也是 hostile`、或者 source 缺失，这些行会记到 **未归属 hostile DoT**
+  - 一旦终端里出现“未归属 hostile DoT”，下方每个玩家的 ACT 数值就应该理解成**下限**，不能直接把“插件 > ACT”判成插件虚高
+- 默认会排除 `statusId = 0x35D`（野火）
+- 原因是当前插件普通 `dotDamage-*` **不计入野火**
+- 如需把这类特殊 DoT 也一起纳入 ACT 对账，可使用：
+
+```powershell
+--include-special-dot
+```
+
+### 常用命令
+
+#### 1）只看最新一场的白魔 / 贤者
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --jobs whm,sge
+```
+
+#### 2）看最新一场全部玩家
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest
+```
+
+#### 3）按副本名筛
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --zone 缇坦妮雅
+```
+
+#### 4）按玩家筛
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --players 阳介,在爱锈蚀之前
+```
+
+#### 5）输出每个玩家前 N 个 status 聚合明细
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --jobs whm,sge --top-status 5
+```
+
+#### 6）导出结构化结果
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --json-out output\dotreconcile.json --csv-out output\dotreconcile.csv --csv-status-out output\dotreconcile-status.csv
+```
+
+### 支持的主要参数
+
+- `--history <path>`
+- `--log <path>`
+- `--act-log-dir <dir>`
+- `--latest`（显式表示“取最新一场”；当前不传时默认也是取最新一场匹配记录）
+- `--zone <text>`
+- `--jobs <csv>`
+- `--players <csv>`
+- `--top-status <n>`
+- `--include-special-dot`
+- `--json-out <path>`
+- `--csv-out <path>`
+- `--csv-status-out <path>`
+
+### 输出怎么读
+
+每个玩家会输出类似：
+
+- 玩家名
+- 职业
+- 插件 `dotDamage-*`
+- ACT hostile-only DoT
+- 差异百分比
+- 状态：
+  - `GREEN`：差异较小或双方都为 0
+  - `YELLOW`：中等偏差
+  - `RED`：明显异常，建议继续排查
+
+如果开启 `--top-status`，还会额外打印：
+
+- `statusId`
+- 该 status 在 ACT 汇总里的伤害
+- 占该玩家 ACT DoT 的比例
+- 事件数
+
+### 适合什么时候用
+
+推荐在下面这些场景先跑一遍：
+
+- 改完 `LocalStatsService.cs` 的 DoT 逻辑之后
+- 改完 `PlayerDotCatalog.cs` 之后
+- 想快速确认：
+  - 白魔是否仍虚高
+  - 贤者是否仍掉成 0
+  - 某职业是否仍明显偏少 / 偏高
+
+建议节奏：
+
+1. 先跑重点职业快筛
+2. 只有红灯 / 黄灯再继续深挖
+3. 需要留档时再导出 `json / csv`
+
+### 额外提醒
+
+- 当前 ACT 日志如果正在被 ACT 占用，工具会尽量以共享读方式继续扫描
+- 部分真实日志里的 `24|DoT` 行可能拿不到稳定的有效 `statusId`，这时 status 明细里可能看到 `0x0`
+- 这不一定是工具问题，也可能是原始日志字段本身没有给出可用状态号
 
 <a id="readme-build"></a>
 ## 构建状态

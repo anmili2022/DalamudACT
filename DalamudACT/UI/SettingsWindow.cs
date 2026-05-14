@@ -783,6 +783,12 @@ internal sealed class SettingsWindow : Window
             return;
         }
 
+        if (currentStyle == FloatingStatsDisplayStyle.Minimal)
+        {
+            DrawMinimalFloatingDisplayStyleSection();
+            return;
+        }
+
         if (!PluginConfiguration.UsesLegacyFloatingTableLayout(currentStyle))
         {
             ImGui.Dummy(new Vector2(0f, 2f));
@@ -816,6 +822,221 @@ internal sealed class SettingsWindow : Window
         }
 
         DrawCompactHelp("玩家列宽 / 行高设为 0 时自动取值。", "把玩家列最小宽度或表格行高拖到 0，会回退到自动布局。");
+    }
+
+    private void DrawMinimalFloatingDisplayStyleSection()
+    {
+        const ImGuiTableFlags compactTableFlags =
+            ImGuiTableFlags.SizingStretchSame
+            | ImGuiTableFlags.NoSavedSettings;
+        var style = ImGui.GetStyle();
+
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(style.ItemSpacing.X, 2f));
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(style.FramePadding.X, 2f));
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(style.CellPadding.X, 2f));
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+        ImGui.Separator();
+        ImGui.TextDisabled("极简样式参数");
+        DrawCompactHelp("极简样式固定隐藏页签与秒伤列。", "现在可更细地控制占比条里显示职业、伤害、死亡、占比，以及总DPS条里的时间、标题、总DPS、总伤和总死亡。");
+
+        var showHeader = config.FloatingStatsMinimalShowHeader;
+        var showSummaryRow = config.FloatingStatsMinimalShowSummaryRow;
+        var showPlayerColumn = config.FloatingStatsMinimalShowPlayerColumn;
+        var showDamageColumn = config.FloatingStatsMinimalShowDamageColumn;
+        var showDeathsColumn = config.FloatingStatsMinimalShowDeathsColumn;
+        var showPlayerNameInShareBar = config.FloatingStatsMinimalShowPlayerNameInShareBar;
+        var showJobInShareBar = config.FloatingStatsMinimalShowJobInShareBar;
+        var showDamageInShareBar = config.FloatingStatsMinimalShowDamageInShareBar;
+        var showDeathsInShareBar = config.FloatingStatsMinimalShowDeathsInShareBar;
+        var showRatioInShareBar = config.FloatingStatsMinimalShowRatioInShareBar;
+        var showDurationInSummaryBar = config.FloatingStatsMinimalShowDurationInSummaryBar;
+        var showTitleInSummaryBar = config.FloatingStatsMinimalShowTitleInSummaryBar;
+        var showDpsInSummaryBar = config.FloatingStatsMinimalShowDpsInSummaryBar;
+        var showDamageInSummaryBar = config.FloatingStatsMinimalShowDamageInSummaryBar;
+        var showDeathsInSummaryBar = config.FloatingStatsMinimalShowDeathsInSummaryBar;
+
+        ImGui.TextDisabled("基础显示");
+        if (ImGui.BeginTable("##minimal_basic_toggle_grid", 3, compactTableFlags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (ImGui.Checkbox("显示表头", ref showHeader))
+            {
+                config.FloatingStatsMinimalShowHeader = showHeader;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (ImGui.Checkbox("显示总DPS行", ref showSummaryRow))
+            {
+                config.FloatingStatsMinimalShowSummaryRow = showSummaryRow;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(2);
+            if (ImGui.Checkbox("显示玩家列", ref showPlayerColumn))
+            {
+                config.FloatingStatsMinimalShowPlayerColumn = showPlayerColumn;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (ImGui.Checkbox("显示伤害量列", ref showDamageColumn))
+            {
+                config.FloatingStatsMinimalShowDamageColumn = showDamageColumn;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (ImGui.Checkbox("显示死亡列", ref showDeathsColumn))
+            {
+                config.FloatingStatsMinimalShowDeathsColumn = showDeathsColumn;
+                config.Save();
+            }
+
+            ImGui.EndTable();
+        }
+
+        ImGui.TextDisabled("占比条内容");
+        if (ImGui.BeginTable("##minimal_share_toggle_grid", 3, compactTableFlags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (ImGui.Checkbox("占比条显示玩家名", ref showPlayerNameInShareBar))
+            {
+                config.FloatingStatsMinimalShowPlayerNameInShareBar = showPlayerNameInShareBar;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (ImGui.Checkbox("占比条显示职业", ref showJobInShareBar))
+            {
+                config.FloatingStatsMinimalShowJobInShareBar = showJobInShareBar;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(2);
+            if (ImGui.Checkbox("占比条显示伤害", ref showDamageInShareBar))
+            {
+                config.FloatingStatsMinimalShowDamageInShareBar = showDamageInShareBar;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (ImGui.Checkbox("占比条显示死亡", ref showDeathsInShareBar))
+            {
+                config.FloatingStatsMinimalShowDeathsInShareBar = showDeathsInShareBar;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (ImGui.Checkbox("占比条显示占比", ref showRatioInShareBar))
+            {
+                config.FloatingStatsMinimalShowRatioInShareBar = showRatioInShareBar;
+                config.Save();
+            }
+
+            ImGui.EndTable();
+        }
+
+        ImGui.TextDisabled("总DPS条内容");
+        if (ImGui.BeginTable("##minimal_summary_toggle_grid", 3, compactTableFlags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (ImGui.Checkbox("显示时间", ref showDurationInSummaryBar))
+            {
+                config.FloatingStatsMinimalShowDurationInSummaryBar = showDurationInSummaryBar;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (ImGui.Checkbox("显示标题", ref showTitleInSummaryBar))
+            {
+                config.FloatingStatsMinimalShowTitleInSummaryBar = showTitleInSummaryBar;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(2);
+            if (ImGui.Checkbox("显示总DPS", ref showDpsInSummaryBar))
+            {
+                config.FloatingStatsMinimalShowDpsInSummaryBar = showDpsInSummaryBar;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (ImGui.Checkbox("显示总伤害", ref showDamageInSummaryBar))
+            {
+                config.FloatingStatsMinimalShowDamageInSummaryBar = showDamageInSummaryBar;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (ImGui.Checkbox("显示总死亡数", ref showDeathsInSummaryBar))
+            {
+                config.FloatingStatsMinimalShowDeathsInSummaryBar = showDeathsInSummaryBar;
+                config.Save();
+            }
+
+            ImGui.EndTable();
+        }
+
+        var minimalRowHeight = config.FloatingStatsMinimalRowHeight;
+        var minimalFontScale = config.FloatingStatsMinimalFontScale;
+        var minimalPlayerColumnWidth = config.FloatingStatsMinimalPlayerColumnWidth;
+        var minimalDamageColumnWidth = config.FloatingStatsMinimalDamageColumnWidth;
+        var minimalDeathsColumnWidth = config.FloatingStatsMinimalDeathsColumnWidth;
+
+        ImGui.TextDisabled("尺寸与字号");
+        if (ImGui.BeginTable("##minimal_size_grid", 2, compactTableFlags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (DrawLabeledSliderFloat("表格行高", "##minimal_row_height", ref minimalRowHeight, 1f, 60f, "%.0f"))
+            {
+                config.FloatingStatsMinimalRowHeight = minimalRowHeight;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (DrawLabeledSliderFloat("字号缩放", "##minimal_font_scale", ref minimalFontScale, 0.6f, 1.2f, "%.2f x"))
+            {
+                config.FloatingStatsMinimalFontScale = minimalFontScale;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (DrawLabeledSliderFloat("玩家列宽", "##minimal_player_width", ref minimalPlayerColumnWidth, 1f, 400f, "%.0f"))
+            {
+                config.FloatingStatsMinimalPlayerColumnWidth = minimalPlayerColumnWidth;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            if (DrawLabeledSliderFloat("伤害量列宽", "##minimal_damage_width", ref minimalDamageColumnWidth, 1f, 400f, "%.0f"))
+            {
+                config.FloatingStatsMinimalDamageColumnWidth = minimalDamageColumnWidth;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            if (DrawLabeledSliderFloat("死亡列宽", "##minimal_deaths_width", ref minimalDeathsColumnWidth, 1f, 200f, "%.0f"))
+            {
+                config.FloatingStatsMinimalDeathsColumnWidth = minimalDeathsColumnWidth;
+                config.Save();
+            }
+
+            ImGui.EndTable();
+        }
+
+        DrawCompactHelp("以上都是极简样式专属属性。", "我把开关和滑块压成了多列表格；现在表格行高会同时影响单元格高度、占比条高度，并自动限制极简字号上限。");
+        ImGui.PopStyleVar(3);
     }
 
     private void DrawIkegamiFloatingDisplayStyleSection()
@@ -1192,28 +1413,25 @@ internal sealed class SettingsWindow : Window
     {
         ImGui.Dummy(new Vector2(0f, 2f));
         ImGui.Separator();
-        if (!ImGui.CollapsingHeader("样式分享码"))
+        if (!ImGui.CollapsingHeader("样式管理"))
             return;
 
-        if (ImGui.Button("生成并复制 Classic 分享码"))
+        ImGui.TextDisabled("样式分享码");
+        foreach (var style in new[]
+                 {
+                     FloatingStatsDisplayStyle.Classic,
+                     FloatingStatsDisplayStyle.Ikegami,
+                     FloatingStatsDisplayStyle.Minimal,
+                 })
         {
-            if (config.TryGenerateFloatingStyleShareCode(
-                    FloatingStatsDisplayStyle.Classic,
-                    out var shareCode,
-                    out var message))
-            {
-                floatingStyleShareCode = shareCode;
-                ImGui.SetClipboardText(shareCode);
-            }
+            if (style != FloatingStatsDisplayStyle.Classic)
+                ImGui.SameLine();
 
-            floatingStyleTransferStatusText = message;
-        }
+            if (!ImGui.Button($"生成并复制 {GetFloatingStyleShareCodeStyleLabel(style)} 分享码"))
+                continue;
 
-        ImGui.SameLine();
-        if (ImGui.Button("生成并复制 Ikegami 分享码"))
-        {
             if (config.TryGenerateFloatingStyleShareCode(
-                    FloatingStatsDisplayStyle.Ikegami,
+                    style,
                     out var shareCode,
                     out var message))
             {
@@ -1228,7 +1446,7 @@ internal sealed class SettingsWindow : Window
 
         var shareCodeBoxHeight = ImGui.GetTextLineHeightWithSpacing() * 3.0f;
 
-        DrawCompactHelp("同一个输入框可粘贴或暂存分享码。", "复制按钮适合转发现成内容；导入时会自动识别 Classic / Ikegami。");
+        DrawCompactHelp("同一个输入框可粘贴或暂存分享码。", "复制按钮适合转发现成内容；导入时会自动识别 Classic / Ikegami / Minimal。");
         if (ImGui.Button("复制当前分享码"))
         {
             ImGui.SetClipboardText(floatingStyleShareCode ?? string.Empty);
@@ -1264,6 +1482,33 @@ internal sealed class SettingsWindow : Window
                 floatingStyleShareCode,
                 out floatingStyleTransferStatusText);
         }
+
+        ImGui.Dummy(new Vector2(0f, 4f));
+        ImGui.Separator();
+        ImGui.TextDisabled("按样式恢复默认");
+
+        foreach (var style in new[]
+                 {
+                     FloatingStatsDisplayStyle.Classic,
+                     FloatingStatsDisplayStyle.Ikegami,
+                     FloatingStatsDisplayStyle.Minimal,
+                 })
+        {
+            if (style != FloatingStatsDisplayStyle.Classic)
+                ImGui.SameLine();
+
+            if (!ImGui.Button($"恢复 {GetFloatingStyleShareCodeStyleLabel(style)} 默认"))
+                continue;
+
+            config.ResetFloatingStyleToDefaults(style, out floatingStyleTransferStatusText);
+            if (style == config.FloatingStatsDisplayStyle)
+            {
+                StatsPanel.RequestMetricColumnWidthReset();
+                StatsPanel.RequestHistoryColumnWidthReset();
+            }
+        }
+
+        DrawCompactHelp("只恢复指定样式的默认设置。", "恢复当前正在使用的样式时，会立即刷新当前界面；其它样式会写回各自样式文件，等切过去时生效。");
 
         if (!string.IsNullOrWhiteSpace(floatingStyleTransferStatusText))
             ImGui.TextWrapped(floatingStyleTransferStatusText);
@@ -1402,6 +1647,7 @@ internal sealed class SettingsWindow : Window
         {
             FloatingStatsDisplayStyle.Classic => "Classic（经典表格）",
             FloatingStatsDisplayStyle.Ikegami => "Ikegami",
+            FloatingStatsDisplayStyle.Minimal => "Minimal（极简样式）",
             _ => style.ToString(),
         };
 
@@ -1410,6 +1656,7 @@ internal sealed class SettingsWindow : Window
         {
             FloatingStatsDisplayStyle.Classic => "经典表格布局，保留列宽、固定列宽和表格行高等旧参数。",
             FloatingStatsDisplayStyle.Ikegami => "横向条带卡片布局，使用专属的尺寸、透明度、滚动条与 footer 参数。",
+            FloatingStatsDisplayStyle.Minimal => "极简表格布局：固定只显示 DPS，无页签；职业列与秒伤列会合并到占比条文字。",
             _ => "未识别的展示样式。",
         };
 
@@ -1426,6 +1673,7 @@ internal sealed class SettingsWindow : Window
         => style switch
         {
             FloatingStatsDisplayStyle.Ikegami => "Ikegami",
+            FloatingStatsDisplayStyle.Minimal => "Minimal",
             _ => "Classic",
         };
 

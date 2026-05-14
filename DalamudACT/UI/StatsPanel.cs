@@ -2670,6 +2670,41 @@ internal static class StatsPanel
     private static float CalculateFixedTextColumnWidth(string text)
         => ImGui.CalcTextSize(text).X + CalculateColumnPadding();
 
+    internal static float CalculateMinimalAutoWindowHeight(LocalStatsService statsService, PluginConfiguration config)
+    {
+        const float maxHeight = 4000f;
+        var style = ImGui.GetStyle();
+        var windowPaddingHeight = style.WindowPadding.Y * 2f;
+        var singleLineHeight = ImGui.GetTextLineHeightWithSpacing() + 2f;
+        var minimumHeight = Math.Clamp(windowPaddingHeight + singleLineHeight, 1f, maxHeight);
+
+        if (!config.ShowDpsTab)
+            return minimumHeight;
+
+        var combatData = statsService.DisplayCombatData;
+        if (combatData?.Msg?.Encounter == null)
+            return minimumHeight;
+
+        var visibleRowCount = GetVisibleCombatantRows(combatData, config).Count;
+        if (visibleRowCount <= 0)
+            return minimumHeight;
+
+        visibleRowCount = Math.Min(visibleRowCount, Math.Max(config.DpsVisibleCount, 1));
+
+        var rowHeight = ResolveMinimalRowHeight(config);
+        var headerHeight = config.FloatingStatsMinimalShowHeader
+            ? Math.Max(rowHeight, ImGui.GetTextLineHeight() + 2f)
+            : 0f;
+        var summaryRowCount = config.FloatingStatsMinimalShowSummaryRow ? 1 : 0;
+        var bodyRowCount = visibleRowCount + summaryRowCount;
+        var separatorCount = Math.Max(0, bodyRowCount - 1);
+        if (config.FloatingStatsMinimalShowHeader && bodyRowCount > 0)
+            separatorCount += 1;
+
+        var contentHeight = headerHeight + (bodyRowCount * rowHeight) + separatorCount + 2f;
+        return Math.Clamp(windowPaddingHeight + contentHeight, minimumHeight, maxHeight);
+    }
+
     private static float CalculateColumnPadding()
     {
         var style = ImGui.GetStyle();

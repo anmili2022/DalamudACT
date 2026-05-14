@@ -160,7 +160,7 @@ internal sealed class SettingsWindow : Window
 
     private void DrawVisibleTabsSection()
     {
-        if (!ImGui.CollapsingHeader("悬浮面板显示项目"))
+        if (!ImGui.CollapsingHeader("悬浮面板样式管理"))
             return;
 
         DrawSettingCard(
@@ -855,6 +855,13 @@ internal sealed class SettingsWindow : Window
         var showDpsInSummaryBar = config.FloatingStatsMinimalShowDpsInSummaryBar;
         var showDamageInSummaryBar = config.FloatingStatsMinimalShowDamageInSummaryBar;
         var showDeathsInSummaryBar = config.FloatingStatsMinimalShowDeathsInSummaryBar;
+        var minimalAutoWindowHeight = config.FloatingStatsMinimalAutoWindowHeight;
+
+        if (DrawLabeledCheckbox("高度自动适配条目数", "##minimal_auto_window_height", ref minimalAutoWindowHeight))
+        {
+            config.FloatingStatsMinimalAutoWindowHeight = minimalAutoWindowHeight;
+            config.Save();
+        }
 
         ImGui.TextDisabled("基础显示");
         if (ImGui.BeginTable("##minimal_basic_toggle_grid", 3, compactTableFlags))
@@ -1035,7 +1042,9 @@ internal sealed class SettingsWindow : Window
             ImGui.EndTable();
         }
 
-        DrawCompactHelp("以上都是极简样式专属属性。", "我把开关和滑块压成了多列表格；现在表格行高会同时影响单元格高度、占比条高度，并自动限制极简字号上限。");
+        DrawCompactHelp(
+            "以上都是极简样式专属属性。",
+            "开启“高度自动适配条目数”后，极简悬浮窗会按当前显示条目数、表头和总DPS行自动伸缩高度；关闭后可继续手动拖拽窗口高度。表格行高会同时影响单元格高度、占比条高度，并自动限制极简字号上限。");
         ImGui.PopStyleVar(3);
     }
 

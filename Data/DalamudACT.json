@@ -1,4 +1,4 @@
-﻿{
+{
     "Author": "wozaiha",
     "Name": "DPS统计",
     "Punchline": "在游戏里直接查看队伍战斗统计。\nLocal ACTX-style combat stats directly inside the game.",
@@ -6,7 +6,7 @@
     "InternalName": "DalamudACT",
     "RepoUrl": "https://github.com/anmili2022/DalamudACT",
     "ApplicableVersion": "any",
-    "AssemblyVersion": "0.15.2.12",
+    "AssemblyVersion": "0.15.2.13",
     "Tags": [
         "combat",
         "dps",
@@ -17,4 +17,3 @@
     ],
     "DalamudApiLevel": 15
 }
-

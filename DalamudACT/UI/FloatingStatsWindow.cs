@@ -89,9 +89,14 @@ internal sealed class FloatingStatsWindow : Window
             applyStartupExpandedSize = false;
         }
 
+        var autoHeightOverride = ApplyMinimalAutoWindowHeightIfNeeded();
+
         if (!collapseToTabBar)
         {
             expandedWindowSize = ImGui.GetWindowSize();
+            if (autoHeightOverride.HasValue)
+                expandedWindowSize.Y = autoHeightOverride.Value;
+
             PersistExpandedWindowSizeIfNeeded(config.FloatingStatsDisplayStyle, expandedWindowSize);
         }
 
@@ -190,10 +195,7 @@ internal sealed class FloatingStatsWindow : Window
                 config.FloatingStatsIkegamiWindowWidth,
                 config.FloatingStatsIkegamiWindowHeight,
                 fallback),
-            FloatingStatsDisplayStyle.Minimal => ResolveSavedExpandedWindowSize(
-                config.FloatingStatsMinimalWindowWidth,
-                config.FloatingStatsMinimalWindowHeight,
-                fallback),
+            FloatingStatsDisplayStyle.Minimal => ResolveMinimalExpandedWindowSize(fallback),
             _ => ResolveSavedExpandedWindowSize(
                 config.FloatingStatsClassicWindowWidth,
                 config.FloatingStatsClassicWindowHeight,
@@ -243,11 +245,15 @@ internal sealed class FloatingStatsWindow : Window
                     width,
                     height);
             case FloatingStatsDisplayStyle.Minimal:
-                return UpdateSavedExpandedWindowSize(
-                    ref config.FloatingStatsMinimalWindowWidth,
-                    ref config.FloatingStatsMinimalWindowHeight,
-                    width,
-                    height);
+                return config.FloatingStatsMinimalAutoWindowHeight
+                    ? UpdateSavedExpandedWindowWidth(
+                        ref config.FloatingStatsMinimalWindowWidth,
+                        width)
+                    : UpdateSavedExpandedWindowSize(
+                        ref config.FloatingStatsMinimalWindowWidth,
+                        ref config.FloatingStatsMinimalWindowHeight,
+                        width,
+                        height);
             default:
                 return UpdateSavedExpandedWindowSize(
                     ref config.FloatingStatsClassicWindowWidth,
@@ -261,6 +267,20 @@ internal sealed class FloatingStatsWindow : Window
         => savedWidth > 0f && savedHeight > 0f
             ? new Vector2(savedWidth, savedHeight)
             : fallback;
+
+    private Vector2 ResolveMinimalExpandedWindowSize(Vector2 fallback)
+    {
+        var width = config.FloatingStatsMinimalWindowWidth > 0f
+            ? config.FloatingStatsMinimalWindowWidth
+            : fallback.X;
+        var height = !config.FloatingStatsMinimalAutoWindowHeight && config.FloatingStatsMinimalWindowHeight > 0f
+            ? config.FloatingStatsMinimalWindowHeight
+            : fallback.Y;
+
+        return new Vector2(
+            Math.Clamp(width, 1f, SavedWindowSizeMax),
+            Math.Clamp(height, 1f, SavedWindowSizeMax));
+    }
 
     private static bool UpdateSavedExpandedWindowSize(
         ref float savedWidth,
@@ -276,11 +296,38 @@ internal sealed class FloatingStatsWindow : Window
         return true;
     }
 
+    private static bool UpdateSavedExpandedWindowWidth(ref float savedWidth, float width)
+    {
+        if (NearlyEqual(savedWidth, width))
+            return false;
+
+        savedWidth = width;
+        return true;
+    }
+
     private static bool NearlyEqual(float left, float right)
         => Math.Abs(left - right) <= SavedWindowSizeEpsilon;
 
     private static bool SupportsCollapsedTabBar(FloatingStatsDisplayStyle style)
         => style != FloatingStatsDisplayStyle.Minimal;
+
+    private float? ApplyMinimalAutoWindowHeightIfNeeded()
+    {
+        if (collapseToTabBar
+            || config.FloatingStatsDisplayStyle != FloatingStatsDisplayStyle.Minimal
+            || !config.FloatingStatsMinimalAutoWindowHeight)
+            return null;
+
+        var desiredHeight = Math.Clamp(
+            StatsPanel.CalculateMinimalAutoWindowHeight(statsService, config),
+            1f,
+            SavedWindowSizeMax);
+        var currentSize = ImGui.GetWindowSize();
+        if (!NearlyEqual(currentSize.Y, desiredHeight))
+            ImGui.SetWindowSize(new Vector2(Math.Max(1f, currentSize.X), desiredHeight), ImGuiCond.Always);
+
+        return desiredHeight;
+    }
 
     private StatsPanelTabId ResolvePreferredLiveTab()
     {

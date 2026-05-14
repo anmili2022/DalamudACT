@@ -103,7 +103,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
     private static readonly FieldInfo[] PersistentFieldInfos = typeof(PluginConfiguration)
         .GetFields(BindingFlags.Public | BindingFlags.Instance);
 
-    public int Version { get; set; } = 50;
+    public int Version { get; set; } = 51;
 
     public float WindowOpacity = 1f;
     public float FloatingStatsOpacity = 0.72f;
@@ -198,6 +198,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public bool FloatingStatsMinimalShowDpsInSummaryBar = true;
     public bool FloatingStatsMinimalShowDamageInSummaryBar = false;
     public bool FloatingStatsMinimalShowDeathsInSummaryBar = false;
+    public bool FloatingStatsMinimalAutoWindowHeight = false;
     public float FloatingStatsMinimalRowHeight = 20f;
     public float FloatingStatsMinimalFontScale = 1f;
     public float FloatingStatsMinimalPlayerColumnWidth = 51f;
@@ -534,6 +535,11 @@ public sealed class PluginConfiguration : IPluginConfiguration
             FloatingStatsMinimalShowHeader = true;
         }
 
+        if (Version < 51)
+        {
+            FloatingStatsMinimalAutoWindowHeight = false;
+        }
+
         if (Version < 47)
         {
             FloatingStatsMinimalShowSummaryRow = true;
@@ -592,7 +598,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         LogHelper.EnableDebugLog = EnableDebugLog;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 50);
+        Version = Math.Max(Version, 51);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();
@@ -735,6 +741,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         FloatingStatsMinimalShowDpsInSummaryBar = true;
         FloatingStatsMinimalShowDamageInSummaryBar = false;
         FloatingStatsMinimalShowDeathsInSummaryBar = false;
+        FloatingStatsMinimalAutoWindowHeight = false;
         FloatingStatsMinimalRowHeight = 20f;
         FloatingStatsMinimalFontScale = 1f;
         FloatingStatsMinimalPlayerColumnWidth = 51f;

@@ -67,9 +67,7 @@ internal static class StatsPanel
     private static readonly Vector4 FrameBackgroundColor = new(0.10f, 0.10f, 0.10f, 0.65f);
     private static readonly Vector4 FriendlyNpcBarColor = new(0.34f, 0.78f, 0.49f, 0.92f);
     private static readonly Vector4 HostileNpcBarColor = new(0.95f, 0.40f, 0.25f, 0.92f);
-    private static readonly Vector4 FriendlyNpcTextColor = new(0.72f, 1.00f, 0.78f, 1.00f);
     private static readonly Vector4 HostileNpcTextColor = new(1.00f, 0.72f, 0.60f, 1.00f);
-    private static readonly Vector4 FriendlyNpcRowBackgroundColor = new(0.08f, 0.26f, 0.10f, 0.22f);
     private static readonly Vector4 HostileNpcRowBackgroundColor = new(0.36f, 0.10f, 0.08f, 0.28f);
     private static readonly Vector4 IkegamiCardBackgroundColor = new(1.00f, 1.00f, 1.00f, 0.035f);
     private static readonly Vector4 IkegamiNameBackgroundColor = new(1.00f, 1.00f, 1.00f, 0.06f);
@@ -2207,11 +2205,18 @@ internal static class StatsPanel
     {
         if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
         {
-            if (kind == FloatingCombatantKind.FriendlyNpc)
-                return FriendlyNpcBarColor;
-
             if (kind == FloatingCombatantKind.HostileNpc)
                 return HostileNpcBarColor;
+
+            if (kind == FloatingCombatantKind.FriendlyNpc)
+            {
+                if (config.BarColorMode == StatsBarColorMode.Single)
+                    return config.GetSingleBarColor();
+
+                return HasCombatantJob(combatant)
+                    ? config.GetThemeBarColor(combatant.Job)
+                    : FriendlyNpcBarColor;
+            }
         }
 
         if (config.BarColorMode == StatsBarColorMode.Single)
@@ -2226,8 +2231,8 @@ internal static class StatsPanel
         {
             if (kind == FloatingCombatantKind.FriendlyNpc)
             {
-                color = FriendlyNpcTextColor;
-                return true;
+                color = default;
+                return false;
             }
 
             if (kind == FloatingCombatantKind.HostileNpc)
@@ -2247,8 +2252,8 @@ internal static class StatsPanel
         {
             if (kind == FloatingCombatantKind.FriendlyNpc)
             {
-                color = FriendlyNpcRowBackgroundColor;
-                return true;
+                color = default;
+                return false;
             }
 
             if (kind == FloatingCombatantKind.HostileNpc)
@@ -2261,6 +2266,12 @@ internal static class StatsPanel
         color = default;
         return false;
     }
+
+    private static bool HasCombatantJob(Combatant combatant)
+        => !string.IsNullOrWhiteSpace(combatant.Job)
+           && !string.Equals(combatant.Job, "友方NPC", StringComparison.Ordinal)
+           && !string.Equals(combatant.Job, "敌方NPC", StringComparison.Ordinal)
+           && !string.Equals(combatant.Job, "NPC", StringComparison.OrdinalIgnoreCase);
 
     private static string JoinPair(string? left, string? right)
     {

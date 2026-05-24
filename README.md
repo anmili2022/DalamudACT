@@ -1,16 +1,17 @@
 # DPS统计
 
-最后更新：`2026-05-14`
+最后更新：`2026-05-24`
 
 快速查看：[`README 简洁总结`](md/README-SUMMARY.md)
 
 ## 从这里开始
 
-如果你是维护者或接手排查问题，先看这三份：
+如果你是维护者或接手排查问题，先看这四份：
 
 - [维护首页（单页总览）](md/MAINTAINER-HOME.md)
 - [维护文档总览图](md/MAINTAINER-DOC-MAP.md)
 - [HANDOVER.md](HANDOVER.md)
+- [2026-05-24 NPC 队友识别交接](md/2026-05-24-npc-party-handoff.md)
 
 ## 目录 / TOC
 
@@ -25,6 +26,7 @@
 - [先看哪份文档](#readme-reading-order)
 - [文档入口](#readme-docs)
 - [离线 DoT 对账工具](#readme-dotreconcile)
+- [开发固定流程与编码注意事项](#readme-dev-flow-encoding)
 - [构建状态](#readme-build)
 
 `DPS统计` 是一个直接在游戏内显示战斗统计的 Dalamud 插件。
@@ -274,11 +276,12 @@
 2. [维护入口索引](md/MAINTAINER-INDEX.md)
 3. [下一位维护者第一小时清单](md/MAINTAINER-FIRST-HOUR-CHECKLIST.md)
 4. [HANDOVER.md](HANDOVER.md)
-5. [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
-6. [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
-7. [2026-05-09 发布交接](md/2026-05-09-RELEASE-HANDOFF.md)
-8. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
-9. 再按需要查看更早记录
+5. [2026-05-24 NPC 队友识别交接](md/2026-05-24-npc-party-handoff.md)
+6. [最近问题与解决方案整理](md/RECENT-ISSUES-SUMMARY.md)
+7. [最近问题状态表（维护视角）](md/RECENT-ISSUES-STATUS-TABLE.md)
+8. [2026-05-09 发布交接](md/2026-05-09-RELEASE-HANDOFF.md)
+9. [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
+10. 再按需要查看更早记录
 
 <a id="readme-docs"></a>
 ## 文档入口
@@ -296,6 +299,7 @@
 - 主入口：
   - [维护首页（单页总览）](md/MAINTAINER-HOME.md)
   - [维护文档总览图](md/MAINTAINER-DOC-MAP.md)
+  - [项目结构说明](md/PROJECT-STRUCTURE.md)
   - [维护入口索引](md/MAINTAINER-INDEX.md)
   - [下一位维护者第一小时清单](md/MAINTAINER-FIRST-HOUR-CHECKLIST.md)
   - [HANDOVER.md](HANDOVER.md)
@@ -307,6 +311,7 @@
   - [发布 Runbook](md/RELEASE-RUNBOOK.md)
 - 历史工作记录：
   - [SESSION-HANDOFF](md/SESSION-HANDOFF.md)
+  - [2026-05-24 NPC 队友识别交接](md/2026-05-24-npc-party-handoff.md)
   - [2026-05-06 工作记录](md/2026-05-06.md)
   - [2026-05-05 工作记录](md/2026-05-05.md)
   - [2026-05-04 工作记录](md/2026-05-04.md)
@@ -334,27 +339,32 @@
 <a id="readme-dotreconcile"></a>
 ## 离线 DoT 对账工具
 
-为了减少“每次手工翻 history + ACT 日志做 DoT 对账太慢”的问题，仓库里新增了一个最小版离线工具：
+为了减少“每次手工翻 history + ACT 日志做 DoT 对账太慢”的问题，仓库里提供了离线对账工具：
 
 - `tools/DotReconcile`
 
-它的目标不是替代游戏内统计，而是把 DoT 对账先压缩成**几十秒级快筛**。
+它的目标不是替代游戏内统计，而是把 DoT 对账压缩成**几十秒级快筛**，并把“ACT 已归属个人数”和“ACT hostile 总量”明确拆开，避免把 ACT 归属缺失误判成插件虚高。
 
 ### 这个工具做什么
 
 它会自动完成下面几件事：
 
-1. 读取插件导出的 `history-records.json`
-2. 选中最新一场战斗，或按副本名筛最近一场
-3. 扫描 ACT 的 `Network_*.log`
-4. 提取 `24|DoT|...` 事件
+1. 读取插件导出的 `history-records.json`。
+2. 选中最新一场战斗，或按副本名筛最近一场。
+3. 扫描 ACT 的 `Network_*.log`。
+4. 提取战斗窗口内的 `24|DoT|...` 事件。
 5. 按玩家汇总：
    - 插件 `dotDamage-*`
-   - ACT hostile-only DoT
+   - ACT 已归属 hostile-only DoT
    - 差异百分比
    - `GREEN / YELLOW / RED`
-6. 可选输出每个玩家的 status 聚合明细
-7. 可选导出 `json / csv / status csv`
+6. 统计 ACT hostile-only 的：
+   - 已归属伤害
+   - 未归属伤害
+   - 已归属 + 未归属总量
+7. 可选扫描 ACT `26|` 状态应用窗口，用来解释 `status=0` 的 DoT tick。
+8. 可选扫描 Dalamud 的 `DOT诊断：补算Tick` 日志，把插件内部补算 tick 与 ACT 状态证据合并成总表。
+9. 可选导出 `summary / json / csv / status csv / windowcheck csv / known-dot csv / dotdiagnostic csv`。
 
 ### 默认对账口径
 
@@ -371,12 +381,15 @@ ACT 侧默认采用：
 
 额外说明：
 
-- 工具现在会把玩家结果明确标成 **ACT 已归属**：
-  - 也就是只统计 `24|DoT|...` 里 source 还能归到玩家的那部分
-  - 如果日志里出现 `source=target`、`source 也是 hostile`、或者 source 缺失，这些行会记到 **未归属 hostile DoT**
-  - 一旦终端里出现“未归属 hostile DoT”，下方每个玩家的 ACT 数值就应该理解成**下限**，不能直接把“插件 > ACT”判成插件虚高
-- 默认会排除 `statusId = 0x35D`（野火）
-- 原因是当前插件普通 `dotDamage-*` **不计入野火**
+- 玩家明细里的 ACT 数值是 **ACT 已归属**：
+  - 也就是只统计 `24|DoT|...` 里 source 能归到玩家的那部分。
+  - 如果日志里出现 `source=target`、`source 也是 hostile`、或者 source 缺失，这些行会记到 **未归属 hostile DoT**。
+  - 一旦终端或 `summary` 里出现“未归属 hostile DoT”，下方每个玩家的 ACT 数值就应该理解成**下限**，不能直接把“插件 > ACT 已归属”判成插件虚高。
+- 总体判断优先看：
+  - `插件合计 vs ACT 已归属`：用于看 ACT 已归属个人口径差异。
+  - `插件合计 vs ACT hostile 总量`：用于判断整场插件是否真的偏高。
+- 默认会排除 `statusId = 0x35D`（野火）。
+- 原因是当前插件普通 `dotDamage-*` **不计入野火**。
 - 如需把这类特殊 DoT 也一起纳入 ACT 对账，可使用：
 
 ```powershell
@@ -403,6 +416,8 @@ dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest
 dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --zone 缇坦妮雅
 ```
 
+注意：如果 history 里最新一场不是你要看的副本，不要用 `--latest`；改用 `--zone "副本名关键字"`。
+
 #### 4）按玩家筛
 
 ```powershell
@@ -415,47 +430,156 @@ dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --players 阳介,
 dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --jobs whm,sge --top-status 5
 ```
 
-#### 6）导出结构化结果
+#### 6）导出完整结构化结果
 
 ```powershell
-dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --json-out output\dotreconcile.json --csv-out output\dotreconcile.csv --csv-status-out output\dotreconcile-status.csv
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --summary-out output\dotreconcile-summary.csv --json-out output\dotreconcile.json --csv-out output\dotreconcile.csv --csv-status-out output\dotreconcile-status.csv --csv-windowcheck-out output\dotreconcile-windowcheck.csv --csv-known-dot-out output\dotreconcile-known-dot.csv --csv-dotdiagnostic-out output\dotreconcile-dotdiagnostic.csv
+```
+
+#### 7）按指定副本导出完整对账结果
+
+```powershell
+dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --history "C:\Users\Administrator\AppData\Roaming\XIVLauncherCN\pluginConfigs\DalamudACT\history-records.json" --act-log-dir "D:\ff14act\FFXIVLogs" --zone "重量级1" --top-status 10 --status-windows --summary-out output\dotreconcile-heavy1-summary.csv --json-out output\dotreconcile-heavy1.json --csv-out output\dotreconcile-heavy1.csv --csv-status-out output\dotreconcile-heavy1-status.csv --csv-windowcheck-out output\dotreconcile-heavy1-windowcheck.csv --csv-known-dot-out output\dotreconcile-heavy1-known-dot.csv --csv-dotdiagnostic-out output\dotreconcile-heavy1-dotdiagnostic.csv
 ```
 
 ### 支持的主要参数
 
-- `--history <path>`
-- `--log <path>`
-- `--act-log-dir <dir>`
-- `--latest`（显式表示“取最新一场”；当前不传时默认也是取最新一场匹配记录）
-- `--zone <text>`
-- `--jobs <csv>`
-- `--players <csv>`
-- `--top-status <n>`
-- `--include-special-dot`
-- `--json-out <path>`
-- `--csv-out <path>`
-- `--csv-status-out <path>`
+- `--history <path>`：指定插件历史记录导出文件。
+- `--log <path>`：指定 ACT 网络日志文件；支持逗号分隔多个路径。
+- `--act-log-dir <dir>`：指定 ACT 网络日志目录。
+- `--dalamud-log <path>`：指定 Dalamud 日志文件；支持逗号分隔多个路径。不传时默认扫描 `C:\Users\Administrator\AppData\Roaming\XIVLauncherCN\dalamud*.log`。
+- `--latest`：显式表示“取最新一场”；当前不传时默认也是取最新一场匹配记录。
+- `--zone <text>`：按副本名关键字选最近一场匹配记录。
+- `--jobs <csv>`：按职业筛选，例如 `whm,sge,blm`。
+- `--players <csv>`：按玩家名筛选。
+- `--top-status <n>`：终端打印每个玩家前 N 个 ACT status 聚合明细；`0` 表示关闭。
+- `--status-windows`：额外打印 ACT `26|` 状态应用摘要和窗口一致性检查。
+- `--include-special-dot`：包含默认排除的特殊 DoT，例如 `0x35D`。
+- `--summary-out <path>`：导出短汇总；扩展名为 `.json` 时写 JSON，否则写单行 CSV。
+- `--json-out <path>`：导出完整 JSON。
+- `--csv-out <path>`：导出玩家主表 CSV。
+- `--csv-status-out <path>`：导出 ACT status 明细 CSV。
+- `--csv-windowcheck-out <path>`：导出 ACT 状态窗口一致性检查 CSV。
+- `--csv-known-dot-out <path>`：导出职业已知 DoT 状态专项核对 CSV。
+- `--csv-dotdiagnostic-out <path>`：导出插件 `DOT诊断：补算Tick` 与 ACT 证据合并后的总表 CSV。
 
 ### 输出怎么读
 
-每个玩家会输出类似：
+#### 1. 终端主表 / `--csv-out`
+
+每个玩家会输出：
 
 - 玩家名
 - 职业
 - 插件 `dotDamage-*`
-- ACT hostile-only DoT
+- ACT 已归属 hostile-only DoT
 - 差异百分比
 - 状态：
   - `GREEN`：差异较小或双方都为 0
   - `YELLOW`：中等偏差
   - `RED`：明显异常，建议继续排查
 
-如果开启 `--top-status`，还会额外打印：
+注意：这里的 ACT 是**已归属到玩家的部分**，不是 ACT hostile 总量。
 
-- `statusId`
-- 该 status 在 ACT 汇总里的伤害
-- 占该玩家 ACT DoT 的比例
-- 事件数
+#### 2. `--summary-out`
+
+这是最快判断整场的输出。重点看：
+
+- `PluginDotDamageTotal`
+- `ActAttributedDotDamageTotal`
+- `ActAttributedDiffPercent`
+- `ActUnresolvedHostileDotDamage`
+- `ActUnresolvedHostileSharePercent`
+- `ActHostileTotalDotDamage`
+- `ActHostileTotalDiffPercent`
+- `Conclusion`
+
+判断规则：
+
+- 如果 `ActAttributedDiffPercent` 高，但 `ActHostileTotalDiffPercent` 接近 0 或为负，通常说明 ACT 个人归属漏了，不代表插件整体虚高。
+- 如果 `ActUnresolvedHostileSharePercent` 很高，个人 ACT DoT 更要视为下限。
+
+#### 3. `--csv-status-out`
+
+按玩家列出 ACT 已归属 DoT 的 status 分布。
+
+如果大量伤害集中在：
+
+```text
+0x0
+```
+
+说明 ACT 原始 DoT tick 没给出稳定状态 ID，不能直接把这个玩家的 ACT 已归属总量等同于某个具体 DoT。
+
+#### 4. `--status-windows` / `--csv-windowcheck-out`
+
+用于解释：
+
+```text
+ACT 有 DoT 状态窗口，但 24|DoT tick 是 status=0
+```
+
+常见证据包括：
+
+- 白魔 `0x74F 天辉`
+- 黑魔 `0xF1F 高闪雷`
+- 骑士 `0xF8 厄运流转`
+- 绝枪 `0x72D / 0x72E`
+
+如果窗口存在，但 ACT DoT tick 全是 `status=0`，个人 ACT 已归属不能直接作为该 DoT 的实值。
+
+#### 5. `--csv-known-dot-out`
+
+按职业已知 DoT 状态输出专项核对表。重点看：
+
+- `ActKnownStatusDamage`
+- `ActZeroStatusDamage`
+- `KnownWindowApplyCount`
+- `Evidence`
+- `Note`
+
+典型解释：
+
+- `ACT非零已知status`：最适合直接做局部对账，例如召唤 `0xA92`。
+- `状态窗口+ACT status=0`：ACT 看到了状态窗口，但 tick 没带明确 status；不能按个人 ACT 总量直接判断插件虚高/虚低。
+
+#### 6. `--csv-dotdiagnostic-out`
+
+读取 Dalamud 日志中的：
+
+```text
+DOT诊断：补算Tick
+```
+
+并和 ACT 证据合并。重点看：
+
+- `DiagnosticTickEvents`
+- `DiagnosticTickDamageSum`
+- `PlayerDiagnosticDamageTotal`
+- `PluginDotDamageTotal`
+- `DiagnosticTotalVsPluginTotalDiffPercent`
+- `ActKnownStatusDamage`
+- `DiagnosticVsActKnownStatusDiffPercent`
+- `Evidence`
+- `Conclusion`
+
+如果：
+
+```text
+PlayerDiagnosticDamageTotal ≈ PluginDotDamageTotal
+```
+
+说明插件历史里的 DoT 基本就是 DOT诊断补算 tick 的合计，导出/UI 没有乱加。
+
+如果同时：
+
+```text
+ActKnownStatusDamage = 0
+ActZeroStatusDamage > 0
+KnownWindowApplyCount > 0
+```
+
+则说明 ACT 有状态窗口，但 tick 主要/全部落在 `status=0`，ACT 个人已归属不能直接当作该 DoT 实值。
 
 ### 适合什么时候用
 
@@ -466,20 +590,162 @@ dotnet run --project tools\DotReconcile\DotReconcile.csproj -- --latest --json-o
 - 想快速确认：
   - 白魔是否仍虚高
   - 贤者是否仍掉成 0
+  - 召唤 `0xA92` 是否对上
+  - 暗黑 `0x2ED` 是否漏算
   - 某职业是否仍明显偏少 / 偏高
 
 建议节奏：
 
-1. 先跑重点职业快筛
-2. 只有红灯 / 黄灯再继续深挖
-3. 需要留档时再导出 `json / csv`
+1. 先跑 `--summary-out` 看整场总量。
+2. 再看 `--csv-known-dot-out` 判断 ACT 对各职业已知 DoT 的状态证据。
+3. 如果开了 `DOT诊断`，再看 `--csv-dotdiagnostic-out`，确认插件内部补算 tick 是否与历史记录一致。
+4. 只有红灯 / 黄灯、或 `summary` 与 `dotdiagnostic` 明显不一致时，再继续深挖原始日志。
 
 ### 额外提醒
 
-- 当前 ACT 日志如果正在被 ACT 占用，工具会尽量以共享读方式继续扫描
-- 部分真实日志里的 `24|DoT` 行可能拿不到稳定的有效 `statusId`，这时 status 明细里可能看到 `0x0`
-- 这不一定是工具问题，也可能是原始日志字段本身没有给出可用状态号
+- 当前 ACT 日志如果正在被 ACT 占用，工具会尽量以共享读方式继续扫描。
+- Dalamud 日志如果正在写入或被轮转，工具会尽量以共享读方式读取；读取失败不会中断 ACT 对账。
+- 部分真实日志里的 `24|DoT` 行可能拿不到稳定的有效 `statusId`，这时 status 明细里可能看到 `0x0`。
+- 这不一定是工具问题，也可能是原始日志字段本身没有给出可用状态号。
+- `--csv-dotdiagnostic-out` 依赖插件侧开启调试日志并写出 `DOT诊断：补算Tick`；排查结束后建议关闭调试日志，避免 `dalamud.log` 增长过快。
 
+<a id="readme-dev-flow-encoding"></a>
+## 开发固定流程与编码注意事项
+
+为了避免后续维护时再次出现中文文档乱码、误删现场文件或交付未验证产物，建议每轮修改都按下面固定流程走。
+
+### 1. 开工前固定检查
+
+进入项目后先确认当前现场：
+
+```powershell
+Get-Content -Encoding UTF8 README.md
+git status --short
+git branch --show-current
+git rev-parse --short HEAD
+```
+
+如果是接手维护或排查问题，优先看：
+
+```text
+HANDOVER.md
+md/SESSION-HANDOFF.md
+md/MAINTAINER-HOME.md
+md/MAINTAINER-FIRST-HOUR-CHECKLIST.md
+md/2026-05-24-npc-party-handoff.md
+```
+
+当前仓库经常处于结构拆分后的脏工作区，看到旧路径显示为 `D`、新路径显示为 `??` 时，不要立刻恢复或删除。先确认新路径文件是否存在，例如：
+
+```text
+DalamudACT/Features/
+DalamudACT/Infrastructure/
+DalamudACT/UI/Windows/
+DalamudACT/UI/Panels/
+```
+
+### 2. 禁止事项
+
+除非已经明确确认用途，否则不要执行：
+
+```powershell
+git reset --hard
+git checkout -- .
+```
+
+也不要：
+
+- 误删 `1.txt`；
+- 批量删除未跟踪的新目录；
+- 把旧路径 `DalamudACT/Stats/LocalStatsService.cs` 当成当前主入口；
+- 直接恢复 `ActorControl` Hook；
+- 使用 `PronounModule.ResolvePlaceholder(string, byte, byte)`；
+- 把所有 `OwnerId != 0` 的 `BattleNpc` 都归属给玩家；
+- 单靠 `StatusFlags.Hostile` 判断 NPC 队友；
+- 没有跑构建就交付 `output\DalamudACT.dll`。
+
+### 3. 中文文档编码规则
+
+本仓库中文文档统一按 UTF-8 维护。详细规范见：
+
+```text
+md/ENCODING-GUIDE.md
+```
+
+读中文文档时显式指定 UTF-8：
+
+```powershell
+Get-Content -Encoding UTF8 README.md
+Get-Content -Encoding UTF8 md/SESSION-HANDOFF.md
+```
+
+写中文文档时使用安全写法，例如：
+
+```powershell
+Set-Content -Encoding UTF8 path\file.md -Value <UTF8中文文本>
+```
+
+或用 .NET 明确写 UTF-8：
+
+```powershell
+[System.IO.File]::WriteAllText(
+    'path\file.md',
+    $text,
+    [System.Text.UTF8Encoding]::new($false))
+```
+
+不要把包含中文的 here-string 通过管道传给 Python，例如不要使用：
+
+```powershell
+<中文 here-string> | python -
+```
+
+原因是在 Windows PowerShell / 控制台编码组合下，中文可能在进入 Python 前就已经被降级成问号。一旦文件内容层面已经变成连续问号，就不是显示编码问题，而是原文已经丢失。
+
+如果确实要用 Python 生成中文文件，建议把 Python 脚本保存成 UTF-8 文件后从文件运行，并在 Python 内部显式使用：
+
+```python
+Path("xxx.md").write_text(text, encoding="utf-8", newline="\n")
+```
+
+### 4. 提交 / 交付前固定检查
+
+每轮修改后先跑文本编码检查：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\Check-TextEncoding.ps1
+```
+
+如果要全仓库检查：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\Check-TextEncoding.ps1 -All
+```
+
+然后跑构建：
+
+```powershell
+dotnet build E:\git\DalamudACT\DalamudACT.sln
+```
+
+确认结果应为：
+
+```text
+0 个警告
+0 个错误
+```
+
+如需确认输出 DLL 版本：
+
+```powershell
+[Reflection.AssemblyName]::GetAssemblyName('E:\git\DalamudACT\output\DalamudACT.dll').Version.ToString()
+```
+
+当前可信产物路径仍是：
+
+```text
+E:\git\DalamudACT\output\DalamudACT.dll
+```
 <a id="readme-build"></a>
 ## 构建状态
 

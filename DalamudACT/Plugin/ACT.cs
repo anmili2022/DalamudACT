@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
@@ -20,9 +21,10 @@ namespace DalamudACT;
 /// - https://github.com/NotAdam/Lumina.Excel
 /// 调整 Hook、IDataManager、GetExcelSheet&lt;T&gt;() 或 ExcelSheet&lt;T&gt; 相关逻辑前，先对照这些文档。
 /// </summary>
-public sealed class ACT : IDalamudPlugin
+public sealed partial class ACT : IDalamudPlugin
 {
     private const uint InvalidActorId = 0xE0000000;
+    private static readonly string PluginVersion = typeof(ACT).Assembly.GetName().Version?.ToString() ?? "未知版本";
 
     private readonly IDalamudPluginInterface pluginInterface;
     private readonly LocalStatsService statsService;
@@ -31,10 +33,17 @@ public sealed class ACT : IDalamudPlugin
     private readonly ExcelSheet<Action> actionSheet;
     private bool frameworkUpdateFaulted;
     private bool abilityEffectFaulted;
+    private bool actorControlFaulted;
     private DateTime lastUntrackedCombatDebugAtUtc;
     private int suppressedUntrackedCombatDebugCount;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
+    private Hook<ActorControlDelegate>? actorControlHook;
+
+    // 2026-05-23：ActorControl Hook 在部分 Dalamud / 客户端组合下会在 HookFromAddress 的
+    // FollowJmp 阶段触发原生 AccessViolation，并直接导致游戏进程崩溃。
+    // 在补上目标地址范围校验、页保护校验和显式配置开关前，默认不再安装该 Hook。
+    private static bool ShouldInstallActorControlHook => false;
 
     public string Name => "DPS统计";
 
@@ -60,6 +69,7 @@ public sealed class ACT : IDalamudPlugin
         pluginInterface.UiBuilder.OpenMainUi += ui.OpenMainWindow;
         pluginInterface.UiBuilder.OpenConfigUi += ui.ToggleSettingsWindow;
         DalamudApi.Framework.Update += OnFrameworkUpdate;
+        LogHelper.PrintWithModule("插件", "加载", $"已加载 DPS统计 v{PluginVersion}。");
     }
 
     public void Dispose()
@@ -92,25 +102,43 @@ public sealed class ACT : IDalamudPlugin
         }
     }
 
-    private void InstallHooks()
+    private unsafe void InstallHooks()
     {
-        unsafe
+        try
+        {
+            receiveAbilityHook = DalamudApi.Interop.HookFromSignature<ReceiveAbilityDelegate>(
+                ActionEffectHandler.Addresses.Receive.String,
+                ReceiveAbilityEffect);
+            receiveAbilityHook.Enable();
+            LogHelper.Info("插件", "已安装 ActionEffect Hook，用于实时战斗统计。");
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Error("插件", ex, "安装 ActionEffect Hook 失败。插件会继续加载，但实时 DPS 数据将不可用。");
+        }
+
+        if (ShouldInstallActorControlHook)
         {
             try
             {
-                receiveAbilityHook = DalamudApi.Interop.HookFromSignature<ReceiveAbilityDelegate>(
-                    ActionEffectHandler.Addresses.Receive.String,
-                    ReceiveAbilityEffect);
-                receiveAbilityHook.Enable();
-                LogHelper.Info("插件", "已安装 ActionEffect Hook，用于实时战斗统计。");
+                actorControlHook = CreateActorControlHook();
+                actorControlHook.Enable();
+                LogHelper.Info("插件", "已安装 ActorControl Hook，用于 debug 战斗记录中的特效标记采集。");
             }
             catch (Exception ex)
             {
-                LogHelper.Error("插件", ex, "安装 ActionEffect Hook 失败。插件会继续加载，但实时 DPS 数据将不可用。");
+                LogHelper.Warning("插件", ex, "安装 ActorControl Hook 失败。debug 战斗记录的特效标记采集将不可用。");
             }
         }
+        else
+        {
+            actorControlHook = null;
+            LogHelper.Warning(
+                "插件",
+                "ActorControl Hook 已因启动崩溃风险暂时禁用；debug 战斗记录中的友方特效标记 Hook 采集暂不可用。ActionEffect 主统计、BOSS 读条轮询、BUFF/debuff 与 DoT 诊断不受影响。");
+        }
 
-        LogHelper.Warning("插件", "当前 Dalamud 运行时处于兼容模式，ActorControlSelf 与 Cast Hook 已禁用。");
+        LogHelper.Warning("插件", "Cast Hook 当前按稳定性策略禁用；BOSS 读条使用 Framework 轮询 IBattleChara.IsCasting 采集。ActionEffect 主统计会独立安装；ActorControl 特效标记采集当前已按稳定性策略禁用。");
     }
 
     private void DisposeHooks()
@@ -120,6 +148,10 @@ public sealed class ACT : IDalamudPlugin
             receiveAbilityHook?.Disable();
             if (receiveAbilityHook != null)
                 LogHelper.Debug("插件", "已关闭 ActionEffect Hook。");
+
+            actorControlHook?.Disable();
+            if (actorControlHook != null)
+                LogHelper.Debug("插件", "已关闭 ActorControl Hook。");
         }
         catch
         {
@@ -127,6 +159,7 @@ public sealed class ACT : IDalamudPlugin
         }
 
         receiveAbilityHook?.Dispose();
+        actorControlHook?.Dispose();
     }
 
     private string GetPlaceName()
@@ -180,6 +213,25 @@ public sealed class ACT : IDalamudPlugin
         return actionCategoryId is 9 or 15;
     }
 
+    private bool IsAutoAttackAction(uint actionId, string actionName)
+    {
+        if (actionId is 7 or 8)
+            return true;
+
+        if (actionId == 0)
+            return false;
+
+        if (actionSheet.TryGetRow(actionId, out var actionRow)
+            && actionRow.ActionCategory.RowId == 1)
+        {
+            return true;
+        }
+
+        return string.Equals(actionName, "攻击", StringComparison.Ordinal)
+               || string.Equals(actionName, "射击", StringComparison.Ordinal)
+               || string.Equals(actionName, "Attack", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static long DecodeAmount(ActionEffectHandler.Effect effect)
         => (uint)effect.Value | ((uint)effect.Param3 << 16);
 
@@ -220,6 +272,54 @@ public sealed class ACT : IDalamudPlugin
         return 0;
     }
 
+    private static bool MatchesEventActorId(IGameObject? gameObject, uint actorId)
+    {
+        if (gameObject == null || !IsUsableActorId(actorId))
+            return false;
+
+        var gameObjectActorId = unchecked((uint)(gameObject.GameObjectId & uint.MaxValue));
+        if (IsUsableActorId(gameObjectActorId) && gameObjectActorId == actorId)
+            return true;
+
+        var reflectedObjectId = TryGetReflectedActorId(gameObject, "ObjectId");
+        if (IsUsableActorId(reflectedObjectId) && reflectedObjectId == actorId)
+            return true;
+
+        return IsUsableActorId(gameObject.EntityId) && gameObject.EntityId == actorId;
+    }
+
+    private static IGameObject? ResolveEventActorObject(uint actorId, nint characterAddress)
+    {
+        var normalizedActorId = NormalizeEventActorId(actorId);
+        if (characterAddress != nint.Zero)
+        {
+            var objectFromAddress = DalamudApi.ObjectTable.CreateObjectReference(characterAddress);
+            // ActionEffect 里的 character 指针在部分 NPC/副本事件中不一定可靠。
+            // 只有它和事件 sourceId 口径能对上时才使用；否则回退到 sourceId 查表。
+            // 否则会把 Boss/目标对象误当成 NPC 队友来源，历史里出现“佐拉加=friendlyNpc”。
+            if (objectFromAddress != null
+                && (normalizedActorId == 0 || MatchesEventActorId(objectFromAddress, normalizedActorId)))
+            {
+                return objectFromAddress;
+            }
+        }
+
+        if (normalizedActorId == 0)
+            return null;
+
+        var entityMatch = DalamudApi.ObjectTable.SearchByEntityId(normalizedActorId);
+        if (entityMatch != null)
+            return entityMatch;
+
+        foreach (var obj in DalamudApi.ObjectTable)
+        {
+            if (MatchesEventActorId(obj, normalizedActorId))
+                return obj;
+        }
+
+        return null;
+    }
+
     private static uint TryGetReflectedActorId(object? instance, string propertyName)
     {
         if (instance == null)
@@ -256,6 +356,14 @@ public sealed class ACT : IDalamudPlugin
         return true;
     }
 
+    private bool TryObserveFriendlyCombatantSource(uint preferredActorId, IGameObject? gameObject, out uint actorId)
+    {
+        if (statsService.ObserveFriendlyCombatantSourceFromGameObject(gameObject, out actorId))
+            return true;
+
+        return TryObserveFriendlyCombatant(preferredActorId, gameObject, out actorId);
+    }
+
     private uint ResolveTrackedSourceActorId(uint sourceId, nint sourceCharacterAddress, DateTime nowUtc, out bool canResolveTrackedSource)
     {
         var normalizedSourceId = NormalizeEventActorId(sourceId);
@@ -267,7 +375,7 @@ public sealed class ACT : IDalamudPlugin
 
         if (sourceCharacterAddress != nint.Zero)
         {
-            var sourceObject = DalamudApi.ObjectTable.CreateObjectReference(sourceCharacterAddress);
+            var sourceObject = ResolveEventActorObject(sourceId, sourceCharacterAddress);
             var sourceObjectActorId = TryGetActorIdFromGameObject(sourceObject);
             if (sourceObjectActorId != 0 && statsService.CanResolveTrackedSource(sourceObjectActorId, nowUtc))
             {
@@ -405,18 +513,25 @@ public sealed class ACT : IDalamudPlugin
         var isLimitBreakAction = IsLimitBreakAction(actionId);
         var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
         var sourceActorId = ResolveTrackedSourceActorId(sourceId, sourceCharacterAddress, nowUtc, out var sourceCanResolveToTrackedActor);
+        var sourceObject = sourceCanResolveToTrackedActor
+            ? null
+            : ResolveEventActorObject(sourceId, sourceCharacterAddress);
         var isKnownPlayerDotAction = PlayerDotCatalog.IsKnownPlayerDotAction(actionId);
 
         var hasTrackedParticipant = sourceCanResolveToTrackedActor;
         var hasRelevantTrackedEffect = false;
         var anyTargetTracked = false;
         uint firstTargetId = 0;
+        var debugTargetIds = new List<uint>(header->NumTargets);
+        long debugTotalDamageToTrackedTargets = 0;
 
         for (var targetIndex = 0; targetIndex < header->NumTargets; targetIndex++)
         {
             var targetId = NormalizeEventActorId(targets[targetIndex]);
             if (targetId == 0)
                 continue;
+
+            debugTargetIds.Add(targetId);
 
             var resolvedTargetActorId = targetId;
             if (firstTargetId == 0)
@@ -457,6 +572,17 @@ public sealed class ACT : IDalamudPlugin
                         if (amount <= 0)
                             break;
 
+                        if (!sourceCanResolveToTrackedActor
+                            && TryObserveFriendlyCombatantSource(
+                                sourceActorId != 0 ? sourceActorId : NormalizeEventActorId(sourceId),
+                                sourceObject,
+                                out var observedSourceActorId))
+                        {
+                            sourceActorId = observedSourceActorId;
+                            sourceCanResolveToTrackedActor = true;
+                            hasTrackedParticipant = true;
+                        }
+
                         if (sourceCanResolveToTrackedActor
                             && !targetIsTrackedActor)
                         {
@@ -466,6 +592,8 @@ public sealed class ACT : IDalamudPlugin
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
                             hasRelevantTrackedEffect = true;
+                            if (targetIsTrackedActor)
+                                debugTotalDamageToTrackedTargets += amount;
                             statsService.RecordDamage(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), IsDirectHit(effect), nowUtc, zoneName);
                             break;
                         }
@@ -475,7 +603,28 @@ public sealed class ACT : IDalamudPlugin
                     case LocalActionEffectType.Heal:
                     {
                         var amount = DecodeAmount(effect);
-                        if (amount > 0 && (sourceCanResolveToTrackedActor || targetIsTrackedActor))
+                        if (amount <= 0)
+                            break;
+
+                        // 有些攻击技能会在 hostile 目标上带出 Heal 类型的附加效果。
+                        // 这类效果不是我方治疗，不能写进 HPS/治疗流水，否则会出现
+                        // “玩家 使用攻击技能 治疗 Boss” 这类错误记录。
+                        // 当前 HPS 口径只统计目标是已追踪我方对象的治疗。
+                        if (!targetIsTrackedActor)
+                            break;
+
+                        if (!sourceCanResolveToTrackedActor
+                            && TryObserveFriendlyCombatantSource(
+                                sourceActorId != 0 ? sourceActorId : NormalizeEventActorId(sourceId),
+                                sourceObject,
+                                out var observedSourceActorId))
+                        {
+                            sourceActorId = observedSourceActorId;
+                            sourceCanResolveToTrackedActor = true;
+                            hasTrackedParticipant = true;
+                        }
+
+                        if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
                             hasRelevantTrackedEffect = true;
                             statsService.RecordHeal(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), nowUtc, zoneName);
@@ -506,6 +655,25 @@ public sealed class ACT : IDalamudPlugin
             statsService.RecordEncounterActivity(zoneName, nowUtc);
         else if (inCombatNow)
             DebugLogUntrackedCombatEvent(sourceId, sourceCharacterAddress, firstTargetId, sourceCanResolveToTrackedActor, anyTargetTracked, actionName);
+
+        statsService.RecordDebugBossAbility(
+            NormalizeEventActorId(sourceId),
+            actionId,
+            actionName,
+            debugTargetIds,
+            debugTotalDamageToTrackedTargets,
+            IsAutoAttackAction(actionId, actionName),
+            nowUtc,
+            zoneName);
+
+        statsService.RecordDebugFriendlyAbility(
+            sourceActorId,
+            actionId,
+            actionName,
+            debugTargetIds,
+            IsAutoAttackAction(actionId, actionName),
+            nowUtc,
+            zoneName);
     }
 
     private unsafe delegate void ReceiveAbilityDelegate(

@@ -73,7 +73,7 @@
 
 ### 3）Ikegami 设置区乱码文案已恢复成正常中文
 
-本轮接手时，`SettingsWindow.cs` 里的 `DrawIkegamiFloatingDisplayStyleSection()` 曾出现大量 `????` 文案。
+本轮接手时，`SettingsWindow.cs` 里的 `DrawIkegamiFloatingDisplayStyleSection()` 曾出现大量“连续问号”乱码文案。
 
 已恢复并统一命名为正常中文，例如：
 

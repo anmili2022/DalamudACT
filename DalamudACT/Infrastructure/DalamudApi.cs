@@ -42,6 +42,16 @@ public sealed class DalamudApi
                ?? name?.ToString();
     }
 
+    public static string? GetCurrentTargetName()
+    {
+        var localPlayer = GetLocalPlayerObject();
+        var target = GetPropertyValue(localPlayer, "TargetObject");
+        var name = GetPropertyValue(target, "Name");
+
+        return GetPropertyValue(name, "TextValue") as string
+               ?? name?.ToString();
+    }
+
     public static ulong GetLocalPlayerGameObjectId()
     {
         var localPlayer = GetLocalPlayerObject();

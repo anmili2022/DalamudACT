@@ -103,7 +103,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
     private static readonly FieldInfo[] PersistentFieldInfos = typeof(PluginConfiguration)
         .GetFields(BindingFlags.Public | BindingFlags.Instance);
 
-    public int Version { get; set; } = 51;
+    public int Version { get; set; } = 57;
 
     public float WindowOpacity = 1f;
     public float FloatingStatsOpacity = 0.72f;
@@ -116,8 +116,35 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public CombatEndRule CombatEndRule = CombatEndRule.PartyList;
     public int EncounterTimeoutSeconds = 30;
     public int HistoryPreviewSeconds = 8;
+    public bool CombatTimelineRecordingEnabled = false;
     public int CombatTimelineMaxEntries = 500;
+    public int DebugCombatLogMaxEntries = 2000;
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
+    public bool DebugCombatRecordingEnabled = false;
+    public bool DebugRecordBossAutoAttack = true;
+    public bool DebugRecordBossBuff = true;
+    public bool DebugRecordBossAction = true;
+    public bool DebugRecordBossCast = true;
+    public bool DebugRecordSmallHostileNpcAsBoss = false;
+    public bool DebugRecordPartyMarker = true;
+    public bool DebugRecordPartyAction = true;
+    public bool DebugRecordPartyBuff = true;
+    public bool DebugRecordPartyDebuff = true;
+    public bool DebugRecordSelfMarker = true;
+    public bool DebugRecordSelfAction = true;
+    public bool DebugRecordSelfBuff = true;
+    public bool DebugRecordSelfDebuff = true;
+    public float DebugCombatLogTimeColumnWidth = 86f;
+    public float DebugCombatLogKindColumnWidth = 100f;
+    public float DebugCombatLogActorColumnWidth = 140f;
+    public float DebugCombatLogTargetColumnWidth = 140f;
+    public float DebugCombatLogPrimaryColumnWidth = 160f;
+    public bool DebugCombatLogShowTimeColumn = true;
+    public bool DebugCombatLogShowKindColumn = true;
+    public bool DebugCombatLogShowActorColumn = true;
+    public bool DebugCombatLogShowTargetColumn = true;
+    public bool DebugCombatLogShowPrimaryColumn = true;
+    public bool DebugCombatLogShowMessageColumn = true;
 
     public bool ShowDpsTab = true;
     public bool ShowHpsTab = true;
@@ -218,6 +245,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public float SingleBarColorA = 0.9f;
     public float ThemeBarOpacity = DefaultThemeBarOpacity;
     public Dictionary<string, ThemeBarColorSetting> ThemeBarColors = new();
+    public List<string> CustomFriendlyNpcNames = new();
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public bool? ShowDemoPanel;
@@ -242,6 +270,15 @@ public sealed class PluginConfiguration : IPluginConfiguration
         CombatTimelineMaxEntries = CombatTimelineMaxEntries < 0
             ? 500
             : Math.Clamp(CombatTimelineMaxEntries, 0, 50000);
+        DebugCombatLogMaxEntries = DebugCombatLogMaxEntries < 0
+            ? 2000
+            : Math.Clamp(DebugCombatLogMaxEntries, 0, 50000);
+        DebugCombatLogTimeColumnWidth = Math.Clamp(DebugCombatLogTimeColumnWidth <= 0f ? 86f : DebugCombatLogTimeColumnWidth, 48f, 2000f);
+        DebugCombatLogKindColumnWidth = Math.Clamp(DebugCombatLogKindColumnWidth <= 0f ? 100f : DebugCombatLogKindColumnWidth, 48f, 2000f);
+        DebugCombatLogActorColumnWidth = Math.Clamp(DebugCombatLogActorColumnWidth <= 0f ? 140f : DebugCombatLogActorColumnWidth, 48f, 2000f);
+        DebugCombatLogTargetColumnWidth = Math.Clamp(DebugCombatLogTargetColumnWidth <= 0f ? 140f : DebugCombatLogTargetColumnWidth, 48f, 2000f);
+        DebugCombatLogPrimaryColumnWidth = Math.Clamp(DebugCombatLogPrimaryColumnWidth <= 0f ? 160f : DebugCombatLogPrimaryColumnWidth, 48f, 2000f);
+        EnsureAnyDebugCombatLogColumnVisible();
         DpsVisibleCount = Math.Clamp(DpsVisibleCount, 1, 24);
         FloatingStatsPlayerColumnMinWidth = Math.Clamp(FloatingStatsPlayerColumnMinWidth, 0f, 360f);
         FloatingStatsMetricColumnWidth = Math.Clamp(FloatingStatsMetricColumnWidth, 48f, 220f);
@@ -321,6 +358,8 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         if (!Enum.IsDefined(typeof(StatsBarColorMode), BarColorMode))
             BarColorMode = StatsBarColorMode.Theme;
+
+        NormalizeCustomFriendlyNpcNames();
 
         if (ShowDemoPanel.HasValue)
             ShowStatsPanel = ShowDemoPanel.Value;
@@ -406,6 +445,9 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
         if (Version < 25)
             CombatTimelineMaxEntries = 500;
+
+        if (Version < 57)
+            CombatTimelineRecordingEnabled = false;
 
         if (Version < 26)
             FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;
@@ -540,6 +582,55 @@ public sealed class PluginConfiguration : IPluginConfiguration
             FloatingStatsMinimalAutoWindowHeight = false;
         }
 
+        if (Version < 52)
+        {
+            DebugCombatLogMaxEntries = 2000;
+            DebugCombatRecordingEnabled = false;
+            DebugRecordBossAutoAttack = true;
+            DebugRecordBossBuff = true;
+            DebugRecordBossAction = true;
+            DebugRecordBossCast = true;
+            DebugRecordSmallHostileNpcAsBoss = false;
+            DebugRecordPartyMarker = true;
+            DebugRecordPartyBuff = true;
+            DebugRecordPartyDebuff = true;
+            DebugRecordSelfMarker = true;
+            DebugRecordSelfBuff = true;
+            DebugRecordSelfDebuff = true;
+        }
+
+        if (Version < 53)
+        {
+            DebugRecordSmallHostileNpcAsBoss = false;
+            DebugRecordPartyBuff = true;
+            DebugRecordSelfBuff = true;
+        }
+
+        if (Version < 54)
+        {
+            DebugCombatLogTimeColumnWidth = 86f;
+            DebugCombatLogKindColumnWidth = 100f;
+            DebugCombatLogActorColumnWidth = 140f;
+            DebugCombatLogTargetColumnWidth = 140f;
+            DebugCombatLogPrimaryColumnWidth = 160f;
+        }
+
+        if (Version < 55)
+        {
+            DebugCombatLogShowTimeColumn = true;
+            DebugCombatLogShowKindColumn = true;
+            DebugCombatLogShowActorColumn = true;
+            DebugCombatLogShowTargetColumn = true;
+            DebugCombatLogShowPrimaryColumn = true;
+            DebugCombatLogShowMessageColumn = true;
+        }
+
+        if (Version < 56)
+        {
+            DebugRecordPartyAction = true;
+            DebugRecordSelfAction = true;
+        }
+
         if (Version < 47)
         {
             FloatingStatsMinimalShowSummaryRow = true;
@@ -598,7 +689,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         LogHelper.EnableDebugLog = EnableDebugLog;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 51);
+        Version = Math.Max(Version, 58);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();
@@ -606,6 +697,22 @@ public sealed class PluginConfiguration : IPluginConfiguration
 
     public bool HasAnyVisibleStatsTab()
         => ShowDpsTab || ShowHpsTab || ShowTakenTab || ShowOverviewTab || ShowHistoryTab;
+
+    public void EnsureAnyDebugCombatLogColumnVisible()
+    {
+        if (DebugCombatLogShowTimeColumn
+            || DebugCombatLogShowKindColumn
+            || DebugCombatLogShowActorColumn
+            || DebugCombatLogShowTargetColumn
+            || DebugCombatLogShowPrimaryColumn
+            || DebugCombatLogShowMessageColumn)
+        {
+            return;
+        }
+
+        // 至少保留“内容”列，避免用户把 debug 战斗记录表格隐藏到无法操作。
+        DebugCombatLogShowMessageColumn = true;
+    }
 
     public static bool UsesLegacyFloatingTableLayout(FloatingStatsDisplayStyle style)
         => style == FloatingStatsDisplayStyle.Classic;
@@ -646,6 +753,37 @@ public sealed class PluginConfiguration : IPluginConfiguration
             ThemeBarColors[entry.JobName] = new ThemeBarColorSetting(entry.DefaultColor);
     }
 
+    public void NormalizeCustomFriendlyNpcNames()
+    {
+        var normalizedNames = new List<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        if (CustomFriendlyNpcNames != null)
+        {
+            foreach (var name in CustomFriendlyNpcNames)
+            {
+                var normalizedName = NormalizeFriendlyNpcNameForCatalog(name);
+                if (string.IsNullOrWhiteSpace(normalizedName) || !seen.Add(normalizedName))
+                    continue;
+
+                normalizedNames.Add(normalizedName);
+            }
+        }
+
+        CustomFriendlyNpcNames = normalizedNames;
+    }
+
+    public static string NormalizeFriendlyNpcNameForCatalog(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return string.Empty;
+
+        return name.Trim()
+            .Replace("·", string.Empty, StringComparison.Ordinal)
+            .Replace("・", string.Empty, StringComparison.Ordinal)
+            .Replace(" ", string.Empty, StringComparison.Ordinal);
+    }
+
     public void Reset()
     {
         WindowOpacity = 1f;
@@ -660,8 +798,35 @@ public sealed class PluginConfiguration : IPluginConfiguration
         CombatEndRule = CombatEndRule.PartyList;
         EncounterTimeoutSeconds = 30;
         HistoryPreviewSeconds = 8;
+        CombatTimelineRecordingEnabled = false;
         CombatTimelineMaxEntries = 500;
+        DebugCombatLogMaxEntries = 2000;
         EnableDebugLog = LogHelper.DefaultEnableDebugLog;
+        DebugCombatRecordingEnabled = false;
+        DebugRecordBossAutoAttack = true;
+        DebugRecordBossBuff = true;
+        DebugRecordBossAction = true;
+        DebugRecordBossCast = true;
+        DebugRecordSmallHostileNpcAsBoss = false;
+        DebugRecordPartyMarker = true;
+        DebugRecordPartyAction = true;
+        DebugRecordPartyBuff = true;
+        DebugRecordPartyDebuff = true;
+        DebugRecordSelfMarker = true;
+        DebugRecordSelfAction = true;
+        DebugRecordSelfBuff = true;
+        DebugRecordSelfDebuff = true;
+        DebugCombatLogTimeColumnWidth = 86f;
+        DebugCombatLogKindColumnWidth = 100f;
+        DebugCombatLogActorColumnWidth = 140f;
+        DebugCombatLogTargetColumnWidth = 140f;
+        DebugCombatLogPrimaryColumnWidth = 160f;
+        DebugCombatLogShowTimeColumn = true;
+        DebugCombatLogShowKindColumn = true;
+        DebugCombatLogShowActorColumn = true;
+        DebugCombatLogShowTargetColumn = true;
+        DebugCombatLogShowPrimaryColumn = true;
+        DebugCombatLogShowMessageColumn = true;
         ShowDpsTab = true;
         ShowHpsTab = true;
         ShowTakenTab = true;
@@ -760,6 +925,7 @@ public sealed class PluginConfiguration : IPluginConfiguration
         SingleBarColorA = 0.9f;
         ThemeBarOpacity = DefaultThemeBarOpacity;
         ResetThemeBarColors();
+        CustomFriendlyNpcNames = new List<string>();
         LogHelper.EnableDebugLog = EnableDebugLog;
     }
 

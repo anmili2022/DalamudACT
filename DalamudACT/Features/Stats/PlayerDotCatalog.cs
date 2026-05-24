@@ -23,7 +23,12 @@ internal static class PlayerDotCatalog
         Job("骑士",
             Skill("厄运流转", [23], [248], seedPotency: 140, dotTickPotency: 30)),
         Job("战士"),
-        Job("暗黑骑士"),
+        // Dark Knight: Salted Earth is a source-owned / ground DoT.
+        // The status lives on the caster, so it must be captured from friendly status owners.
+        Job("暗黑骑士",
+            Skill("腐秽大地", [3639], [749], dotTickPotency: 50,
+                statusOwnerKind: PlayerDotStatusOwnerKind.SourceActor,
+                allowObservedPotencySampleFallback: true)),
         Job("绝枪战士",
             Skill("音速破", [16153], [1837], seedPotency: 340, dotTickPotency: 120),
             Skill("弓形冲波", [16159], [1838], seedPotency: 150, dotTickPotency: 60)),
@@ -100,7 +105,13 @@ internal static class PlayerDotCatalog
             Skill("樱花怒放", [88], [118, 1312]),
             // Chaotic Spring 存在前/背位与连击差异；这里优先采用官方连击威力 300 做近似。
             Skill("樱花缭乱", [25772, 29490], [2719], seedPotency: 300, dotTickPotency: 45)),
-        Job("忍者"),
+        Job("忍者",
+            // 7.x 当前忍者单体 DoT 技能：
+            // - 介毒之术：action 0x905D -> status 0xF09
+            // - 百雷铳：action 0x905E -> status 0xF42
+            // 这里先补齐 action/status 白名单，具体威力优先走动作描述解析。
+            Skill("介毒之术", [36957], [3849]),
+            Skill("百雷铳", [36958], [3906])),
         Job("武士",
             Skill("彼岸花", [7489], [1228, 1319], seedPotency: 200, dotTickPotency: 50)),
         Job("钐镰客"),
@@ -112,6 +123,7 @@ internal static class PlayerDotCatalog
             Skill("烈毒咬箭", [7406, 8836], [1200, 1321], seedPotency: 150, dotTickPotency: 20),
             Skill("狂风蚀箭", [7407, 8837], [1201, 1322], seedPotency: 100, dotTickPotency: 25)),
         Job("机工士",
+            // 兼容较新的持续伤害技能档位。
             Skill("毒菌冲击", [16499, 29406], [1866, 2019])),
         Job("舞者"),
 
@@ -122,7 +134,8 @@ internal static class PlayerDotCatalog
             Skill("高闪雷", [36986], [3871], seedPotency: 150, dotTickPotency: 60),
             Skill("高震雷", [36987], [3872], seedPotency: 100, dotTickPotency: 40)),
         Job("召唤师",
-            Skill("星极超流（Slipstream）", [16523, 25837, 29669], [2706, 3225], seedPotency: 520, dotTickPotency: 30),
+            Skill("星极超流（Slipstream）", [16523, 25837, 29669], [2706, 3225], seedPotency: 520, dotTickPotency: 30,
+                statusOwnerKind: PlayerDotStatusOwnerKind.SourceActor),
             Skill("赤焰（Scarlet Flame）", [16519, 29681], [3231])),
         Job("赤魔法师"),
         Job("绘灵法师"),
@@ -175,8 +188,10 @@ internal static class PlayerDotCatalog
         int? seedPotency = null,
         int? dotTickPotency = null,
         bool disableAverageFallback = false,
-        IReadOnlyList<PlayerDotAnchorEntry>? anchors = null)
-        => new(skillName, actionIds, statusIds, seedPotency, dotTickPotency, disableAverageFallback, anchors ?? []);
+        IReadOnlyList<PlayerDotAnchorEntry>? anchors = null,
+        PlayerDotStatusOwnerKind statusOwnerKind = PlayerDotStatusOwnerKind.TargetActor,
+        bool allowObservedPotencySampleFallback = false)
+        => new(skillName, actionIds, statusIds, seedPotency, dotTickPotency, disableAverageFallback, anchors ?? [], statusOwnerKind, allowObservedPotencySampleFallback);
 
     private static PlayerDotAnchorEntry Anchor(string anchorName, IReadOnlyCollection<uint> actionIds, int potency)
         => new(anchorName, actionIds, potency);
@@ -191,7 +206,9 @@ internal sealed record PlayerDotSkillEntry(
     int? SeedPotency,
     int? DotTickPotency,
     bool DisableAverageFallback,
-    IReadOnlyList<PlayerDotAnchorEntry> Anchors)
+    IReadOnlyList<PlayerDotAnchorEntry> Anchors,
+    PlayerDotStatusOwnerKind StatusOwnerKind,
+    bool AllowObservedPotencySampleFallback)
 {
     public bool TryGetPotencyRatio(out double ratio)
     {
@@ -212,6 +229,12 @@ internal sealed record PlayerDotSkillEntry(
 
         return ActionIds.FirstOrDefault();
     }
+}
+
+internal enum PlayerDotStatusOwnerKind
+{
+    TargetActor,
+    SourceActor,
 }
 
 internal sealed record PlayerDotAnchorEntry(

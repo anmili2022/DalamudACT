@@ -12,26 +12,30 @@ internal sealed class PluginUI : IDisposable
     private readonly SettingsWindow settingsWindow;
     private readonly FloatingStatsWindow floatingStatsWindow;
     private readonly CombatTimelineWindow combatTimelineWindow;
+    private readonly DebugCombatLogWindow debugCombatLogWindow;
     private bool windowDrawFaulted;
 
     public PluginUI(PluginConfiguration config, LocalStatsService statsService)
     {
         this.config = config;
 
-        mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
-        settingsWindow = new SettingsWindow(config, statsService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
+        mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
+        settingsWindow = new SettingsWindow(config, statsService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
+        debugCombatLogWindow = new DebugCombatLogWindow(config, statsService);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);
         AddWindow(windowSystem, floatingStatsWindow);
         AddWindow(windowSystem, combatTimelineWindow);
+        AddWindow(windowSystem, debugCombatLogWindow);
 
         mainWindow.IsOpen = false;
         settingsWindow.IsOpen = false;
         floatingStatsWindow.IsOpen = config.ShowStatsPanel;
         combatTimelineWindow.IsOpen = false;
+        debugCombatLogWindow.IsOpen = false;
     }
 
     public void Draw()
@@ -71,6 +75,8 @@ internal sealed class PluginUI : IDisposable
     private void OpenSettingsWindow() => settingsWindow.IsOpen = true;
 
     private void OpenCombatTimelineWindow() => combatTimelineWindow.IsOpen = true;
+
+    private void OpenDebugCombatLogWindow() => debugCombatLogWindow.IsOpen = true;
 
     private void ToggleFloatingStatsWindow()
     {

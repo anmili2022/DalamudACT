@@ -18,13 +18,15 @@ internal sealed class MainWindow : Window
     private readonly Action openSettings;
     private readonly Action toggleFloatingStatsPanel;
     private readonly Action openCombatTimelineWindow;
+    private readonly Action openDebugCombatLogWindow;
 
     public MainWindow(
         PluginConfiguration config,
         LocalStatsService statsService,
         Action openSettings,
         Action toggleFloatingStatsPanel,
-        Action openCombatTimelineWindow)
+        Action openCombatTimelineWindow,
+        Action openDebugCombatLogWindow)
         : base("DPS统计", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         this.config = config;
@@ -32,6 +34,7 @@ internal sealed class MainWindow : Window
         this.openSettings = openSettings;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
+        this.openDebugCombatLogWindow = openDebugCombatLogWindow;
         Size = new Vector2(640f, 600f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
@@ -50,7 +53,7 @@ internal sealed class MainWindow : Window
         DrawCard(
             "##main_quick_actions_card",
             "快速操作",
-            "常用入口集中在这里，可快速打开设置页、战斗流水窗口，或显示/隐藏悬浮统计面板。",
+            "常用入口集中在这里，可快速打开设置页、战斗流水/debug战斗记录窗口，或显示/隐藏悬浮统计面板。",
             6.6f,
             DrawQuickActions);
 
@@ -85,7 +88,7 @@ internal sealed class MainWindow : Window
             ImGuiTableFlags.SizingStretchSame
             | ImGuiTableFlags.NoSavedSettings;
 
-        if (ImGui.BeginTable("##main_action_grid", 3, flags))
+        if (ImGui.BeginTable("##main_action_grid", 4, flags))
         {
             ImGui.TableNextRow();
             ImGui.TableSetColumnIndex(0);
@@ -97,6 +100,10 @@ internal sealed class MainWindow : Window
                 openCombatTimelineWindow();
 
             ImGui.TableSetColumnIndex(2);
+            if (ImGui.Button("打开debug战斗记录", new Vector2(-1f, 0f)))
+                openDebugCombatLogWindow();
+
+            ImGui.TableSetColumnIndex(3);
             if (ImGui.Button(GetFloatingStatsButtonLabel(), new Vector2(-1f, 0f)))
                 toggleFloatingStatsPanel();
 

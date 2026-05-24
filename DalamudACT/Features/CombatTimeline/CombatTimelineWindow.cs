@@ -104,6 +104,16 @@ internal sealed class CombatTimelineWindow : Window
         IReadOnlyList<string> targetOptions,
         IReadOnlyList<string> actionOptions)
     {
+        var recordingEnabled = config.CombatTimelineRecordingEnabled;
+        if (ImGui.Checkbox("开始记录", ref recordingEnabled))
+            statsService.SetCombatTimelineRecordingEnabled(recordingEnabled);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后才会写入新的战斗流水；关闭后保留已有流水，方便复制或排查。插件每次加载时默认关闭。");
+
+        ImGui.SameLine();
+        ImGui.TextDisabled(recordingEnabled ? "记录中" : "已停止");
+
+        ImGui.SameLine();
         ImGui.Checkbox("自动滚动到最新事件", ref autoScroll);
 
         ImGui.SameLine();
@@ -143,7 +153,9 @@ internal sealed class CombatTimelineWindow : Window
         if (entries.Count == 0)
         {
             lastRenderedEntryCount = 0;
-            ImGui.TextDisabled(!HasAnyActiveFilter()
+            ImGui.TextDisabled(!config.CombatTimelineRecordingEnabled && !HasAnyActiveFilter()
+                ? "战斗流水记录已停止。勾选“开始记录”后才会写入新事件；关闭不会清空已有流水。"
+                : !HasAnyActiveFilter()
                 ? "暂无战斗流水。进入战斗后，这里会开始记录关键事件。"
                 : "当前筛选条件下暂无战斗流水。");
             ImGui.EndChild();

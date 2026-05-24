@@ -16,21 +16,26 @@ namespace DalamudACT;
 internal sealed class SettingsWindow : Window
 {
     private static readonly string PluginVersion = typeof(SettingsWindow).Assembly.GetName().Version?.ToString() ?? "未知版本";
+    private const int DebugRecordToggleCount = 9;
     private readonly PluginConfiguration config;
     private readonly LocalStatsService statsService;
     private readonly Action openMainWindow;
     private readonly Action toggleFloatingStatsPanel;
     private readonly Action openCombatTimelineWindow;
+    private readonly Action openDebugCombatLogWindow;
     private readonly Dictionary<string, float> adaptiveChildHeights = new();
     private string floatingStyleShareCode = string.Empty;
     private string floatingStyleTransferStatusText = string.Empty;
+    private string customFriendlyNpcNameInput = string.Empty;
+    private string customFriendlyNpcStatusText = string.Empty;
 
     public SettingsWindow(
         PluginConfiguration config,
         LocalStatsService statsService,
         Action openMainWindow,
         Action toggleFloatingStatsPanel,
-        Action openCombatTimelineWindow)
+        Action openCombatTimelineWindow,
+        Action openDebugCombatLogWindow)
         : base($"DPS统计 设置 v{PluginVersion}###SettingsWindow")
     {
         this.config = config;
@@ -38,6 +43,7 @@ internal sealed class SettingsWindow : Window
         this.openMainWindow = openMainWindow;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
+        this.openDebugCombatLogWindow = openDebugCombatLogWindow;
         Size = new Vector2(620f, 760f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
@@ -59,6 +65,10 @@ internal sealed class SettingsWindow : Window
         ImGui.SameLine();
         if (ImGui.Button("打开战斗流水"))
             openCombatTimelineWindow();
+
+        ImGui.SameLine();
+        if (ImGui.Button("打开debug战斗记录"))
+            openDebugCombatLogWindow();
 
         ImGui.Dummy(new Vector2(0f, 2f));
 
@@ -191,6 +201,7 @@ internal sealed class SettingsWindow : Window
             "控制悬浮窗统计列表中显示玩家、友方 NPC 与敌方 NPC 的组合。",
             6.8f,
             DrawFloatingParticipantModeSection);
+
     }
 
     private void DrawColumnsSection()
@@ -391,11 +402,27 @@ internal sealed class SettingsWindow : Window
 
         ImGui.Dummy(new Vector2(0f, 2f));
         DrawSettingCard(
+            "##friendly_npc_name_list_card",
+            "NPC 队友识别名单",
+            "只显示当前可识别到的队伍成员，用于核对玩家与 NPC 队友是否已纳入统计。",
+            10.0f,
+            DrawFriendlyNpcNameListSection);
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+        DrawSettingCard(
             "##maintenance_logging_card",
             "日志与调试",
             "控制是否输出调试（Debug）/详细（Verbose）级别日志，便于排查问题；普通信息 / 警告 / 错误日志不受影响。",
             9.8f,
             DrawLoggingSection);
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+        DrawSettingCard(
+            "##maintenance_debug_combat_record_card",
+            "debug战斗记录",
+            "控制 Boss/小怪平A、BUFF/debuff、技能、读条，以及友方标记、技能、BUFF 和 debuff 记录项；详细内容在独立 debug 战斗记录悬浮窗中查看和复制。",
+            13f,
+            DrawDebugCombatRecordSection);
 
         ImGui.Dummy(new Vector2(0f, 2f));
         DrawSettingCard(
@@ -454,6 +481,186 @@ internal sealed class SettingsWindow : Window
 
         LogUiHelper.DrawRecentLogToolbar();
         LogUiHelper.DrawRecentLogList(10);
+    }
+
+    private void DrawDebugCombatRecordSection()
+    {
+        var recordingEnabled = config.DebugCombatRecordingEnabled;
+        if (ImGui.Checkbox("开始记录debug战斗记录", ref recordingEnabled))
+            statsService.SetDebugCombatRecordingEnabled(recordingEnabled);
+
+        ImGui.SameLine();
+        if (ImGui.Button("打开窗口"))
+            openDebugCombatLogWindow();
+
+        ImGui.SameLine();
+        if (ImGui.Button("清空debug记录"))
+            statsService.ClearDebugCombatLog();
+
+        DrawCompactHelp("记录只在开始记录后写入。", "关闭记录不会清空已记录内容；可在 debug 战斗记录窗口中复制当前筛选结果。插件每次加载时默认关闭。");
+
+        ImGui.AlignTextToFramePadding();
+        ImGui.TextDisabled($"记录项：{BuildDebugRecordToggleSummary()}");
+        ImGui.SameLine();
+        DrawDebugRecordPresetButtons("settings");
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+        if (ImGui.CollapsingHeader("展开记录项开关###settings_debug_combat_record_options"))
+        {
+            DrawDebugCombatRecordToggleGrid("settings");
+        }
+        else
+        {
+            ImGui.TextDisabled("详细开关已收起；常用操作可直接用“全开 / 全关 / 默认”。");
+        }
+
+        var maxEntries = config.DebugCombatLogMaxEntries;
+        ImGui.SetNextItemWidth(-1f);
+        if (ImGui.SliderInt("debug记录保留条数（0=全部）", ref maxEntries, 0, 50000))
+        {
+            config.DebugCombatLogMaxEntries = maxEntries <= 0 ? 0 : Math.Clamp(maxEntries, 100, 50000);
+            statsService.ApplyDebugCombatLogRetentionLimit();
+            config.Save();
+        }
+    }
+
+    private void DrawDebugCombatRecordToggleGrid(string idPrefix)
+    {
+        const ImGuiTableFlags flags =
+            ImGuiTableFlags.SizingStretchSame
+            | ImGuiTableFlags.NoSavedSettings;
+
+        if (!ImGui.BeginTable($"##{idPrefix}_debug_combat_record_toggle_grid", 2, flags))
+            return;
+
+        ImGui.TableNextRow();
+
+        ImGui.TableSetColumnIndex(0);
+        DrawDebugCombatRecordToggleGroup("Boss / 小怪", () =>
+        {
+            DrawDebugCombatRecordCheckbox($"平A##{idPrefix}_boss_auto", ref config.DebugRecordBossAutoAttack);
+            DrawDebugCombatRecordCheckbox($"BUFF/debuff##{idPrefix}_boss_buff", ref config.DebugRecordBossBuff);
+            DrawDebugCombatRecordCheckbox($"技能##{idPrefix}_boss_action", ref config.DebugRecordBossAction);
+            DrawDebugCombatRecordCheckbox($"读条##{idPrefix}_boss_cast", ref config.DebugRecordBossCast);
+            DrawDebugCombatRecordCheckbox($"小怪按 Boss##{idPrefix}_small_as_boss", ref config.DebugRecordSmallHostileNpcAsBoss);
+        });
+
+        ImGui.TableSetColumnIndex(1);
+        DrawDebugCombatRecordToggleGroup("友方", () =>
+        {
+            DrawDebugCombatRecordFriendlyCheckbox($"标记##{idPrefix}_friendly_marker", ref config.DebugRecordPartyMarker, ref config.DebugRecordSelfMarker);
+            DrawDebugCombatRecordFriendlyCheckbox($"技能##{idPrefix}_friendly_action", ref config.DebugRecordPartyAction, ref config.DebugRecordSelfAction);
+            DrawDebugCombatRecordFriendlyCheckbox($"BUFF##{idPrefix}_friendly_buff", ref config.DebugRecordPartyBuff, ref config.DebugRecordSelfBuff);
+            DrawDebugCombatRecordFriendlyCheckbox($"debuff##{idPrefix}_friendly_debuff", ref config.DebugRecordPartyDebuff, ref config.DebugRecordSelfDebuff);
+        });
+
+        ImGui.EndTable();
+    }
+
+    private static void DrawDebugCombatRecordToggleGroup(string title, Action drawContent)
+    {
+        ImGui.TextDisabled(title);
+        drawContent();
+    }
+
+    private void DrawDebugCombatRecordCheckbox(string label, ref bool value)
+    {
+        var current = value;
+        if (ImGui.Checkbox(label, ref current))
+        {
+            value = current;
+            config.Save();
+        }
+    }
+
+    private void DrawDebugCombatRecordFriendlyCheckbox(string label, ref bool partyValue, ref bool selfValue)
+    {
+        var current = partyValue || selfValue;
+        if (!ImGui.Checkbox(label, ref current))
+            return;
+
+        partyValue = current;
+        selfValue = current;
+        config.Save();
+    }
+
+    private void DrawDebugRecordPresetButtons(string idPrefix)
+    {
+        if (ImGui.SmallButton($"全开##{idPrefix}_debug_record_all_on"))
+            SetAllDebugRecordToggles(true);
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton($"全关##{idPrefix}_debug_record_all_off"))
+            SetAllDebugRecordToggles(false);
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton($"默认##{idPrefix}_debug_record_default"))
+            ResetDebugRecordTogglesToDefault();
+
+        ImGui.SameLine();
+        DrawHelpMarker("默认：除“小怪按 Boss”外，其他 debug 记录项全部开启。详细开关默认收起，避免设置卡片被拉得太长。");
+    }
+
+    private string BuildDebugRecordToggleSummary()
+    {
+        var enabledCount = CountEnabledDebugRecordToggles();
+        return enabledCount switch
+        {
+            0 => "全部关闭",
+            DebugRecordToggleCount => "全部开启",
+            _ => $"已开 {enabledCount}/{DebugRecordToggleCount}",
+        };
+    }
+
+    private int CountEnabledDebugRecordToggles()
+    {
+        var count = 0;
+        if (config.DebugRecordBossAutoAttack) count++;
+        if (config.DebugRecordBossBuff) count++;
+        if (config.DebugRecordBossAction) count++;
+        if (config.DebugRecordBossCast) count++;
+        if (config.DebugRecordSmallHostileNpcAsBoss) count++;
+        if (config.DebugRecordPartyMarker || config.DebugRecordSelfMarker) count++;
+        if (config.DebugRecordPartyAction || config.DebugRecordSelfAction) count++;
+        if (config.DebugRecordPartyBuff || config.DebugRecordSelfBuff) count++;
+        if (config.DebugRecordPartyDebuff || config.DebugRecordSelfDebuff) count++;
+        return count;
+    }
+
+    private void SetAllDebugRecordToggles(bool enabled)
+    {
+        config.DebugRecordBossAutoAttack = enabled;
+        config.DebugRecordBossBuff = enabled;
+        config.DebugRecordBossAction = enabled;
+        config.DebugRecordBossCast = enabled;
+        config.DebugRecordSmallHostileNpcAsBoss = enabled;
+        config.DebugRecordPartyMarker = enabled;
+        config.DebugRecordPartyAction = enabled;
+        config.DebugRecordPartyBuff = enabled;
+        config.DebugRecordPartyDebuff = enabled;
+        config.DebugRecordSelfMarker = enabled;
+        config.DebugRecordSelfAction = enabled;
+        config.DebugRecordSelfBuff = enabled;
+        config.DebugRecordSelfDebuff = enabled;
+        config.Save();
+    }
+
+    private void ResetDebugRecordTogglesToDefault()
+    {
+        config.DebugRecordBossAutoAttack = true;
+        config.DebugRecordBossBuff = true;
+        config.DebugRecordBossAction = true;
+        config.DebugRecordBossCast = true;
+        config.DebugRecordSmallHostileNpcAsBoss = false;
+        config.DebugRecordPartyMarker = true;
+        config.DebugRecordPartyAction = true;
+        config.DebugRecordPartyBuff = true;
+        config.DebugRecordPartyDebuff = true;
+        config.DebugRecordSelfMarker = true;
+        config.DebugRecordSelfAction = true;
+        config.DebugRecordSelfBuff = true;
+        config.DebugRecordSelfDebuff = true;
+        config.Save();
     }
 
     private string GetFloatingStatsButtonLabel()
@@ -1581,6 +1788,218 @@ internal sealed class SettingsWindow : Window
         {
             ImGui.TextDisabled("默认先收起规则说明；需要核对 NPC 纳入规则时再展开。");
         }
+    }
+
+    private void DrawFriendlyNpcNameListSection()
+    {
+        DrawCurrentPartyMemberList();
+    }
+
+    private void DrawCurrentPartyMemberList()
+    {
+        var members = statsService.GetCurrentPartyMemberDisplayInfos();
+        if (!ImGui.CollapsingHeader($"当前队伍成员（{members.Count}）###current_party_member_names", ImGuiTreeNodeFlags.DefaultOpen))
+        {
+            ImGui.TextDisabled("当前队伍成员默认展开；收起后这里只显示人数。");
+            return;
+        }
+
+        if (members.Count == 0)
+        {
+            ImGui.TextDisabled("当前没有可显示的队伍成员。");
+            return;
+        }
+
+        const ImGuiTableFlags tableFlags =
+            ImGuiTableFlags.RowBg
+            | ImGuiTableFlags.BordersInnerH
+            | ImGuiTableFlags.SizingStretchProp
+            | ImGuiTableFlags.NoSavedSettings;
+
+        if (!ImGui.BeginTable("##current_party_member_name_table", 5, tableFlags))
+            return;
+
+        ImGui.TableSetupColumn("名字");
+        ImGui.TableSetupColumn("职业", ImGuiTableColumnFlags.WidthFixed, 78f);
+        ImGui.TableSetupColumn("类型", ImGuiTableColumnFlags.WidthFixed, 78f);
+        ImGui.TableSetupColumn("生命", ImGuiTableColumnFlags.WidthFixed, 96f);
+        ImGui.TableSetupColumn("操作", ImGuiTableColumnFlags.WidthFixed, 64f);
+        ImGui.TableHeadersRow();
+
+        for (var index = 0; index < members.Count; index++)
+        {
+            var member = members[index];
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted(member.Name);
+
+            ImGui.TableSetColumnIndex(1);
+            ImGui.TextUnformatted(member.JobName);
+
+            ImGui.TableSetColumnIndex(2);
+            ImGui.TextUnformatted(member.KindName);
+
+            ImGui.TableSetColumnIndex(3);
+            ImGui.TextUnformatted(member.MaxHp > 0 ? $"{member.CurrentHp}/{member.MaxHp}" : "--");
+
+            ImGui.TableSetColumnIndex(4);
+            if (ImGui.SmallButton($"填入##fill_custom_friendly_npc_from_party_{index}"))
+            {
+                customFriendlyNpcNameInput = member.Name;
+                customFriendlyNpcStatusText = $"已填入当前队伍成员名字：“{member.Name}”。";
+            }
+        }
+
+        ImGui.EndTable();
+    }
+
+    private void AddCustomFriendlyNpcNameFromInput()
+    {
+        var rawName = customFriendlyNpcNameInput;
+        var usedCurrentTarget = false;
+        if (string.IsNullOrWhiteSpace(rawName))
+        {
+            rawName = DalamudApi.GetCurrentTargetName();
+            usedCurrentTarget = !string.IsNullOrWhiteSpace(rawName);
+            if (usedCurrentTarget)
+                customFriendlyNpcNameInput = rawName!;
+        }
+
+        var normalizedName = PluginConfiguration.NormalizeFriendlyNpcNameForCatalog(rawName);
+        if (string.IsNullOrWhiteSpace(normalizedName))
+        {
+            customFriendlyNpcStatusText = "请输入 NPC 名字，或先选中一个目标后再点“添加”。";
+            return;
+        }
+
+        if (normalizedName.EndsWith("的幻体", StringComparison.Ordinal))
+        {
+            customFriendlyNpcStatusText = $"“{normalizedName}”已被“的幻体”规则自动识别，不需要加入自定义名单。";
+            customFriendlyNpcNameInput = string.Empty;
+            return;
+        }
+
+        if (LocalStatsService.IsBuiltInFriendlyNpcName(normalizedName))
+        {
+            customFriendlyNpcStatusText = $"“{normalizedName}”已经在内置名单中。";
+            customFriendlyNpcNameInput = string.Empty;
+            return;
+        }
+
+        config.CustomFriendlyNpcNames ??= new List<string>();
+        config.NormalizeCustomFriendlyNpcNames();
+        foreach (var existingName in config.CustomFriendlyNpcNames)
+        {
+            if (!string.Equals(existingName, normalizedName, StringComparison.Ordinal))
+                continue;
+
+            customFriendlyNpcStatusText = $"“{normalizedName}”已经在自定义名单中。";
+            customFriendlyNpcNameInput = string.Empty;
+            return;
+        }
+
+        config.CustomFriendlyNpcNames.Add(normalizedName);
+        config.NormalizeCustomFriendlyNpcNames();
+        config.Save();
+        customFriendlyNpcNameInput = string.Empty;
+        customFriendlyNpcStatusText = usedCurrentTarget
+            ? $"已把当前目标加入自定义 NPC 队友名单：“{normalizedName}”。"
+            : $"已加入自定义 NPC 队友名单：“{normalizedName}”。";
+    }
+
+    private void DrawCustomFriendlyNpcNameTable()
+    {
+        config.CustomFriendlyNpcNames ??= new List<string>();
+        if (config.CustomFriendlyNpcNames.Count == 0)
+        {
+            ImGui.TextDisabled("暂无自定义 NPC 名字。遇到漏识别的剧情/任务友方 NPC 时，把名字填到上方添加即可。");
+            return;
+        }
+
+        var removeIndex = -1;
+        const ImGuiTableFlags tableFlags =
+            ImGuiTableFlags.RowBg
+            | ImGuiTableFlags.BordersInnerH
+            | ImGuiTableFlags.SizingStretchProp
+            | ImGuiTableFlags.NoSavedSettings;
+
+        if (ImGui.BeginTable("##custom_friendly_npc_name_table", 2, tableFlags))
+        {
+            ImGui.TableSetupColumn("名字");
+            ImGui.TableSetupColumn("操作", ImGuiTableColumnFlags.WidthFixed, 72f);
+            ImGui.TableHeadersRow();
+
+            for (var index = 0; index < config.CustomFriendlyNpcNames.Count; index++)
+            {
+                ImGui.TableNextRow();
+                ImGui.TableSetColumnIndex(0);
+                ImGui.TextUnformatted(config.CustomFriendlyNpcNames[index]);
+
+                ImGui.TableSetColumnIndex(1);
+                if (ImGui.SmallButton($"删除##remove_custom_friendly_npc_name_{index}"))
+                    removeIndex = index;
+            }
+
+            ImGui.EndTable();
+        }
+
+        if (removeIndex >= 0 && removeIndex < config.CustomFriendlyNpcNames.Count)
+        {
+            var removedName = config.CustomFriendlyNpcNames[removeIndex];
+            config.CustomFriendlyNpcNames.RemoveAt(removeIndex);
+            config.NormalizeCustomFriendlyNpcNames();
+            config.Save();
+            customFriendlyNpcStatusText = $"已删除自定义 NPC 名字：“{removedName}”。";
+        }
+
+        if (ImGui.Button("复制自定义名单##copy_custom_friendly_npc_names"))
+        {
+            ImGui.SetClipboardText(string.Join(Environment.NewLine, config.CustomFriendlyNpcNames));
+            customFriendlyNpcStatusText = "已复制自定义名单。";
+        }
+
+        ImGui.SameLine();
+        if (ImGui.Button("清空自定义名单##clear_custom_friendly_npc_names"))
+        {
+            config.CustomFriendlyNpcNames.Clear();
+            config.Save();
+            customFriendlyNpcStatusText = "已清空自定义 NPC 队友名单。";
+        }
+    }
+
+    private void DrawBuiltInFriendlyNpcNameTable()
+    {
+        if (ImGui.Button("复制内置名单##copy_builtin_friendly_npc_names"))
+        {
+            ImGui.SetClipboardText(string.Join(Environment.NewLine, LocalStatsService.BuiltInFriendlyNpcNames));
+            customFriendlyNpcStatusText = "已复制内置名单。";
+        }
+
+        const ImGuiTableFlags tableFlags =
+            ImGuiTableFlags.RowBg
+            | ImGuiTableFlags.BordersInnerH
+            | ImGuiTableFlags.SizingStretchProp
+            | ImGuiTableFlags.NoSavedSettings;
+
+        if (!ImGui.BeginTable("##builtin_friendly_npc_name_table", 3, tableFlags))
+            return;
+
+        ImGui.TableSetupColumn("内置名字");
+        ImGui.TableSetupColumn("内置名字");
+        ImGui.TableSetupColumn("内置名字");
+
+        var names = LocalStatsService.BuiltInFriendlyNpcNames;
+        for (var index = 0; index < names.Count; index++)
+        {
+            if (index % 3 == 0)
+                ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(index % 3);
+            ImGui.TextUnformatted(names[index]);
+        }
+
+        ImGui.EndTable();
     }
 
     private static void DrawSemanticRow(string setting, string dps, string hps, string taken)

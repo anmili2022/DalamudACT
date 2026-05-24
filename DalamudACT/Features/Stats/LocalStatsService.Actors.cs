@@ -840,6 +840,16 @@ internal sealed partial class LocalStatsService
         PronounModule* pronounModule,
         int index)
     {
+        _ = pronounModule;
+        _ = index;
+
+        // FFXIVClientStructs 生成的 ResolvePlaceholder 函数指针签名在本地 SDK 与
+        // GitHub Actions 使用的 Dalamud CN SDK 间不一致（4 参数 / 5 参数）。
+        // 为避免发布构建失败，这里不再直接调用该函数指针，队伍读取继续依赖
+        // AgentHUD、Dalamud PartyList、BuddyList 和 ObjectTable 兜底。
+        return null;
+
+#if false
         byte* placeholder = stackalloc byte[4];
         placeholder[0] = (byte)'<';
         placeholder[1] = (byte)('0' + index);
@@ -850,6 +860,7 @@ internal sealed partial class LocalStatsService
         // 不同 Dalamud / FFXIVClientStructs 运行时里这个便捷重载可能不存在，会触发 MissingMethodException。
         // 这里直接走生成器暴露的原生成员函数指针，与 AE 的底层读取路径等价，但避开字符串重载版本差异。
         return PronounModule.MemberFunctionPointers.ResolvePlaceholder(pronounModule, placeholder, 0, 0);
+#endif
     }
 
     private unsafe void AddNativePartyMemberToLocalPartyHelper(

@@ -13,35 +13,41 @@ internal sealed class PluginUI : IDisposable
     private readonly FloatingStatsWindow floatingStatsWindow;
     private readonly CombatTimelineWindow combatTimelineWindow;
     private readonly DebugCombatLogWindow debugCombatLogWindow;
+    private readonly PartyMonitorWindow partyMonitorWindow;
     private bool windowDrawFaulted;
 
-    public PluginUI(PluginConfiguration config, LocalStatsService statsService)
+    public PluginUI(PluginConfiguration config, LocalStatsService statsService, PartyMonitorService monitorService)
     {
         this.config = config;
 
         mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
-        settingsWindow = new SettingsWindow(config, statsService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
+        settingsWindow = new SettingsWindow(config, statsService, monitorService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
         debugCombatLogWindow = new DebugCombatLogWindow(config, statsService);
+        partyMonitorWindow = new PartyMonitorWindow(config, monitorService);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);
         AddWindow(windowSystem, floatingStatsWindow);
         AddWindow(windowSystem, combatTimelineWindow);
         AddWindow(windowSystem, debugCombatLogWindow);
+        AddWindow(windowSystem, partyMonitorWindow);
 
         mainWindow.IsOpen = false;
         settingsWindow.IsOpen = false;
         floatingStatsWindow.IsOpen = config.ShowStatsPanel;
         combatTimelineWindow.IsOpen = false;
         debugCombatLogWindow.IsOpen = false;
+        partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
     }
 
     public void Draw()
     {
         if (floatingStatsWindow.IsOpen != config.ShowStatsPanel)
             floatingStatsWindow.IsOpen = config.ShowStatsPanel;
+
+        SyncPartyMonitorVisibility();
 
         try
         {
@@ -65,10 +71,26 @@ internal sealed class PluginUI : IDisposable
         }
     }
 
+    private void SyncPartyMonitorVisibility()
+    {
+        if (partyMonitorWindow.IsOpen != config.PartyMonitor.ShowPartyMonitorWindow)
+        {
+            partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
+        }
+    }
+
     public void ToggleSettingsWindow()
         => settingsWindow.IsOpen = !settingsWindow.IsOpen;
 
     public void OpenMainWindow() => mainWindow.IsOpen = true;
+
+    public void TogglePartyMonitorWindow()
+    {
+        var nextState = !partyMonitorWindow.IsOpen;
+        partyMonitorWindow.IsOpen = nextState;
+        config.PartyMonitor.ShowPartyMonitorWindow = nextState;
+        config.Save();
+    }
 
     public void Dispose() => windowSystem.RemoveAllWindows();
 

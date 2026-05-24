@@ -4,6 +4,7 @@ using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
 
+
 namespace DalamudACT;
 
 /// <summary>
@@ -19,6 +20,7 @@ internal sealed class SettingsWindow : Window
     private const int DebugRecordToggleCount = 9;
     private readonly PluginConfiguration config;
     private readonly LocalStatsService statsService;
+    private readonly PartyMonitorService? monitorService;
     private readonly Action openMainWindow;
     private readonly Action toggleFloatingStatsPanel;
     private readonly Action openCombatTimelineWindow;
@@ -28,10 +30,17 @@ internal sealed class SettingsWindow : Window
     private string floatingStyleTransferStatusText = string.Empty;
     private string customFriendlyNpcNameInput = string.Empty;
     private string customFriendlyNpcStatusText = string.Empty;
+    private readonly Dictionary<uint, string> customSkillActionIdInputs = new();
+    private readonly Dictionary<uint, string> customSkillNameInputs = new();
+    private readonly Dictionary<uint, string> customSkillCdInputs = new();
+    private readonly Dictionary<uint, bool> customSkillIsMit = new();
+    private uint customSkillSelectedJobId;
+    private string? customSkillSelectedJobName;
 
     public SettingsWindow(
         PluginConfiguration config,
         LocalStatsService statsService,
+        PartyMonitorService? monitorService,
         Action openMainWindow,
         Action toggleFloatingStatsPanel,
         Action openCombatTimelineWindow,
@@ -40,6 +49,7 @@ internal sealed class SettingsWindow : Window
     {
         this.config = config;
         this.statsService = statsService;
+        this.monitorService = monitorService;
         this.openMainWindow = openMainWindow;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
@@ -73,24 +83,21 @@ internal sealed class SettingsWindow : Window
         ImGui.Dummy(new Vector2(0f, 2f));
 
         DrawWindowSection();
-        DrawCombatSection();
-        DrawVisibleTabsSection();
-        DrawColumnsSection();
-        DrawBarColorsSection();
-        DrawThemePaletteSection();
+        DrawFloatingPanelSection();
+        DrawPartyMonitorSection();
         DrawMaintenanceSection();
     }
 
     private void DrawWindowSection()
     {
-        if (!ImGui.CollapsingHeader("窗口设置", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!DrawFirstLevelHeader("窗口设置", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
         DrawSettingCard(
             "##window_settings_card",
             "窗口与悬浮面板",
-            "统一控制主窗口透明度、悬浮统计面板透明度与悬浮面板状态。",
-            6.4f,
+            "统一控制主窗口透明度、悬浮统计面板透明度、队友监控窗口透明度与锁定状态。",
+            10f,
             () =>
             {
                 var opacity = config.WindowOpacity;
@@ -116,14 +123,57 @@ internal sealed class SettingsWindow : Window
                 }
 
                 var lockFloatingStatsWindow = config.LockFloatingStatsWindow;
-                if (ImGui.Checkbox("锁定悬浮窗口", ref lockFloatingStatsWindow))
+                if (ImGui.Checkbox("锁定悬浮DPS窗口", ref lockFloatingStatsWindow))
                 {
                     config.LockFloatingStatsWindow = lockFloatingStatsWindow;
                     config.Save();
                 }
 
                 DrawCompactHelp("锁定后不可拖动或缩放。", "启用后，悬浮窗口的位置和大小将无法手动修改。");
+
+                        var enableParty = config.PartyMonitor.EnablePartyMonitor;
+                if (ImGui.Checkbox("启用队友监控", ref enableParty))
+                {
+                    config.PartyMonitor.EnablePartyMonitor = enableParty;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                var showParty = config.PartyMonitor.ShowPartyMonitorWindow;
+                if (ImGui.Checkbox("显示队友监控窗口", ref showParty))
+                {
+                    config.PartyMonitor.ShowPartyMonitorWindow = showParty;
+                    config.Save();
+                }
+
+                var partyOpacity = config.PartyMonitor.PartyMonitorOpacity;
+                if (ImGui.SliderFloat("队友监控窗口透明度", ref partyOpacity, 0f, 1f))
+                {
+                    config.PartyMonitor.PartyMonitorOpacity = partyOpacity;
+                    config.Save();
+                }
+
+                var lockPartyWindow = config.PartyMonitor.LockPartyMonitorWindow;
+                if (ImGui.Checkbox("锁定队友监控窗口", ref lockPartyWindow))
+                {
+                    config.PartyMonitor.LockPartyMonitorWindow = lockPartyWindow;
+                    config.Save();
+                }
             });
+    }
+
+    private void DrawFloatingPanelSection()
+    {
+        if (!DrawFirstLevelHeader("悬浮DPS统计面板"))
+            return;
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        DrawCombatSection();
+        DrawVisibleTabsSection();
+        DrawColumnsSection();
+        DrawBarColorsSection();
+        DrawThemePaletteSection();
     }
 
     private void DrawCombatSection()
@@ -388,9 +438,338 @@ internal sealed class SettingsWindow : Window
             });
     }
 
+    private void DrawPartyMonitorSection()
+    {
+        if (!DrawFirstLevelHeader("队友监控"))
+            return;
+
+        var pm = config.PartyMonitor;
+
+        if (!pm.EnablePartyMonitor)
+        {
+            ImGui.TextDisabled("请在「窗口设置」中启用队友监控。");
+            return;
+        }
+
+        DrawSettingCard(
+            "##party_monitor_modules_card",
+            "监控模块",
+            "选择你要监控的模块：食物、减伤技能、团辅技能。",
+            5.2f,
+            () =>
+            {
+                var monitorFood = pm.MonitorFood;
+                if (ImGui.Checkbox("监控食物", ref monitorFood))
+                {
+                    pm.MonitorFood = monitorFood;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                var monitorSkills = pm.MonitorSkills;
+                if (ImGui.Checkbox("监控技能", ref monitorSkills))
+                {
+                    pm.MonitorSkills = monitorSkills;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                var anonymousMode = pm.AnonymousMode;
+                if (ImGui.Checkbox("匿名模式", ref anonymousMode))
+                {
+                    pm.AnonymousMode = anonymousMode;
+                    config.Save();
+                }
+            });
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        if (!pm.EnablePartyMonitor)
+            return;
+
+        DrawPartyMonitorStyleSettings(pm);
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        if (pm.MonitorSkills)
+            DrawPartyMonitorJobSkillSettings(pm);
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+        DrawCustomSkillSection(pm);
+
+        DrawCompactHelp("技能 ID 需要与实际游戏数据核对", "部分技能 ID 可能与当前版本不一致，可在运行时通过插件日志确认。");
+    }
+
+    private void DrawPartyMonitorStyleSettings(PartyMonitorConfig pm)
+    {
+        DrawSettingCard(
+            "##party_monitor_style_card",
+            "样式",
+            "调整队友监控悬浮窗的图标、背景和起效高亮显示。",
+            8.2f,
+            () =>
+            {
+                var iconSize = pm.IconSize;
+                if (ImGui.SliderFloat("图标大小", ref iconSize, 20f, 48f, "%.0f"))
+                {
+                    pm.IconSize = iconSize;
+                    config.Save();
+                }
+
+                var countdownScale = pm.CountdownTextScale;
+                if (ImGui.SliderFloat("CD倒计时数字大小", ref countdownScale, 0.6f, 2f, "%.2f"))
+                {
+                    pm.CountdownTextScale = countdownScale;
+                    config.Save();
+                }
+
+                var enhancedActive = pm.EnhancedActiveStyle;
+                if (ImGui.Checkbox("启用起效增强样式", ref enhancedActive))
+                {
+                    pm.EnhancedActiveStyle = enhancedActive;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                var hideSkillsOnCooldown = pm.HideSkillsOnCooldown;
+                if (ImGui.Checkbox("CD中技能隐藏", ref hideSkillsOnCooldown))
+                {
+                    pm.HideSkillsOnCooldown = hideSkillsOnCooldown;
+                    config.Save();
+                }
+
+                var mergeSkillGroups = pm.MergeSkillGroups;
+                if (ImGui.Checkbox("团辅减伤合并", ref mergeSkillGroups))
+                {
+                    pm.MergeSkillGroups = mergeSkillGroups;
+                    config.Save();
+                }
+
+                var glowStrength = pm.ActiveGlowStrength;
+                if (ImGui.SliderFloat("起效增强强度", ref glowStrength, 0f, 2f, "%.2f"))
+                {
+                    pm.ActiveGlowStrength = glowStrength;
+                    config.Save();
+                }
+
+                var bg = pm.BackgroundColor;
+                if (ImGui.ColorEdit4("背景默认颜色", ref bg))
+                {
+                    pm.BackgroundColor = bg;
+                    config.Save();
+                }
+            });
+    }
+
+    private void DrawPartyMonitorJobSkillSettings(PartyMonitorConfig pm)
+    {
+        if (!ImGui.CollapsingHeader("按职业选择监控技能"))
+            return;
+
+        DrawSettingCard(
+            "##party_monitor_job_skills_card",
+            "职业技能列表",
+            "展开各职业，勾选你想在监控窗口内显示的减伤和团辅技能。",
+            16f,
+            () =>
+            {
+                var monitorJobIds = new uint[]
+                {
+                    19, 21, 32, 37,
+                    24, 28, 33, 40,
+                    20, 22, 30, 34, 39, 41,
+                    23, 31, 38,
+                    25, 27, 35, 42,
+                };
+
+                for (var jobIndex = 0; jobIndex < monitorJobIds.Length; jobIndex++)
+                {
+                    var jobId = monitorJobIds[jobIndex];
+                    var jobName = PartyMonitorWindow.GetJobName(jobId);
+                    var jobConfig = pm.GetOrCreateJobConfig(jobId);
+                    var skills = PartySkillCatalog.GetSkillsForJob(jobId, jobConfig);
+                    if (skills.Count == 0)
+                        continue;
+
+                    if (!ImGui.CollapsingHeader($"{jobIndex + 1:00}/{monitorJobIds.Length:00} {jobName}###job_skills_{jobId}"))
+                        continue;
+
+                    for (var i = 0; i < skills.Count; i++)
+                    {
+                        var skill = skills[i];
+                        var enabled = skill.Category == SkillCategory.Mitigation
+                            ? jobConfig.EnabledMitigationActionIds.Contains(skill.ActionId)
+                            : jobConfig.EnabledRaidBuffActionIds.Contains(skill.ActionId);
+
+                        if (i % 3 != 0)
+                            ImGui.SameLine();
+
+                        var icon = KamiIconLoader.GetIcon(skill.ActionId);
+                        if (icon != default)
+                        {
+                            ImGui.Image(icon, new Vector2(22f, 22f));
+                            ImGui.SameLine();
+                        }
+
+                        if (ImGui.Checkbox($"{skill.Name}", ref enabled))
+                        {
+                            if (skill.Category == SkillCategory.Mitigation)
+                            {
+                                if (enabled)
+                                    jobConfig.EnabledMitigationActionIds.Add(skill.ActionId);
+                                else
+                                    jobConfig.EnabledMitigationActionIds.Remove(skill.ActionId);
+                            }
+                            else
+                            {
+                                if (enabled)
+                                    jobConfig.EnabledRaidBuffActionIds.Add(skill.ActionId);
+                                else
+                                    jobConfig.EnabledRaidBuffActionIds.Remove(skill.ActionId);
+                            }
+                            config.Save();
+                        }
+                    }
+                }
+            });
+    }
+
+    private void DrawCustomSkillSection(PartyMonitorConfig pm)
+    {
+        const uint globalCustomKey = 0;
+
+        var actionIdStr = customSkillActionIdInputs.TryGetValue(globalCustomKey, out var aStr) ? aStr : string.Empty;
+        var skillName = customSkillNameInputs.TryGetValue(globalCustomKey, out var nStr) ? nStr : string.Empty;
+        var cdStr = customSkillCdInputs.TryGetValue(globalCustomKey, out var cStr) ? cStr : string.Empty;
+
+        ImGui.Separator();
+        ImGui.TextColored(new Vector4(0.6f, 0.8f, 1f, 1f), "添加自定义技能（当目录中缺少某个技能时使用）");
+
+        ImGui.TextDisabled("目标职业");
+        ImGui.SameLine();
+        var selectedJobLabel = customSkillSelectedJobName ?? "请选择";
+        ImGui.SetNextItemWidth(120f);
+        if (ImGui.BeginCombo($"##custom_skill_job_selector", selectedJobLabel))
+        {
+            foreach (var jobId in new uint[]
+            {
+                19, 21, 32, 37,
+                24, 28, 33, 40,
+                20, 22, 30, 34, 39, 41,
+                23, 31, 38,
+                25, 27, 35, 42,
+            })
+            {
+                var jobLabel = PartyMonitorWindow.GetJobName(jobId);
+                var isSelected = customSkillSelectedJobId == jobId;
+                if (ImGui.Selectable(jobLabel, isSelected))
+                {
+                    customSkillSelectedJobId = jobId;
+                    customSkillSelectedJobName = jobLabel;
+                }
+                if (isSelected)
+                    ImGui.SetItemDefaultFocus();
+            }
+            ImGui.EndCombo();
+        }
+
+        ImGui.SameLine(0f, 6f);
+        ImGui.TextDisabled("技能ID");
+        ImGui.SameLine(0f, 6f);
+        DrawHelpMarker("游戏内 Action 编号，可在 https://ff14.huijiwiki.com 对应职业页中找到。");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(80f);
+        if (ImGui.InputText($"##custom_action_id", ref actionIdStr, 16))
+            customSkillActionIdInputs[globalCustomKey] = actionIdStr;
+
+        ImGui.SameLine(0f, 8f);
+        ImGui.TextDisabled("技能名称");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(100f);
+        if (ImGui.InputText($"##custom_action_name", ref skillName, 32))
+            customSkillNameInputs[globalCustomKey] = skillName;
+
+        ImGui.SameLine(0f, 8f);
+        ImGui.TextDisabled("冷却(秒)");
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(50f);
+        if (ImGui.InputText($"##custom_action_cd", ref cdStr, 8))
+            customSkillCdInputs[globalCustomKey] = cdStr;
+
+        ImGui.SameLine(0f, 12f);
+        var isMit = customSkillIsMit.TryGetValue(globalCustomKey, out var mit) ? mit : true;
+        if (ImGui.RadioButton($"减伤##cat_mit", isMit))
+        {
+            isMit = true;
+            customSkillIsMit[globalCustomKey] = isMit;
+        }
+        ImGui.SameLine();
+        if (ImGui.RadioButton($"团辅##cat_buff", !isMit))
+        {
+            isMit = false;
+            customSkillIsMit[globalCustomKey] = isMit;
+        }
+
+        ImGui.SameLine();
+        if (ImGui.SmallButton($"添加##custom_add"))
+        {
+            if (customSkillSelectedJobId != 0
+                && uint.TryParse(actionIdStr, out var actId)
+                && !string.IsNullOrWhiteSpace(skillName)
+                && float.TryParse(cdStr, out var cd)
+                && cd > 0)
+            {
+                var jobConfig = pm.GetOrCreateJobConfig(customSkillSelectedJobId);
+                var category = isMit ? SkillCategory.Mitigation : SkillCategory.RaidBuff;
+                if (!jobConfig.CustomSkills.ContainsKey(actId))
+                {
+                    jobConfig.CustomSkills[actId] = new CustomSkillEntry(skillName, category, cd);
+                    if (category == SkillCategory.Mitigation)
+                        jobConfig.EnabledMitigationActionIds.Add(actId);
+                    else
+                        jobConfig.EnabledRaidBuffActionIds.Add(actId);
+                    monitorService?.InvalidateSkillsCache();
+                    config.Save();
+                }
+                customSkillActionIdInputs[globalCustomKey] = string.Empty;
+                customSkillNameInputs[globalCustomKey] = string.Empty;
+                customSkillCdInputs[globalCustomKey] = string.Empty;
+            }
+        }
+
+        var allCustomSkills = new List<(uint JobId, uint ActionId, CustomSkillEntry Entry)>();
+        foreach (var (jobId, jobConfig) in pm.JobConfigs)
+        {
+            foreach (var (actId, entry) in jobConfig.CustomSkills)
+                allCustomSkills.Add((jobId, actId, entry));
+        }
+
+        if (allCustomSkills.Count > 0)
+        {
+            ImGui.Dummy(new Vector2(0f, 2f));
+            ImGui.TextDisabled("已添加的自定义技能");
+            ImGui.Indent(8f);
+            foreach (var (jobId, actId, entry) in allCustomSkills)
+            {
+                var jobLabel = PartyMonitorWindow.GetJobName(jobId);
+                var label = $"[{jobLabel}] [{actId}] {entry.Name} ({entry.CooldownSeconds}s)";
+                if (ImGui.SmallButton($"删除##custom_del_{jobId}_{actId}"))
+                {
+                    var jc = pm.GetOrCreateJobConfig(jobId);
+                    jc.CustomSkills.Remove(actId);
+                    jc.EnabledMitigationActionIds.Remove(actId);
+                    jc.EnabledRaidBuffActionIds.Remove(actId);
+                    config.Save();
+                }
+                ImGui.SameLine();
+                ImGui.TextDisabled(label);
+            }
+            ImGui.Unindent(8f);
+        }
+    }
+
     private void DrawMaintenanceSection()
     {
-        if (!ImGui.CollapsingHeader("数据与状态", ImGuiTreeNodeFlags.DefaultOpen))
+        if (!DrawFirstLevelHeader("数据与状态", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
         DrawSettingCard(
@@ -906,9 +1285,137 @@ internal sealed class SettingsWindow : Window
             LogHelper.PrintWithModule("设置", "恢复默认", "已恢复插件默认配置，并重置统计页与历史页列宽记忆。");
         }
         ImGui.TableSetColumnIndex(1);
-        ImGui.TextDisabled("恢复配置默认值");
+        if (ImGui.Button("打印当前BUFF", new Vector2(-1f, 0f)))
+            DumpLocalPlayerBuffs();
 
         ImGui.EndTable();
+    }
+
+    private static void DumpLocalPlayerBuffs()
+    {
+        var localPlayer = DalamudApi.GetLocalPlayerBattleChara();
+        if (localPlayer == null)
+        {
+            LogHelper.PrintErrorWithModule("调试", "BUFF", "未读取到本地玩家对象，无法打印当前BUFF。请确认已登录且角色已加载。");
+            return;
+        }
+
+        var rawStatusList = localPlayer.GetType().GetProperty("StatusList")?.GetValue(localPlayer)
+                            ?? localPlayer.GetType().GetProperty("Statuses")?.GetValue(localPlayer);
+        if (rawStatusList == null)
+        {
+            LogHelper.PrintErrorWithModule("调试", "BUFF", "未读取到本地玩家 StatusList/Statuses。请检查当前 Dalamud API 版本。 ");
+            return;
+        }
+
+        var name = localPlayer.Name.TextValue?.Trim();
+        var actorId = unchecked((uint)(localPlayer.GameObjectId & uint.MaxValue));
+        if (actorId == 0)
+            actorId = localPlayer.EntityId;
+
+        LogHelper.PrintWithModule("调试", "BUFF", $"开始打印当前BUFF：name={name}，actorId=0x{actorId:X8}，job={localPlayer.ClassJob.RowId}。");
+
+        var printed = 0;
+        var length = ReadIntProperty(rawStatusList, "Length");
+        if (length <= 0)
+            length = ReadIntProperty(rawStatusList, "Count");
+
+        for (var i = 0; i < length; i++)
+        {
+            var status = ReadIndexedValue(rawStatusList, i);
+            if (status == null)
+                continue;
+
+            var statusId = ReadUIntProperty(status, "StatusId");
+            if (statusId == 0)
+                statusId = ReadUIntProperty(status, "Id");
+            if (statusId == 0)
+                continue;
+
+            printed++;
+            var statusName = "未知";
+            var category = 0u;
+            try
+            {
+                var gameDataRef = status.GetType().GetProperty("GameData")?.GetValue(status);
+                var gameData = gameDataRef?.GetType().GetProperty("Value")?.GetValue(gameDataRef);
+                statusName = gameData?.GetType().GetProperty("Name")?.GetValue(gameData)?.ToString() ?? statusName;
+                category = ReadUIntProperty(gameData!, "StatusCategory");
+            }
+            catch
+            {
+            }
+
+            LogHelper.PrintWithModule(
+                "调试",
+                "BUFF",
+                $"#{i:00} id={statusId} name={statusName} category={category} remaining={ReadFloatProperty(status, "RemainingTime"):0.0}s param={ReadProperty(status, "Param")} stacks={ReadProperty(status, "StackCount")} source=0x{ReadUIntProperty(status, "SourceId"):X8} actor=0x{ReadUIntProperty(status, "ActorId"):X8}.");
+        }
+
+        LogHelper.PrintWithModule("调试", "BUFF", $"当前BUFF打印完成，共 {printed} 个非空状态。食物通常应关注 id/category/remaining 字段。");
+    }
+
+    private static string ReadProperty(object instance, string propertyName)
+    {
+        try
+        {
+            return instance.GetType().GetProperty(propertyName)?.GetValue(instance)?.ToString() ?? "-";
+        }
+        catch
+        {
+            return "-";
+        }
+    }
+
+    private static object? ReadIndexedValue(object instance, int index)
+    {
+        try
+        {
+            return instance.GetType().GetProperty("Item")?.GetValue(instance, [index]);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static int ReadIntProperty(object instance, string propertyName)
+    {
+        try
+        {
+            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
+            return value == null ? 0 : Convert.ToInt32(value);
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    private static float ReadFloatProperty(object instance, string propertyName)
+    {
+        try
+        {
+            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
+            return value == null ? 0f : Convert.ToSingle(value);
+        }
+        catch
+        {
+            return 0f;
+        }
+    }
+
+    private static uint ReadUIntProperty(object instance, string propertyName)
+    {
+        try
+        {
+            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
+            return value == null ? 0 : Convert.ToUInt32(value);
+        }
+        catch
+        {
+            return 0;
+        }
     }
 
     private void DrawColumnWidthResetButtons()
@@ -2104,6 +2611,16 @@ internal sealed class SettingsWindow : Window
             FloatingStatsDisplayStyle.Minimal => "Minimal",
             _ => "Classic",
         };
+
+    private static bool DrawFirstLevelHeader(string label, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
+    {
+        ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.25f, 0.45f, 0.75f, 0.45f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(0.25f, 0.45f, 0.75f, 0.55f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(0.25f, 0.45f, 0.75f, 0.65f));
+        var result = ImGui.CollapsingHeader(label, flags);
+        ImGui.PopStyleColor(3);
+        return result;
+    }
 
     private void DrawToggle(string label, ref bool value)
     {

@@ -146,6 +146,8 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public bool DebugCombatLogShowPrimaryColumn = true;
     public bool DebugCombatLogShowMessageColumn = true;
 
+    public PartyMonitorConfig PartyMonitor = new();
+
     public bool ShowDpsTab = true;
     public bool ShowHpsTab = true;
     public bool ShowTakenTab = true;
@@ -684,12 +686,15 @@ public sealed class PluginConfiguration : IPluginConfiguration
         if (Version < 10)
             MigrateThemeBarColorsToSkylineDefaults();
 
+        if (Version < 59)
+            PartyMonitor.RemoveDefaultDisabledBuiltInSkills();
+
         SyncSharedColumnSettings();
         EnsureThemeBarColors();
         LogHelper.EnableDebugLog = EnableDebugLog;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 58);
+        Version = Math.Max(Version, 59);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();

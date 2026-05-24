@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 
@@ -29,6 +30,7 @@ public sealed class DalamudApi
     [PluginService] public static Dalamud.Plugin.Services.IChatGui ChatGui { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IPartyList PartyList { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IBuddyList BuddyList { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.ITextureProvider TextureProvider { get; private set; } = null!;
 
     public static uint GetTerritoryTypeId()
         => TryGetUInt32Property(ClientState, "TerritoryType", "TerritoryTypeId", "CurrentTerritoryType");
@@ -87,7 +89,11 @@ public sealed class DalamudApi
     {
         var localPlayer = GetLocalPlayerObject();
         var classJob = GetPropertyValue(localPlayer, "ClassJob");
-        return TryGetUInt32Property(classJob, "RowId");
+        var rowId = TryGetRowId(classJob);
+        if (rowId != 0)
+            return rowId;
+
+        return 0;
     }
 
     public static uint GetLocalPlayerMaxHp()
@@ -96,13 +102,37 @@ public sealed class DalamudApi
         return TryGetUInt32Property(localPlayer, "MaxHp");
     }
 
+    public static IBattleChara? GetLocalPlayerBattleChara()
+        => GetLocalPlayerObject() as IBattleChara;
+
+    public static bool TryGetLocalPlayerInfo(out uint actorId, out string name, out uint classJobId, out IBattleChara? battleChara)
+    {
+        battleChara = GetLocalPlayerBattleChara();
+        actorId = GetLocalPlayerActorId();
+        name = GetLocalPlayerName()?.Trim() ?? string.Empty;
+        classJobId = GetLocalPlayerClassJobId();
+
+        return actorId != 0 && !string.IsNullOrWhiteSpace(name) && classJobId != 0;
+    }
+
     private static object? GetLocalPlayerObject()
     {
         var objectTableLocalPlayer = GetPropertyValue(ObjectTable, "LocalPlayer");
         if (objectTableLocalPlayer != null)
             return objectTableLocalPlayer;
 
-        return GetPropertyValue(ClientState, "LocalPlayer");
+        return GetPropertyValue(ClientState, "Pc")
+               ?? GetPropertyValue(ClientState, "LocalPlayer");
+    }
+
+    private static uint TryGetRowId(object? rowRefOrSheetRow)
+    {
+        var direct = TryGetUInt32Property(rowRefOrSheetRow, "RowId");
+        if (direct != 0)
+            return direct;
+
+        var value = GetPropertyValue(rowRefOrSheetRow, "Value");
+        return TryGetUInt32Property(value, "RowId");
     }
 
     private static uint TryGetUInt32Property(object? instance, params string[] propertyNames)
@@ -130,7 +160,16 @@ public sealed class DalamudApi
     }
 
     private static object? GetPropertyValue(object? instance, string propertyName)
-        => instance?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(instance);
+    {
+        try
+        {
+            return instance?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(instance);
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     private static bool TryConvertToUInt32(object? value, out uint result)
     {

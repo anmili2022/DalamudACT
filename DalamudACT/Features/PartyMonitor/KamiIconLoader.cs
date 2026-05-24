@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
+
+namespace DalamudACT;
+
+public static class KamiIconLoader
+{
+    private static readonly Dictionary<uint, IDalamudTextureWrap?> IconCache = new();
+    private static readonly Dictionary<uint, uint> ActionIconCache = new();
+
+    public static unsafe ImTextureID GetIcon(uint actionId)
+    {
+        if (IconCache.TryGetValue(actionId, out var cached))
+            return cached != null ? cached.Handle : default;
+        if (actionId == 0)
+            return default;
+
+        var iconId = ResolveActionIconId(actionId);
+        if (iconId == 0 || iconId == 405)
+        {
+            IconCache[actionId] = null;
+            return default;
+        }
+
+        try
+        {
+            var folder = (iconId / 1000) * 1000;
+            var path = $"ui/icon/{folder:000000}/{iconId:000000}.tex";
+            var texFile = DalamudApi.GameData.GetFile<Lumina.Data.Files.TexFile>(path);
+            if (texFile != null)
+            {
+                var wrap = DalamudApi.TextureProvider.CreateFromTexFile(texFile);
+                if (wrap != null)
+                {
+                    IconCache[actionId] = wrap;
+                    return wrap.Handle;
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        IconCache[actionId] = null;
+        return default;
+    }
+
+    public static bool IsLoaded(uint actionId) => IconCache.ContainsKey(actionId);
+
+    public static void ClearCache()
+    {
+        foreach (var wrap in IconCache.Values)
+            wrap?.Dispose();
+        IconCache.Clear();
+        ActionIconCache.Clear();
+    }
+
+    private static uint ResolveActionIconId(uint actionId)
+    {
+        if (ActionIconCache.TryGetValue(actionId, out var cached))
+            return cached;
+
+        try
+        {
+            var sheet = DalamudApi.GameData.GetExcelSheet<Lumina.Excel.Sheets.Action>();
+            if (sheet != null && sheet.TryGetRow(actionId, out var row))
+            {
+                var iconId = row.Icon;
+                ActionIconCache[actionId] = iconId;
+                return iconId;
+            }
+        }
+        catch
+        {
+        }
+
+        ActionIconCache[actionId] = 0;
+        return 0;
+    }
+}

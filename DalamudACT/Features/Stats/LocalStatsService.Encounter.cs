@@ -74,6 +74,9 @@ internal sealed partial class LocalStatsService
         lock (gate)
         {
             var wasStarted = currentEncounter.Started;
+            if (!wasStarted)
+                return;
+
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
 
             var loggedSourceName = ResolveCombatTimelineSourceName(sourceId, timeUtc);

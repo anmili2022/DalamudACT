@@ -718,7 +718,9 @@ internal sealed partial class LocalStatsService
             yield return ally;
     }
 
-    private LocalPartyHelperSnapshot BuildLocalPartyHelperSnapshot()
+    public LocalPartyHelperSnapshot? LastSnapshot { get; private set; }
+
+    public LocalPartyHelperSnapshot BuildLocalPartyHelperSnapshot()
     {
         var helper = new LocalPartyHelperSnapshot();
         var seen = new HashSet<ulong>();
@@ -731,8 +733,6 @@ internal sealed partial class LocalStatsService
 
         foreach (var member in DalamudApi.PartyList)
         {
-            // PartyList / GameObject 仍保留作为公开 API 兜底；
-            // 剧情 / 信赖 NPC 队伍在部分场景下只有 <1>~<8> 占位符能完整解析。
             var battleChara = ResolvePartyMemberBattleChara(member);
             AddAllyToLocalPartyHelper(helper, battleChara, seen);
         }
@@ -748,14 +748,13 @@ internal sealed partial class LocalStatsService
             if (obj is not IBattleChara battleChara)
                 continue;
 
-            // Do not treat ObjectTable PartyMember flags as authoritative party membership here.
-            // In 24-man duties, alliance members may look friendly and cause out-of-party DoT attribution.
             if (!IsFriendlyTrackedBattleNpc(battleChara))
                 continue;
 
             AddAllyToLocalPartyHelper(helper, battleChara, seen);
         }
 
+        LastSnapshot = helper;
         return helper;
     }
 
@@ -1461,7 +1460,7 @@ internal sealed partial class LocalStatsService
         uint CurrentHp,
         uint MaxHp);
 
-    private sealed class LocalPartyHelperSnapshot
+    public sealed class LocalPartyHelperSnapshot
     {
         public List<IBattleChara> Party { get; } = new();
         public List<IBattleChara> CastableParty { get; } = new();

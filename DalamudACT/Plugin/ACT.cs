@@ -28,6 +28,7 @@ public sealed partial class ACT : IDalamudPlugin
 
     private readonly IDalamudPluginInterface pluginInterface;
     private readonly LocalStatsService statsService;
+    private readonly PartyMonitorService monitorService;
     private readonly PluginUI ui;
     private readonly ExcelSheet<TerritoryType> territorySheet;
     private readonly ExcelSheet<Action> actionSheet;
@@ -62,9 +63,10 @@ public sealed partial class ACT : IDalamudPlugin
         Configuration.Initialize(pluginInterface);
 
         statsService = new LocalStatsService(Configuration);
+        monitorService = new PartyMonitorService(Configuration, statsService);
         InstallHooks();
 
-        ui = new PluginUI(Configuration, statsService);
+        ui = new PluginUI(Configuration, statsService, monitorService);
         pluginInterface.UiBuilder.Draw += ui.Draw;
         pluginInterface.UiBuilder.OpenMainUi += ui.OpenMainWindow;
         pluginInterface.UiBuilder.OpenConfigUi += ui.ToggleSettingsWindow;
@@ -90,6 +92,7 @@ public sealed partial class ACT : IDalamudPlugin
             _ = framework;
             statsService.WarmOwnerCacheFromObjectTable();
             statsService.Update(GetPlaceName(), DalamudApi.Conditions.Any(ConditionFlag.InCombat));
+            monitorService.Update();
             frameworkUpdateFaulted = false;
         }
         catch (Exception ex)
@@ -519,7 +522,7 @@ public sealed partial class ACT : IDalamudPlugin
         var isKnownPlayerDotAction = PlayerDotCatalog.IsKnownPlayerDotAction(actionId);
 
         var hasTrackedParticipant = sourceCanResolveToTrackedActor;
-        var hasRelevantTrackedEffect = false;
+        var hasCombatStartingTrackedEffect = false;
         var anyTargetTracked = false;
         uint firstTargetId = 0;
         var debugTargetIds = new List<uint>(header->NumTargets);
@@ -591,7 +594,7 @@ public sealed partial class ACT : IDalamudPlugin
 
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            hasRelevantTrackedEffect = true;
+                            hasCombatStartingTrackedEffect = true;
                             if (targetIsTrackedActor)
                                 debugTotalDamageToTrackedTargets += amount;
                             statsService.RecordDamage(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), IsDirectHit(effect), nowUtc, zoneName);
@@ -626,7 +629,6 @@ public sealed partial class ACT : IDalamudPlugin
 
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            hasRelevantTrackedEffect = true;
                             statsService.RecordHeal(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), nowUtc, zoneName);
                         }
                         break;
@@ -634,7 +636,7 @@ public sealed partial class ACT : IDalamudPlugin
                     case LocalActionEffectType.Miss:
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            hasRelevantTrackedEffect = true;
+                            hasCombatStartingTrackedEffect = true;
                             statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, actionName, isMiss: true, nowUtc, zoneName);
                         }
                         break;
@@ -643,7 +645,7 @@ public sealed partial class ACT : IDalamudPlugin
                     case LocalActionEffectType.PartialInvulnerable:
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            hasRelevantTrackedEffect = true;
+                            hasCombatStartingTrackedEffect = true;
                             statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, actionName, isMiss: false, nowUtc, zoneName);
                         }
                         break;
@@ -651,10 +653,13 @@ public sealed partial class ACT : IDalamudPlugin
             }
         }
 
-        if (hasTrackedParticipant && (hasRelevantTrackedEffect || inCombatNow))
+        if (hasTrackedParticipant && (hasCombatStartingTrackedEffect || inCombatNow))
             statsService.RecordEncounterActivity(zoneName, nowUtc);
         else if (inCombatNow)
             DebugLogUntrackedCombatEvent(sourceId, sourceCharacterAddress, firstTargetId, sourceCanResolveToTrackedActor, anyTargetTracked, actionName);
+
+        if (sourceCanResolveToTrackedActor)
+            monitorService.RecordSkillUse(sourceActorId, actionId, nowUtc);
 
         statsService.RecordDebugBossAbility(
             NormalizeEventActorId(sourceId),

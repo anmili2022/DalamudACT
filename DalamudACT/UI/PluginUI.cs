@@ -25,7 +25,7 @@ internal sealed class PluginUI : IDisposable
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
         debugCombatLogWindow = new DebugCombatLogWindow(config, statsService);
-        partyMonitorWindow = new PartyMonitorWindow(config, monitorService);
+        partyMonitorWindow = new PartyMonitorWindow(config, monitorService, ToggleSettingsWindow);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);

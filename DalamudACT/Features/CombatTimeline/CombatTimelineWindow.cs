@@ -25,17 +25,11 @@ internal sealed class CombatTimelineWindow : Window
         All,
         Damage,
         Heal,
+        Status,
         Failure,
         Death,
         CombatBoundary,
     }
-
-    private const ImGuiTableFlags TimelineTableFlags =
-        ImGuiTableFlags.RowBg
-        | ImGuiTableFlags.BordersInnerH
-        | ImGuiTableFlags.SizingStretchProp
-        | ImGuiTableFlags.ScrollY
-        | ImGuiTableFlags.NoSavedSettings;
 
     private static readonly TimeSpan InlineFeedbackDuration = TimeSpan.FromSeconds(2.4);
 
@@ -53,6 +47,8 @@ internal sealed class CombatTimelineWindow : Window
     private int lastRenderedEntryCount = -1;
     private DateTime? lastInlineFeedbackAtUtc;
     private string inlineFeedbackText = "已复制";
+    private readonly HashSet<int> selectedTimelineIndices = new();
+    private int lastSelectedTimelineIndex = -1;
 
     public CombatTimelineWindow(PluginConfiguration config, LocalStatsService statsService)
         : base("战斗流水###CombatTimelineWindow")
@@ -116,7 +112,10 @@ internal sealed class CombatTimelineWindow : Window
         ImGui.SameLine();
         ImGui.Checkbox("自动滚动到最新事件", ref autoScroll);
 
-        ImGui.SameLine();
+        DrawInlineFeedback();
+
+        ImGui.Spacing();
+
         ImGui.BeginDisabled(filteredEntries.Count == 0);
         if (ImGui.Button("复制当前显示"))
         {
@@ -126,7 +125,26 @@ internal sealed class CombatTimelineWindow : Window
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
             ImGui.SetTooltip("复制当前筛选结果。");
 
-        ImGui.SameLine();
+        if (selectedTimelineIndices.Count > 0)
+        {
+            ImGui.SameLine();
+            if (ImGui.Button($"复制选中({selectedTimelineIndices.Count})"))
+            {
+                var text = BuildSelectedTimelineText(filteredEntries);
+                ImGui.SetClipboardText(text);
+                ShowInlineFeedback($"已复制 {selectedTimelineIndices.Count} 行");
+            }
+            if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled))
+                ImGui.SetTooltip("复制已选中的行。点击行可切换选中，Shift+点击可连续多选。");
+
+            ImGui.SameLine();
+            if (ImGui.Button("取消选中"))
+            {
+                selectedTimelineIndices.Clear();
+                lastSelectedTimelineIndex = -1;
+            }
+        }
+
         if (ImGui.Button("清空流水"))
         {
             statsService.ClearCombatTimeline();
@@ -134,9 +152,11 @@ internal sealed class CombatTimelineWindow : Window
         }
 
         ImGui.EndDisabled();
-        DrawInlineFeedback();
 
         ImGui.Spacing();
+        if (!ImGui.CollapsingHeader("保留与筛选###combat_timeline_tools"))
+            return;
+
         DrawRetentionControls();
 
         ImGui.Spacing();
@@ -154,7 +174,7 @@ internal sealed class CombatTimelineWindow : Window
         {
             lastRenderedEntryCount = 0;
             ImGui.TextDisabled(!config.CombatTimelineRecordingEnabled && !HasAnyActiveFilter()
-                ? "战斗流水记录已停止。勾选“开始记录”后才会写入新事件；关闭不会清空已有流水。"
+                ? "战斗流水记录已停止。勾选\"开始记录\"后才会写入新事件；关闭不会清空已有流水。"
                 : !HasAnyActiveFilter()
                 ? "暂无战斗流水。进入战斗后，这里会开始记录关键事件。"
                 : "当前筛选条件下暂无战斗流水。");
@@ -162,39 +182,73 @@ internal sealed class CombatTimelineWindow : Window
             return;
         }
 
-        if (ImGui.BeginTable("##combat_timeline_table", 2, TimelineTableFlags))
+        if (entries.Count != lastRenderedEntryCount)
         {
-            ImGui.TableSetupColumn("时间", ImGuiTableColumnFlags.WidthFixed, 86f);
-            ImGui.TableSetupColumn("内容", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.TableHeadersRow();
-
-            var shouldAutoScroll = autoScroll && entries.Count != lastRenderedEntryCount;
-
-            for (var index = 0; index < entries.Count; index++)
-            {
-                var entry = entries[index];
-                ImGui.TableNextRow();
-
-                ImGui.TableSetColumnIndex(0);
-                ImGui.TextDisabled(entry.TimestampLocal.ToString("HH:mm:ss"));
-
-                ImGui.TableSetColumnIndex(1);
-                ImGui.PushStyleColor(ImGuiCol.Text, GetEntryColor(entry.Kind));
-                ImGui.TextWrapped(entry.Message);
-                ImGui.PopStyleColor();
-
-                if (ImGui.IsItemHovered())
-                    ImGui.SetTooltip(entry.TimestampLocal.ToString("yyyy-MM-dd HH:mm:ss.fff"));
-
-                if (shouldAutoScroll && index == entries.Count - 1)
-                    ImGui.SetScrollHereY(1f);
-            }
-
-            lastRenderedEntryCount = entries.Count;
-            ImGui.EndTable();
+            selectedTimelineIndices.Clear();
+            lastSelectedTimelineIndex = -1;
         }
 
+        var shouldAutoScroll = autoScroll && entries.Count != lastRenderedEntryCount;
+        var shiftHeld = ImGui.IsKeyDown(ImGuiKey.ModShift);
+
+        for (var index = 0; index < entries.Count; index++)
+        {
+            var entry = entries[index];
+            var isSelected = selectedTimelineIndices.Contains(index);
+
+            ImGui.PushStyleColor(ImGuiCol.Text, GetEntryColor(entry.Kind));
+            if (isSelected)
+                ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.30f, 0.48f, 0.78f, 0.55f));
+            ImGui.PushID(index);
+
+            var line = $"[{entry.TimestampLocal:HH:mm:ss}] {entry.Message}";
+            if (ImGui.Selectable(line, isSelected))
+            {
+                if (shiftHeld && lastSelectedTimelineIndex >= 0)
+                {
+                    var start = Math.Min(lastSelectedTimelineIndex, index);
+                    var end = Math.Max(lastSelectedTimelineIndex, index);
+                    for (var i = start; i <= end; i++)
+                        selectedTimelineIndices.Add(i);
+                }
+                else
+                {
+                    if (isSelected)
+                        selectedTimelineIndices.Remove(index);
+                    else
+                        selectedTimelineIndices.Add(index);
+                    lastSelectedTimelineIndex = index;
+                }
+            }
+
+            ImGui.PopID();
+            if (isSelected)
+                ImGui.PopStyleColor();
+            ImGui.PopStyleColor();
+
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip(entry.TimestampLocal.ToString("yyyy-MM-dd HH:mm:ss.fff"));
+
+            if (shouldAutoScroll && index == entries.Count - 1)
+                ImGui.SetScrollHereY(1f);
+        }
+
+        lastRenderedEntryCount = entries.Count;
         ImGui.EndChild();
+    }
+
+    private string BuildSelectedTimelineText(IReadOnlyList<LocalStatsService.CombatTimelineEntry> entries)
+    {
+        var builder = new StringBuilder(selectedTimelineIndices.Count * 48);
+        var sortedIndices = selectedTimelineIndices.OrderBy(static i => i).ToList();
+        foreach (var index in sortedIndices)
+        {
+            if (index < 0 || index >= entries.Count)
+                continue;
+            var entry = entries[index];
+            builder.AppendLine($"{entry.TimestampLocal:yyyy-MM-dd HH:mm:ss.fff} {entry.Message}");
+        }
+        return builder.ToString().TrimEnd();
     }
 
     private void ShowInlineFeedback(string text)
@@ -218,6 +272,7 @@ internal sealed class CombatTimelineWindow : Window
         {
             LocalStatsService.CombatTimelineEntryKind.CombatStart => new Vector4(0.48f, 0.92f, 0.60f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Heal => new Vector4(0.40f, 0.92f, 0.72f, 1f),
+            LocalStatsService.CombatTimelineEntryKind.Status => new Vector4(0.68f, 0.82f, 1f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Failure => new Vector4(1f, 0.84f, 0.42f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Death => new Vector4(1f, 0.52f, 0.52f, 1f),
             LocalStatsService.CombatTimelineEntryKind.CombatEnd => new Vector4(0.98f, 0.76f, 0.45f, 1f),
@@ -474,6 +529,7 @@ internal sealed class CombatTimelineWindow : Window
         var hasTargetCampFilter = targetCampFilter != TimelineCampFilter.All;
         var hasKindFilter = kindFilter != TimelineKindFilter.All;
         var hasActionFilter = !string.IsNullOrWhiteSpace(actionText);
+        var hasContextFilter = hasActorFilter || hasActorCampFilter || hasTargetFilter || hasTargetCampFilter || hasActionFilter;
         if (!hasActorFilter && !hasActorCampFilter && !hasTargetFilter && !hasTargetCampFilter && !hasKindFilter && !hasActionFilter)
             return entries;
 
@@ -482,6 +538,12 @@ internal sealed class CombatTimelineWindow : Window
         {
             if (hasKindFilter && !MatchesKindFilter(entry, kindFilter))
                 continue;
+
+            if (hasContextFilter && IsCombatBoundaryEntry(entry))
+            {
+                filtered.Add(entry);
+                continue;
+            }
 
             if (hasActorFilter && !string.Equals(entry.ActorName, actorName, StringComparison.Ordinal))
                 continue;
@@ -503,6 +565,9 @@ internal sealed class CombatTimelineWindow : Window
 
         return filtered;
     }
+
+    private static bool IsCombatBoundaryEntry(LocalStatsService.CombatTimelineEntry entry)
+        => entry.Kind is LocalStatsService.CombatTimelineEntryKind.CombatStart or LocalStatsService.CombatTimelineEntryKind.CombatEnd;
 
     private static IReadOnlyList<string> BuildDistinctNameOptions(
         IReadOnlyList<LocalStatsService.CombatTimelineEntry> entries,
@@ -639,6 +704,7 @@ internal sealed class CombatTimelineWindow : Window
             TimelineKindFilter.All => true,
             TimelineKindFilter.Damage => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Damage,
             TimelineKindFilter.Heal => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Heal,
+            TimelineKindFilter.Status => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Status,
             TimelineKindFilter.Failure => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Failure,
             TimelineKindFilter.Death => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Death,
             TimelineKindFilter.CombatBoundary => entry.Kind is LocalStatsService.CombatTimelineEntryKind.CombatStart or LocalStatsService.CombatTimelineEntryKind.CombatEnd,
@@ -659,6 +725,7 @@ internal sealed class CombatTimelineWindow : Window
         {
             TimelineKindFilter.Damage => "伤害",
             TimelineKindFilter.Heal => "治疗",
+            TimelineKindFilter.Status => "状态",
             TimelineKindFilter.Failure => "未命中/抵抗",
             TimelineKindFilter.Death => "死亡",
             TimelineKindFilter.CombatBoundary => "进战/结算",

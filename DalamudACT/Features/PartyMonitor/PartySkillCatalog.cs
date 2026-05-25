@@ -172,7 +172,7 @@ internal static class PartySkillCatalog
         // 贤者
         Register(40, new(24311, "泛输血", SkillCategory.Mitigation, 120f, 10f, 24311));
         Register(40, new(24305, "输血", SkillCategory.Mitigation, 45f, 7f, 24305));
-        Register(40, new(24298, "坚角清汁", SkillCategory.Mitigation, 120f, 10f, 24298));
+        Register(40, new(24298, "坚角清汁", SkillCategory.Mitigation, 30f, 15f, 24298));
         Register(40, new(24302, "自生", SkillCategory.Mitigation, 60f, 15f, 24302));
         Register(40, new(24318, "魂灵风息", SkillCategory.Mitigation, 120f, 15f, 24318));
         Register(40, new(24301, "消化", SkillCategory.Mitigation, 30f, 0f, 24301));

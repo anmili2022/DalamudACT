@@ -17,6 +17,7 @@ internal sealed class PartyMonitorWindow : Window
     private const float PanelPaddingY = 7f;
     private const float JobColumnWidthNormal = 92f;
     private const float JobColumnWidthAnonymous = 42f;
+    private const float CollapsedPanelHeight = 34f;
     private const float CooldownRevealSeconds = 10f;
 
     private float JobColumnWidth => config.PartyMonitor.AnonymousMode ? JobColumnWidthAnonymous : JobColumnWidthNormal;
@@ -39,14 +40,20 @@ internal sealed class PartyMonitorWindow : Window
 
     private readonly PluginConfiguration config;
     private readonly PartyMonitorService monitorService;
+    private readonly Action toggleSettingsWindow;
+    private bool collapsed;
+    private bool restoreExpandedSize;
+    private Vector2 expandedWindowSize = new(PanelWidth, 260f);
 
     public PartyMonitorWindow(
         PluginConfiguration config,
-        PartyMonitorService monitorService)
+        PartyMonitorService monitorService,
+        Action toggleSettingsWindow)
         : base("###PartyMonitorPanel", BaseWindowFlags)
     {
         this.config = config;
         this.monitorService = monitorService;
+        this.toggleSettingsWindow = toggleSettingsWindow;
         Size = new Vector2(PanelWidth, 260f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
@@ -60,9 +67,18 @@ internal sealed class PartyMonitorWindow : Window
         else
             Flags = BaseWindowFlags;
 
+        ApplyCollapsedWindowSize();
+
         DrawPanelBackground();
+        HandleContextClick();
 
         ImGui.SetCursorPos(new Vector2(PanelPaddingX, PanelPaddingY));
+
+        if (collapsed)
+        {
+            DrawCollapsedHeader();
+            return;
+        }
 
         var members = monitorService.GetMemberStates();
 
@@ -88,6 +104,45 @@ internal sealed class PartyMonitorWindow : Window
     private static Vector4 WithAlpha(Vector4 color, float alpha)
         => new(color.X, color.Y, color.Z, alpha);
 
+    private void HandleContextClick()
+    {
+        if (config.PartyMonitor.LockPartyMonitorWindow)
+            return;
+
+        if (ImGui.IsWindowHovered(ImGuiHoveredFlags.RootAndChildWindows) && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+            toggleSettingsWindow();
+    }
+
+    private void ApplyCollapsedWindowSize()
+    {
+        if (collapsed)
+        {
+            ImGui.SetWindowSize(new Vector2(Math.Max(ImGui.GetWindowWidth(), 140f), CollapsedPanelHeight), ImGuiCond.Always);
+            return;
+        }
+
+        if (!restoreExpandedSize)
+            return;
+
+        ImGui.SetWindowSize(new Vector2(Math.Max(expandedWindowSize.X, 140f), Math.Max(expandedWindowSize.Y, 120f)), ImGuiCond.Always);
+        restoreExpandedSize = false;
+    }
+
+    private void ToggleCollapsed()
+    {
+        if (!collapsed)
+            expandedWindowSize = ImGui.GetWindowSize();
+
+        collapsed = !collapsed;
+        restoreExpandedSize = !collapsed;
+    }
+
+    private void DrawCollapsedHeader()
+    {
+        if (DrawGroupHeader("技能监控", MitigationColor, true))
+            ToggleCollapsed();
+    }
+
     private void DrawOverlayContent(IReadOnlyList<PartyMonitorService.PartyMemberState> members)
     {
         var raidBuffRows = config.PartyMonitor.MonitorRaidBuffs
@@ -100,7 +155,7 @@ internal sealed class PartyMonitorWindow : Window
         if (config.PartyMonitor.MonitorSkills)
         {
             if (config.PartyMonitor.MergeSkillGroups)
-                DrawSkillGroup("技能", BuildMergedRows(members, config.PartyMonitor), MitigationColor);
+                DrawSkillGroup("技能监控", BuildMergedRows(members, config.PartyMonitor), MitigationColor);
             else
             {
                 DrawSkillGroup("团辅", raidBuffRows, RaidBuffColor);
@@ -162,15 +217,19 @@ internal sealed class PartyMonitorWindow : Window
             return;
 
         var count = rows.Sum(r => r.Skills.Count(ShouldShowSkill));
-        DrawGroupHeader($"{title} ({count})", color);
+        if (DrawGroupHeader($"{title} ({count})", color, title == "技能监控"))
+            ToggleCollapsed();
         foreach (var row in rows)
             DrawSkillRow(row.Member, row.Skills);
         ImGui.Dummy(new Vector2(0f, 6f));
     }
 
-    private void DrawGroupHeader(string title, Vector4 color)
+    private bool DrawGroupHeader(string title, Vector4 color, bool collapsible = false)
     {
         DrawShadowText(title, color, true);
+        var clicked = collapsible && ImGui.IsItemClicked(ImGuiMouseButton.Left);
+        if (collapsible && ImGui.IsItemHovered())
+            ImGui.SetTooltip(collapsed ? "左键展开技能监控" : "左键折叠技能监控");
         var y = ImGui.GetCursorScreenPos().Y - 2f;
         var minX = ImGui.GetCursorScreenPos().X;
         var maxX = ImGui.GetWindowPos().X + ImGui.GetWindowWidth() - PanelPaddingX;
@@ -180,6 +239,7 @@ internal sealed class PartyMonitorWindow : Window
             ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, 0.62f)),
             1f);
         ImGui.Dummy(new Vector2(0f, 3f));
+        return clicked;
     }
 
     private void DrawSkillRow(

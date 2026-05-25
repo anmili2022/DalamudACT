@@ -13,6 +13,7 @@
 - [HANDOVER.md](HANDOVER.md)
 - [2026-05-24 NPC 队友识别交接](md/2026-05-24-npc-party-handoff.md)
 - [2026-05-25 队友监控交接](md/2026-05-25-party-monitor-handoff.md)
+- [2026-05-26 战斗流水与技能监控交接](md/2026-05-26-combat-timeline-party-monitor-handoff.md)
 
 ## 目录 / TOC
 

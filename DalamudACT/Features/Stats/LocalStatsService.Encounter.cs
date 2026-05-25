@@ -16,9 +16,12 @@ internal sealed partial class LocalStatsService
     private DateTime partyOutOfCombatSinceUtc;
     private DateTime enteredCombatWithoutDataSinceUtc;
     private DateTime lastNoDataCombatDiagnosticUtc;
+    private DateTime lastCombatTimelineStatusPollUtc;
     private int encounterFinalizedVersion;
     private bool latestInCombatHint;
     private bool suppressStaleDisplayUntilNextCombatStart;
+    private bool combatTimelineStatusRecorderPrimed;
+    private readonly HashSet<CombatTimelineStatusKey> observedCombatTimelineStatusKeys = new();
 
     public CombatDataWrapper? CurrentCombatData { get; private set; }
 
@@ -133,6 +136,9 @@ internal sealed partial class LocalStatsService
         lock (gate)
         {
             var wasStarted = currentEncounter.Started;
+            if (!wasStarted)
+                return;
+
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
 
             var loggedSourceName = ResolveCombatTimelineSourceName(sourceId, timeUtc);
@@ -281,6 +287,7 @@ internal sealed partial class LocalStatsService
             latestInCombatHint = inCombat;
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
             PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, inCombat);
+            PollCombatTimelineFriendlyStatusesLocked(nowUtc, inCombat);
             PollActivePlayerDots(nowUtc, inCombat);
             PollDebugCombatRecorderLocked(nowUtc, currentEncounter.ZoneName, inCombat);
             var allPartyMembersOutOfCombat = AreAllPartyMembersOutOfCombat(inCombat);
@@ -374,6 +381,79 @@ internal sealed partial class LocalStatsService
             partyMemberHpCache.Remove(actorId);
     }
 
+    private void PollCombatTimelineFriendlyStatusesLocked(DateTime nowUtc, bool inCombat)
+    {
+        if (!config.CombatTimelineRecordingEnabled || (!inCombat && !currentEncounter.Started))
+        {
+            observedCombatTimelineStatusKeys.Clear();
+            combatTimelineStatusRecorderPrimed = false;
+            lastCombatTimelineStatusPollUtc = default;
+            return;
+        }
+
+        if (nowUtc - lastCombatTimelineStatusPollUtc < TimeSpan.FromMilliseconds(100))
+            return;
+
+        lastCombatTimelineStatusPollUtc = nowUtc;
+
+        var seenStatusKeys = new HashSet<CombatTimelineStatusKey>();
+        foreach (var friendlyActor in EnumerateTrackedPartyBattleCharas())
+            CaptureCombatTimelineFriendlyStatusesLocked(friendlyActor, nowUtc, seenStatusKeys);
+
+        observedCombatTimelineStatusKeys.RemoveWhere(key => !seenStatusKeys.Contains(key));
+        if (!combatTimelineStatusRecorderPrimed)
+            combatTimelineStatusRecorderPrimed = true;
+    }
+
+    private void CaptureCombatTimelineFriendlyStatusesLocked(IBattleChara friendlyActor, DateTime nowUtc, ISet<CombatTimelineStatusKey> seenStatusKeys)
+    {
+        var actorId = ResolveBattleCharaActorId(friendlyActor);
+        if (actorId is 0 or InvalidActorId)
+            return;
+
+        if (!TryGetTrackedActor(actorId, out var trackedActor) || trackedActor.Kind == TrackedActorKind.HostileNpc)
+            return;
+
+        foreach (var status in EnumerateStatusEntries(friendlyActor))
+        {
+            var statusId = GetStatusId(status);
+            if (statusId == 0)
+                continue;
+
+            var isBuff = IsBuffStatus(status);
+            var isDebuff = IsDebuffStatus(status);
+            if (!isBuff && !isDebuff)
+                continue;
+
+            var sourceActorId = ResolveStatusSourceActorId(status);
+            var key = new CombatTimelineStatusKey(actorId, statusId, sourceActorId, isDebuff);
+            seenStatusKeys.Add(key);
+            if (!combatTimelineStatusRecorderPrimed)
+            {
+                observedCombatTimelineStatusKeys.Add(key);
+                continue;
+            }
+
+            if (!observedCombatTimelineStatusKeys.Add(key))
+                continue;
+
+            var statusName = GetDebugStatusName(status, statusId);
+            var statusText = FormatStatusNameWithId(statusName, statusId);
+            var sourceName = sourceActorId == 0 ? "未知来源" : ResolveCombatTimelineSourceName(sourceActorId, nowUtc);
+            var statusKindText = isDebuff ? "debuff" : "BUFF";
+            var remainingText = FormatDebugStatusRemaining(status);
+            AppendCombatTimelineEntryLocked(
+                nowUtc,
+                CombatTimelineEntryKind.Status,
+                $"{trackedActor.Name} 获得{statusKindText} {statusText}，来源 {sourceName}{remainingText}。",
+                trackedActor.Name,
+                trackedActor.Name,
+                true,
+                true,
+                statusText);
+        }
+    }
+
     private void UpdateTrackedActorHp(uint actorId, uint currentHp, DateTime nowUtc, string zoneName, bool inCombat)
     {
         if (partyMemberHpCache.TryGetValue(actorId, out var previousHp)
@@ -434,8 +514,8 @@ internal sealed partial class LocalStatsService
     {
         if (!currentEncounter.HasMeaningfulData)
         {
-            AppendCombatTimelineEntryLocked(finalizedAtUtc, CombatTimelineEntryKind.CombatEnd, $"战斗结束：{currentEncounter.ZoneName}（未记录到有效战斗数据）。");
             LogHelper.Debug("统计", $"已丢弃区域 {currentEncounter.ZoneName} 的战斗结算：未记录到有效战斗数据。");
+            RemoveLastCombatStartTimelineEntryLocked();
             currentEncounter = new EncounterSession
             {
                 ZoneName = currentEncounter.ZoneName,
@@ -542,6 +622,18 @@ internal sealed partial class LocalStatsService
             return;
 
         AppendCombatTimelineEntryLocked(timeUtc, CombatTimelineEntryKind.CombatStart, $"进入战斗：{currentEncounter.ZoneName}");
+    }
+
+    private void RemoveLastCombatStartTimelineEntryLocked()
+    {
+        for (var i = combatTimelineEntries.Count - 1; i >= 0; i--)
+        {
+            if (combatTimelineEntries[i].Kind == CombatTimelineEntryKind.CombatStart)
+            {
+                combatTimelineEntries.RemoveAt(i);
+                return;
+            }
+        }
     }
 
     private void AppendCombatTimelineEntryLocked(
@@ -664,8 +756,15 @@ internal sealed partial class LocalStatsService
         Heal,
         Failure,
         Death,
+        Status,
         CombatEnd,
     }
+
+    private readonly record struct CombatTimelineStatusKey(
+        uint TargetActorId,
+        uint StatusId,
+        uint SourceActorId,
+        bool IsDebuff);
 
     private sealed class EncounterSession
     {

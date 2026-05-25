@@ -597,9 +597,24 @@ internal sealed class SettingsWindow : Window
             }
 
             ImGui.TableSetColumnIndex(1);
-            ImGui.TextDisabled("窗口透明度");
-            ImGui.SetCursorPosY(Math.Max(0f, ImGui.GetCursorPosY() - 1f));
-            ImGui.TextUnformatted("在「窗口设置」中调整");
+            var iconGap = pm.IconGap;
+            if (DrawLabeledSliderFloat("图标列间距", "##party_monitor_icon_gap", ref iconGap, 1f, 12f, "%.0f px"))
+            {
+                pm.IconGap = iconGap;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            var rowGap = pm.RowGap;
+            if (DrawLabeledSliderFloat("行间距", "##party_monitor_row_gap", ref rowGap, 0f, 12f, "%.0f px"))
+            {
+                pm.RowGap = rowGap;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            DrawCompactHelp("列间距控制技能图标之间的水平间隔", "行间距控制成员行之间的垂直间隔。");
 
             ImGui.EndTable();
         }

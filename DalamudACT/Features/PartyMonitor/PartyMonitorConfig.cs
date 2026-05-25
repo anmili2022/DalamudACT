@@ -49,6 +49,10 @@ public sealed class PartyMonitorConfig
 
     public float ActiveGlowStrength { get; set; } = 1f;
 
+    public float IconGap { get; set; } = 4f;
+
+    public float RowGap { get; set; } = 3f;
+
     public Vector4 BackgroundColor { get; set; } = new(0.04f, 0.05f, 0.075f, 1f);
 
     public Dictionary<uint, PartyMonitorJobConfig> JobConfigs { get; set; } = new();

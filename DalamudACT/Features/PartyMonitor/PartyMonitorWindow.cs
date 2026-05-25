@@ -15,10 +15,15 @@ internal sealed class PartyMonitorWindow : Window
     private const float PanelWidth = 500f;
     private const float PanelPaddingX = 8f;
     private const float PanelPaddingY = 7f;
-    private const float JobColumnWidth = 92f;
-    private const float IconGap = 4f;
-    private const float RowGap = 3f;
+    private const float JobColumnWidthNormal = 92f;
+    private const float JobColumnWidthAnonymous = 42f;
     private const float CooldownRevealSeconds = 10f;
+
+    private float JobColumnWidth => config.PartyMonitor.AnonymousMode ? JobColumnWidthAnonymous : JobColumnWidthNormal;
+
+    private float IconGap => config.PartyMonitor.IconGap;
+
+    private float RowGap => config.PartyMonitor.RowGap;
 
     private static readonly Vector4 GreenColor = new(0.4f, 1f, 0.4f, 1f);
     private static readonly Vector4 OrangeColor = new(1f, 0.6f, 0.2f, 1f);
@@ -411,7 +416,7 @@ internal sealed class PartyMonitorWindow : Window
         ImGui.Dummy(new Vector2(width, height));
     }
 
-    private static float GetNameChipWidth(string text)
+    private float GetNameChipWidth(string text)
         => Math.Clamp(ImGui.CalcTextSize(text).X + 12f, 34f, JobColumnWidth);
 
     private static string GetShortJobName(uint jobId)

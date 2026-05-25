@@ -73,9 +73,10 @@ internal sealed class PluginUI : IDisposable
 
     private void SyncPartyMonitorVisibility()
     {
-        if (partyMonitorWindow.IsOpen != config.PartyMonitor.ShowPartyMonitorWindow)
+        var shouldShow = config.PartyMonitor.EnablePartyMonitor && config.PartyMonitor.ShowPartyMonitorWindow;
+        if (partyMonitorWindow.IsOpen != shouldShow)
         {
-            partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
+            partyMonitorWindow.IsOpen = shouldShow;
         }
     }
 
@@ -88,6 +89,7 @@ internal sealed class PluginUI : IDisposable
     {
         var nextState = !partyMonitorWindow.IsOpen;
         partyMonitorWindow.IsOpen = nextState;
+        config.PartyMonitor.EnablePartyMonitor = nextState;
         config.PartyMonitor.ShowPartyMonitorWindow = nextState;
         config.Save();
     }

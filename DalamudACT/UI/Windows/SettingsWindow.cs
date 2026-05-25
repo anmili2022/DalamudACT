@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
@@ -131,18 +132,11 @@ internal sealed class SettingsWindow : Window
 
                 DrawCompactHelp("锁定后不可拖动或缩放。", "启用后，悬浮窗口的位置和大小将无法手动修改。");
 
-                        var enableParty = config.PartyMonitor.EnablePartyMonitor;
-                if (ImGui.Checkbox("启用队友监控", ref enableParty))
+                var enableParty = config.PartyMonitor.EnablePartyMonitor && config.PartyMonitor.ShowPartyMonitorWindow;
+                if (ImGui.Checkbox("显示队友监控窗口", ref enableParty))
                 {
                     config.PartyMonitor.EnablePartyMonitor = enableParty;
-                    config.Save();
-                }
-
-                ImGui.SameLine();
-                var showParty = config.PartyMonitor.ShowPartyMonitorWindow;
-                if (ImGui.Checkbox("显示队友监控窗口", ref showParty))
-                {
-                    config.PartyMonitor.ShowPartyMonitorWindow = showParty;
+                    config.PartyMonitor.ShowPartyMonitorWindow = enableParty;
                     config.Save();
                 }
 
@@ -454,7 +448,7 @@ internal sealed class SettingsWindow : Window
         DrawSettingCard(
             "##party_monitor_modules_card",
             "监控模块",
-            "选择你要监控的模块：食物、减伤技能、团辅技能。",
+            "选择你要监控的模块：食物、团辅技能、减伤技能。",
             5.2f,
             () =>
             {
@@ -466,10 +460,18 @@ internal sealed class SettingsWindow : Window
                 }
 
                 ImGui.SameLine();
-                var monitorSkills = pm.MonitorSkills;
-                if (ImGui.Checkbox("监控技能", ref monitorSkills))
+                var monitorRaidBuffs = pm.MonitorRaidBuffs;
+                if (ImGui.Checkbox("监控团辅", ref monitorRaidBuffs))
                 {
-                    pm.MonitorSkills = monitorSkills;
+                    pm.MonitorRaidBuffs = monitorRaidBuffs;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                var monitorMitigations = pm.MonitorMitigations;
+                if (ImGui.Checkbox("监控减伤", ref monitorMitigations))
+                {
+                    pm.MonitorMitigations = monitorMitigations;
                     config.Save();
                 }
 
@@ -501,63 +503,150 @@ internal sealed class SettingsWindow : Window
 
     private void DrawPartyMonitorStyleSettings(PartyMonitorConfig pm)
     {
-        DrawSettingCard(
-            "##party_monitor_style_card",
-            "样式",
-            "调整队友监控悬浮窗的图标、背景和起效高亮显示。",
-            8.2f,
-            () =>
+        if (!ImGui.CollapsingHeader("悬浮窗样式", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        const ImGuiTableFlags flags =
+            ImGuiTableFlags.SizingStretchSame
+            | ImGuiTableFlags.NoSavedSettings;
+
+        var sectionHeaderColor = new Vector4(0.72f, 0.86f, 1f, 0.92f);
+
+        ImGui.TextColored(sectionHeaderColor, "尺寸与 CD 数字");
+        ImGui.Separator();
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        if (ImGui.BeginTable("##party_monitor_style_size_grid", 2, flags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+
+            var iconSize = pm.IconSize;
+            if (DrawLabeledSliderFloat("图标大小", "##party_monitor_icon_size", ref iconSize, 20f, 48f, "%.0f px"))
             {
-                var iconSize = pm.IconSize;
-                if (ImGui.SliderFloat("图标大小", ref iconSize, 20f, 48f, "%.0f"))
-                {
-                    pm.IconSize = iconSize;
-                    config.Save();
-                }
+                pm.IconSize = iconSize;
+                config.Save();
+            }
 
-                var countdownScale = pm.CountdownTextScale;
-                if (ImGui.SliderFloat("CD倒计时数字大小", ref countdownScale, 0.6f, 2f, "%.2f"))
-                {
-                    pm.CountdownTextScale = countdownScale;
-                    config.Save();
-                }
+            ImGui.TableSetColumnIndex(1);
+            var countdownScale = pm.CountdownTextScale;
+            if (DrawLabeledSliderFloat("CD数字大小", "##party_monitor_countdown_scale", ref countdownScale, 0.6f, 2f, "%.2f x"))
+            {
+                pm.CountdownTextScale = countdownScale;
+                config.Save();
+            }
 
-                var enhancedActive = pm.EnhancedActiveStyle;
-                if (ImGui.Checkbox("启用起效增强样式", ref enhancedActive))
-                {
-                    pm.EnhancedActiveStyle = enhancedActive;
-                    config.Save();
-                }
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextDisabled("CD数字颜色");
+            ImGui.SetCursorPosY(Math.Max(0f, ImGui.GetCursorPosY() - 1f));
+            ImGui.SetNextItemWidth(-1f);
+            var countdownColor = pm.CountdownTextColor;
+            if (ImGui.ColorEdit4("##party_monitor_countdown_color", ref countdownColor))
+            {
+                pm.CountdownTextColor = countdownColor;
+                config.Save();
+            }
 
-                ImGui.SameLine();
-                var hideSkillsOnCooldown = pm.HideSkillsOnCooldown;
-                if (ImGui.Checkbox("CD中技能隐藏", ref hideSkillsOnCooldown))
-                {
-                    pm.HideSkillsOnCooldown = hideSkillsOnCooldown;
-                    config.Save();
-                }
+            ImGui.TableSetColumnIndex(1);
+            var countdownBottom = pm.CountdownTextBottomCenter;
+            if (DrawLabeledCheckbox("CD数字位置", "##party_monitor_countdown_bottom", ref countdownBottom, "底部居中", "垂直居中"))
+            {
+                pm.CountdownTextBottomCenter = countdownBottom;
+                config.Save();
+            }
 
-                var mergeSkillGroups = pm.MergeSkillGroups;
-                if (ImGui.Checkbox("团辅减伤合并", ref mergeSkillGroups))
-                {
-                    pm.MergeSkillGroups = mergeSkillGroups;
-                    config.Save();
-                }
+            ImGui.EndTable();
+        }
 
-                var glowStrength = pm.ActiveGlowStrength;
-                if (ImGui.SliderFloat("起效增强强度", ref glowStrength, 0f, 2f, "%.2f"))
-                {
-                    pm.ActiveGlowStrength = glowStrength;
-                    config.Save();
-                }
+        ImGui.Dummy(new Vector2(0f, 6f));
 
-                var bg = pm.BackgroundColor;
-                if (ImGui.ColorEdit4("背景默认颜色", ref bg))
-                {
-                    pm.BackgroundColor = bg;
-                    config.Save();
-                }
-            });
+        ImGui.TextColored(sectionHeaderColor, "布局与显示规则");
+        ImGui.Separator();
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        if (ImGui.BeginTable("##party_monitor_style_rule_grid", 2, flags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+
+            var hideSkillsOnCooldown = pm.HideSkillsOnCooldown;
+            if (DrawLabeledCheckbox("CD中技能", "##party_monitor_hide_cd", ref hideSkillsOnCooldown, "隐藏", "显示"))
+            {
+                pm.HideSkillsOnCooldown = hideSkillsOnCooldown;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            var mergeSkillGroups = pm.MergeSkillGroups;
+            if (DrawLabeledCheckbox("团辅/减伤分组", "##party_monitor_merge_groups", ref mergeSkillGroups, "合并", "分开"))
+            {
+                pm.MergeSkillGroups = mergeSkillGroups;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            var hideNameColumn = pm.HideNameColumn;
+            if (DrawLabeledCheckbox("姓名/职业列", "##party_monitor_hide_name_column", ref hideNameColumn, "隐藏", "显示"))
+            {
+                pm.HideNameColumn = hideNameColumn;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            ImGui.TextDisabled("窗口透明度");
+            ImGui.SetCursorPosY(Math.Max(0f, ImGui.GetCursorPosY() - 1f));
+            ImGui.TextUnformatted("在「窗口设置」中调整");
+
+            ImGui.EndTable();
+        }
+
+        ImGui.Dummy(new Vector2(0f, 6f));
+
+        ImGui.TextColored(sectionHeaderColor, "起效高亮与背景");
+        ImGui.Separator();
+        ImGui.Dummy(new Vector2(0f, 2f));
+
+        if (ImGui.BeginTable("##party_monitor_style_effect_grid", 2, flags))
+        {
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+
+            var enhancedActive = pm.EnhancedActiveStyle;
+            if (DrawLabeledCheckbox("起效增强样式", "##party_monitor_enhanced_active", ref enhancedActive))
+            {
+                pm.EnhancedActiveStyle = enhancedActive;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            var glowStrength = pm.ActiveGlowStrength;
+            if (DrawLabeledSliderFloat("起效增强强度", "##party_monitor_glow_strength", ref glowStrength, 0f, 2f, "%.2f x"))
+            {
+                pm.ActiveGlowStrength = glowStrength;
+                config.Save();
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextDisabled("背景默认颜色");
+            ImGui.SetCursorPosY(Math.Max(0f, ImGui.GetCursorPosY() - 1f));
+            ImGui.SetNextItemWidth(-1f);
+            var bg = pm.BackgroundColor;
+            if (ImGui.ColorEdit4("##party_monitor_bg_color", ref bg))
+            {
+                pm.BackgroundColor = bg;
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(1);
+            DrawCompactHelp("默认白色数字、垂直居中。", "CD 数字颜色、大小和位置会立即影响监控窗口；图标大小改变时，数字也会跟随缩放。 ");
+
+            ImGui.EndTable();
+        }
     }
 
     private void DrawPartyMonitorJobSkillSettings(PartyMonitorConfig pm)
@@ -580,6 +669,61 @@ internal sealed class SettingsWindow : Window
                     23, 31, 38,
                     25, 27, 35, 42,
                 };
+
+                var hasAnyRaidBuffEnabled = monitorJobIds.Any(jobId => pm.GetOrCreateJobConfig(jobId).EnabledRaidBuffActionIds.Count > 0);
+                if (ImGui.Button(hasAnyRaidBuffEnabled ? "一键关闭所有团辅技能" : "一键开启所有团辅技能"))
+                {
+                    foreach (var jobId in monitorJobIds)
+                    {
+                        var jobConfig = pm.GetOrCreateJobConfig(jobId);
+                        jobConfig.EnabledRaidBuffActionIds.Clear();
+
+                        if (!hasAnyRaidBuffEnabled)
+                        {
+                            foreach (var skill in PartySkillCatalog.GetSkillsForJob(jobId, jobConfig))
+                            {
+                                if (skill.Category == SkillCategory.RaidBuff)
+                                    jobConfig.EnabledRaidBuffActionIds.Add(skill.ActionId);
+                            }
+                        }
+                    }
+
+                    config.Save();
+                    LogHelper.PrintWithModule(
+                        "队友监控",
+                        "团辅技能",
+                        hasAnyRaidBuffEnabled
+                            ? "已关闭所有职业的团辅技能监控。减伤技能设置未改变。"
+                            : "已开启所有职业的团辅技能监控。减伤技能设置未改变。");
+                }
+
+                ImGui.SameLine();
+                DrawHelpMarker("这是一个切换按钮：当前有团辅启用时点击会全部关闭；全部关闭后再点击会开启所有团辅。不会影响减伤技能和食物监控。 ");
+
+                ImGui.SameLine(0f, 12f);
+                if (ImGui.Button("重置监控技能"))
+                {
+                    pm.ResetEnabledSkillsToDefault(monitorJobIds);
+                    monitorService?.InvalidateSkillsCache();
+                    config.Save();
+                    LogHelper.PrintWithModule("队友监控", "技能设置", "已重置监控技能为默认勾选。自定义技能定义未删除。 ");
+                }
+
+                ImGui.SameLine();
+                DrawHelpMarker("恢复所有职业的默认勾选状态。若已点击“设当前为默认”，会使用你保存的默认；否则使用插件内置默认。不会删除自定义技能。 ");
+
+                ImGui.SameLine(0f, 8f);
+                if (ImGui.Button("设当前为默认"))
+                {
+                    pm.SaveCurrentEnabledSkillsAsDefault(monitorJobIds);
+                    config.Save();
+                    LogHelper.PrintWithModule("队友监控", "技能设置", "已将当前所有职业的监控技能勾选状态保存为默认。 ");
+                }
+
+                ImGui.SameLine();
+                DrawHelpMarker("把当前所有职业的团辅/减伤勾选状态保存为你的默认。之后点击“重置监控技能”会恢复到这套勾选。 ");
+
+                ImGui.Dummy(new Vector2(0f, 4f));
 
                 for (var jobIndex = 0; jobIndex < monitorJobIds.Length; jobIndex++)
                 {

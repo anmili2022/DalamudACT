@@ -7,25 +7,43 @@ public sealed class PartyMonitorConfig
 {
     public bool EnablePartyMonitor { get; set; } = true;
 
-    public bool ShowPartyMonitorWindow { get; set; }
+    public bool ShowPartyMonitorWindow { get; set; } = true;
 
-    public float PartyMonitorOpacity { get; set; } = 0.8f;
+    public float PartyMonitorOpacity { get; set; } = 0.9f;
 
     public bool LockPartyMonitorWindow { get; set; }
 
     public bool MonitorFood { get; set; } = true;
 
-    public bool MonitorSkills { get; set; } = true;
+    public bool MonitorRaidBuffs { get; set; } = true;
+
+    public bool MonitorMitigations { get; set; } = true;
+
+    public bool MonitorSkills
+    {
+        get => MonitorRaidBuffs || MonitorMitigations;
+        set
+        {
+            MonitorRaidBuffs = value;
+            MonitorMitigations = value;
+        }
+    }
 
     public bool AnonymousMode { get; set; } = true;
 
-    public bool HideSkillsOnCooldown { get; set; } = true;
+    public bool HideSkillsOnCooldown { get; set; }
 
     public bool MergeSkillGroups { get; set; }
+
+    public bool HideNameColumn { get; set; }
 
     public float IconSize { get; set; } = 30f;
 
     public float CountdownTextScale { get; set; } = 1f;
+
+    public Vector4 CountdownTextColor { get; set; } = new(1f, 1f, 1f, 1f);
+
+    public bool CountdownTextBottomCenter { get; set; }
 
     public bool EnhancedActiveStyle { get; set; } = true;
 
@@ -34,6 +52,8 @@ public sealed class PartyMonitorConfig
     public Vector4 BackgroundColor { get; set; } = new(0.04f, 0.05f, 0.075f, 1f);
 
     public Dictionary<uint, PartyMonitorJobConfig> JobConfigs { get; set; } = new();
+
+    public Dictionary<uint, PartyMonitorSkillDefaultConfig> DefaultJobSkillConfigs { get; set; } = new();
 
     public PartyMonitorJobConfig GetOrCreateJobConfig(uint classJobId)
     {
@@ -78,6 +98,40 @@ public sealed class PartyMonitorConfig
             }
         }
     }
+
+    public void ResetEnabledSkillsToDefault(IEnumerable<uint> classJobIds)
+    {
+        foreach (var classJobId in classJobIds)
+        {
+            var jobConfig = GetOrCreateJobConfig(classJobId);
+            jobConfig.EnabledMitigationActionIds.Clear();
+            jobConfig.EnabledRaidBuffActionIds.Clear();
+
+            if (DefaultJobSkillConfigs.TryGetValue(classJobId, out var defaultConfig))
+            {
+                foreach (var actionId in defaultConfig.EnabledMitigationActionIds)
+                    jobConfig.EnabledMitigationActionIds.Add(actionId);
+                foreach (var actionId in defaultConfig.EnabledRaidBuffActionIds)
+                    jobConfig.EnabledRaidBuffActionIds.Add(actionId);
+                continue;
+            }
+
+            InitializeDefaultEnabledSkills(classJobId, jobConfig);
+        }
+    }
+
+    public void SaveCurrentEnabledSkillsAsDefault(IEnumerable<uint> classJobIds)
+    {
+        foreach (var classJobId in classJobIds)
+        {
+            var jobConfig = GetOrCreateJobConfig(classJobId);
+            DefaultJobSkillConfigs[classJobId] = new PartyMonitorSkillDefaultConfig
+            {
+                EnabledMitigationActionIds = new HashSet<uint>(jobConfig.EnabledMitigationActionIds),
+                EnabledRaidBuffActionIds = new HashSet<uint>(jobConfig.EnabledRaidBuffActionIds),
+            };
+        }
+    }
 }
 
 public sealed class PartyMonitorJobConfig
@@ -85,6 +139,12 @@ public sealed class PartyMonitorJobConfig
     public HashSet<uint> EnabledMitigationActionIds { get; set; } = new();
     public HashSet<uint> EnabledRaidBuffActionIds { get; set; } = new();
     public Dictionary<uint, CustomSkillEntry> CustomSkills { get; set; } = new();
+}
+
+public sealed class PartyMonitorSkillDefaultConfig
+{
+    public HashSet<uint> EnabledMitigationActionIds { get; set; } = new();
+    public HashSet<uint> EnabledRaidBuffActionIds { get; set; } = new();
 }
 
 public sealed record CustomSkillEntry(

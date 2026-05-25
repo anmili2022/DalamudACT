@@ -51,7 +51,7 @@ internal sealed class PartyMonitorWindow : Window
         BgAlpha = 0f;
 
         if (config.PartyMonitor.LockPartyMonitorWindow)
-            Flags = BaseWindowFlags | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
+            Flags = BaseWindowFlags | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs;
         else
             Flags = BaseWindowFlags;
 
@@ -85,13 +85,17 @@ internal sealed class PartyMonitorWindow : Window
 
     private void DrawOverlayContent(IReadOnlyList<PartyMonitorService.PartyMemberState> members)
     {
-        var raidBuffRows = BuildRows(members, SkillCategory.RaidBuff);
-        var mitigationRows = BuildRows(members, SkillCategory.Mitigation);
+        var raidBuffRows = config.PartyMonitor.MonitorRaidBuffs
+            ? BuildRows(members, SkillCategory.RaidBuff)
+            : [];
+        var mitigationRows = config.PartyMonitor.MonitorMitigations
+            ? BuildRows(members, SkillCategory.Mitigation)
+            : [];
 
         if (config.PartyMonitor.MonitorSkills)
         {
             if (config.PartyMonitor.MergeSkillGroups)
-                DrawSkillGroup("技能", BuildMergedRows(members), MitigationColor);
+                DrawSkillGroup("技能", BuildMergedRows(members, config.PartyMonitor), MitigationColor);
             else
             {
                 DrawSkillGroup("团辅", raidBuffRows, RaidBuffColor);
@@ -121,12 +125,17 @@ internal sealed class PartyMonitorWindow : Window
         return rows;
     }
 
-    private static List<MemberSkillRow> BuildMergedRows(IReadOnlyList<PartyMonitorService.PartyMemberState> members)
+    private static List<MemberSkillRow> BuildMergedRows(IReadOnlyList<PartyMonitorService.PartyMemberState> members, PartyMonitorConfig cfg)
     {
         var rows = new List<MemberSkillRow>();
         foreach (var member in members)
         {
-            var skills = member.RaidBuffSkills.Concat(member.MitigationSkills).ToList();
+            var skills = new List<PartyMonitorService.SkillCooldownState>();
+            if (cfg.MonitorRaidBuffs)
+                skills.AddRange(member.RaidBuffSkills);
+            if (cfg.MonitorMitigations)
+                skills.AddRange(member.MitigationSkills);
+
             if (skills.Count == 0)
                 continue;
 
@@ -175,18 +184,24 @@ internal sealed class PartyMonitorWindow : Window
         var rowStart = ImGui.GetCursorPos();
         var iconSize = GetIconSize();
         var rowHeight = Math.Max(iconSize, ImGui.GetTextLineHeight() + 5f) + RowGap;
+        var iconStartX = config.PartyMonitor.HideNameColumn
+            ? rowStart.X
+            : PanelPaddingX + JobColumnWidth + 4f;
 
-        ImGui.SetCursorPos(rowStart);
-        DrawNameChip(GetMemberDisplayName(member), GetJobColor(member.JobId), JobColumnWidth);
+        if (!config.PartyMonitor.HideNameColumn)
+        {
+            ImGui.SetCursorPos(rowStart);
+            var label = GetMemberDisplayName(member);
+            DrawNameChip(label, GetJobColor(member.JobId), GetNameChipWidth(label));
+        }
 
         var drawnCount = 0;
-        var iconX = PanelPaddingX + JobColumnWidth + 4f;
         foreach (var skill in skills)
         {
             if (!ShouldShowSkill(skill))
                 continue;
 
-            ImGui.SetCursorPos(new Vector2(iconX + drawnCount * (iconSize + IconGap), rowStart.Y));
+            ImGui.SetCursorPos(new Vector2(iconStartX + drawnCount * (iconSize + IconGap), rowStart.Y));
             DrawSkillIcon(skill);
             drawnCount++;
         }
@@ -223,7 +238,7 @@ internal sealed class PartyMonitorWindow : Window
 
         var text = GetSkillStateText(state);
         if (!string.IsNullOrEmpty(text))
-            DrawIconText(pos, iconSize, text, config.PartyMonitor.CountdownTextScale);
+            DrawIconText(pos, iconSize, text, config.PartyMonitor);
 
         if (ImGui.IsItemHovered())
             DrawSkillTooltip(state);
@@ -248,16 +263,29 @@ internal sealed class PartyMonitorWindow : Window
     private float GetIconSize()
         => Math.Clamp(config.PartyMonitor.IconSize, 20f, 48f);
 
-    private static void DrawIconText(Vector2 iconPos, float iconSize, string text, float textScale)
+    private static void DrawIconText(Vector2 iconPos, float iconSize, string text, PartyMonitorConfig cfg)
     {
         var drawList = ImGui.GetWindowDrawList();
-        var scale = Math.Clamp(textScale, 0.6f, 2f);
+        var scale = Math.Clamp(cfg.CountdownTextScale * (iconSize / 30f), 0.6f, 2.6f);
         var textSize = ImGui.CalcTextSize(text) * scale;
-        var pos = iconPos + new Vector2(iconSize - textSize.X - 2f, iconSize - textSize.Y - 1f);
+        var textY = cfg.CountdownTextBottomCenter
+            ? iconSize - textSize.Y - 2f
+            : (iconSize - textSize.Y) * 0.5f;
+        var pos = iconPos + new Vector2((iconSize - textSize.X) * 0.5f, textY);
+
         if (scale != 1f)
             ImGui.SetWindowFontScale(scale);
-        drawList.AddText(pos + new Vector2(1f, 1f), ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.95f)), text);
-        drawList.AddText(pos, ImGui.ColorConvertFloat4ToU32(TitleColor), text);
+        var outlineColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 1f));
+        var textColor = ImGui.ColorConvertFloat4ToU32(cfg.CountdownTextColor);
+        drawList.AddText(pos + new Vector2(-1f, 0f), outlineColor, text);
+        drawList.AddText(pos + new Vector2(1f, 0f), outlineColor, text);
+        drawList.AddText(pos + new Vector2(0f, -1f), outlineColor, text);
+        drawList.AddText(pos + new Vector2(0f, 1f), outlineColor, text);
+        drawList.AddText(pos + new Vector2(1f, 1f), outlineColor, text);
+        drawList.AddText(pos + new Vector2(0.35f, 0f), textColor, text);
+        drawList.AddText(pos + new Vector2(-0.35f, 0f), textColor, text);
+        drawList.AddText(pos + new Vector2(0f, 0.35f), textColor, text);
+        drawList.AddText(pos, textColor, text);
         if (scale != 1f)
             ImGui.SetWindowFontScale(1f);
     }
@@ -382,6 +410,9 @@ internal sealed class PartyMonitorWindow : Window
         drawList.PopClipRect();
         ImGui.Dummy(new Vector2(width, height));
     }
+
+    private static float GetNameChipWidth(string text)
+        => Math.Clamp(ImGui.CalcTextSize(text).X + 12f, 34f, JobColumnWidth);
 
     private static string GetShortJobName(uint jobId)
     {

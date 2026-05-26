@@ -3,7 +3,7 @@
     "Name": "DPS统计",
     "Punchline": "在游戏里直接查看队伍战斗统计。\nLocal ACTX-style combat stats directly inside the game.",
     "Description": "一个基于本地 ACTX 风格统计口径的 Dalamud 战斗统计插件，直接在游戏内显示队伍 DPS、HPS、承伤、概览和战斗历史，不依赖外部网页面板。支持宏命令 /dps settings、/dps dps、/dps skills 快速开关设置面板、DPS统计悬浮窗和技能监控悬浮窗。\nLocal ACTX-style combat meter for Dalamud. Displays party DPS, HPS, damage taken, overview summaries, and encounter history directly in game without relying on an external web overlay. Macro commands are available: /dps settings, /dps dps, /dps skills.",
-    "IconUrl": "https://github.com/anmili2022/DalamudACT/raw/master/DalamudACT/images/icon.png",
+    "IconUrl": "https://raw.githubusercontent.com/anmili2022/DalamudACT/main/DalamudACT/images/icon.png",
     "ImageUrls": [],
     "RepoUrl": "https://github.com/anmili2022/DalamudACT",
     "Tags": [

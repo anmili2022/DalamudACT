@@ -391,18 +391,60 @@ internal sealed class SettingsWindow : Window
                 ImGui.SameLine();
                 DrawHelpMarker("恢复默认时会同时重置主题色透明度和所有职业颜色。");
 
+                ImGui.SameLine(0f, 12f);
+                if (ImGui.Button("职能单色"))
+                {
+                    config.ThemeBarOpacity = PluginConfiguration.DefaultThemeBarOpacity;
+                    config.ApplyRoleThemeBarColors();
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                DrawHelpMarker("按职能写入高对比主题色：坦克蓝、治疗绿、输出红。近战、远敏、法系统一使用输出色。");
+
+                var highlightSelfBar = config.HighlightSelfBar;
+                if (ImGui.Checkbox("凸显自身", ref highlightSelfBar))
+                {
+                    config.HighlightSelfBar = highlightSelfBar;
+                    config.Save();
+                }
+
+                ImGui.SameLine(0f, 8f);
+                ImGui.BeginDisabled(!config.HighlightSelfBar);
+                var selfHighlightColor = config.SelfHighlightColor;
+                if (ImGui.RadioButton("日光黄", selfHighlightColor == SelfHighlightColorMode.SunlightYellow))
+                {
+                    config.SelfHighlightColor = SelfHighlightColorMode.SunlightYellow;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                if (ImGui.RadioButton("暖金", selfHighlightColor == SelfHighlightColorMode.WarmGold))
+                {
+                    config.SelfHighlightColor = SelfHighlightColorMode.WarmGold;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                if (ImGui.RadioButton("玫红", selfHighlightColor == SelfHighlightColorMode.RosePink))
+                {
+                    config.SelfHighlightColor = SelfHighlightColorMode.RosePink;
+                    config.Save();
+                }
+
+                ImGui.SameLine();
+                if (ImGui.RadioButton("白底黑字", selfHighlightColor == SelfHighlightColorMode.WhiteBlack))
+                {
+                    config.SelfHighlightColor = SelfHighlightColorMode.WhiteBlack;
+                    config.Save();
+                }
+                ImGui.EndDisabled();
+
                 if (!ImGui.CollapsingHeader("职业颜色列表"))
                 {
                     ImGui.TextDisabled("默认先收起职业颜色列表；需要微调单职业 RGB 时再展开。");
                     return;
                 }
-
-                var themePaletteLineHeight = ImGui.GetTextLineHeightWithSpacing();
-                var themePaletteMinHeight = themePaletteLineHeight * 5.8f;
-                var themePaletteMaxHeight = themePaletteLineHeight * 10.0f;
-                var themePaletteHeight = GetAdaptiveChildHeight("##theme_palette", themePaletteMinHeight, themePaletteMaxHeight);
-                if (!ImGui.BeginChild("##theme_palette", new Vector2(0f, themePaletteHeight), true))
-                    return;
 
                 foreach (var group in JobThemePalette.GroupedEntries)
                 {
@@ -422,13 +464,6 @@ internal sealed class SettingsWindow : Window
                         }
                     }
                 }
-
-                RememberAdaptiveChildHeight(
-                    "##theme_palette",
-                    ImGui.GetCursorPosY() + ImGui.GetStyle().WindowPadding.Y,
-                    themePaletteMinHeight,
-                    themePaletteMaxHeight);
-                ImGui.EndChild();
             });
     }
 
@@ -581,7 +616,7 @@ internal sealed class SettingsWindow : Window
 
             ImGui.TableSetColumnIndex(1);
             var mergeSkillGroups = pm.MergeSkillGroups;
-            if (DrawLabeledCheckbox("团辅/减伤分组", "##party_monitor_merge_groups", ref mergeSkillGroups, "合并", "分开"))
+            if (DrawLabeledCheckbox("团辅/减伤分组合并", "##party_monitor_merge_groups", ref mergeSkillGroups, "已开启", "已关闭"))
             {
                 pm.MergeSkillGroups = mergeSkillGroups;
                 config.Save();

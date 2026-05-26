@@ -33,7 +33,7 @@ public sealed class PartyMonitorConfig
 
     public bool HideSkillsOnCooldown { get; set; }
 
-    public bool MergeSkillGroups { get; set; }
+    public bool MergeSkillGroups { get; set; } = true;
 
     public bool HideNameColumn { get; set; }
 

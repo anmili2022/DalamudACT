@@ -711,6 +711,7 @@ internal static class StatsPanel
             var totalRatio = totalValue > 0 ? value / totalValue : 0d;
             var barColor = ResolveBarColor(combatant, config);
             var hasCustomTextColor = TryResolveCombatantTextColor(combatant, config, out var rowTextColor);
+            var hasBarTextColor = TryResolveCombatantBarTextColor(combatant, config, out var barTextColor);
 
             TableNextRow(rowHeight);
             if (TryResolveCombatantRowBackgroundColor(combatant, config, out var rowBackgroundColor))
@@ -752,7 +753,11 @@ internal static class StatsPanel
             ImGui.TableSetColumnIndex(shareColumnIndex);
             ImGui.PushStyleColor(ImGuiCol.FrameBg, FrameBackgroundColor);
             ImGui.PushStyleColor(ImGuiCol.PlotHistogram, barColor);
+            if (hasBarTextColor)
+                ImGui.PushStyleColor(ImGuiCol.Text, barTextColor);
             ImGui.ProgressBar((float)Math.Clamp(maxRatio, 0d, 1d), new Vector2(-1f, 0f), $"{totalRatio:P1}");
+            if (hasBarTextColor)
+                ImGui.PopStyleColor();
             DrawCombatantBarTooltip(
                 combatant,
                 tooltipPrimaryLabel,
@@ -1027,6 +1032,7 @@ internal static class StatsPanel
             var totalRatio = totalValue > 0 ? value / totalValue : 0d;
             var barColor = ResolveBarColor(combatant, config);
             var hasCustomTextColor = TryResolveCombatantTextColor(combatant, config, out var rowTextColor);
+            var hasBarTextColor = TryResolveCombatantBarTextColor(combatant, config, out var barTextColor);
 
             TableNextRow(rowHeight);
             if (TryResolveCombatantRowBackgroundColor(combatant, config, out var rowBackgroundColor))
@@ -1059,6 +1065,8 @@ internal static class StatsPanel
             ImGui.TableSetColumnIndex(shareColumnIndex);
             ImGui.PushStyleColor(ImGuiCol.FrameBg, FrameBackgroundColor);
             ImGui.PushStyleColor(ImGuiCol.PlotHistogram, barColor);
+            if (hasBarTextColor)
+                ImGui.PushStyleColor(ImGuiCol.Text, barTextColor);
             ImGui.ProgressBar(
                 (float)Math.Clamp(maxRatio, 0d, 1d),
                 new Vector2(-1f, Math.Max(1f, ResolveMinimalProgressBarHeight(rowHeight))),
@@ -1069,6 +1077,8 @@ internal static class StatsPanel
                     combatant.DeathsText,
                     totalRatio,
                     config));
+            if (hasBarTextColor)
+                ImGui.PopStyleColor();
             DrawIkegamiDpsTooltip(combatant, tooltipFontScale);
             ImGui.PopStyleColor(2);
 
@@ -1274,6 +1284,7 @@ internal static class StatsPanel
                 var combatant = rows[rowIndex];
                 var barColor = ResolveBarColor(combatant, config);
                 var hasCustomTextColor = TryResolveCombatantTextColor(combatant, config, out var rowTextColor);
+                var hasBarTextColor = TryResolveCombatantBarTextColor(combatant, config, out var barTextColor);
                 var primaryLabel = combatant.Name ?? string.Empty;
                 var secondaryLabel = string.IsNullOrWhiteSpace(combatant.Job) ? null : combatant.Job;
                 var jobBadgeText = ResolveIkegamiJobBadgeText(combatant);
@@ -1325,6 +1336,8 @@ internal static class StatsPanel
                     ikegamiBodyFontScale,
                     hasCustomTextColor,
                     rowTextColor,
+                    hasBarTextColor,
+                    barTextColor,
                     id == "dps"
                         ? () => DrawIkegamiDpsTooltip(combatant, ikegamiTooltipFontScale)
                         : () => DrawIkegamiMetricTooltip(
@@ -1390,6 +1403,8 @@ internal static class StatsPanel
         float bodyFontScale,
         bool hasCustomTextColor,
         Vector4 rowTextColor,
+        bool hasBarTextColor,
+        Vector4 barTextColor,
         Action drawTooltip)
     {
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
@@ -1443,7 +1458,7 @@ internal static class StatsPanel
                     if (headerFontScale != 1f)
                         ImGui.SetWindowFontScale(headerFontScale);
 
-                    ImGui.PushStyleColor(ImGuiCol.Text, IkegamiHeaderTextColor);
+                    ImGui.PushStyleColor(ImGuiCol.Text, hasBarTextColor ? barTextColor : IkegamiHeaderTextColor);
                     ImGui.SetCursorPosY(Math.Max(0f, ((headerHeight - ImGui.GetTextLineHeight()) * 0.5f) - 1f));
                     DrawLeftAlignedTextLine(primaryMetricDisplayText, headerLeftPadding);
                     ImGui.PopStyleColor();
@@ -2203,6 +2218,9 @@ internal static class StatsPanel
 
     private static Vector4 ResolveBarColor(Combatant combatant, PluginConfiguration config)
     {
+        if (config.HighlightSelfBar && IsLocalPlayerCombatant(combatant))
+            return config.GetSelfHighlightBarColor();
+
         if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
         {
             if (kind == FloatingCombatantKind.HostileNpc)
@@ -2225,6 +2243,13 @@ internal static class StatsPanel
         return config.GetThemeBarColor(combatant.Job);
     }
 
+    private static bool IsLocalPlayerCombatant(Combatant combatant)
+    {
+        var localPlayerName = DalamudApi.GetLocalPlayerName()?.Trim();
+        return !string.IsNullOrWhiteSpace(localPlayerName)
+               && string.Equals(combatant.Name?.Trim(), localPlayerName, StringComparison.Ordinal);
+    }
+
     private static bool TryResolveCombatantTextColor(Combatant combatant, PluginConfiguration config, out Vector4 color)
     {
         if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
@@ -2240,6 +2265,20 @@ internal static class StatsPanel
                 color = HostileNpcTextColor;
                 return true;
             }
+        }
+
+        color = default;
+        return false;
+    }
+
+    private static bool TryResolveCombatantBarTextColor(Combatant combatant, PluginConfiguration config, out Vector4 color)
+    {
+        if (config.HighlightSelfBar
+            && config.SelfHighlightColor == SelfHighlightColorMode.WhiteBlack
+            && IsLocalPlayerCombatant(combatant))
+        {
+            color = new Vector4(0.02f, 0.02f, 0.02f, 1f);
+            return true;
         }
 
         color = default;

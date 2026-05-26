@@ -19,6 +19,14 @@ public enum StatsBarColorMode
     Single = 1,
 }
 
+public enum SelfHighlightColorMode
+{
+    SunlightYellow = 0,
+    WarmGold = 1,
+    RosePink = 2,
+    WhiteBlack = 3,
+}
+
 public enum CombatEndRule
 {
     PartyList = 0,
@@ -247,6 +255,8 @@ public sealed class PluginConfiguration : IPluginConfiguration
     public float SingleBarColorA = 0.9f;
     public float ThemeBarOpacity = DefaultThemeBarOpacity;
     public Dictionary<string, ThemeBarColorSetting> ThemeBarColors = new();
+    public bool HighlightSelfBar = false;
+    public SelfHighlightColorMode SelfHighlightColor = SelfHighlightColorMode.SunlightYellow;
     public List<string> CustomFriendlyNpcNames = new();
 
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -758,6 +768,34 @@ public sealed class PluginConfiguration : IPluginConfiguration
             ThemeBarColors[entry.JobName] = new ThemeBarColorSetting(entry.DefaultColor);
     }
 
+    public void ApplyRoleThemeBarColors()
+    {
+        ThemeBarColors = new Dictionary<string, ThemeBarColorSetting>();
+        foreach (var entry in JobThemePalette.Entries)
+            ThemeBarColors[entry.JobName] = new ThemeBarColorSetting(GetRoleThemeBarColor(entry.Category));
+    }
+
+    public Vector4 GetSelfHighlightBarColor()
+    {
+        var color = SelfHighlightColor switch
+        {
+            SelfHighlightColorMode.WarmGold => new Vector4(0.984f, 0.749f, 0.141f, 1f),
+            SelfHighlightColorMode.RosePink => new Vector4(0.984f, 0.443f, 0.522f, 1f),
+            SelfHighlightColorMode.WhiteBlack => new Vector4(1f, 1f, 1f, 1f),
+            _ => new Vector4(1.000f, 0.902f, 0.427f, 1f),
+        };
+
+        return ApplyThemeBarOpacity(color);
+    }
+
+    private static Vector4 GetRoleThemeBarColor(string category)
+        => category switch
+        {
+            "坦克" => new Vector4(0.231f, 0.510f, 0.965f, DefaultThemeBarOpacity),
+            "治疗" => new Vector4(0.133f, 0.773f, 0.369f, DefaultThemeBarOpacity),
+            _ => new Vector4(0.937f, 0.267f, 0.267f, DefaultThemeBarOpacity),
+        };
+
     public void NormalizeCustomFriendlyNpcNames()
     {
         var normalizedNames = new List<string>();
@@ -930,6 +968,8 @@ public sealed class PluginConfiguration : IPluginConfiguration
         SingleBarColorA = 0.9f;
         ThemeBarOpacity = DefaultThemeBarOpacity;
         ResetThemeBarColors();
+        HighlightSelfBar = false;
+        SelfHighlightColor = SelfHighlightColorMode.SunlightYellow;
         CustomFriendlyNpcNames = new List<string>();
         LogHelper.EnableDebugLog = EnableDebugLog;
     }

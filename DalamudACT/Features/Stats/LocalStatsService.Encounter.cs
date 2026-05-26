@@ -191,6 +191,9 @@ internal sealed partial class LocalStatsService
         lock (gate)
         {
             var wasStarted = currentEncounter.Started;
+            if (!wasStarted)
+                return;
+
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
 
             var loggedSourceName = ResolveCombatTimelineSourceName(sourceId, timeUtc);
@@ -383,7 +386,7 @@ internal sealed partial class LocalStatsService
 
     private void PollCombatTimelineFriendlyStatusesLocked(DateTime nowUtc, bool inCombat)
     {
-        if (!config.CombatTimelineRecordingEnabled || (!inCombat && !currentEncounter.Started))
+        if (!config.CombatTimelineRecordingEnabled || !currentEncounter.Started)
         {
             observedCombatTimelineStatusKeys.Clear();
             combatTimelineStatusRecorderPrimed = false;

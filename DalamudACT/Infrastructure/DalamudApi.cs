@@ -31,6 +31,7 @@ public sealed class DalamudApi
     [PluginService] public static Dalamud.Plugin.Services.IPartyList PartyList { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.IBuddyList BuddyList { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.ITextureProvider TextureProvider { get; private set; } = null!;
+    [PluginService] public static Dalamud.Plugin.Services.ICommandManager Commands { get; private set; } = null!;
 
     public static uint GetTerritoryTypeId()
         => TryGetUInt32Property(ClientState, "TerritoryType", "TerritoryTypeId", "CurrentTerritoryType");

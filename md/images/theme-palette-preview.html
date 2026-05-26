@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DPS统计 主题色预览</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: rgba(18, 24, 38, 0.88);
+      --panel-2: rgba(255, 255, 255, 0.055);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: rgba(255, 255, 255, 0.94);
+      --muted: rgba(255, 255, 255, 0.62);
+      --accent: #88c0ff;
+      --self: #fff36d;
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(59, 130, 246, 0.24), transparent 26%),
+        radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.16), transparent 24%),
+        linear-gradient(135deg, #07111f, var(--bg));
+      padding: 26px;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    h1, h2, p { margin: 0; }
+    h1 { font-size: 28px; letter-spacing: 0.04em; }
+    h2 { font-size: 17px; color: var(--accent); margin-bottom: 10px; }
+    .sub { margin-top: 8px; color: var(--muted); line-height: 1.7; }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button.active {
+      border-color: rgba(136, 192, 255, 0.8);
+      background: rgba(80, 140, 220, 0.38);
+      box-shadow: 0 0 0 1px rgba(136, 192, 255, 0.2) inset;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .meter {
+      display: grid;
+      gap: 7px;
+    }
+
+    .row {
+      position: relative;
+      height: 26px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .bar {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--w);
+      background: var(--c);
+      opacity: 0.75;
+    }
+
+    .self .bar {
+      background: var(--self);
+      opacity: 0.95;
+      box-shadow: 0 0 16px rgba(255, 243, 109, 0.55);
+    }
+
+    .self {
+      border-color: rgba(255, 243, 109, 0.8);
+      box-shadow: 0 0 0 1px rgba(255, 243, 109, 0.35) inset, 0 0 18px rgba(255, 243, 109, 0.22);
+    }
+
+    .text {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      height: 100%;
+      padding: 0 9px;
+      text-shadow: 0 1px 2px #000;
+      font-size: 13px;
+    }
+
+    .job { font-weight: 700; }
+    .value { font-variant-numeric: tabular-nums; }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .swatch {
+      min-height: 54px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 8px;
+      background: var(--c);
+      color: #fff;
+      text-shadow: 0 1px 2px #000;
+      cursor: pointer;
+    }
+
+    .swatch.active {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .chip {
+      border-radius: 9px;
+      padding: 9px;
+      background: var(--c);
+      min-height: 48px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      text-shadow: 0 1px 2px #000;
+      font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .note {
+      margin-top: 12px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: var(--panel-2);
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 14px; }
+      .grid { grid-template-columns: 1fr; }
+      .palette { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>DPS统计 主题色 / 职能单色 / 凸显自身预览</h1>
+    <p class="sub">先用这个页面选颜色。选定后再改插件代码：增加“职能单色”按钮和“凸显自身”开关。</p>
+
+    <div class="toolbar">
+      <button class="active" data-mode="job">职业主题色</button>
+      <button data-mode="role">职能单色</button>
+      <button data-mode="softRole">低饱和职能单色</button>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>悬浮统计面板预览</h2>
+        <div id="meter" class="meter"></div>
+        <div class="note">点击下方“自身高亮色”可切换自身条颜色。当前设定自身为“贤者 Lokis”。</div>
+      </section>
+
+      <section class="card">
+        <h2>自身高亮色候选</h2>
+        <div id="selfSwatches" class="swatches"></div>
+        <div class="note" id="pickedText"></div>
+      </section>
+
+      <section class="card">
+        <h2>当前职业主题色</h2>
+        <div id="jobPalette" class="palette"></div>
+      </section>
+
+      <section class="card">
+        <h2>职能单色候选</h2>
+        <div class="palette">
+          <div class="chip" style="--c:#3b82f6"><span>坦克</span><span>#3B82F6</span></div>
+          <div class="chip" style="--c:#22c55e"><span>治疗</span><span>#22C55E</span></div>
+          <div class="chip" style="--c:#ef4444"><span>近战</span><span>#EF4444</span></div>
+          <div class="chip" style="--c:#f59e0b"><span>远敏</span><span>#F59E0B</span></div>
+          <div class="chip" style="--c:#a855f7"><span>法系</span><span>#A855F7</span></div>
+        </div>
+        <div class="note">建议按钮名：恢复默认主题色 / 职能单色。职能单色按坦克、治疗、近战、远敏、法系统一配色。</div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const jobs = [
+      { job: '骑士', name: 'Shiyuvi', role: 'tank', value: '8.12k', width: 98, color: '#151c64' },
+      { job: '贤者', name: 'Lokis', role: 'healer', value: '7.84k', width: 93, color: '#7fa8e8', self: true },
+      { job: '武士', name: '丹凤吟', role: 'melee', value: '7.11k', width: 85, color: '#ffca28' },
+      { job: '舞者', name: 'Rhoeas', role: 'ranged', value: '6.44k', width: 78, color: '#f48fb1' },
+      { job: '黑魔', name: '墨乄染', role: 'caster', value: '6.02k', width: 72, color: '#7e57c2' },
+      { job: '战士', name: 'Anmi', role: 'tank', value: '5.73k', width: 68, color: '#991717' },
+      { job: '诗人', name: 'Mio', role: 'ranged', value: '5.21k', width: 62, color: '#9e9d24' },
+      { job: '赤魔', name: 'Sora', role: 'caster', value: '4.88k', width: 58, color: '#e91e63' },
+    ];
+
+    const roleColors = {
+      tank: '#3b82f6',
+      healer: '#22c55e',
+      melee: '#ef4444',
+      ranged: '#ef4444',
+      caster: '#ef4444',
+    };
+
+    const softRoleColors = {
+      tank: '#5b78a8',
+      healer: '#5f9c78',
+      melee: '#9b5b5b',
+      ranged: '#9b5b5b',
+      caster: '#9b5b5b',
+    };
+
+    const selfColors = [
+      ['日光黄', '#fff36d'],
+      ['琥珀金', '#fbbf24'],
+      ['电光青', '#22d3ee'],
+      ['薄荷绿', '#86efac'],
+      ['玫红', '#fb7185'],
+      ['纯白', '#ffffff'],
+    ];
+
+    let mode = 'job';
+    let selfColor = selfColors[0][1];
+
+    function getColor(row) {
+      if (mode === 'role') return roleColors[row.role];
+      if (mode === 'softRole') return softRoleColors[row.role];
+      return row.color;
+    }
+
+    function renderMeter() {
+      document.documentElement.style.setProperty('--self', selfColor);
+      const meter = document.getElementById('meter');
+      meter.innerHTML = jobs.map(row => `
+        <div class="row ${row.self ? 'self' : ''}">
+          <div class="bar" style="--w:${row.width}%;--c:${getColor(row)}"></div>
+          <div class="text">
+            <span class="job">${row.job}</span>
+            <span></span>
+            <span class="value">${row.value}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSwatches() {
+      const box = document.getElementById('selfSwatches');
+      box.innerHTML = selfColors.map(([name, color]) => `
+        <button class="swatch ${color === selfColor ? 'active' : ''}" style="--c:${color}" data-self="${color}">
+          <b>${name}</b><br>${color.toUpperCase()}
+        </button>
+      `).join('');
+      document.getElementById('pickedText').textContent = `当前自身高亮色：${selfColor.toUpperCase()}。推荐优先试“日光黄”或“电光青”，在深色背景上最醒目。`;
+    }
+
+    function renderPalette() {
+      const palette = document.getElementById('jobPalette');
+      palette.innerHTML = jobs.map(row => `
+        <div class="chip" style="--c:${row.color}"><span>${row.job}</span><span>${row.color.toUpperCase()}</span></div>
+      `).join('');
+    }
+
+    document.querySelectorAll('[data-mode]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('[data-mode]').forEach(x => x.classList.remove('active'));
+        button.classList.add('active');
+        mode = button.dataset.mode;
+        renderMeter();
+      });
+    });
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-self]');
+      if (!button) return;
+      selfColor = button.dataset.self;
+      renderSwatches();
+      renderMeter();
+    });
+
+    renderPalette();
+    renderSwatches();
+    renderMeter();
+  </script>
+</body>
+</html>

@@ -102,7 +102,7 @@ internal sealed class PluginUI : IDisposable
 
     private void OpenDebugCombatLogWindow() => debugCombatLogWindow.IsOpen = true;
 
-    private void ToggleFloatingStatsWindow()
+    public void ToggleFloatingStatsWindow()
     {
         var nextState = !floatingStatsWindow.IsOpen;
         floatingStatsWindow.IsOpen = nextState;

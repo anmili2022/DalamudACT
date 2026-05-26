@@ -145,6 +145,7 @@ internal sealed class CombatTimelineWindow : Window
             }
         }
 
+        ImGui.SameLine();
         if (ImGui.Button("清空流水"))
         {
             statsService.ClearCombatTimeline();

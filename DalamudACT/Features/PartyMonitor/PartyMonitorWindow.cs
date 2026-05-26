@@ -158,8 +158,8 @@ internal sealed class PartyMonitorWindow : Window
                 DrawSkillGroup("技能监控", BuildMergedRows(members, config.PartyMonitor), MitigationColor);
             else
             {
-                DrawSkillGroup("团辅", raidBuffRows, RaidBuffColor);
-                DrawSkillGroup("减伤", mitigationRows, MitigationColor);
+                DrawSkillGroup(null, raidBuffRows, RaidBuffColor);
+                DrawSkillGroup(null, mitigationRows, MitigationColor);
             }
         }
 
@@ -211,14 +211,18 @@ internal sealed class PartyMonitorWindow : Window
            || state.IsActive
            || state.RemainingCooldown <= CooldownRevealSeconds;
 
-    private void DrawSkillGroup(string title, IReadOnlyList<MemberSkillRow> rows, Vector4 color)
+    private void DrawSkillGroup(string? title, IReadOnlyList<MemberSkillRow> rows, Vector4 color)
     {
         if (rows.Count == 0)
             return;
 
-        var count = rows.Sum(r => r.Skills.Count(ShouldShowSkill));
-        if (DrawGroupHeader($"{title} ({count})", color, title == "技能监控"))
-            ToggleCollapsed();
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            var count = rows.Sum(r => r.Skills.Count(ShouldShowSkill));
+            if (DrawGroupHeader($"{title} ({count})", color, title == "技能监控"))
+                ToggleCollapsed();
+        }
+
         foreach (var row in rows)
             DrawSkillRow(row.Member, row.Skills);
         ImGui.Dummy(new Vector2(0f, 6f));

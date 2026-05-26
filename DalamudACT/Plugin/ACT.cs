@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Dalamud.Game.Command;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
@@ -24,6 +25,7 @@ namespace DalamudACT;
 public sealed partial class ACT : IDalamudPlugin
 {
     private const uint InvalidActorId = 0xE0000000;
+    private const string CommandName = "/dps";
     private static readonly string PluginVersion = typeof(ACT).Assembly.GetName().Version?.ToString() ?? "未知版本";
 
     private readonly IDalamudPluginInterface pluginInterface;
@@ -67,6 +69,7 @@ public sealed partial class ACT : IDalamudPlugin
         InstallHooks();
 
         ui = new PluginUI(Configuration, statsService, monitorService);
+        RegisterCommands();
         pluginInterface.UiBuilder.Draw += ui.Draw;
         pluginInterface.UiBuilder.OpenMainUi += ui.OpenMainWindow;
         pluginInterface.UiBuilder.OpenConfigUi += ui.ToggleSettingsWindow;
@@ -80,9 +83,67 @@ public sealed partial class ACT : IDalamudPlugin
         pluginInterface.UiBuilder.Draw -= ui.Draw;
         pluginInterface.UiBuilder.OpenMainUi -= ui.OpenMainWindow;
         pluginInterface.UiBuilder.OpenConfigUi -= ui.ToggleSettingsWindow;
+        UnregisterCommands();
         ui.Dispose();
         DisposeHooks();
         Configuration.Save();
+    }
+
+    private void RegisterCommands()
+    {
+        DalamudApi.Commands.AddHandler(CommandName, new CommandInfo(OnCommand)
+        {
+            HelpMessage = "DPS统计：settings 设置；dps DPS悬浮窗；skills 技能监控；help 帮助。",
+        });
+    }
+
+    private static void UnregisterCommands()
+    {
+        DalamudApi.Commands.RemoveHandler(CommandName);
+    }
+
+    private void OnCommand(string command, string args)
+    {
+        _ = command;
+        var normalized = (args ?? string.Empty).Trim().ToLowerInvariant();
+        switch (normalized)
+        {
+            case "":
+            case "help":
+            case "帮助":
+                PrintCommandHelp();
+                return;
+            case "settings":
+            case "setting":
+            case "config":
+            case "cfg":
+            case "设置":
+                ui.ToggleSettingsWindow();
+                return;
+            case "dps":
+            case "stats":
+            case "panel":
+            case "统计":
+            case "悬浮窗":
+                ui.ToggleFloatingStatsWindow();
+                return;
+            case "skills":
+            case "skill":
+            case "party":
+            case "monitor":
+            case "技能":
+            case "技能监控":
+                ui.TogglePartyMonitorWindow();
+                return;
+            default:
+                LogHelper.PrintWithModule("命令", "宏", $"未知子命令：{args}。输入 /dps help 查看可用命令。");
+                return;
+        }
+    }
+
+    private static void PrintCommandHelp()
+    {
+        LogHelper.PrintWithModule("命令", "宏", "可用宏命令：/dps settings 切换设置面板；/dps dps 切换DPS统计悬浮窗；/dps skills 切换技能监控悬浮窗。 ");
     }
 
     private void OnFrameworkUpdate(IFramework framework)
@@ -636,7 +697,6 @@ public sealed partial class ACT : IDalamudPlugin
                     case LocalActionEffectType.Miss:
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            hasCombatStartingTrackedEffect = true;
                             statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, actionName, isMiss: true, nowUtc, zoneName);
                         }
                         break;
@@ -645,7 +705,6 @@ public sealed partial class ACT : IDalamudPlugin
                     case LocalActionEffectType.PartialInvulnerable:
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            hasCombatStartingTrackedEffect = true;
                             statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, actionName, isMiss: false, nowUtc, zoneName);
                         }
                         break;

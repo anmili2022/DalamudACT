@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DPS统计 主题色预览 v2</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg0: #05070d;
+      --bg1: #101725;
+      --panel: rgba(10, 14, 22, 0.82);
+      --panelLine: rgba(190, 210, 255, 0.16);
+      --text: #f7fbff;
+      --muted: rgba(247, 251, 255, 0.58);
+      --soft: rgba(255, 255, 255, 0.065);
+      --self: #ffe66d;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.48);
+      font-family: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 16%, rgba(59, 130, 246, 0.18), transparent 24%),
+        radial-gradient(circle at 82% 18%, rgba(168, 85, 247, 0.14), transparent 28%),
+        linear-gradient(145deg, var(--bg0), var(--bg1));
+      padding: 30px;
+    }
+
+    main { max-width: 1240px; margin: 0 auto; }
+    h1 { margin: 0; font-size: 27px; letter-spacing: 0.03em; }
+    p { margin: 0; }
+    .hint { color: var(--muted); margin-top: 8px; line-height: 1.7; }
+
+    .layout {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panelLine);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+    }
+
+    .controls { padding: 18px; }
+    .section + .section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--panelLine); }
+    .label { font-size: 13px; color: var(--muted); margin-bottom: 9px; }
+
+    .seg {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    button {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.065);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    button:hover { background: rgba(255, 255, 255, 0.10); }
+    button.active {
+      border-color: rgba(128, 190, 255, 0.84);
+      background: linear-gradient(90deg, rgba(56, 132, 255, 0.34), rgba(56, 132, 255, 0.10));
+      box-shadow: 0 0 18px rgba(56, 132, 255, 0.16) inset;
+    }
+
+    .colorGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .colorButton {
+      display: grid;
+      gap: 5px;
+      min-height: 62px;
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.28), rgba(0,0,0,0)),
+        var(--c);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.75);
+    }
+    .colorButton small { opacity: 0.82; }
+
+    .stage {
+      min-height: 620px;
+      padding: 18px;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.045), transparent),
+        rgba(6, 9, 15, 0.42);
+    }
+
+    .previewTitle {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .previewTitle strong { font-size: 16px; }
+    .previewTitle span { color: var(--muted); font-size: 12px; }
+
+    .meterWindow {
+      width: 520px;
+      border-radius: 10px;
+      border: 1px solid rgba(200, 220, 255, 0.16);
+      background: rgba(4, 7, 12, 0.72);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.46);
+      padding: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+    .tab {
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.68);
+      font-size: 12px;
+    }
+    .tab.active { color: #fff; background: rgba(64, 128, 255, 0.34); }
+
+    .row {
+      position: relative;
+      height: 24px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 4px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.065);
+    }
+    .fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--w);
+      background: var(--c);
+      opacity: var(--alpha);
+    }
+    .row.self {
+      border-color: color-mix(in srgb, var(--self), white 20%);
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--self), transparent 50%) inset,
+        0 0 14px color-mix(in srgb, var(--self), transparent 70%);
+    }
+    .row.self .fill {
+      background:
+        linear-gradient(90deg, var(--self), color-mix(in srgb, var(--self), white 25%));
+      opacity: 0.96;
+    }
+    .rowText {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 72px 1fr 36px;
+      gap: 8px;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 12.5px;
+      text-shadow: 0 1px 2px #000;
+    }
+    .job { font-weight: 800; letter-spacing: 0.03em; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .death { text-align: right; color: rgba(255,255,255,0.78); }
+
+    .partyMonitor {
+      margin-top: 16px;
+      width: 520px;
+      border-radius: 10px;
+      border: 1px solid rgba(200, 220, 255, 0.14);
+      background: rgba(4, 7, 12, 0.60);
+      padding: 9px;
+    }
+    .pmHeader {
+      color: #88d8ff;
+      font-weight: 800;
+      text-shadow: 0 1px 2px #000;
+      border-bottom: 1px solid rgba(136, 216, 255, 0.38);
+      padding-bottom: 5px;
+      margin-bottom: 7px;
+    }
+    .skillLine { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+    .nameTag {
+      min-width: 48px;
+      padding: 4px 7px;
+      border-radius: 5px;
+      background: rgba(59, 130, 246, 0.7);
+      font-size: 12px;
+      text-shadow: 0 1px 2px #000;
+    }
+    .icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 11px;
+    }
+    .ready { border-color: #a7f3a3; color: #a7f3a3; }
+    .cool { border-color: #ff914d; color: #fff; }
+    .activeSkill { border-color: #ffe45c; box-shadow: 0 0 10px rgba(255, 228, 92, 0.35); color: #ffe45c; }
+
+    .legend {
+      margin-top: 15px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .legendItem {
+      border-radius: 10px;
+      min-height: 58px;
+      padding: 8px;
+      background: var(--c);
+      border: 1px solid rgba(255,255,255,0.12);
+      text-shadow: 0 1px 2px #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      font-size: 12px;
+    }
+    .legendItem small { opacity: 0.86; }
+
+    @media (max-width: 980px) {
+      body { padding: 14px; }
+      .layout { grid-template-columns: 1fr; }
+      .meterWindow, .partyMonitor { width: 100%; }
+      .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>主题方案预览 v2</h1>
+    <p class="hint">更接近游戏内悬浮统计 + 技能监控的观感。先选“职能单色”和“凸显自身”颜色，再落代码。</p>
+
+    <div class="layout">
+      <aside class="panel controls">
+        <div class="section">
+          <div class="label">占比条配色模式</div>
+          <div class="seg">
+            <button class="active" data-mode="job">职业主题色（保留每个职业差异）</button>
+            <button data-mode="role">职能单色（高对比推荐）</button>
+            <button data-mode="muted">职能单色（低饱和护眼）</button>
+            <button data-mode="mono">单色背景 + 只凸显自身</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="label">自身高亮色</div>
+          <div class="colorGrid" id="selfColors"></div>
+        </div>
+
+        <div class="section">
+          <div class="label">建议</div>
+          <p class="hint" id="advice">推荐先看“职能单色（高对比）+ 日光黄自身高亮”。</p>
+        </div>
+      </aside>
+
+      <section class="panel stage">
+        <div class="previewTitle">
+          <strong id="modeTitle">职业主题色</strong>
+          <span>模拟悬浮窗口，透明背景，深色游戏场景</span>
+        </div>
+
+        <div class="meterWindow">
+          <div class="tabs"><span class="tab active">DPS</span><span class="tab">HPS</span><span class="tab">承伤</span></div>
+          <div id="rows"></div>
+        </div>
+
+        <div class="partyMonitor">
+          <div class="pmHeader">技能监控</div>
+          <div class="skillLine"><span class="nameTag">骑士</span><span class="icon activeSkill">效</span><span class="icon ready">✓</span><span class="icon cool">12</span><span class="icon ready">✓</span></div>
+          <div class="skillLine"><span class="nameTag selfTag">贤者</span><span class="icon activeSkill">15</span><span class="icon cool">28</span><span class="icon ready">✓</span></div>
+          <div class="skillLine"><span class="nameTag">武士</span><span class="icon cool">48</span><span class="icon ready">✓</span></div>
+        </div>
+
+        <div class="legend" id="legend"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const data = [
+      { job: '骑士', role: 'tank', dps: '9.84k', death: 0, w: 98, jobColor: '#151c64' },
+      { job: '贤者', role: 'healer', dps: '8.92k', death: 0, w: 89, jobColor: '#7fa8e8', self: true },
+      { job: '武士', role: 'melee', dps: '8.44k', death: 1, w: 84, jobColor: '#ffca28' },
+      { job: '舞者', role: 'ranged', dps: '7.60k', death: 0, w: 76, jobColor: '#f48fb1' },
+      { job: '黑魔', role: 'caster', dps: '7.12k', death: 0, w: 71, jobColor: '#7e57c2' },
+      { job: '战士', role: 'tank', dps: '6.55k', death: 0, w: 65, jobColor: '#991717' },
+      { job: '诗人', role: 'ranged', dps: '5.90k', death: 2, w: 59, jobColor: '#9e9d24' },
+      { job: '赤魔', role: 'caster', dps: '5.45k', death: 0, w: 54, jobColor: '#e91e63' },
+    ];
+
+    const role = {
+      tank: ['坦克', '#3b82f6'],
+      healer: ['治疗', '#22c55e'],
+      melee: ['输出', '#ef4444'],
+      ranged: ['输出', '#ef4444'],
+      caster: ['输出', '#ef4444'],
+    };
+
+    const mutedRole = {
+      tank: ['坦克', '#496a9e'],
+      healer: ['治疗', '#5a9a71'],
+      melee: ['输出', '#9b5b5b'],
+      ranged: ['输出', '#9b5b5b'],
+      caster: ['输出', '#9b5b5b'],
+    };
+
+    const selfChoices = [
+      ['日光黄', '#ffe66d'],
+      ['电光青', '#22d3ee'],
+      ['暖金', '#fbbf24'],
+      ['玫红', '#fb7185'],
+      ['翡翠绿', '#34d399'],
+      ['纯白', '#ffffff'],
+    ];
+
+    let mode = 'job';
+    let self = selfChoices[0][1];
+
+    function colorFor(row) {
+      if (mode === 'job') return row.jobColor;
+      if (mode === 'role') return role[row.role][1];
+      if (mode === 'muted') return mutedRole[row.role][1];
+      return '#334155';
+    }
+
+    function modeName() {
+      return {
+        job: '职业主题色',
+        role: '职能单色（高对比）',
+        muted: '职能单色（低饱和）',
+        mono: '单色背景 + 凸显自身',
+      }[mode];
+    }
+
+    function renderRows() {
+      document.documentElement.style.setProperty('--self', self);
+      document.getElementById('modeTitle').textContent = modeName();
+      document.getElementById('rows').innerHTML = data.map(row => `
+        <div class="row ${row.self ? 'self' : ''}">
+          <div class="fill" style="--w:${row.w}%;--c:${colorFor(row)};--alpha:${mode === 'mono' ? 0.38 : 0.75}"></div>
+          <div class="rowText"><span class="job">${row.job}</span><span class="num">${row.dps}</span><span class="death">${row.death}</span></div>
+        </div>
+      `).join('');
+      document.querySelector('.selfTag').style.background = self;
+      document.querySelector('.selfTag').style.color = '#111827';
+      document.querySelector('.selfTag').style.textShadow = 'none';
+    }
+
+    function renderLegend() {
+      const source = mode === 'muted' ? mutedRole : role;
+      const uniqueRoles = [...new Map(Object.values(source).map(([name, color]) => [name, [name, color]])).values()];
+      document.getElementById('legend').innerHTML = uniqueRoles.map(([name, color]) => `
+        <div class="legendItem" style="--c:${color}"><b>${name}</b><small>${color.toUpperCase()}</small></div>
+      `).join('') + `<div class="legendItem" style="--c:${self};color:#111;text-shadow:none"><b>自身</b><small>${self.toUpperCase()}</small></div>`;
+    }
+
+    function renderSelfButtons() {
+      document.getElementById('selfColors').innerHTML = selfChoices.map(([name, color]) => `
+        <button class="colorButton ${color === self ? 'active' : ''}" data-self="${color}" style="--c:${color}"><b>${name}</b><small>${color.toUpperCase()}</small></button>
+      `).join('');
+    }
+
+    function updateAdvice() {
+      const text = mode === 'mono'
+        ? '单色模式下，自身高亮会最突出，适合只想快速定位自己的场景。'
+        : mode === 'role'
+        ? '高对比职能单色最清晰，适合推广默认方案。'
+        : mode === 'muted'
+        ? '低饱和职能单色更柔和，长时间看更舒服，但识别度略低。'
+        : '职业主题色信息量最多，但颜色较杂。可搭配自身高亮解决找自己困难。';
+      document.getElementById('advice').textContent = text;
+    }
+
+    function render() {
+      renderRows();
+      renderLegend();
+      renderSelfButtons();
+      updateAdvice();
+    }
+
+    document.addEventListener('click', event => {
+      const modeButton = event.target.closest('[data-mode]');
+      if (modeButton) {
+        mode = modeButton.dataset.mode;
+        document.querySelectorAll('[data-mode]').forEach(btn => btn.classList.toggle('active', btn === modeButton));
+        render();
+        return;
+      }
+      const selfButton = event.target.closest('[data-self]');
+      if (selfButton) {
+        self = selfButton.dataset.self;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

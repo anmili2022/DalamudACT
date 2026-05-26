@@ -44,9 +44,6 @@ internal sealed class PluginUI : IDisposable
 
     public void Draw()
     {
-        if (floatingStatsWindow.IsOpen != config.ShowStatsPanel)
-            floatingStatsWindow.IsOpen = config.ShowStatsPanel;
-
         SyncPartyMonitorVisibility();
 
         try
@@ -63,12 +60,13 @@ internal sealed class PluginUI : IDisposable
             }
         }
 
-        if (config.ShowStatsPanel != floatingStatsWindow.IsOpen)
-        {
-            config.ShowStatsPanel = floatingStatsWindow.IsOpen;
-            config.ShowDemoPanel = floatingStatsWindow.IsOpen;
-            config.Save();
-        }
+        SyncFloatingStatsVisibility();
+    }
+
+    private void SyncFloatingStatsVisibility()
+    {
+        if (floatingStatsWindow.IsOpen != config.ShowStatsPanel)
+            floatingStatsWindow.IsOpen = config.ShowStatsPanel;
     }
 
     private void SyncPartyMonitorVisibility()

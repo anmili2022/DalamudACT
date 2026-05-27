@@ -47,7 +47,9 @@ internal sealed partial class LocalStatsService
     private static ActorIdentity GetPartyMemberIdentity(Dalamud.Game.ClientState.Party.IPartyMember member, IGameObject? gameObject)
     {
         var gameObjectIdentity = GetGameObjectIdentity(gameObject);
-        var objectId = member.ObjectId;
+        var objectId = TryGetPropertyActorId(member, "EntityId");
+        if (objectId == 0)
+            objectId = TryGetPropertyActorId(member, "ObjectId");
         var entityId = TryGetPropertyActorId(member, "EntityId");
         return new ActorIdentity(
             gameObjectIdentity.GameObjectId,
@@ -59,7 +61,9 @@ internal sealed partial class LocalStatsService
     private static ActorIdentity GetBuddyIdentity(IBuddyMember buddy, IGameObject? gameObject)
     {
         var gameObjectIdentity = GetGameObjectIdentity(gameObject);
-        var objectId = buddy.ObjectId;
+        var objectId = TryGetPropertyActorId(buddy, "EntityId");
+        if (objectId == 0)
+            objectId = TryGetPropertyActorId(buddy, "ObjectId");
         var entityId = TryGetPropertyActorId(buddy, "EntityId");
         return new ActorIdentity(
             gameObjectIdentity.GameObjectId,

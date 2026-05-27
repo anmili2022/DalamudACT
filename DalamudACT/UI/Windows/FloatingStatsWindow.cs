@@ -41,6 +41,7 @@ internal sealed class FloatingStatsWindow : Window
     private StatsPanelTabId activeTab = StatsPanelTabId.None;
     private int observedEncounterFinalizedVersion;
     private FloatingStatsDisplayStyle observedDisplayStyle;
+    private bool observedIkegamiMinimalMode;
 
     public FloatingStatsWindow(
         PluginConfiguration config,
@@ -55,6 +56,7 @@ internal sealed class FloatingStatsWindow : Window
         Size = expandedWindowSize;
         SizeCondition = ImGuiCond.FirstUseEver;
         observedDisplayStyle = config.FloatingStatsDisplayStyle;
+        observedIkegamiMinimalMode = config.FloatingStatsIkegamiMinimalMode;
         InitializeStartupLayout();
         applyStartupExpandedSize = !collapseToTabBar;
     }
@@ -75,6 +77,17 @@ internal sealed class FloatingStatsWindow : Window
                 true);
             ApplyDisplayStyleLayoutChange(config.FloatingStatsDisplayStyle);
             observedDisplayStyle = config.FloatingStatsDisplayStyle;
+        }
+
+        if (observedIkegamiMinimalMode != config.FloatingStatsIkegamiMinimalMode)
+        {
+            observedIkegamiMinimalMode = config.FloatingStatsIkegamiMinimalMode;
+            if (IsIkegamiMinimalMode())
+            {
+                collapseToTabBar = false;
+                expandedWindowSize = GetExpandedWindowSize(config.FloatingStatsDisplayStyle);
+                ImGui.SetWindowSize(expandedWindowSize, ImGuiCond.Always);
+            }
         }
 
         if (applyStartupCollapsedSize && collapseToTabBar)
@@ -115,7 +128,7 @@ internal sealed class FloatingStatsWindow : Window
         if (drawResult.OpenSettingsRequested)
             toggleSettingsWindow();
 
-        if (!SupportsCollapsedTabBar(config.FloatingStatsDisplayStyle))
+        if (!SupportsCollapsedTabBar())
             return;
 
         if (collapseToTabBar && activeTab != StatsPanelTabId.Dps)
@@ -144,7 +157,7 @@ internal sealed class FloatingStatsWindow : Window
 
     private void InitializeStartupLayout()
     {
-        if (!SupportsCollapsedTabBar(config.FloatingStatsDisplayStyle))
+        if (!SupportsCollapsedTabBar())
         {
             activeTab = config.ShowDpsTab ? StatsPanelTabId.Dps : ResolvePreferredLiveTab();
             collapseToTabBar = false;
@@ -308,8 +321,16 @@ internal sealed class FloatingStatsWindow : Window
     private static bool NearlyEqual(float left, float right)
         => Math.Abs(left - right) <= SavedWindowSizeEpsilon;
 
-    private static bool SupportsCollapsedTabBar(FloatingStatsDisplayStyle style)
-        => style != FloatingStatsDisplayStyle.Minimal;
+    private bool SupportsCollapsedTabBar()
+        => SupportsCollapsedTabBar(config.FloatingStatsDisplayStyle);
+
+    private bool SupportsCollapsedTabBar(FloatingStatsDisplayStyle style)
+        => style != FloatingStatsDisplayStyle.Minimal
+           && !(style == FloatingStatsDisplayStyle.Ikegami && config.FloatingStatsIkegamiMinimalMode);
+
+    private bool IsIkegamiMinimalMode()
+        => config.FloatingStatsDisplayStyle == FloatingStatsDisplayStyle.Ikegami
+           && config.FloatingStatsIkegamiMinimalMode;
 
     private float? ApplyMinimalAutoWindowHeightIfNeeded()
     {

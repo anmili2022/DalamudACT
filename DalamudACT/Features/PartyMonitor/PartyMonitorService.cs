@@ -342,7 +342,9 @@ internal sealed class PartyMonitorService
     {
         try
         {
-            var id = member.ObjectId;
+            var id = ReadUIntProperty(member, "EntityId");
+            if (id == 0)
+                id = ReadUIntProperty(member, "ObjectId");
             if (id != 0) return id;
             var obj = member.GameObject;
             if (obj != null)

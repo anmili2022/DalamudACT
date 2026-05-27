@@ -62,10 +62,11 @@ internal sealed class PartyMonitorWindow : Window
     {
         BgAlpha = 0f;
 
+        Flags = BaseWindowFlags;
+        if (config.PartyMonitor.AutoResizePartyMonitorWindow && !collapsed)
+            Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         if (config.PartyMonitor.LockPartyMonitorWindow)
-            Flags = BaseWindowFlags | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs;
-        else
-            Flags = BaseWindowFlags;
+            Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs;
 
         ApplyCollapsedWindowSize();
 
@@ -281,13 +282,10 @@ internal sealed class PartyMonitorWindow : Window
     private void DrawSkillIcon(PartyMonitorService.SkillCooldownState state)
     {
         var iconSize = GetIconSize();
-        var icon = KamiIconLoader.GetIcon(state.Skill.ActionId);
         var pos = ImGui.GetCursorScreenPos();
         var border = GetSkillStateColor(state);
 
-        if (icon != default)
-            ImGui.Image(icon, new Vector2(iconSize, iconSize));
-        else
+        if (!KamiIconLoader.TryDrawIcon(state.Skill.ActionId, new Vector2(iconSize, iconSize)))
             ImGui.Dummy(new Vector2(iconSize, iconSize));
 
         var drawList = ImGui.GetWindowDrawList();
@@ -398,14 +396,20 @@ internal sealed class PartyMonitorWindow : Window
     private static void DrawSkillTooltip(PartyMonitorService.SkillCooldownState state)
     {
         ImGui.BeginTooltip();
-        ImGui.TextUnformatted(state.Skill.Name);
-        if (state.IsActive)
-            ImGui.TextColored(ActiveColor, $"激活中 {state.RemainingActiveDuration:0}s");
-        else if (state.IsReady)
-            ImGui.TextColored(ReadyColor, "就绪");
-        else
-            ImGui.TextColored(CooldownColor, $"冷却中 {state.RemainingCooldown:0}s");
-        ImGui.EndTooltip();
+        try
+        {
+            ImGui.TextUnformatted(state.Skill.Name);
+            if (state.IsActive)
+                ImGui.TextColored(ActiveColor, $"激活中 {state.RemainingActiveDuration:0}s");
+            else if (state.IsReady)
+                ImGui.TextColored(ReadyColor, "就绪");
+            else
+                ImGui.TextColored(CooldownColor, $"冷却中 {state.RemainingCooldown:0}s");
+        }
+        finally
+        {
+            ImGui.EndTooltip();
+        }
     }
 
     private void DrawFoodOverlay(IReadOnlyList<PartyMonitorService.PartyMemberState> members)

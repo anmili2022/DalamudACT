@@ -13,6 +13,8 @@ public sealed class PartyMonitorConfig
 
     public bool LockPartyMonitorWindow { get; set; }
 
+    public bool AutoResizePartyMonitorWindow { get; set; }
+
     public bool MonitorFood { get; set; } = true;
 
     public bool MonitorRaidBuffs { get; set; } = true;

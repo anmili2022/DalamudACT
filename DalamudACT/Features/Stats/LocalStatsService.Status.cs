@@ -127,6 +127,42 @@ internal sealed partial class LocalStatsService
         }
     }
 
+    private static bool IsBuffStatus(object status)
+        => TryGetStatusCategory(status) == 1;
+
+    private static bool IsDebuffStatus(object status)
+        => TryGetStatusCategory(status) == 2;
+
+    private static int TryGetStatusCategory(object status)
+    {
+        var category = TryGetStatusGameDataInt(status, "StatusCategory");
+        if (category != 0)
+            return category;
+
+        return TryGetStatusGameDataInt(status, "Category");
+    }
+
+    private static string GetStatusName(object status, uint statusId)
+    {
+        var name = TryGetStatusGameDataText(status, "Name");
+        return string.IsNullOrWhiteSpace(name)
+            ? $"0x{statusId:X}"
+            : NormalizeActionName(name);
+    }
+
+    private static string FormatStatusNameWithId(string statusName, uint statusId)
+        => string.IsNullOrWhiteSpace(statusName)
+            ? $"0x{statusId:X}"
+            : $"{statusName}[{statusId}]";
+
+    private static string FormatStatusRemaining(object status)
+    {
+        var remainingTime = GetStatusRemainingTime(status);
+        return remainingTime > 0f
+            ? $"，剩余 {Math.Floor(remainingTime)}s"
+            : string.Empty;
+    }
+
     private static object? GetReflectedStatusValue(object status, string propertyName)
     {
         try

@@ -18,15 +18,13 @@ internal sealed class MainWindow : Window
     private readonly Action openSettings;
     private readonly Action toggleFloatingStatsPanel;
     private readonly Action openCombatTimelineWindow;
-    private readonly Action openDebugCombatLogWindow;
 
     public MainWindow(
         PluginConfiguration config,
         LocalStatsService statsService,
         Action openSettings,
         Action toggleFloatingStatsPanel,
-        Action openCombatTimelineWindow,
-        Action openDebugCombatLogWindow)
+        Action openCombatTimelineWindow)
         : base("DPS统计", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
         this.config = config;
@@ -34,7 +32,6 @@ internal sealed class MainWindow : Window
         this.openSettings = openSettings;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
-        this.openDebugCombatLogWindow = openDebugCombatLogWindow;
         Size = new Vector2(640f, 600f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
@@ -53,7 +50,7 @@ internal sealed class MainWindow : Window
         DrawCard(
             "##main_quick_actions_card",
             "快速操作",
-            "常用入口集中在这里，可快速打开设置页、战斗流水/debug战斗记录窗口，或显示/隐藏悬浮统计面板。",
+            "常用入口集中在这里，可快速打开设置页、战斗流水窗口，或显示/隐藏悬浮统计面板。",
             6.6f,
             DrawQuickActions);
 
@@ -88,26 +85,27 @@ internal sealed class MainWindow : Window
             ImGuiTableFlags.SizingStretchSame
             | ImGuiTableFlags.NoSavedSettings;
 
-        if (ImGui.BeginTable("##main_action_grid", 4, flags))
+        if (ImGui.BeginTable("##main_action_grid", 3, flags))
         {
-            ImGui.TableNextRow();
-            ImGui.TableSetColumnIndex(0);
-            if (ImGui.Button("打开设置", new Vector2(-1f, 0f)))
-                openSettings();
+            try
+            {
+                ImGui.TableNextRow();
+                ImGui.TableSetColumnIndex(0);
+                if (ImGui.Button("打开设置", new Vector2(-1f, 0f)))
+                    openSettings();
 
-            ImGui.TableSetColumnIndex(1);
-            if (ImGui.Button("打开战斗流水", new Vector2(-1f, 0f)))
-                openCombatTimelineWindow();
+                ImGui.TableSetColumnIndex(1);
+                if (ImGui.Button("打开战斗流水", new Vector2(-1f, 0f)))
+                    openCombatTimelineWindow();
 
-            ImGui.TableSetColumnIndex(2);
-            if (ImGui.Button("打开debug战斗记录", new Vector2(-1f, 0f)))
-                openDebugCombatLogWindow();
-
-            ImGui.TableSetColumnIndex(3);
-            if (ImGui.Button(GetFloatingStatsButtonLabel(), new Vector2(-1f, 0f)))
-                toggleFloatingStatsPanel();
-
-            ImGui.EndTable();
+                ImGui.TableSetColumnIndex(2);
+                if (ImGui.Button(GetFloatingStatsButtonLabel(), new Vector2(-1f, 0f)))
+                    toggleFloatingStatsPanel();
+            }
+            finally
+            {
+                ImGui.EndTable();
+            }
         }
 
         ImGui.TextDisabled($"当前状态：{statsService.StatusText}");
@@ -118,14 +116,20 @@ internal sealed class MainWindow : Window
         if (!ImGui.BeginTable("##main_runtime_summary", 2, SummaryTableFlags))
             return;
 
-        DrawRow("模式", "独立运行 / 本地采集");
-        DrawRow("版本", PluginVersion);
-        DrawRow("统计来源", statsService.DataSourceText);
-        DrawRow("战斗结束判定", BuildCombatEndSummary(config));
-        DrawRow("悬浮面板", BuildFloatingPanelSummary(config));
-        DrawRow("悬浮对象", BuildFloatingParticipantSummary(config));
-        DrawRow("当前状态", statsService.StatusText);
-        ImGui.EndTable();
+        try
+        {
+            DrawRow("模式", "独立运行 / 本地采集");
+            DrawRow("版本", PluginVersion);
+            DrawRow("统计来源", statsService.DataSourceText);
+            DrawRow("战斗结束判定", BuildCombatEndSummary(config));
+            DrawRow("悬浮面板", BuildFloatingPanelSummary(config));
+            DrawRow("悬浮对象", BuildFloatingParticipantSummary(config));
+            DrawRow("当前状态", statsService.StatusText);
+        }
+        finally
+        {
+            ImGui.EndTable();
+        }
     }
 
     private void DrawUiSummary()
@@ -133,13 +137,19 @@ internal sealed class MainWindow : Window
         if (!ImGui.BeginTable("##main_ui_summary", 2, SummaryTableFlags))
             return;
 
-        DrawRow("主界面透明度", $"{config.WindowOpacity:P0}");
-        DrawRow("悬浮面板透明度", $"{config.FloatingStatsOpacity:P0}");
-        DrawRow("页签显示", BuildTabSummary(config));
-        DrawRow("共享列显示", BuildColumnSummary(config));
-        DrawRow("统计页列宽记忆", BuildMetricWidthSummary(config));
-        DrawRow("历史页列宽记忆", BuildHistoryWidthSummary(config));
-        ImGui.EndTable();
+        try
+        {
+            DrawRow("主界面透明度", $"{config.WindowOpacity:P0}");
+            DrawRow("悬浮面板透明度", $"{config.FloatingStatsOpacity:P0}");
+            DrawRow("页签显示", BuildTabSummary(config));
+            DrawRow("共享列显示", BuildColumnSummary(config));
+            DrawRow("统计页列宽记忆", BuildMetricWidthSummary(config));
+            DrawRow("历史页列宽记忆", BuildHistoryWidthSummary(config));
+        }
+        finally
+        {
+            ImGui.EndTable();
+        }
     }
 
     private void DrawRecentStatusSummary()
@@ -159,16 +169,26 @@ internal sealed class MainWindow : Window
         ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 1f);
         ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(1f, 1f, 1f, 0.035f));
         ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1f, 1f, 1f, 0.12f));
-
-        ImGui.BeginChild(id, new Vector2(0f, height), true);
-        ImGui.TextUnformatted(title);
-        ImGui.TextDisabled(description);
-        ImGui.Spacing();
-        drawContent();
-        ImGui.EndChild();
-
-        ImGui.PopStyleColor(2);
-        ImGui.PopStyleVar(2);
+        try
+        {
+            ImGui.BeginChild(id, new Vector2(0f, height), true);
+            try
+            {
+                ImGui.TextUnformatted(title);
+                ImGui.TextDisabled(description);
+                ImGui.Spacing();
+                drawContent();
+            }
+            finally
+            {
+                ImGui.EndChild();
+            }
+        }
+        finally
+        {
+            ImGui.PopStyleColor(2);
+            ImGui.PopStyleVar(2);
+        }
     }
 
     private string GetFloatingStatsButtonLabel()

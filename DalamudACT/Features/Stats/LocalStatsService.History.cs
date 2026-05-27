@@ -58,9 +58,6 @@ internal sealed partial class LocalStatsService
         {
             historicalRecords.Clear();
             combatTimelineEntries.Clear();
-            debugCombatLogEntries.Clear();
-            debugObservedStatusKeys.Clear();
-            debugBossCastActionIds.Clear();
             ownerCache.Clear();
             observedFriendlyActorCache.Clear();
             partyMemberHpCache.Clear();
@@ -80,8 +77,6 @@ internal sealed partial class LocalStatsService
             enteredCombatWithoutDataSinceUtc = default;
             lastNoDataCombatDiagnosticUtc = default;
             lastPlayerDotStatusPollUtc = default;
-            lastDebugCombatRecordPollUtc = default;
-            debugCombatRecorderPrimed = false;
             HistoryTransferStatusText = string.Empty;
             suppressStaleDisplayUntilNextCombatStart = false;
             StatusText = "等待战斗数据...";

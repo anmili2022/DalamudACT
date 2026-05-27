@@ -11,6 +11,29 @@ public static class KamiIconLoader
 {
     private static readonly Dictionary<uint, IDalamudTextureWrap?> IconCache = new();
     private static readonly Dictionary<uint, uint> ActionIconCache = new();
+    private static bool disableIconDrawing;
+
+    public static bool TryDrawIcon(uint actionId, Vector2 size)
+    {
+        if (disableIconDrawing)
+            return false;
+
+        var icon = GetIcon(actionId);
+        if (icon == default)
+            return false;
+
+        try
+        {
+            ImGui.Image(icon, size);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            disableIconDrawing = true;
+            LogHelper.Error("队友监控", ex, "绘制技能图标失败，已临时禁用技能图标以避免 UI 原生层崩溃。 ");
+            return false;
+        }
+    }
 
     public static unsafe ImTextureID GetIcon(uint actionId)
     {
@@ -57,6 +80,7 @@ public static class KamiIconLoader
             wrap?.Dispose();
         IconCache.Clear();
         ActionIconCache.Clear();
+        disableIconDrawing = false;
     }
 
     private static uint ResolveActionIconId(uint actionId)

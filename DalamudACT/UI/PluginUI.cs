@@ -12,7 +12,6 @@ internal sealed class PluginUI : IDisposable
     private readonly SettingsWindow settingsWindow;
     private readonly FloatingStatsWindow floatingStatsWindow;
     private readonly CombatTimelineWindow combatTimelineWindow;
-    private readonly DebugCombatLogWindow debugCombatLogWindow;
     private readonly PartyMonitorWindow partyMonitorWindow;
     private bool windowDrawFaulted;
 
@@ -20,25 +19,22 @@ internal sealed class PluginUI : IDisposable
     {
         this.config = config;
 
-        mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
-        settingsWindow = new SettingsWindow(config, statsService, monitorService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenDebugCombatLogWindow);
+        mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
+        settingsWindow = new SettingsWindow(config, statsService, monitorService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
-        debugCombatLogWindow = new DebugCombatLogWindow(config, statsService);
         partyMonitorWindow = new PartyMonitorWindow(config, monitorService, ToggleSettingsWindow);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);
         AddWindow(windowSystem, floatingStatsWindow);
         AddWindow(windowSystem, combatTimelineWindow);
-        AddWindow(windowSystem, debugCombatLogWindow);
         AddWindow(windowSystem, partyMonitorWindow);
 
         mainWindow.IsOpen = false;
         settingsWindow.IsOpen = false;
         floatingStatsWindow.IsOpen = config.ShowStatsPanel;
         combatTimelineWindow.IsOpen = false;
-        debugCombatLogWindow.IsOpen = false;
         partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
     }
 
@@ -97,8 +93,6 @@ internal sealed class PluginUI : IDisposable
     private void OpenSettingsWindow() => settingsWindow.IsOpen = true;
 
     private void OpenCombatTimelineWindow() => combatTimelineWindow.IsOpen = true;
-
-    private void OpenDebugCombatLogWindow() => debugCombatLogWindow.IsOpen = true;
 
     public void ToggleFloatingStatsWindow()
     {

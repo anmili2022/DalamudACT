@@ -90,26 +90,44 @@ internal static class LogUiHelper
             ImGui.Bullet();
             ImGui.SameLine();
             ImGui.PushStyleColor(ImGuiCol.Text, GetRecentLogLevelColor(entry.Level));
-            ImGui.TextWrapped($"[{entry.Level}] {entry.TimestampLocal:HH:mm:ss} {entry.Message}");
-            ImGui.PopStyleColor();
+            try
+            {
+                ImGui.TextWrapped($"[{entry.Level}] {entry.TimestampLocal:HH:mm:ss} {entry.Message}");
+            }
+            finally
+            {
+                ImGui.PopStyleColor();
+            }
 
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                ImGui.TextUnformatted($"级别：{entry.Level}");
-                ImGui.TextUnformatted($"时间：{entry.TimestampLocal:yyyy-MM-dd HH:mm:ss.fff}");
-                ImGui.Separator();
-                if (ImGui.SmallButton($"复制全文##recent_log_copy_{index}"))
+                try
                 {
-                    ImGui.SetClipboardText(BuildRecentLogFullText(entry));
-                    ShowInlineFeedback("已复制");
-                }
+                    ImGui.TextUnformatted($"级别：{entry.Level}");
+                    ImGui.TextUnformatted($"时间：{entry.TimestampLocal:yyyy-MM-dd HH:mm:ss.fff}");
+                    ImGui.Separator();
+                    if (ImGui.SmallButton($"复制全文##recent_log_copy_{index}"))
+                    {
+                        ImGui.SetClipboardText(BuildRecentLogFullText(entry));
+                        ShowInlineFeedback("已复制");
+                    }
 
-                ImGui.Separator();
-                ImGui.PushTextWrapPos(Math.Min(ImGui.GetFontSize() * 28f, 720f));
-                ImGui.TextUnformatted(entry.Message);
-                ImGui.PopTextWrapPos();
-                ImGui.EndTooltip();
+                    ImGui.Separator();
+                    ImGui.PushTextWrapPos(Math.Min(ImGui.GetFontSize() * 28f, 720f));
+                    try
+                    {
+                        ImGui.TextUnformatted(entry.Message);
+                    }
+                    finally
+                    {
+                        ImGui.PopTextWrapPos();
+                    }
+                }
+                finally
+                {
+                    ImGui.EndTooltip();
+                }
             }
         }
     }

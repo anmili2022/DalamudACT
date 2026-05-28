@@ -1,0 +1,321 @@
+### The Windward Wilds
+# ZoneId: 1300
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+# ALL ENCOUNTER ABILITIES
+#
+# Probable auto-attacks:
+#   Wyvern's Radiance
+#   AB38 AB39 AB3F AB40 AB44 AB45 AB46 AB47 AB51 AB52 AB65 AB66 AB68 AB69 AB6A
+#   AF07 AF08 B000 B003 B010 B011
+#  Used throughout fight at odd times, doesn't seem to line up with
+#  mechanics.
+#
+#  A94D --sync--
+#   Appears at odd times near some jumps, but is inconsistent.
+#
+# Mechanics:
+#
+# AB33 -> Jump to center
+# B077 --sync-- -> Jump to edge
+#
+# AB34 Chainblade Blow
+# AB35 Chainblade Blow
+# AB36 Chainblade Blow
+# AB37 Chainblade Blow
+# AFFA Chainblade Blow
+# AFFB Chainblade Blow
+# AFFC Chainblade Blow
+# AFFD Chainblade Blow
+# AFFE Chainblade Blow
+# AFFF Chainblade Blow
+# B001 Chainblade Blow
+# B002 Chainblade Blow
+#  Together form the chainblade bow. Some abilities used during early phase,
+#  while others used after power-up.
+#
+#  One ability is triggered when the hand falls, then two abilities for the
+#  actual damage. Timeline only shows the first dmage triggers.
+#
+# AB3A Guardian Siegeflight
+# AB3B Guardian Siegeflight
+# AB3D Wyvern's Siegeflight
+# AB3E Wyvern's Siegeflight
+# B00B Guardian Siegeflight
+# B00C Wyvern's Siegeflight
+# B00D Guardian Siegeflight
+# B00F Wyvern's Siegeflight
+# B012 --sync--
+# B044 --sync--
+# B014 --sync--
+# B043 --sync--
+#  Dash + lines mechanic. Guardian is white line expanding with sides safe,
+#  while Wyvern's is red line leaving center safe. The first ability appears
+#  to be the dash, followed by the turn around.
+#
+# AB48 Wyvern's Ouroblade
+# AB49 Wyvern's Ouroblade
+# AB4A Wyvern's Ouroblade
+# AB4B Wyvern's Ouroblade
+# B004 Wyvern's Ouroblade
+# B005 Wyvern's Ouroblade
+# B006 Wyvern's Ouroblade
+# B007 Wyvern's Ouroblade
+#  Half room cleave, two hits, two variants per phase. Only the first hit
+#  shows in the timeline.
+#
+# AB3C Guardian Resonance
+# B00E Guardian Resonance
+#  Lines up with the expanded lines (in or out), but only the white lines
+#  has this ability. It lines up with the red lines damage, but the timeline
+#  generator doesn't fill in the red lines ability.
+#
+# AB4D Guardian Resonance
+# AB4E Guardian Resonance
+# AB50 Guardian Resonance
+# AB4C Aetheric Resonance
+#  Skills used during towers.
+#
+# AB41 --sync--
+# B013 --sync--
+# AB42 Rush
+# AB43 Rush
+#  Dashes + expanding rings? Not sure if we have a sync entry for the ring
+#  explosions.
+#
+# AB53 --sync--
+#  Unsure, something after towers?
+#
+# AB54 Wyvern's Vengeance
+# AB55 Wyvern's Vengeance
+#  Does seem to be the actual exaflare hits, but we need to identify which
+#  ones make good log syncs, as there are too many in the generated
+#  timeline.
+#
+# AB5A Wild Energy
+#  Player aoe puddles?
+#
+# AB5D Forged Fury
+# AB5E Forged Fury
+# AEF6 Forged Fury
+# AEF7 Forged Fury
+#  Powerup skill, along with raidwide.
+#
+# AB61 --sync--
+# AB63 Wyvern's Weal
+# AFF6 Wyvern's Weal
+# AFF7 Wyvern's Weal
+# AFF8 Wyvern's Weal
+# AFF9 Wyvern's Weal
+#  Line aoe sweep across arena.
+
+# AB64 Wyvern's Rattle
+#  Single rolling line?
+#
+# AB67 Wrathful Rattle
+#  Exalines maybe?
+#
+# AB6B Chainblade Charge
+# AB6C Chainblade Charge
+# AF0B Chainblade Charge
+#  Party stack. The last ability is the actual stack, others are part of
+#  windup.
+#
+# AB6E Roar - Aoe
+# B091 Roar - Aoe
+#
+# AF04 Steeltail Thrust
+# B008 Steeltail Thrust
+#  Tail thrust. It looks like damage is on the second skill.
+#
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+# Raidwide
+5.6 "咆哮 (全屏)" Ability { id: "AB6E", source: "护锁刃龙" }
+# Chainblade Blow x2
+14.4 "--sync--" Ability { id: "(AB34|AB35)", source: "护锁刃龙" }
+15.6 "锁刃敲打 (1)" Ability { id: "(AB36|AFFA)", source: "护锁刃龙" }
+15.9 "--sync--" Ability { id: "(AB37|AFFB)", source: "护锁刃龙" }
+23.3 "--sync--" Ability { id: "(AB34|AB35)", source: "护锁刃龙" }
+24.5 "锁刃敲打 (2)" Ability { id: "(AB36|AFFA)", source: "护锁刃龙" }
+24.8 "--sync--" Ability { id: "(AB37|AFFB)", source: "护锁刃龙" }
+# Jump to edge
+31.0 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+# Dash + lines
+39.2 "锁刃飞翔突进 (冲锋)" Ability { id: "(AB3A|AB3D)", source: "护锁刃龙" }
+40.8 "--sync--" Ability { id: "(AB3B|AB3E)", source: "护锁刃龙" }
+41.5 "--sync--" Ability { id: "(B014|B043)", source: "护锁刃龙" }
+44.3 "护龙共振" Ability { id: "AB3C", source: "护锁刃龙" }
+# Rolling line + puddles
+44.8 "锁哭龙闪" Ability { id: "AB64", source: "护锁刃龙" }
+# Dash + lines
+60.2 "锁刃飞翔突进 (冲锋)" Ability { id: "(AB3A|AB3D)", source: "护锁刃龙" }
+61.6 "--sync--" Ability { id: "(AB3B|AB3E)", source: "护锁刃龙" }
+62.4 "--sync--" Ability { id: "(B014|B043)", source: "护锁刃龙" }
+65.3 "护龙共振" Ability { id: "AB3C", source: "护锁刃龙" }
+# Chainblade Blow
+71.3 "--sync--" Ability { id: "(AB34|AB35)", source: "护锁刃龙" }
+72.5 "锁刃敲打" Ability { id: "(AB36|AFFA)", source: "护锁刃龙" }
+72.8 "--sync--" Ability { id: "(AB37|AFFB)", source: "护锁刃龙" }
+# Jump to edge
+85.4 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+90.3 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+91.3 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+92.3 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+93.3 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+93.7 "突进" Ability { id: "AB42", source: "护锁刃龙" }
+94.3 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+95.3 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+95.9 "突进 (2)" #Ability { id: "AB43", source: "护锁刃龙" }
+97.9 "突进 (3)" #Ability { id: "AB43", source: "护锁刃龙" }
+# Party stack
+110.8 "锁刃下挥" Ability { id: "AB6B", source: "护锁刃龙" }
+111.0 "锁刃下挥" Ability { id: "AB6C", source: "护锁刃龙" }
+113.1 "锁刃下挥" Ability { id: "AF0B", source: "护锁刃龙" }
+# Half room
+121.8 "回旋锁刃【龙闪】" Ability { id: "(AB48|AB4A)", source: "护锁刃龙" }
+122.8 "--sync--" Ability { id: "(AB49|AB4B)", source: "护锁刃龙" }
+132.1 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+# Towers
+144.0 "护龙共振" Ability { id: "AB50", source: "护锁刃龙" }
+147.0 "护龙共振" Ability { id: "AB50", source: "护锁刃龙" }
+148.7 "地脉共振" Ability { id: "AB4C", source: "护锁刃龙" }
+149.9 "护龙共振" Ability { id: "(AB4E|AB4D)", source: "护锁刃龙" }
+# exaflares (could use better syncs)
+152.0 "--sync--" Ability { id: "AB53", source: "护锁刃龙" }
+175.6 "龙光扩散" Ability { id: "AB5A", source: "护锁刃龙" }
+183.8 "龙光扩散" Ability { id: "AB5A", source: "护锁刃龙" }
+# Big raid wide + power up)
+192.1 "护龙乱击" Ability { id: "AB5D", source: "护锁刃龙" } duration 5.2
+194.1 "护龙乱击" Ability { id: "AB5E", source: "护锁刃龙" }
+195.0 "护龙乱击" Ability { id: "AEF6", source: "护锁刃龙" }
+197.3 "护龙乱击" Ability { id: "AEF7", source: "护锁刃龙" }
+206.1 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+# Persistant line cleave
+213.4 "咆哮 (全屏)" Ability { id: "B091", source: "护锁刃龙" }
+223.6 "龙闪炮" Ability { id: "(AFF6|AFF7)", source: "护锁刃龙" } duration 10
+232.8 "--sync--" Ability { id: "AB61", source: "护锁刃龙" }
+# Aoes
+233.1 "龙光扩散" Ability { id: "AB5A", source: "护锁刃龙" }
+# Dash + lines
+245.3 "锁刃飞翔突进 (冲锋)" Ability { id: "(B00B|B00C)", source: "护锁刃龙" }
+246.9 "--sync--" Ability { id: "(B00D|B00F)", source: "护锁刃龙" }
+247.7 "--sync--" Ability { id: "(B012|B044)", source: "护锁刃龙" }
+250.5 "护龙共振" Ability { id: "B00E", source: "护锁刃龙" }
+# Chainblade Blow
+255.5 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+256.7 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+257.1 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+# Dash + lines
+263.5 "锁刃飞翔突进 (冲锋)" Ability { id: "(B00B|B00C)", source: "护锁刃龙" }
+265.1 "--sync--" Ability { id: "(B00D|B00F)", source: "护锁刃龙" }
+265.9 "--sync--" Ability { id: "(B012|B044)", source: "护锁刃龙" }
+268.5 "护龙共振" Ability { id: "B00E", source: "护锁刃龙" }
+# Chainblade Blow
+273.8 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+275.0 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+275.4 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+285.1 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+# Exalines?
+288.3 "锁哭龙闪·改" Ability { id: "AB67", source: "护锁刃龙" }
+299.1 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+300.3 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+300.7 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+317.8 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+322.6 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+323.6 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+324.7 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+325.7 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+326.1 "突进" Ability { id: "AB42", source: "护锁刃龙" }
+326.6 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+327.6 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+328.2 "突进 (2)" #Ability { id: "AB43", source: "护锁刃龙" }
+330.2 "突进 (3)" #Ability { id: "AB43", source: "护锁刃龙" }
+337.9 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+344.1 "回旋锁刃【龙闪】" Ability { id: "(B004|B006)", source: "护锁刃龙" }
+345.1 "--sync--" Ability { id: "(B005|B007)", source: "护锁刃龙" }
+# Tail thrust
+351.3 "龙尾突刺" Ability { id: "B008", source: "护锁刃龙" }
+351.9 "龙尾突刺" Ability { id: "AF04", source: "护锁刃龙" }
+# Party Stack
+360.1 "锁刃下挥" Ability { id: "AB6B", source: "护锁刃龙" }
+360.3 "锁刃下挥" Ability { id: "AB6C", source: "护锁刃龙" }
+362.4 "锁刃下挥" Ability { id: "AF0B", source: "护锁刃龙" }
+# Chainblade Blow
+369.1 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+370.3 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+370.7 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+# Towers
+379.4 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+391.3 "护龙共振" Ability { id: "AB50", source: "护锁刃龙" }
+394.3 "护龙共振" Ability { id: "AB50", source: "护锁刃龙" }
+396.0 "地脉共振" Ability { id: "AB4C", source: "护锁刃龙" }
+397.2 "护龙共振" Ability { id: "(AB4D|AB4E)", source: "护锁刃龙" }
+399.3 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+# Rolling line?
+401.6 "锁哭龙闪" Ability { id: "AB64", source: "护锁刃龙" }
+# Dash + lines
+412.2 "锁刃飞翔突进 (冲锋)" Ability { id: "(B00B|B00C)", source: "护锁刃龙" }
+413.6 "--sync--" Ability { id: "(B00D|B00F)", source: "护锁刃龙" }
+414.1 "--sync--" Ability { id: "(B012|B044)", source: "护锁刃龙" }
+417.1 "护龙共振" Ability { id: "B00E", source: "护锁刃龙" }
+# Chainblade Blow
+422.0 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+423.2 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+423.6 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+# Dash + lines
+430.0 "锁刃飞翔突进 (冲锋)" Ability { id: "(B00B|B00C)", source: "护锁刃龙" }
+431.6 "--sync--" Ability { id: "(B00D|B00F)", source: "护锁刃龙" }
+432.4 "--sync--" Ability { id: "(B012|B044)", source: "护锁刃龙" }
+435.3 "护龙共振" Ability { id: "B00E", source: "护锁刃龙" }
+# Chainblade Blow
+440.3 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+441.5 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+441.9 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+# Raidwide
+450.3 "咆哮 (全屏)" Ability { id: "AB6E", source: "护锁刃龙" }
+455.1 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+# Sweepling line Aoe
+464.0 "龙闪炮" Ability { id: "(AFF6|AFF7)", source: "护锁刃龙" } duration 10
+473.2 "--sync--" Ability { id: "AB61", source: "护锁刃龙" }
+473.5 "龙光扩散" Ability { id: "AB5A", source: "护锁刃龙" }
+481.6 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+# Exalines?
+484.9 "锁哭龙闪·改" Ability { id: "AB67", source: "护锁刃龙" }
+# Chainblade Blow
+495.7 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+496.9 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+497.3 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+# Dashes + expanding rings?
+514.1 "(场边)" Ability { id: "B077", source: "护锁刃龙" }
+518.8 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+519.8 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+520.9 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+521.9 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+522.3 "突进" Ability { id: "AB42", source: "护锁刃龙" }
+522.8 "--sync--" #Ability { id: "AB41", source: "护锁刃龙" }
+523.8 "--sync--" #Ability { id: "B013", source: "护锁刃龙" }
+524.4 "突进 (2)" #Ability { id: "AB43", source: "护锁刃龙" }
+526.3 "突进 (3)" #Ability { id: "AB43", source: "护锁刃龙" }
+534.2 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+# Halfroom
+540.4 "回旋锁刃【龙闪】" Ability { id: "(B004|B006)", source: "护锁刃龙" }
+541.4 "--sync--" Ability { id: "(B005|B007)", source: "护锁刃龙" }
+# Tail thrust
+547.6 "龙尾突刺" Ability { id: "B008", source: "护锁刃龙" }
+548.2 "龙尾突刺" Ability { id: "AF04", source: "护锁刃龙" }
+# Party stack
+556.3 "锁刃下挥" Ability { id: "AB6B", source: "护锁刃龙" }
+556.5 "锁刃下挥" Ability { id: "AB6C", source: "护锁刃龙" }
+558.6 "锁刃下挥" Ability { id: "AF0B", source: "护锁刃龙" }
+# Chainblade Blow
+562.7 "--sync--" Ability { id: "(AFFC|AFFD)", source: "护锁刃龙" }
+563.9 "锁刃敲打" Ability { id: "(AFFE|B001)", source: "护锁刃龙" }
+564.3 "--sync--" Ability { id: "(AFFF|B002)", source: "护锁刃龙" }
+# Raidwide
+588.3 "咆哮 (全屏)" Ability { id: "AB6E", source: "护锁刃龙" }
+# Jump to center
+592.1 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5

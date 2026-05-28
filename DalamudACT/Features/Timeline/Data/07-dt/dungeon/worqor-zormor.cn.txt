@@ -1,0 +1,237 @@
+### WORQOR ZORMOR
+# ZoneId: 1193
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~~~~#
+# Ryoqor Terteh #
+#~~~~~~~~~~~~~~~#
+
+# -ii 8DB7 8DB0 8DB6 8F69
+# -p 8DB8:1014.1
+
+# The Calmgrounds will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1188" } window 1000,1
+1009.1 "雾雪之声" StartsUsing { id: "8DB8", source: "辽刻特特雪精" } window 10,5
+1014.1 "雾雪之声" Ability { id: "8DB8", source: "辽刻特特雪精" }
+1020.5 "召集小弟" Ability { id: "8DA9", source: "辽刻特特雪精" }
+1034.5 "冻结" Ability { id: "8DAA", source: "辽刻特特雪精" }
+1040.4 "冻雪之声" Ability { id: "8DAE", source: "洛洛特雪精" }
+1045.4 "冻雪之声" Ability { id: "8DAE", source: "洛洛特雪精" }
+1054.3 "召集小弟" Ability { id: "8DA9", source: "辽刻特特雪精" }
+1068.3 "冻结" Ability { id: "8DAA", source: "辽刻特特雪精" }
+1074.2 "冰轮" Ability { id: "8DAF", source: "刻洛特雪精" }
+1079.2 "冰轮" Ability { id: "8DAF", source: "刻洛特雪精" }
+1087.2 "生成雪球" Ability { id: "8DB3", source: "辽刻特特雪精" }
+1097.1 "大雪球 (first)" #Ability { id: "8DB6", source: "雪球" }
+1099.1 "大雪球 (second)" #Ability { id: "8DB6", source: "雪球" }
+1100.9 "降霜" Ability { id: "8DB9", source: "辽刻特特雪精" }
+
+# begin loop
+1110.9 "召集小弟" Ability { id: "8DA9", source: "辽刻特特雪精" }
+1124.9 "冻结" Ability { id: "8DAA", source: "辽刻特特雪精" }
+1130.8 "冰轮" Ability { id: "8DAF", source: "刻洛特雪精" }
+1130.8 "冻雪之声" Ability { id: "8DAE", source: "洛洛特雪精" }
+1135.8 "冰轮" Ability { id: "8DAF", source: "刻洛特雪精" }
+1135.8 "冻雪之声" Ability { id: "8DAE", source: "洛洛特雪精" }
+1145.5 "雾雪之声" Ability { id: "8DB8", source: "辽刻特特雪精" }
+1158.2 "生成雪球" Ability { id: "8DB3", source: "辽刻特特雪精" }
+1168.1 "大雪球" #Ability { id: "8DB6", source: "雪球" }
+1170.1 "大雪球" #Ability { id: "8DB6", source: "雪球" }
+1171.9 "降霜" Ability { id: "8DB9", source: "辽刻特特雪精" }
+1187.3 "雾雪之声" Ability { id: "8DB8", source: "辽刻特特雪精" }
+1197.9 "雾雪之声" Ability { id: "8DB8", source: "辽刻特特雪精" }
+1211.0 "召集小弟" Ability { id: "8DA9", source: "辽刻特特雪精" } forcejump 1110.9
+
+# IGNORED ABILITIES
+# 8DB0 Frozen Swirl (damage)
+# 8DB6 Snow Boulder (vfx)
+# 8DB7 Frosting Fracas (vfx?)
+# 8F69 Sparkling Sprinkling (castbar)
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 8DA9 Fluffle Up
+# 8DAA Cold Feat
+# 8DAE Ice Scream
+# 8DAF Frozen Swirl
+# 8DB0 Frozen Swirl
+# 8DB3 Snowscoop
+# 8DB6 Snow Boulder
+# 8DB7 Frosting Fracas
+# 8DB8 Frosting Fracas
+# 8DB9 Sparkling Sprinkling
+# 8F69 Sparkling Sprinkling
+
+#~~~~~~~~~~~#
+# Kahderyor #
+#~~~~~~~~~~~#
+
+# -ii 8DBD 8DC8 8DC7 8DC2 8DCA 8DC0 8DC1
+# -p 8DBA:2009.1
+
+# The Council Of Morgar will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "118D" } window 2000,1
+2004.1 "无拘之风" StartsUsing { id: "8DBA", source: "卡德由夜鸟" } window 5,5
+2009.1 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" }
+2021.6 "结晶碎击" Ability { id: "8D39", source: "卡德由夜鸟" }
+2032.7 "风击" Ability { id: "8DBC", source: "卡德由夜鸟" }
+2041.8 "地击" Ability { id: "8DBB", source: "卡德由夜鸟" }
+2051.7 "结晶雨" Ability { id: "8DBE", source: "卡德由夜鸟" }
+2063.0 "地击" Ability { id: "8DBB", source: "卡德由夜鸟" }
+2074.1 "风击" Ability { id: "8DBC", source: "卡德由夜鸟" }
+2084.6 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" }
+2093.5 "附着结晶" Ability { id: "8DC3", source: "卡德由夜鸟" }
+2106.6 "锐利目光" Ability { id: "8DBF", source: "卡德由夜鸟" }
+2113.6 "猛禽之眼" Ability { id: "8DC9", source: "卡德由夜鸟" }
+2113.6 "震石圆/旋风环" Ability { id: ["8DC5", "8DC6"], source: "卡德由夜鸟" }
+2120.6 "猛禽之眼" Ability { id: "8DC9", source: "卡德由夜鸟" }
+2120.6 "震石圆/旋风环" Ability { id: ["8DC5", "8DC6"], source: "卡德由夜鸟" }
+
+# begin loop
+2130.6 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" }
+2139.7 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" }
+2147.0 "结晶雨" Ability { id: "8DBE", source: "卡德由夜鸟" }
+2158.3 "地击" Ability { id: "8DBB", source: "卡德由夜鸟" }
+2169.4 "风击" Ability { id: "8DBC", source: "卡德由夜鸟" }
+2179.9 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" }
+2188.8 "附着结晶" Ability { id: "8DC3", source: "卡德由夜鸟" }
+2202.1 "锐利目光" Ability { id: "8DBF", source: "卡德由夜鸟" }
+2209.1 "猛禽之眼" Ability { id: "8DC9", source: "卡德由夜鸟" }
+2209.1 "震石圆/旋风环" Ability { id: ["8DC5", "8DC6"], source: "卡德由夜鸟" }
+2216.1 "猛禽之眼" Ability { id: "8DC9", source: "卡德由夜鸟" }
+2216.1 "震石圆/旋风环" Ability { id: ["8DC5", "8DC6"], source: "卡德由夜鸟" }
+2226.2 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" } forcejump 2130.6
+
+# IGNORED ABILITIES
+# 8DBD Crystalline Crush (vfx)
+# 8DC0 Stalagmite Circle (vfx)
+# 8DC1 Cyclonic Ring (vfx)
+# 8DC2 Crystalline Storm (damage)
+# 8DC7 Earthen Shot (player spread; ~same time as other arena cast)
+# 8DC8 Wind Shot (player donut; ~same time as other arena cast)
+# 8DCA Seed Crystals (each player; ~same time as boss cast)
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 8D39 Crystalline Crush
+# 8DBA Wind Unbound
+# 8DBB Earthen Shot
+# 8DBC Wind Shot
+# 8DBD Crystalline Crush
+# 8DBE Crystalline Storm
+# 8DBF Sharpened Sights
+# 8DC0 Stalagmite Circle
+# 8DC1 Cyclonic Ring
+# 8DC2 Crystalline Storm
+# 8DC3 Seed Crystals
+# 8DC5 Stalagmite Circle
+# 8DC6 Cyclonic Ring
+# 8DC7 Earthen Shot
+# 8DC8 Wind Shot
+# 8DC9 Eye of the Fierce
+# 8DCA Seed Crystals
+
+#~~~~~~~~~~~#
+# Gurfurlur #
+#~~~~~~~~~~~#
+
+# -ii 8E17 8DDA 995C 8DD7
+# -ic "Aura Sphere"
+# -p 8DBA:2009.1 -p 8DDB:3500
+
+# Karryor The Resting will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "118E" } window 3000,1
+3005.1 "强力震击" StartsUsing { id: "8DAD", source: "固伏鲁" } window 5,5
+3010.1 "强力震击" Ability { id: "8DAD", source: "固伏鲁" }
+3016.8 "投掷石板" Ability { id: "8DCD", source: "固伏鲁" }
+
+# boss can do either a fire tile or a water tile at the start, then the opposite
+# fake timeline entries, and then sync based on MapEffect (the only indicator...)
+3019.8 "--sync--" MapEffect { flags: "00020001", location: "1A" } jump "fire-first"
+3019.8 "--sync--" MapEffect { flags: "00020001", location: "1B" } jump "water-first"
+3020.7 "轰击"
+3029.8 "猛火喷发 / 大洪水?"
+3036.1 "火山弹?"
+3043.4 "投掷石板"
+3047.2 "轰击"
+
+######## OPENER FORK ########
+3119.8 label "fire-first"
+3120.7 "轰击" Ability { id: "8DCE", source: "固伏鲁" }
+3129.8 "猛火喷发" Ability { id: "8DCF", source: "固伏鲁" }
+3131.4 "猛火喷发" Ability { id: "8DD0", source: "固伏鲁" }
+3133.0 "猛火喷发" Ability { id: "8DD1", source: "固伏鲁" }
+3136.1 "火山弹" Ability { id: "8DD2", source: "固伏鲁" }
+3143.4 "投掷石板" Ability { id: "8DCD", source: "固伏鲁" }
+3147.2 "轰击" Ability { id: "8DCE", source: "固伏鲁" }
+3156.3 "大洪水" Ability { id: "8DD3", source: "固伏鲁" }
+3167.7 "--sync--" Ability { id: "8DDB", source: "固伏鲁" } forcejump "resume"
+
+3219.8 label "water-first"
+3220.7 "轰击" Ability { id: "8DCE", source: "固伏鲁" }
+3229.7 "大洪水" Ability { id: "8DD3", source: "固伏鲁" }
+3240.3 "投掷石板" Ability { id: "8DCD", source: "固伏鲁" }
+3244.1 "轰击" Ability { id: "8DCE", source: "固伏鲁" }
+3253.2 "猛火喷发" Ability { id: "8DCF", source: "固伏鲁" }
+3254.8 "猛火喷发" Ability { id: "8DD0", source: "固伏鲁" }
+3256.2 "猛火喷发" Ability { id: "8DD1", source: "固伏鲁" }
+3259.3 "火山弹" Ability { id: "8DD2", source: "固伏鲁" }
+3268.6 "--sync--" Ability { id: "8DDB", source: "固伏鲁" } forcejump "resume"
+######## END FORK ########
+
+3500.0 label "resume"
+3505.0 "三重猛击" Ability { id: "8DD9", source: "固伏鲁" } duration 3 window 500,5
+3516.7 "强力脚" Ability { id: "8DDF", source: "固伏鲁" }
+3550.7 "尤卡巨人的荣耀" Ability { id: "8DE0", source: "固伏鲁" }
+
+# begin loop
+3565.4 "投掷石板" Ability { id: "8DCD", source: "固伏鲁" }
+3569.3 "轰击" Ability { id: "8DCE", source: "固伏鲁" }
+3578.4 "狂风呼啸" Ability { id: "8DD6", source: "固伏鲁" }
+3594.3 "狂风呼啸" Ability { id: "98A2", source: "固伏鲁" }
+3610.7 "投掷石板" Ability { id: "8DCD", source: "固伏鲁" }
+3614.5 "轰击" Ability { id: "8DCE", source: "固伏鲁" }
+3623.6 "大洪水" Ability { id: "8DD3", source: "固伏鲁" }
+3623.6 "猛火喷发" Ability { id: "8DCF", source: "固伏鲁" }
+3625.2 "猛火喷发" Ability { id: "8DD0", source: "固伏鲁" }
+3626.6 "猛火喷发" Ability { id: "8DD1", source: "固伏鲁" }
+3629.7 "火山弹" Ability { id: "8DD2", source: "固伏鲁" }
+3640.8 "强力震击" Ability { id: "8DAD", source: "固伏鲁" }
+3649.0 "--sync--" Ability { id: "8DDB", source: "固伏鲁" }
+3654.0 "三重猛击" Ability { id: "8DD9", source: "固伏鲁" }
+3668.2 "强力震击" Ability { id: "8DAD", source: "固伏鲁" }
+3683.3 "投掷石板" Ability { id: "8DCD", source: "固伏鲁" } forcejump 3565.4
+
+# IGNORED ABILITIES
+# 8DDA Sledgehammer (followup)
+# 8E17 Heaving Haymaker (damage)
+# 995C Sledgehammer (followup)
+# 8DD7 Whirlwind (persistent wind aoes)
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 8DAD Heaving Haymaker
+# 8DCD Stonework
+# 8DCE Lithic Impact
+# 8DCF Allfire
+# 8DD0 Allfire
+# 8DD1 Allfire
+# 8DD2 Volcanic Drop
+# 8DD3 Great Flood
+# 8DD6 Windswrath
+# 8DD7 Whirlwind
+# 8DD9 Sledgehammer
+# 8DDA Sledgehammer
+# 8DDB --sync--
+# 8DDF Arcane Stomp
+# 8DE0 Enduring Glory
+# 8DE1 Shroud of Eons
+# 8DE2 Shroud of Eons
+# 8E17 Heaving Haymaker
+# 98A2 Windswrath
+# 995C Sledgehammer

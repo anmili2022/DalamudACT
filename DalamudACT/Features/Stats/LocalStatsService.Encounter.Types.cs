@@ -22,6 +22,7 @@ internal sealed partial class LocalStatsService
         CombatStart,
         Damage,
         Heal,
+        Cast,
         Failure,
         Death,
         Status,

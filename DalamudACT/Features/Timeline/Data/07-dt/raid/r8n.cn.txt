@@ -1,0 +1,183 @@
+### Arcadion (R8N): AAC Cruiserweight M4
+# -ii A4ED A38E A4EF A4F0 A988 A98C A97F A97E A38A A3DE A3DF A3A5 A3A7 A96F A970 A971 A972 A973 A974 A975 A920 A923 A924 A925 A926 A927 A92F A985 A37B
+# -p A743:256.8
+# -it "Howling Blade" "Wolf of Stone" "Wolf of Wind"
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+11.6 "空间斩" Ability { id: "A74E", source: "剑嚎" } window 10,10
+19.5 "一刀两断" Ability { id: "A38D", source: "剑嚎" }
+23.6 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+31.8 "群狼剑" Ability { id: "A96D", source: "剑嚎" }
+33.2 "群狼剑" Ability { id: "A976", source: "剑嚎" }
+36.3 "群狼剑" Ability { id: "A977", source: "剑嚎" }
+36.9 "群狼剑 (直线)" Ability { id: "A978", source: "剑嚎" }
+40.9 "群狼剑" Ability { id: "A979", source: "剑嚎" }
+41.5 "群狼剑" Ability { id: "A97A", source: "剑嚎" }
+43.6 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+51.7 "群狼剑" Ability { id: "A96E", source: "剑嚎" }
+53.1 "群狼剑" Ability { id: "A976", source: "剑嚎" }
+56.2 "群狼剑" Ability { id: "A977", source: "剑嚎" }
+56.8 "群狼剑 (直线)" Ability { id: "A978", source: "剑嚎" }
+60.8 "群狼剑" Ability { id: "A979", source: "剑嚎" }
+61.4 "群狼剑" Ability { id: "A97A", source: "剑嚎" }
+64.1 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+71.2 "大震击" Ability { id: "A389", source: "剑嚎" }
+78.4 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+84.5 "幻狼召唤" Ability { id: "A97B", source: "剑嚎" }
+93.9 "幻狼剑 1" #Ability { id: "A97D", source: "剑嚎的幻影" }
+95.9 "幻狼剑 2" #Ability { id: "A97C", source: "剑嚎的幻影" }
+97.9 "幻狼剑 3" #Ability { id: "A97D", source: "剑嚎的幻影" }
+99.9 "幻狼剑 4" #Ability { id: "A97C", source: "剑嚎的幻影" }
+106.7 "残影剑" Ability { id: "A980", source: "剑嚎" }
+107.9 "--untargetable--"
+113.9 "残影剑" Ability { id: "A981", source: "剑嚎" }
+115.0 "--targetable--"
+122.2 "光牙召唤" Ability { id: "A384", source: "剑嚎" }
+128.3 "大地之怒" Ability { id: "A386", source: "剑嚎" }
+129.3 "突进光牙 1" #Ability { id: "A385", source: "光牙" }
+131.7 "突进光牙 2" #Ability { id: "A385", source: "光牙" }
+132.4 "--sync--" Ability { id: "A785", source: "剑嚎" }
+134.3 "局部地震 1" #Ability { id: "A388", source: "剑嚎" }
+136.3 "局部地震 2" #Ability { id: "A388", source: "剑嚎" }
+138.3 "局部地震 3" #Ability { id: "A388", source: "剑嚎" }
+142.5 "大震击" Ability { id: "A389", source: "剑嚎" }
+150.7 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+
+# Adds
+156.0 "光狼召唤" Ability { id: "A37C", source: "剑嚎" }
+158.1 "--sync--" Ability { id: "A37D", source: "剑嚎" }
+160.1 "--untargetable--"
+160.1 "--adds targetable--"
+173.1 "狂风/大震击" Ability { id: [ "A382", "A383"], source: "剑嚎" }
+174.1 "地烈波" Ability { id: "A3A6", source: "土狼首" }
+174.1 "风刃气" #Ability { id: "A3A4", source: "风狼首" }
+189.2 "大震击/狂风" Ability { id: ["A383", "A382"], source: "剑嚎" }
+190.2 "地烈波" Ability { id: "A3A6", source: "土狼首" }
+190.2 "风刃气" #Ability { id: "A3A4", source: "风狼首" }
+205.4 "狂风/大震击" Ability { id: [ "A382", "A383"], source: "剑嚎" }
+206.4 "地烈波" Ability { id: "A3A6", source: "土狼首" }
+206.4 "风刃气" #Ability { id: "A3A4", source: "风狼首" }
+226.3 "风尘光狼斩 (狂暴)" Ability { id: "A746", source: "剑嚎" }
+226.4 "风尘光狼斩 (狂暴)" Ability { id: "A747", source: "剑嚎" }
+226.7 "风尘光狼斩 (狂暴)" Ability { id: "A748", source: "剑嚎" }
+228.8 "风尘光狼斩 (狂暴)" Ability { id: "A9FD", source: "剑嚎" }
+230.0 "风尘光狼斩 (狂暴)" Ability { id: "A380", source: "剑嚎" }
+
+# Adds cleared
+253.4 "风尘光狼斩" StartsUsing { id: "A743", source: "剑嚎" } window 300,10
+256.8 "风尘光狼斩" Ability { id: "A743", source: "剑嚎" }
+256.9 "风尘光狼斩" Ability { id: "A744", source: "剑嚎" }
+257.2 "风尘光狼斩" Ability { id: "A745", source: "剑嚎" }
+259.2 "风尘光狼斩" Ability { id: "A9FC", source: "剑嚎" }
+260.4 "风尘光狼斩" Ability { id: "A37F", source: "剑嚎" }
+266.8 "--targetable--"
+273.9 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+
+# Start Loop Block
+281.7 label "r8n-p2-loop"
+281.7 "群狼剑" Ability { id: ["A90F", "A910"], source: "剑嚎" }
+283.1 "群狼剑" Ability { id: "A928", source: "剑嚎" }
+285.1 "群狼剑" Ability { id: "A371", source: "剑嚎" }
+285.7 "群狼剑 (直线)" Ability { id: "A968", source: "剑嚎" }
+288.7 "群狼剑" Ability { id: "A372", source: "剑嚎" }
+289.3 "群狼剑" Ability { id: "A7B0", source: "剑嚎" }
+291.2 "地烈波" Ability { id: "A989", source: "土狼首" }
+291.5 "--middle--" #Ability { id: "A36B", source: "剑嚎" }
+296.6 "大地的呼唤" Ability { id: "A935", source: "剑嚎" }
+302.0 "斩空剑" Ability { id: "A750", source: "剑嚎" }
+306.0 "崩塌" Ability { id: "A933", source: "剑嚎" }
+307.4 "大地的呼唤" Ability { id: "A935", source: "剑嚎" }
+310.3 "斩空剑" Ability { id: "A750", source: "剑嚎" }
+314.3 "崩塌" Ability { id: "A933", source: "剑嚎" }
+315.7 "大地的呼唤" Ability { id: "A935", source: "剑嚎" }
+318.6 "斩空剑" Ability { id: "A750", source: "剑嚎" }
+322.6 "崩塌" Ability { id: "A933", source: "剑嚎" }
+332.8 "空间斩" Ability { id: "A74E", source: "剑嚎" }
+339.8 "一刀两断" Ability { id: "A38D", source: "剑嚎" }
+346.9 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+352.1 "光牙召唤" Ability { id: "A384", source: "剑嚎" }
+359.2 "突进光牙 1" #Ability { id: "A385", source: "光牙" }
+361.6 "突进光牙 2" #Ability { id: "A385", source: "光牙" }
+362.3 "群狼剑" Ability { id: ["A90F", "A910"], source: "剑嚎" }
+363.7 "群狼剑" Ability { id: "A928", source: "剑嚎" }
+365.7 "群狼剑" Ability { id: "A371", source: "剑嚎" }
+366.3 "群狼剑 (直线)" Ability { id: "A968", source: "剑嚎" }
+369.3 "群狼剑" Ability { id: "A372", source: "剑嚎" }
+369.9 "群狼剑" Ability { id: "A7B0", source: "剑嚎" }
+371.8 "地烈波" Ability { id: "A989", source: "土狼首" }
+380.7 "残影剑" Ability { id: "A373", source: "剑嚎" }
+381.8 "突进光牙 1" #Ability { id: "A385", source: "光牙" }
+381.9 "--untargetable--"
+384.2 "突进光牙 2" #Ability { id: "A385", source: "光牙" }
+386.9 "残影剑" Ability { id: "A374", source: "剑嚎" }
+388.8 "--targetable--"
+390.9 "--sync--" Ability { id: "A785", source: "剑嚎" }
+391.7 "风狼豪波" Ability { id: "A984", source: "风狼首" }
+398.5 "空间斩" Ability { id: "A74E", source: "剑嚎" }
+404.3 "连震击" Ability { id: "A4E2", source: "剑嚎" }
+405.2 "连震击 1" #Ability { id: "A4E3", source: "剑嚎" }
+406.2 "连震击 2" #Ability { id: "A4E3", source: "剑嚎" }
+407.2 "连震击 3" #Ability { id: "A4E3", source: "剑嚎" }
+408.2 "连震击 4" #Ability { id: "A4E3", source: "剑嚎" }
+409.2 "连震击 5" #Ability { id: "A4E3", source: "剑嚎" }
+417.2 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+
+422.3 "幻狼召唤" Ability { id: "A375", source: "剑嚎" }
+430.9 "幻狼剑 1" #Ability { id: ["A376", "A377"], source: "剑嚎的幻影" }
+432.5 "幻狼剑 2" #Ability { id: ["A376", "A377"], source: "剑嚎的幻影" }
+433.9 "幻狼剑 3" #Ability { id: ["A376", "A377"], source: "剑嚎的幻影" }
+435.5 "幻狼剑 4" #Ability { id: ["A376", "A377"], source: "剑嚎的幻影" }
+438.7 "大地之怒" Ability { id: "A386", source: "剑嚎" }
+440.3 "地烈波" Ability { id: "A98D", source: "土狼首" }
+443.3 "局部地震 1" #Ability { id: "A388", source: "剑嚎" }
+445.3 "局部地震 2" #Ability { id: "A388", source: "剑嚎" }
+447.3 "局部地震 3" #Ability { id: "A388", source: "剑嚎" }
+451.0 "空间斩" Ability { id: "A74E", source: "剑嚎" }
+456.8 "连震击" Ability { id: "A4E2", source: "剑嚎" }
+457.7 "连震击 1" #Ability { id: "A4E3", source: "剑嚎" }
+458.7 "连震击 2" #Ability { id: "A4E3", source: "剑嚎" }
+459.7 "连震击 3" #Ability { id: "A4E3", source: "剑嚎" }
+460.7 "连震击 4" #Ability { id: "A4E3", source: "剑嚎" }
+461.7 "连震击 5" #Ability { id: "A4E3", source: "剑嚎" }
+468.8 "一刀两断" Ability { id: "A38D", source: "剑嚎" }
+479.9 "--middle--" Ability { id: "A36B", source: "剑嚎" }
+
+# Loop
+487.7 "群狼剑" Ability { id: ["A90F", "A910"], source: "剑嚎" } forcejump "r8n-p2-loop"
+
+# IGNORED ABILITIES
+# A38E Extraplanar Pursuit (self-cast)
+# A38A Heavensearth (player targeted)
+# A3A5 Growling Wind (Wind of Wind)
+# A3A7 Weal of Stone (Wolf of Stone)
+# A37B Titanic Pursuit (self-cast)
+# A4ED Attack (Howling Blade)
+# A4EF Attack (Wolf of Wind)
+# A4F0 Attack (Wolf of Stone)
+# A920 Wolves' Reign boss jumping to wall? (after adds)
+# A923 Wolves' Reign actor moving to circle (after adds)
+# A924 Wolves' Reign actor moving to circle (after adds)
+# A925 Wolves' Reign actor moving to circle (after adds)
+# A926 Wolves' Reign circle (after adds)
+# A927 Wolves' Reign circle (after adds)
+# A92F Wolves' Reign (after adds)
+# A934 Terrestrial Titans
+# A96F Wolves' Reign boss jumping to wall?
+# A970 Wolves' Reign actor moving to circle
+# A971 Wolves' Reign actor moving to circle
+# A972 Wolves' Reign actor moving to circle
+# A973 Wolves' Reign
+# A974 Wolves' Reign circle
+# A975 Wolves' Reign circle
+# A97E unknown related to Moonbeam's Bite Right-cleave (self-cast)
+# A97F unknown related to Moonbeam's Bite Left-cleave (self-cast)
+# A3DE unknown related to Moonbeam's Bite Right-cleave (self-cast)
+# A3DF unknown related to Moonbeam's Bite Left-cleave (self-cast)
+# A985 Roaring Wind
+# A988 Weal of Stone
+# A98C Weal of Stone (intercadinals)

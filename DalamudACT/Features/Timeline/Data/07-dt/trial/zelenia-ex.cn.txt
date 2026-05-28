@@ -1,0 +1,276 @@
+### RECOLLECTION (EXTREME)
+# ZoneId: 1271
+
+# -ii A8A2 A8A3 A8A4 A8A5 A8A6 A8A7 A8A8 A8A9 A8AA A8AB A8EA
+# -ii A8AE
+# -ii A8D6 A8D7 A8D8 A8D9
+# -ii A8B7
+# -ii A8BF A838
+# -ii A8E4
+# -ii A9B8
+
+# -ii A9B9
+# -ii A89F
+# -ii A8C2
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+## Phase 1
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+11.4 "玫瑰涤" Ability { id: "A89E", source: "泽莲尼娅" } window 11.4,2
+17.6 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+21.7 "震惊" Ability { id: "A8A1", source: "泽莲尼娅" } duration 13.9
+27.8 "王国神圣" Ability { id: "A8C0", source: "泽莲尼娅" }
+31.8 "爆炸" #Ability { id: "A8DA", source: "泽莲尼娅" }
+44.7 "破灵之剑" Ability { id: "A8A0", source: "泽莲尼娅" }
+
+# Escelon 1
+50.1 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+64.2 "凌空错" Ability { id: "A8AD", source: "泽莲尼娅" }
+65.1 "凌空错 1" #Ability { id: "A8AF", source: "泽莲尼娅" }
+68.2 "凌空错 2" #Ability { id: "A8AF", source: "泽莲尼娅" }
+71.2 "凌空错 3" #Ability { id: "A8AF", source: "泽莲尼娅" }
+74.2 "凌空错 4" #Ability { id: "A8AF", source: "泽莲尼娅" }
+83.4 "破防之剑" Ability { id: "A8D5", source: "泽莲尼娅" } duration 4
+89.4 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+93.5 "圣护壁" Ability { id: "A8B5", source: "泽莲尼娅" }
+
+## Adds
+105.4 "突击" Ability { id: "A8B4", source: "泽莲尼娅的幻影" }
+105.7 "爆炸" #Ability { id: "A83C", source: "泽莲尼娅" }
+117.6 "突击" #Ability { id: "A8B4", source: "泽莲尼娅的幻影" }
+117.7 "爆炸" #Ability { id: "A83C", source: "泽莲尼娅" }
+129.6 "突击" #Ability { id: "A8B4", source: "泽莲尼娅的幻影" }
+129.7 "爆炸" #Ability { id: "A83C", source: "泽莲尼娅" }
+141.6 "突击" #Ability { id: "A8B3", source: "泽莲尼娅的幻影" }
+155.9 "寂灭之玫瑰" Ability { id: "A8CD", source: "泽莲尼娅" } window 155.9,5
+
+## Phase 2
+166.9 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 1
+170.7 "魔法阵展开" Ability { id: "A8B9", source: "泽莲尼娅" }
+171.7 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+179.1 "王国震雷" Ability { id: "A8BE", source: "泽莲尼娅" } duration 14.8
+193.2 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+198.9 "王国暴雷" Ability { id: "A8E3", source: "泽莲尼娅" }
+
+207.0 "玫瑰涤" Ability { id: "A89E", source: "泽莲尼娅" }
+213.2 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 2
+217.0 "魔法阵展开·二式" Ability { id: "AA14", source: "泽莲尼娅" }
+218.0 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+227.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+227.2 "王国霹雷" Ability { id: ["A9BA", "A9BB"], source: "泽莲尼娅" }
+228.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+229.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+230.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+230.2 "王国霹雷" Ability { id: ["A9BA", "A9BB"], source: "泽莲尼娅" }
+231.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+232.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+
+242.3 "破灵之剑" Ability { id: "A8A0", source: "泽莲尼娅" }
+247.7 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 3
+251.6 "魔法阵展开·三式" Ability { id: "AA15", source: "泽莲尼娅" }
+252.7 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+258.1 "幻影生成" Ability { id: "A8B2", source: "泽莲尼娅" }
+264.1 "王国神圣" Ability { id: "A8C0", source: "泽莲尼娅的幻影" }
+266.1 "活性纹" Ability { id: "A8BB", source: "泽莲尼娅" }
+273.7 "活性纹" Ability { id: "A820", source: "泽莲尼娅" }
+278.0 "爆炸" Ability { id: "A8C1", source: "泽莲尼娅" }
+
+# Escelon 2
+286.2 "玫瑰涤" Ability { id: "A89E", source: "泽莲尼娅" }
+293.4 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+297.7 "幻影生成" Ability { id: "A8B2", source: "泽莲尼娅" }
+304.8 "震惊" Ability { id: "A8A1", source: "泽莲尼娅的幻影" } duration 13.9
+313.9 "王国中放逐" Ability { id: "A8D1", source: "泽莲尼娅的幻影" }
+314.7 "王国中放逐" Ability { id: "A8D2", source: "泽莲尼娅" }
+319.8 "凌空错" Ability { id: "A8AD", source: "泽莲尼娅" }
+320.7 "凌空错 1" #Ability { id: "A8AF", source: "泽莲尼娅" }
+323.8 "凌空错 2" #Ability { id: "A8AF", source: "泽莲尼娅" }
+326.8 "凌空错 3" #Ability { id: "A8AF", source: "泽莲尼娅" }
+329.8 "凌空错 4" #Ability { id: "A8AF", source: "泽莲尼娅" }
+339.0 "破防之剑" Ability { id: "A8D5", source: "泽莲尼娅" } duration 4
+347.3 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 4
+351.1 "魔法阵展开·四式" Ability { id: "AA16", source: "泽莲尼娅" }
+352.1 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+357.5 "活性纹" Ability { id: "A8BB", source: "泽莲尼娅" }
+365.1 "活性纹" Ability { id: "A820", source: "泽莲尼娅" }
+365.8 "王国暴雷" Ability { id: "A8E6", source: "泽莲尼娅" }
+369.8 "玫瑰荆棘" Ability { id: "A8C3", source: "泽莲尼娅" }
+377.9 "王国强放逐" Ability { id: "A8E8", source: "泽莲尼娅" }
+378.8 "王国强放逐" Ability { id: "A8E9", source: "泽莲尼娅" }
+
+# Escelon 3
+390.1 "玫瑰涤" Ability { id: "A89E", source: "泽莲尼娅" }
+397.3 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+401.5 "幻影生成" Ability { id: "A8B2", source: "泽莲尼娅" }
+414.5 "破势之剑" Ability { id: ["A8B0", "A8B1"], source: "泽莲尼娅的幻影" }
+417.5 "凌空错" Ability { id: "A8AD", source: "泽莲尼娅" }
+418.4 "凌空错 1" #Ability { id: "A8AF", source: "泽莲尼娅" }
+421.5 "凌空错 2" #Ability { id: "A8AF", source: "泽莲尼娅" }
+424.5 "凌空错 3" #Ability { id: "A8AF", source: "泽莲尼娅" }
+427.5 "凌空错 4" #Ability { id: "A8AF", source: "泽莲尼娅" }
+429.5 "破势之剑" Ability { id: ["A8B0", "A8B1"], source: "泽莲尼娅的幻影" }
+436.9 "破防之剑" Ability { id: "A8D5", source: "泽莲尼娅" }
+447.1 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 5
+450.9 "魔法阵展开·五式" Ability { id: "AA17", source: "泽莲尼娅" }
+452.0 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+457.4 "凌空破" Ability { id: "A8C6", source: "泽莲尼娅" } duration 2.5
+469.0 "凌空破 (预兆)" #Ability { id: "A8CA", source: "凌空破" }
+469.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+469.2 "王国霹雷" Ability { id: ["A9BA", "A9BB"], source: "泽莲尼娅" }
+470.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+471.2 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+472.1 "凌空破 (预兆)" #Ability { id: "A8CA", source: "凌空破" }
+472.3 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+472.3 "王国霹雷" Ability { id: ["A9BA", "A9BB"], source: "泽莲尼娅" }
+473.3 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+474.3 "雷鸣剑" #Ability { id: "A8D0", source: "泽莲尼娅" }
+
+484.4 "破灵之剑" Ability { id: "A8A0", source: "泽莲尼娅" }
+491.8 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 6
+495.6 "魔法阵展开·六式" Ability { id: "AA18", source: "泽莲尼娅" }
+496.6 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+502.0 "幻影生成" Ability { id: "A8B2", source: "泽莲尼娅" }
+508.1 "王国神圣" Ability { id: "A8C0", source: "泽莲尼娅的幻影" }
+508.1 "活性纹" Ability { id: "A8BB", source: "泽莲尼娅" }
+515.7 "活性纹" Ability { id: "A820", source: "泽莲尼娅" }
+518.3 "神圣破 (咏唱)" Ability { id: "A8DF", source: "泽莲尼娅" }
+519.1 "神圣破" Ability { id: "A8E2", source: "泽莲尼娅" }
+522.1 "神圣破" Ability { id: "A8E2", source: "泽莲尼娅" }
+522.1 "爆炸" Ability { id: "A8C1", source: "泽莲尼娅" }
+529.6 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+## Bloom 1 repeat
+533.5 "魔法阵展开" Ability { id: "A8B9", source: "泽莲尼娅" }
+534.6 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+542.0 "王国震雷" Ability { id: "A8BE", source: "泽莲尼娅" } duration 14.8
+556.1 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+561.8 "王国暴雷" Ability { id: "A8E3", source: "泽莲尼娅" }
+
+569.9 "玫瑰涤" Ability { id: "A89E", source: "泽莲尼娅" }
+580.8 "破灵之剑" Ability { id: "A8A0", source: "泽莲尼娅" }
+586.2 "--middle--" Ability { id: "A82E", source: "泽莲尼娅" }
+
+# Soft enrage
+594.3 "破防之剑" Ability { id: "A8D5", source: "泽莲尼娅" } duration 4
+607.4 "破防之剑" Ability { id: "A8D5", source: "泽莲尼娅" } duration 4
+620.5 "破防之剑" Ability { id: "A8D5", source: "泽莲尼娅" } duration 4
+629.3 "魔法阵展开·零式" Ability { id: "AA19", source: "泽莲尼娅" }
+630.3 "圣战领域" Ability { id: "A8BA", source: "泽莲尼娅" }
+642.7 "终曲之玫瑰 (狂暴)" Ability { id: "A8C5", source: "泽莲尼娅" }
+
+# IGNORED ABILITIES
+# A838 Alexandrian Thunder II
+# A89F Specter of the Lost - castbar
+# A8A2 Shock - followup hits
+# A8A3 Shock - followup hits
+# A8A4 Shock - followup hits
+# A8A5 Shock - followup hits
+# A8A6 Shock - followup hits
+# A8A7 Shock - followup hits
+# A8A8 Shock - followup hits
+# A8A9 Shock - followup hits
+# A8AA Shock - followup hits
+# A8AB Shock - followup hits
+# A8AE Escelons' Fall - invisible cast for baits
+# A8B7 Perfumed Quietus - castbar
+# A8BF Alexandrian Thunder II
+# A8C2 Unmitigated Explosion
+# A8D6 Stock Break - followup hits
+# A8D7 Stock Break - followup hits
+# A8D8 Stock Break - followup hits
+# A8D9 Stock Break - followup hits
+# A8E4 Alexandrian Thunder III - castbar
+# A8EA --sync-- - autoattack
+# A9B8 Thunder Slash - castbar
+# A9B9 Thunder Slash - castbar
+
+# ALL ENCOUNTER ABILITIES
+# A820 Emblazon
+# A82E --sync-- - jump to mid
+# A838 Alexandrian Thunder II
+# A839 Holy Hazard
+# A83C Explosion
+# A89E Thorned Catharsis
+# A89F Specter of the Lost
+# A8A0 Specter of the Lost
+# A8A1 Shock
+# A8A2 Shock
+# A8A3 Shock
+# A8A4 Shock
+# A8A5 Shock
+# A8A6 Shock
+# A8A7 Shock
+# A8A8 Shock
+# A8A9 Shock
+# A8AA Shock
+# A8AB Shock
+# A8AD Escelons' Fall
+# A8AE Escelons' Fall
+# A8AF Escelons' Fall
+# A8B0 Power Break
+# A8B1 Power Break
+# A8B2 Bud of Valor
+# A8B3 Spearpoint Push
+# A8B4 Spearpoint Push
+# A8B5 Blessed Barricade
+# A8B7 Perfumed Quietus
+# A8B9 Roseblood Bloom
+# A8BA Queen's Crusade
+# A8BB Emblazon
+# A8BE Alexandrian Thunder II
+# A8BF Alexandrian Thunder II
+# A8C0 Alexandrian Holy
+# A8C1 Explosion
+# A8C2 Unmitigated Explosion
+# A8C3 Encircling Thorns
+# A8C4 Encircling Thorns
+# A8C5 Rose Red
+# A8C6 Valorous Ascension
+# A8C7 Valorous Ascension
+# A8C8 Valorous Ascension
+# A8C9 Valorous Ascension
+# A8CA Valorous Ascension
+# A8CD Perfumed Quietus
+# A8D0 Thunder Slash
+# A8D1 Alexandrian Banish II
+# A8D2 Alexandrian Banish II
+# A8D5 Stock Break
+# A8D6 Stock Break
+# A8D7 Stock Break
+# A8D8 Stock Break
+# A8D9 Stock Break
+# A8DA Explosion
+# A8DF Holy Hazard
+# A8E2 Holy Hazard
+# A8E3 Alexandrian Thunder III
+# A8E4 Alexandrian Thunder III
+# A8E6 Alexandrian Thunder III
+# A8E8 Alexandrian Banish III
+# A8E9 Alexandrian Banish III
+# A8EA --sync--
+# A9B8 Thunder Slash
+# A9B9 Thunder Slash
+# A9BA Alexandrian Thunder IV
+# A9BB Alexandrian Thunder IV
+# AA14 Roseblood: 2nd Bloom
+# AA15 Roseblood: 3rd Bloom
+# AA16 Roseblood: 4th Bloom
+# AA17 Roseblood: 5th Bloom
+# AA18 Roseblood: 6th Bloom
+# AA19 Roseblood Withering

@@ -1,0 +1,129 @@
+### AAC CRUISERWEIGHT (M2)
+# ZoneId: 1258
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+# Blank canvas
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+6.7 "慕斯怪大雨" StartsUsing { id: "A66F", source: "狂热糖潮" } window 6.7,2
+11.4 "慕斯怪大雨" Ability { id: "A66F", source: "狂热糖潮" }
+22.8 "--north--" Ability { id: "A673", source: "狂热糖潮" }
+30.9 "单手涂鸦" Ability { id: "A654", source: "狂热糖潮" }
+35.6 "爆炸" Ability { id: "A655", source: "涂鸦爆弹怪" }
+48.2 "单手涂鸦" Ability { id: "A656", source: "狂热糖潮" }
+52.9 "爆炸" Ability { id: "A657", source: "翅膀爆弹怪" }
+63.5 "单手涂鸦" Ability { id: "A658", source: "狂热糖潮" }
+68.2 "突进" #Ability { id: "A659", source: "糖糖箭" }
+74.8 "单手涂鸦" Ability { id: "A65A", source: "狂热糖潮" }
+88.9 "单手涂鸦" Ability { id: "A658", source: "狂热糖潮" }
+94.6 "突进" Ability { id: "A659", source: "糖糖箭" }
+99.2 "软糊怪派对" Ability { id: "A66D", source: "狂热糖潮" }
+100.2 "软糊怪派对 x5" duration 4 #Ability { id: "A66E", source: "狂热糖潮" }
+110.1 "色彩狂热" Ability { id: "A670", source: "狂热糖潮" }
+112.1 "暖色炸弹/冷色炸弹" Ability { id: ["A671", "A672"], source: "狂热糖潮" }
+
+# Desert phase
+121.3 "--north--" Ability { id: "A673", source: "狂热糖潮" }
+122.8 label "desert"
+123.5 "糖心绘景" Ability { id: "A668", source: "狂热糖潮" }
+143.9 "添笔" Ability { id: "A669", source: "狂热糖潮" }
+161.3 "添笔" Ability { id: "A66A", source: "狂热糖潮" }
+175.5 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+178.5 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+181.5 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+184.5 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+187.5 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+190.5 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+196.5 "添笔" Ability { id: "A66C", source: "狂热糖潮" }
+220.7 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+222.7 "慕斯怪小雨 (咏唱)" Ability { id: "A674", source: "狂热糖潮" }
+223.7 "飞针" Ability { id: "A66B", source: "狂热糖潮" }
+228.7 "慕斯怪小雨 (分散)" Ability { id: "A675", source: "狂热糖潮" }
+237.8 "慕斯怪大雨" Ability { id: "A66F", source: "狂热糖潮" }
+
+# Blank canvas
+244.9 "色彩狂热" Ability { id: "A670", source: "狂热糖潮" }
+246.9 "暖色炸弹/冷色炸弹" Ability { id: ["A671", "A672"], source: "狂热糖潮" }
+255.3 "--north--" Ability { id: "A673", source: "狂热糖潮" }
+264.4 "双手涂鸦" Ability { id: ["A65F", "A660", "A661", "A662"], source: "狂热糖潮" }
+269.1 "突进/爆炸"
+279.7 "双手涂鸦" Ability { id: ["A65F", "A660", "A661", "A662"], source: "狂热糖潮" }
+284.4 "突进/爆炸"
+292.0 "软糊怪派对" Ability { id: "A66D", source: "狂热糖潮" }
+293.0 "软糊怪派对 x6" duration 5
+
+# River phase
+305.9 "--north--" Ability { id: "A673", source: "狂热糖潮" }
+308.1 label "river"
+308.1 "糖心绘景" Ability { id: "A663", source: "狂热糖潮" }
+330.2 "糖糖火炎/糖糖闪雷 (咏唱)" Ability { id: ["A65B", "A65D"], source: "狂热糖潮" }
+331.3 "糖糖火炎/糖糖闪雷" Ability { id: ["A65C", "A65E"], source: "狂热糖潮" }
+343.3 "糖糖火炎/糖糖闪雷 (咏唱)" Ability { id: ["A65B", "A65D"], source: "狂热糖潮" }
+344.4 "糖糖火炎/糖糖闪雷" Ability { id: ["A65C", "A65E"], source: "狂热糖潮" }
+351.4 "慕斯怪大雨" Ability { id: "A66F", source: "狂热糖潮" }
+359.8 "添笔" Ability { id: "A664", source: "狂热糖潮" }
+370.9 "落雷" duration 49.5 #Ability { id: "A665", source: "狂热糖潮" }
+384.2 "添笔" Ability { id: "A666", source: "狂热糖潮" }
+397.9 "界雷" Ability { id: "A667", source: "雷暴云" }
+408.0 "界雷" Ability { id: "A667", source: "雷暴云" }
+418.0 "界雷" Ability { id: "A667", source: "雷暴云" }
+425.4 "慕斯怪大雨" Ability { id: "A66F", source: "狂热糖潮" }
+
+# Blank canvas
+431.5 "色彩狂热" Ability { id: "A670", source: "狂热糖潮" }
+433.5 "暖色炸弹/冷色炸弹" Ability { id: ["A671", "A672"], source: "狂热糖潮" }
+441.9 "--north--" Ability { id: "A673", source: "狂热糖潮" }
+451.0 "双手涂鸦" Ability { id: ["A65F", "A660", "A661", "A662"], source: "狂热糖潮" }
+455.7 "突进/爆炸"
+466.3 "双手涂鸦" Ability { id: ["A65F", "A660", "A661", "A662"], source: "狂热糖潮" }
+471.0 "突进/爆炸"
+478.6 "软糊怪派对" Ability { id: "A66D", source: "狂热糖潮" }
+479.6 "软糊怪派对 x6" duration 5
+488.3 "--north--" Ability { id: "A673", source: "狂热糖潮" }
+
+# Doesn't ever seem to repeat desert phase from what I've seen, but just in case, add a sync/jump back to that early here
+489.8 "糖心绘景" StartsUsing { id: "A668", source: "狂热糖潮" } jump "desert"
+490.5 "糖心绘景" Ability { id: "A663", source: "狂热糖潮" } forcejump "river"
+
+# IGNORED ABILITIES
+# A7B3 --sync--
+
+# ALL ENCOUNTER ABILITIES
+# A654 Single Style
+# A655 Burst
+# A656 Single Style
+# A657 Burst
+# A658 Single Style
+# A659 Rush
+# A65A Single Style
+# A65B Taste of Fire
+# A65C Taste of Fire
+# A65D Taste of Thunder
+# A65E Taste of Thunder
+# A65F Double Style
+# A660 Double Style
+# A661 Double Style
+# A662 Double Style
+# A663 Sugarscape
+# A664 Layer
+# A665 Lightning Bolt
+# A666 Layer
+# A667 Highlightning
+# A668 Sugarscape
+# A669 Layer
+# A66A Layer
+# A66B Spray Pain
+# A66C Layer
+# A66D Pudding Party
+# A66E Pudding Party
+# A66F Mousse Mural
+# A670 Color Riot
+# A671 Warm Bomb
+# A672 Cool Bomb
+# A673 --sync--
+# A674 Mousse Touch-up
+# A675 Mousse Touch-up
+# A7B3 --sync--

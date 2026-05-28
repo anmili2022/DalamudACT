@@ -1,0 +1,186 @@
+### THE UNDERKEEP
+# ZoneId: 1266
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+
+#~~~~~~~~~#
+# Gargant #
+#~~~~~~~~~#
+
+# the access hatch will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1433" } window 1000,1
+1005.1 "恐吓虫鸣" StartsUsing { id: "A633", source: "高康特" }
+1010.1 "恐吓虫鸣" Ability { id: "A633", source: "高康特" }
+1019.6 "强力之声" Ability { id: "A632", source: "高康特" }
+1028.6 "--untargetable--"
+1038.3 "伏击" Ability { id: "A62E", source: "高康特" }
+1039.3 "--targetable--"
+1050.4 "恐吓虫鸣" Ability { id: "A633", source: "高康特" }
+1058.3 "强力之声" Ability { id: "A632", source: "高康特" }
+1064.4 "崩落" Ability { id: "A898", source: "高康特" }
+1075.1 "大地之歌" Ability { id: "A630", source: "高康特" }
+1080.6 "--untargetable--"
+1084.3 "碎裂" Ability { id: "A631", source: "沙球" }
+1088.3 "碎裂" Ability { id: "A87F", source: "沙球" }
+1093.5 "伏击" Ability { id: "A62E", source: "高康特" }
+1094.5 "--targetable--"
+1100.0 "强力之声" Ability { id: "A632", source: "高康特" }
+1106.1 "崩落" Ability { id: "A898", source: "高康特" }
+1115.3 "捕猎钳" Ability { id: "A634", source: "高康特" }
+
+1128.6 "恐吓虫鸣" Ability { id: "A633", source: "高康特" }
+1136.0 "强力之声" Ability { id: "A632", source: "高康特" }
+1142.1 "崩落" Ability { id: "A898", source: "高康特" }
+1152.7 "大地之歌" Ability { id: "A630", source: "高康特" }
+1162.0 "碎裂" Ability { id: "A631", source: "沙球" }
+1166.0 "碎裂" Ability { id: "A87F", source: "沙球" }
+1167.7 "强力之声" Ability { id: "A632", source: "高康特" }
+1173.7 "崩落" Ability { id: "A898", source: "高康特" }
+
+1183.0 label "gargant-loop"
+1183.0 "捕猎钳" Ability { id: "A634", source: "高康特" }
+1195.2 "恐吓虫鸣" Ability { id: "A633", source: "高康特" }
+1202.7 "强力之声" Ability { id: "A632", source: "高康特" }
+1208.7 "崩落" Ability { id: "A898", source: "高康特" }
+1219.4 "大地之歌" Ability { id: "A630", source: "高康特" }
+1228.6 "碎裂" Ability { id: "A631", source: "沙球" }
+1232.6 "碎裂" Ability { id: "A87F", source: "沙球" }
+1233.7 "强力之声" Ability { id: "A632", source: "高康特" }
+1239.7 "崩落" Ability { id: "A898", source: "高康特" }
+1248.9 "捕猎钳" Ability { id: "A634", source: "高康特" } forcejump "gargant-loop"
+
+
+# A633 Chilling Chirp [Gargant] 20
+# A632 Almighty Racket [Gargant] 8
+# A62E Aerial Ambush [Gargant] 2
+# A62F Aerial Ambush [Gargant] 2 --damage
+# A899 Foundational Debris [Gargant] 20 -- floor aoes,ignore
+# A898 Sedimentary Debris [Gargant] 28
+# A630 Earthsong [Gargant] 12 --cast
+# A631 Sphere Shatter [Sand Sphere] 21
+# A87F Sphere Shatter [Sand Sphere] 18
+# A634 Trap Jaws [Gargant] 3
+
+#~~~~~~~~~~~~#
+# Soldier S0 #
+#~~~~~~~~~~~~#
+
+# the receiving room will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1435" } window 2000,1
+2005.2 "厄运冲击" StartsUsing { id: "A653", source: "士兵S0" }
+2010.1 "厄运冲击" Ability { id: "A653", source: "士兵S0" }
+2019.3 "闪雷斩" Ability { id: "A880", source: "士兵S0" }
+2025.5 "--north--" Ability { id: "A650", source: "士兵S0" }
+2032.4 "幻影半斩 (咏唱)" Ability { id: ["A642", "A643"], source: "士兵S0" }
+2040.4 "幻影半斩" Ability { id: ["A644", "A645"], source: "士兵S0" }
+2044.6 "--north--" Ability { id: "A650", source: "士兵S0" }
+2050.8 "幻影半斩 (咏唱)" Ability { id: ["A642", "A643"], source: "士兵S0" }
+2058.8 "幻影半斩" Ability { id: ["A644", "A645"], source: "士兵S0" }
+2064.0 "--middle--" Ability { id: "A650", source: "士兵S0" }
+2067.5 "支援炮击" Ability { id: "A64C", source: "士兵S0" }
+2074.6 "裂斩波" Ability { id: "A64E", source: "士兵S0" }
+2082.8 "闪雷斩" Ability { id: "A880", source: "士兵S0" }
+2088.0 "--north--" Ability { id: "A650", source: "士兵S0" }
+
+2088.0 label "soldier-loop"
+2094.9 "幻影半斩 (咏唱)" Ability { id: ["A642", "A643"], source: "士兵S0" }
+2104.7 "幻影半斩" Ability { id: ["A644", "A645"], source: "士兵S0" }
+2106.0 "雷转质电火花" Ability { id: "A64A", source: "士兵S0" }
+2117.7 "厄运冲击" Ability { id: "A653", source: "士兵S0" }
+2124.9 "--middle--" Ability { id: "A650", source: "士兵S0" }
+2128.3 "支援炮击" Ability { id: "A64C", source: "士兵S0" }
+2135.4 "裂斩波" Ability { id: "A64E", source: "士兵S0" }
+2143.6 "闪雷斩" Ability { id: "A880", source: "士兵S0" }
+2151.7 "厄运冲击" Ability { id: "A653", source: "士兵S0" }
+2158.9 "--north--" Ability { id: "A650", source: "士兵S0" } forcejump "soldier-loop"
+
+# A653 Field of Scorn [Soldier S0] 24
+# A880 Thunderous Slash [Soldier S0] 4
+# A648 unknown_a648 [Soldier S0] 14 --clone appear
+# A649 unknown_a649 [Soldier S0] 22 --clone appear
+# A650 unknown_a650 [Soldier S0] 9 --jump
+# A89B unknown_a89b [Soldier S0] 12 --clone leave, L
+# A89C unknown_a89c [Soldier S0] 19 --clone leave, R
+# A642 Sector Bisector [Soldier S0] 2 --cast, L
+# A643 Sector Bisector [Soldier S0] 3 --cast, R
+# A644 Sector Bisector [Soldier S0] 2 --clone cast, L
+# A645 Sector Bisector [Soldier S0] 3 --clone cast, R
+# A646 Sector Bisector [Soldier S0] 2 --damage L
+# A647 Sector Bisector [Soldier S0] 3 --damage R
+# A64C Ordered Fire [Soldier S0] 4
+# A64D Ordered Fire [Add Block] 16 --damage
+# A64E Static Force [Soldier S0] 4
+# A64F Static Force [Soldier S0] 16 --damage
+# A64A Electric Excess [Soldier S0] 3
+# A883 Electric Excess [Soldier S0] 12 --damage
+
+#~~~~~~~~~~~~#
+# Valia Pira #
+#~~~~~~~~~~~~#
+
+# the Chamber of Patience will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1436" } window 3000,1
+3006.2 "熵球" StartsUsing { id: "A61D", source: "灵变柱" }
+3011.1 "熵球" Ability { id: "A61D", source: "灵变柱" }
+3021.3 "启动指令" Ability { id: "A611", source: "灵变柱" }
+3031.0 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3034.0 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3041.0 "支援炮击" Ability { id: "A60C", source: "灵变柱" }
+3050.1 "雷转质射线" Ability { id: "A87A", source: "灵变炮塔" }
+3063.1 "灵变电火花" Ability { id: "A617", source: "灵变柱" }
+3073.3 "前方电中和" Ability { id: "A6F2", source: "灵变柱" }
+3075.3 "雷转质光" Ability { id: "A61C", source: "灵变柱" }
+3083.5 "启动指令" Ability { id: "A611", source: "灵变柱" }
+3093.4 "转移妖红珠" Ability { id: "A6F3", source: "灵变柱" }
+3096.2 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3101.3 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3107.7 "灵变射线" Ability { id: "A62C", source: "灵变柱" }
+3117.8 "熵球" Ability { id: "A61D", source: "灵变柱" }
+
+3128.0 "启动指令" Ability { id: "A611", source: "灵变柱" }
+3132.1 "支援炮击" Ability { id: "A60C", source: "灵变柱" }
+3136.6 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3141.0 "转移妖红珠" Ability { id: "A6F3", source: "灵变柱" }
+3141.1 "雷转质射线" Ability { id: "A87A", source: "灵变炮塔" }
+3143.8 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3150.3 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3155.3 "前方电中和" Ability { id: "A6F2", source: "灵变柱" }
+3157.3 "雷转质光" Ability { id: "A61C", source: "灵变柱" }
+3168.7 "灵变射线" Ability { id: "A62C", source: "灵变柱" }
+3181.4 "灵变电火花" Ability { id: "A617", source: "灵变柱" }
+3193.3 "熵球" Ability { id: "A61D", source: "灵变柱" }
+
+3193.3 label "valia-loop"
+3205.5 "启动指令" Ability { id: "A611", source: "灵变柱" }
+3209.5 "支援炮击" Ability { id: "A60C", source: "灵变柱" }
+3214.1 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3218.5 "转移妖红珠" Ability { id: "A6F3", source: "灵变柱" }
+3218.6 "雷转质射线" Ability { id: "A87A", source: "灵变炮塔" }
+3221.3 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3227.8 "增援射线" Ability { id: "A6F1", source: "灵变块" }
+3232.7 "前方电中和" Ability { id: "A6F2", source: "灵变柱" }
+3234.8 "雷转质光" Ability { id: "A61C", source: "灵变柱" }
+3246.1 "灵变射线" Ability { id: "A62C", source: "灵变柱" }
+3258.8 "灵变电火花" Ability { id: "A617", source: "灵变柱" }
+3270.7 "熵球" Ability { id: "A61D", source: "灵变柱" } forcejump "valia-loop"
+
+# A61E unknown_a61e [Valia Pira] 173 --auto
+# A61D Entropic Sphere [Valia Pira] 52
+# A611 Coordinate March [Valia Pira] 16 --spawns orbs/bits
+# A612 unknown_a612 [] 54 -- animation to trigger?
+# A6F1 Enforcement Ray [Coordinate Bit] 41 -- plus aoe when orb is hit
+# A60C Ordered Fire [Valia Pira] 13 -- spawn wall turrets
+# A60D unknown_a60d [Valia Pira] 26 --animation
+# A87A Electray [Coordinate Turret] 26 --turret line aoe
+# A617 Electric Field [Valia Pira] 10 --cast
+# A619 Concurrent Field [Valia Pira] 60 --ground aoes
+# A8FD Electric Field [Valia Pira] 48 --damage
+# A6F2 Neutralize Front Lines [Valia Pira] 12 --get behind
+# A61C Hypercharged Light [Valia Pira] 48 --spread
+# A6F3 Bloodmarch [Valia Pira] 13 --swaps orb spot
+# A62C Deterrent Pulse [Valia Pira] 39 --line stack

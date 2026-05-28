@@ -1,0 +1,226 @@
+### AAC HEAVYWEIGHT (M1)
+# ZoneId: 1320
+
+# -ii B333 B339 B33A B33E B340 B341 B344 B347 B34A B35A B35D B362 B364 B705 B706 B7C7 B9D2 BBA6 BEB7 BEB8 BEB9 BEBA
+# -it "Vamp Fatale" "Coffinmaker" "Fatal Flail"
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+10.4 "魅亡之音" Ability { id: "B361", source: "致命美人" }
+20.5 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+23.9 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+34.0 "血魅的靴踏音" Ability { id: "B34B", source: "致命美人" }
+34.1 "--sync--" Ability { id: "B34C", source: "致命美人" }
+38.5 "共振波" Ability { id: "B34D", source: "致命蝙蝠" }
+41.9 "共振波" Ability { id: "B34D", source: "致命蝙蝠" }
+45.5 "共振波" Ability { id: "B34D", source: "致命蝙蝠" }
+49.9 "硬核之声" Ability { id: "B35B", source: "致命美人" }
+55.1 "--middle--" Ability { id: "B332", source: "致命美人" }
+64.1 "施虐的尖啸" Ability { id: "B334", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+
+# Coffinmaker mini-phase
+# B332 (jump) manually removed from this part since boss is untargetable
+
+# Coffinmaker mini-phase duration can vary depending on kill time. The currently queued mechanics
+# always finish executing before the rest of the fight resumes.
+
+# There's no good way to handle the mix here. Just let the mini-phase play out, and use a big jump on
+# the StartsUsing of the VFX for Sadistic Screech to jump the timeline
+71.1 "--致命刑锯可选中--"
+71.3 "--致命美人不可选中--"
+71.4 "前进" Ability { id: "B335", source: "致命刑锯" }
+78.5 "冲出" Ability { id: "B336", source: "致命刑锯" }
+81.5 "冲出" Ability { id: "B336", source: "致命刑锯" }
+88.9 "剥蚀的低嗓" #Ability { id: "B363", source: "致命美人" }
+88.9 "前进" Ability { id: "B335", source: "致命刑锯" }
+
+96.0 "冲出" Ability { id: "B337", source: "致命刑锯" }
+99.0 "冲出" Ability { id: "B337", source: "致命刑锯" }
+106.1 "前进" Ability { id: "B335", source: "致命刑锯" }
+108.1 "尖锐的音调" Ability { id: "B365", source: "致命美人" }
+
+110.7 label "coffinmaker-loop"
+115.2 "冲出" #Ability { id: "B338", source: "致命刑锯" }
+115.2 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+
+118.6 "冲出" #Ability { id: "B338", source: "致命刑锯" }
+118.6 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+121.7 "冲出" StartsUsing { id: "B338", source: "致命刑锯" } window 2,2 forcejump "coffinmaker-loop"
+
+# Theoretically there's an enrage here, maybe after 3-5 repeats, but I don't have any logs to get exact details for how many
+# Saw it happen in a clip compilation at some point.
+
+294.1 "施虐的尖啸" StartsUsing { id: "B333", source: "致命美人" } window 200,20
+300.0 "施虐的尖啸" Ability { id: "B334", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+
+# Back to normal arena
+305.2 "--middle--" Ability { id: "B332", source: "致命美人" }
+314.3 "全场杀伤" Ability { id: "B33F", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+324.0 "--middle--" Ability { id: "B332", source: "致命美人" }
+333.3 "致命的闭幕曲" Ability { id: "B342", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+
+# Circular arena
+339.3 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+343.3 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+347.3 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+350.3 "以太流失" Ability { id: "B348", source: "致命美人" }
+351.3 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+357.8 "以太流失" Ability { id: "B349", source: "致命美人" }
+362.5 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+365.5 "以太流失" Ability { id: "B348", source: "致命美人" }
+366.5 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+372.9 "以太流失" Ability { id: "B349", source: "致命美人" }
+378.7 "粗暴之雨 x4" duration 3
+386.5 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+390.5 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+392.6 "贪欲无厌" Ability { id: "B345", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+396.7 "--middle--" Ability { id: "B332", source: "致命美人" }
+
+# Flail/Chakram/Buzzsaw phase
+405.7 "施虐的尖啸" Ability { id: "B334", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+418.9 "掉落" Ability { id: "B33B", source: "致命刺锤" }
+419.8 "--致命刺锤可选中--"
+427.9 "魅亡之音" Ability { id: "B361", source: "致命美人" }
+437.0 "掉落" Ability { id: "B33B", source: "致命刺锤" }
+437.9 "--致命刺锤可选中--"
+448.0 "魅亡之音" Ability { id: "B361", source: "致命美人" }
+463.0 "施虐的尖啸" Ability { id: "B334", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+
+# Back to default arena
+468.3 "--middle--" Ability { id: "B332", source: "致命美人" }
+477.3 "全场杀伤" Ability { id: "B33F", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+
+483.0 label "loop"
+483.0 "--middle--" Ability { id: "B332", source: "致命美人" }
+491.1 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+494.5 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+501.6 "硬核之声" Ability { id: "B35C", source: "致命美人" }
+506.8 "--middle--" Ability { id: "B332", source: "致命美人" }
+516.1 "致命的闭幕曲" Ability { id: "B343", source: "致命美人" }
+
+# Circular arena
+522.1 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+526.1 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+526.1 "血魅的靴踏音" Ability { id: "B34B", source: "致命美人" }
+526.2 "--sync--" Ability { id: "B34C", source: "致命美人" }
+530.0 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+530.8 "共振波" Ability { id: "B34D", source: "致命蝙蝠" }
+534.1 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+534.3 "--middle--" #Ability { id: "B332", source: "致命美人" }
+534.3 "共振波" Ability { id: "B34D", source: "致命蝙蝠" }
+537.9 "共振波" Ability { id: "B34D", source: "致命蝙蝠" }
+538.1 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+542.5 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+546.1 "月之半相" Ability { id: ["B352", "B353", "B354", "B355", "B356", "B357", "B358", "B359"], source: "致命美人" }
+553.2 "粗暴之雨 x5" duration 4
+562.2 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+566.2 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+568.3 "贪欲无厌" Ability { id: "B345", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+
+# Back to normal
+577.3 "硬核之声" Ability { id: "B35C", source: "致命美人" }
+586.4 "尖锐的音调" Ability { id: "B365", source: "致命美人" }
+596.5 "魅亡之音" Ability { id: "B361", source: "致命美人" }
+601.7 "--middle--" Ability { id: "B332", source: "致命美人" }
+611.0 "致命的闭幕曲" Ability { id: "B343", source: "致命美人" }
+
+# Circular arena
+617.0 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+621.0 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+624.0 "以太流失" Ability { id: "B348", source: "致命美人" }
+625.0 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+631.4 "以太流失" Ability { id: "B349", source: "致命美人" }
+636.1 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+639.1 "以太流失" Ability { id: "B348", source: "致命美人" }
+640.1 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+646.5 "以太流失" Ability { id: "B349", source: "致命美人" }
+652.3 "粗暴之雨 x5" duration 4
+661.0 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+665.0 "碎烂脉冲" Ability { id: "B346", source: "致命美人" }
+667.2 "贪欲无厌" Ability { id: "B345", source: ["Coffinmaker", "Vamp Fatale", "Fatal Flail"] }
+669.2 "--middle--" Ability { id: "B332", source: "致命美人" } forcejump "loop"
+
+# IGNORED ABILITIES
+# B333 Sadistic Screech: VFX
+# B339 Gravegrazer
+# B33A Gravegrazer
+# B33E Crowd Kill: VFX
+# B340 Finale Fatale: VFX
+# B341 Finale Fatale: VFX
+# B344 Insatiable Thirst: VFX
+# B347 Aetherletting: VFX
+# B34A Vamp Stomp: VFX
+# B35A Hardcore: VFX, small buster
+# B35D Brutal Rain: VFX
+# B362 Flaying Fry: VFX
+# B364 Penetrating Pitch: VFX
+# B705 Dead Wake: VFX
+# B706 Coffinfiller: VFX
+# B7C7 --sync--: Autoattacks during chakrams phase
+# B9D2 --sync--: VFX
+# BBA6 --sync--: Normal autoattacks
+# BEB7 Half Moon: VFX
+# BEB8 Half Moon: VFX
+# BEB9 Half Moon: VFX
+# BEBA Half Moon: VFX
+
+# ALL ENCOUNTER ABILITIES
+# B332 --sync--
+# B333 Sadistic Screech
+# B334 Sadistic Screech
+# B335 Dead Wake
+# B336 Coffinfiller
+# B337 Coffinfiller
+# B338 Coffinfiller
+# B339 Gravegrazer
+# B33A Gravegrazer
+# B33B Plummet
+# B33C Massive Impact
+# B33D Barbed Burst
+# B33E Crowd Kill
+# B33F Crowd Kill
+# B340 Finale Fatale
+# B341 Finale Fatale
+# B342 Finale Fatale
+# B343 Finale Fatale
+# B344 Insatiable Thirst
+# B345 Insatiable Thirst
+# B346 Pulping Pulse
+# B347 Aetherletting
+# B348 Aetherletting
+# B349 Aetherletting
+# B34A Vamp Stomp
+# B34B Vamp Stomp
+# B34C --sync--
+# B34D Blast Beat
+# B352 Half Moon
+# B353 Half Moon
+# B354 Half Moon
+# B355 Half Moon
+# B356 Half Moon
+# B357 Half Moon
+# B358 Half Moon
+# B359 Half Moon
+# B35A Hardcore
+# B35B Hardcore
+# B35C Hardcore
+# B35D Brutal Rain
+# B360 Brutal Rain
+# B361 Killer Voice
+# B362 Flaying Fry
+# B363 Flaying Fry
+# B364 Penetrating Pitch
+# B365 Penetrating Pitch
+# B705 Dead Wake
+# B706 Coffinfiller
+# B7C7 Attack
+# B9D2 --sync--
+# BBA6 Attack
+# BEB7 Half Moon
+# BEB8 Half Moon
+# BEB9 Half Moon
+# BEBA Half Moon

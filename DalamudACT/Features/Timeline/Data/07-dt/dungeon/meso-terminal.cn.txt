@@ -1,0 +1,181 @@
+### THE MESO TERMINAL
+# ZoneId: 1292
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~~~~~~~~~#
+# Chirurgeon General #
+#~~~~~~~~~~~~~~~~~~~~#
+# -ii ACD6
+
+# The Triage Module will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1496" } window 1000,1
+1009.1 "广域撒药" Ability { id: "AB16", source: "某个医师长的记忆" }
+1016.5 "启动装置" Ability { id: "AB1C", source: "某个医师长的记忆" }
+1027.1 "爆炸药液" Ability { id: "AB1F", source: "某个医师长的记忆" }
+1035.1 "圆状散布" Ability { id: "AB1D", source: "某个医师长的记忆" }
+1041.7 "正面喷雾" Ability { id: "AB1A", source: "某个医师长的记忆" }
+1043.8 "启动装置" Ability { id: "AB1C", source: "某个医师长的记忆" }
+1051.8 "知觉扰乱药" Ability { id: "AB15", source: "某个医师长的记忆" }
+1063.2 "爆炸药液" Ability { id: "AB1F", source: "某个医师长的记忆" }
+1069.9 "高压缩药弹" Ability { id: "AB17", source: "某个医师长的记忆" }
+
+1072.1 label "chirurgeonLoop"
+1072.1 "启动装置" Ability { id: "AB1C", source: "某个医师长的记忆" }
+1077.1 "知觉扰乱药" Ability { id: "AB15", source: "某个医师长的记忆" }
+1086.7 "圆状散布/爆炸药液" Ability { id: ["AB1D", "AB1E", "AB1F"], source: "某个医师长的记忆" }
+1094.7 "圆状散布/爆炸药液" Ability { id: ["AB1D", "AB1E", "AB1F"], source: "某个医师长的记忆" }
+1101.3 "正面喷雾" Ability { id: "AB1A", source: "某个医师长的记忆" }
+1108.3 "广域撒药" Ability { id: "AB16", source: "某个医师长的记忆" }
+1118.3 "高压缩药弹" Ability { id: "AB17", source: "某个医师长的记忆" }
+
+1123.6 "启动装置" Ability { id: "AB1C", source: "某个医师长的记忆" } forcejump "chirurgeonLoop"
+
+# ALL ENCOUNTER ABILITIES
+# AB15 Sensory Deprivation: Cloaks mechanic indicators
+# AB16 Medicine Field: raidwide
+# AB17 Concentrated Dose: tank buster
+# AB1A Biochemical Front: 180-degree frontal cleave
+# AB1C No Man's Land: sets up sphere and aerosol mechanics
+# AB1D Sterile Sphere: small sphere explosion
+# AB1E Sterile Sphere: large sphere explosion
+# AB1F Pungent Aerosol: knockback
+# ACD6 --sync--: auto-attack
+
+#~~~~~~~~~~~~~~#
+# Executioners #
+#~~~~~~~~~~~~~~#
+
+# -ii AA3A AA3C AA3D AA3F AA4A AA4E AA4F AA50
+
+# The Executioner timeline is "best-effort" and will quickly
+# desync depending on player or enemy deaths.
+
+# The Public Forum will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1497" } window 2000,1
+2003.2 "捉拿罪犯" Ability { id: "AA39" }
+2011.8 "处刑人的咆哮" Ability { id: "AA3B", source: "某个处刑人的记忆" }
+2022.5 "铁链束缚" #Ability { id: "AA3E" }
+2027.4 "斩足刃 (咏唱)" Ability { id: "AA42" }
+2034.3 "斩足刃" Ability { id: "AA43" }
+2036.7 "断罪的雷剑" Ability { id: "AA49" }
+2037.4 "斩足刃" Ability { id: "AA43" }
+2042.8 "断罪的雷剑 (生效)" duration 7 #Ability { id: "AA4A" }
+2045.8 "圆月断/月环断" Ability { id: ["AA4B", "AA4C"] }
+2050.7 "断罪的铁球" Ability { id: "AA47" }
+2056.6 "断罪的铁球" Ability { id: "AA48" }
+2058.5 "破碎弹" StartsUsing { id: "AF38", source: "某个黄褐处刑人的记忆" } # Will Breaker
+2061.0 "断罪的雷剑" Ability { id: "AA49" }
+2063.0 "死刑宣告" Ability { id: "AA44" }
+2063.0 "--焦热刑具出现--"
+2063.9 "断罪的雷剑 (生效)" duration 7 #Ability { id: "AA4A" }
+2065.0 "破碎弹?" #Ability { id: "AF38", source: "某个黄褐处刑人的记忆" }
+2067.2 "断罪的铁球" Ability { id: "AA47" } window 10,5
+2069.0 "强连击" Ability { id: "AA45" }
+2071.8 "断罪的铁球" Ability { id: "AA48" }
+
+2081.8 label "executionerLoop"
+2081.8 "连续处刑" Ability { id: "AA4D" }
+2088.6 "斩足刃" Ability { id: "AA43" }
+2090.6 "断罪的铁球" Ability { id: "AA48" }
+2092.6 "斩足刃" Ability { id: "AA43" }
+2094.3 "圆月断/月环断" Ability { id: ["AA4B", "AA4C"] }
+2104.8 "处刑人的咆哮" Ability { id: "AA3B", source: "某个处刑人的记忆" }
+2114.5 "断罪的雷剑" #Ability { id: "AA49", source: "某个翠绿处刑人的记忆" }
+2120.6 "圆月断/月环断" Ability { id: ["AA4B", "AA4C"] } window 10,5
+2121.3 "--焦热刑具出现--"
+2122.2 "断罪的雷剑 (生效)" #Ability { id: "AA4A", source: "某个绯红处刑人的记忆" }
+2124.2 "破碎弹?" #Ability { id: "AF38", source: "某个黄褐处刑人的记忆" }
+2131.2 "死刑宣告" Ability { id: "AA44", source: "某个绯红处刑人的记忆" } window 30,10
+
+2143.0 "连续处刑" Ability { id: "AA4D" } forcejump "executionerLoop"
+
+
+
+# ALL ENCOUNTER ABILITIES
+# AA39 Lawless Pursuit: Tether targeted player
+# AA3A Head-splitting Roar: raidwide castbar
+# AA3B Head-splitting Roar: raidwide (invisible add)
+# AA3C --sync--: reposition in own circle
+# AA3D Shackles of Fate: chain castbar
+# AA3E Shackles of Fate: chain and draw player in
+# AA3F Shackles of Fate: chain and draw player in when leaving the circle
+# AA42 Dismemberment: blade line AoEs castbar
+# AA43 Dismemberment blade line AoEs
+# AA44 Death Penalty: dooms target
+# AA45 Relentless Torment: tank buster headmarker
+# AA46 Relentless Torment: tank buster
+# AA47 Flaying Flail: triangle of circle AoEs castbar
+# AA48 Flaying Flail: triangle of circle AoEs
+# AA49 Peal of Judgment: lightning lines castbar
+# AA4A Peal of Judgment: lightning lines
+# AA4B Chopping Block: chariot AoE
+# AA4C Execution Wheel: dynamo AoE
+# AA4D Serial Torture
+# AA4E --sync--: auto-attack
+# AA4F --sync--: auto-attack
+# AA50 --sync--: auto-attack
+
+#~~~~~~~~~~~~~~~~~~#
+# Immortal Remains #
+#~~~~~~~~~~~~~~~~~~#
+
+# -ii AB32 AB2E AB24 AB25 AB2B AB30
+
+# Non-Volatile Memory will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1498" } window 3000,1
+3010.1 "回忆" Ability { id: "AB31", source: "某些人的记忆" }
+3019.9 "记忆重现" Ability { id: "AB21", source: "某些人的记忆" }
+3039.3 "雷质射线 1" #Ability { id: "AB22", source: "旧日航空机" }
+3042.3 "雷质射线 2" #Ability { id: "AB22", source: "旧日航空机" }
+3047.1 "记忆风暴" Ability { id: "AB2D", source: "某些人的记忆" }
+3057.2 "记忆重现" Ability { id: "AB21", source: "某些人的记忆" }
+3073.3 "轰炸" Ability { id: "AB23", source: "某些人的记忆" }
+3075.3 "慌乱" Ability { id: ["AB26", "AB27"], source: "某些人的记忆" } # Turmoil
+3079.7 "慌乱" Ability { id: "AB28", source: "某些人的记忆" }
+3088.5 "印象" Ability { id: "AB29", source: "某些人的记忆" } # Impression tethers
+3093.5 "印象" Ability { id: "AB2A", source: "某些人的记忆" }
+3096.5 "轰炸" Ability { id: "AB23", source: "某些人的记忆" }
+3105.6 "记忆爆炸" Ability { id: "AB2F", source: "某些人的记忆" }
+3114.7 "记忆重现" Ability { id: "AB21", source: "某些人的记忆" }
+3126.8 "雷光" Ability { id: "B078", source: "某些人的记忆" }
+
+3141.8 label "remainsLoop"
+3141.8 "雷光" Ability { id: "B078", source: "某些人的记忆" }
+3148.0 "雷转质射线" Ability { id: "AB22", source: "旧日航空机" }
+3151.0 "雷转质射线" Ability { id: "AB22", source: "旧日航空机" }
+3153.8 "慌乱" Ability { id: ["AB26", "AB27"], source: "某些人的记忆" } # Turmoil
+3158.2 "慌乱" Ability { id: "AB28", source: "某些人的记忆" }
+3171.9 "雷光" Ability { id: "B078", source: "某些人的记忆" }
+3179.9 "印象" Ability { id: "AB29", source: "某些人的记忆" } # Impression tethers
+3184.9 "印象" Ability { id: "AB2A", source: "某些人的记忆" }
+3187.9 "轰炸" Ability { id: "AB23", source: "某些人的记忆" }
+3197.0 "记忆风暴" Ability { id: "AB2D", source: "某些人的记忆" }
+3206.1 "记忆爆炸" Ability { id: "AB2F", source: "某些人的记忆" }
+3216.2 "回忆" Ability { id: "AB31", source: "某些人的记忆" }
+
+3234.0 "雷光" Ability { id: "B078", source: "某些人的记忆" } forcejump "remainsLoop"
+
+# ALL ENCOUNTER ABILITIES
+# AB21 Memento: Setup cast for Electray/Bombardment/Keraunography
+# AB22 Electray: Cross laser AoEs
+# AB23 Bombardment: Small red circle AoE
+# AB24 Bombardment: Large red circle AoE
+# AB25 Keraunography: Castbar for purple lasers
+# AB26 Turmoil: Half-arena cleave, left side castbar
+# AB27 Turmoil: Half-arena cleave, right side castbar
+# AB28 Turmoil: Half-arena cleave, both sides
+# AB29 Impression: Blue knockback circle display
+# AB2A Impression: Blue knockback circle failure (standing inside)
+# AB2B Impression: Blue knockback circle resolve
+# AB2D Memory of the Storm: Stack laser self-cast
+# AB2E Memory of the Storm: Stack laser (instant)
+# AB2F Memory of the Pyre: Tank buster self-cast
+# AB30 Memory of the Pyre: Tank buster
+# AB31 Recollection: Raidwide
+# AB32 --sync--: Auto-attack
+# B078 Keraunography: Large purple lasers

@@ -1,0 +1,232 @@
+### MISTWAKE
+# ZoneId: 1314
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~~~~~~~#
+# Treno Catoblepas #
+#~~~~~~~~~~~~~~~~~~#
+
+# -ii A940 A945 A946
+
+# TODO: get a longer run and confirm loop.
+
+# The Shattered Lair will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "14EA" } window 1000,1
+1006.4 "地震" StartsUsing { id: "A93F", source: "特雷诺卡托布莱帕斯" }
+1011.1 "地震" Ability { id: "A93F", source: "特雷诺卡托布莱帕斯" }
+1020.9 "震雷" Ability { id: "A943", source: "特雷诺卡托布莱帕斯" }
+1022.3 "震雷" Ability { id: "A944", source: "特雷诺卡托布莱帕斯" }
+1034.1 "恶魔之光" Ability { id: "A942", source: "特雷诺卡托布莱帕斯" }
+1040.2 "地震" Ability { id: "A93F", source: "特雷诺卡托布莱帕斯" }
+1048.3 "暴雷" Ability { id: "A941", source: "特雷诺卡托布莱帕斯" }
+1057.0 "震雷" Ability { id: "A943", source: "特雷诺卡托布莱帕斯" }
+1058.4 "震雷" Ability { id: "A944", source: "特雷诺卡托布莱帕斯" }
+1070.2 "恶魔之光" Ability { id: "A942", source: "特雷诺卡托布莱帕斯" }
+1078.4 "雷光射线" Ability { id: "AF19", source: "特雷诺卡托布莱帕斯" }
+1086.8 "石化吐息" Ability { id: "A947", source: "特雷诺卡托布莱帕斯" }
+1096.6 "震雷" Ability { id: "A943", source: "特雷诺卡托布莱帕斯" }
+1098.0 "震雷" Ability { id: "A944", source: "特雷诺卡托布莱帕斯" }
+1109.8 "恶魔之光" Ability { id: "A942", source: "特雷诺卡托布莱帕斯" }
+1115.9 "地震" Ability { id: "A93F", source: "特雷诺卡托布莱帕斯" }
+1124.0 label "treno-loop"
+1124.0 "地震" Ability { id: "A93F", source: "特雷诺卡托布莱帕斯" }
+1135.1 "暴雷" Ability { id: "A941", source: "特雷诺卡托布莱帕斯" }
+1144.8 "震雷" Ability { id: "A943", source: "特雷诺卡托布莱帕斯" }
+1146.2 "震雷" Ability { id: "A944", source: "特雷诺卡托布莱帕斯" }
+1158.0 "恶魔之光" Ability { id: "A942", source: "特雷诺卡托布莱帕斯" }
+1166.1 "雷光射线" Ability { id: "AF19", source: "特雷诺卡托布莱帕斯" }
+1174.5 "石化吐息" Ability { id: "A947", source: "特雷诺卡托布莱帕斯" }
+1182.6 "地震" Ability { id: "A93F", source: "特雷诺卡托布莱帕斯" }
+1192.3 "震雷" Ability { id: "A943", source: "特雷诺卡托布莱帕斯" }
+1193.7 "震雷" Ability { id: "A944", source: "特雷诺卡托布莱帕斯" }
+1205.5 "恶魔之光" Ability { id: "A942", source: "特雷诺卡托布莱帕斯" }
+1211.6 "地震" Ability { id: "A93F", source: "特雷诺卡托布莱帕斯" } forcejump "treno-loop"
+
+# IGNORED ABILITIES
+# A940 Thunder - Auto?
+# A945 Thunder II - Paired with A944
+# A946 Ray of Lightning - Paired with AF19
+
+# ALL ENCOUNTER ABILITIES
+# A93F Earthquake - Aoe/raidwide
+# A941 Thunder III - Tank buster
+# A942 Bedeviling Light - Petrify unless behind rock
+# A943 Thunder II - Lighting appears
+# A944 Thunder II - Lightning activates
+# AF19 Ray of Lightning - Line stack (breaks rocks)
+# A947 Petribreath - Front conal
+
+
+#~~~~~~~~~~#
+# Amdusias #
+#~~~~~~~~~~#
+
+# -ii B115 B117 B119 B11E B121 B125 B127 B12C B12D B6F7
+
+# TODO: get a longer pull and confirm loop
+
+# Overture Plaza will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "14EB" } window 2000,1
+# Sync up with first cast
+2008.0 "惊雷协奏曲" StartsUsing { id: ["B118", "B11D"], source: "安度西亚斯" }
+2013.0 "惊雷协奏曲" Ability { id: ["B118", "B11D"], source: "安度西亚斯" }
+2025.3 "惊雷协奏曲" Ability { id: ["B118", "B11D"], source: "安度西亚斯" }
+2041.9 "猛毒菌" Ability { id: "B120", source: "安度西亚斯" }
+2046.1 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2047.7 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2049.3 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2050.9 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2052.3 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2054.7 "雷电飞驰" Ability { id: "B122", source: "安度西亚斯" }
+2054.9 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2056.9 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2058.9 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2060.9 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2063.0 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2068.8 label "amdusias-loop"
+2068.8 "霹雷" Ability { id: "B126", source: "安度西亚斯" }
+2076.8 "雷电震击" Ability { id: "B12B", source: "安度西亚斯" }
+2092.7 "惊雷协奏曲" Ability { id: ["B118", "B11D"], source: "安度西亚斯" }
+2096.7 "闪雷" Ability { id: "B11F", source: "安度西亚斯" }
+2107.8 "暴雷" Ability { id: "B128", source: "安度西亚斯" }
+2108.5 "暴雷" Ability { id: "B129", source: "安度西亚斯" }
+2109.6 "暴雷" #Ability { id: "B12A", source: "安度西亚斯" }
+2110.6 "暴雷" #Ability { id: "B12A", source: "安度西亚斯" }
+2127.2 "猛毒菌" Ability { id: "B120", source: "安度西亚斯" }
+2131.4 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2133.0 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2134.6 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2136.2 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2137.6 "--sync--" #Ability { id: "B124", source: "安度西亚斯" }
+2140.0 "雷电飞驰" Ability { id: "B122", source: "安度西亚斯" }
+2140.2 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2142.3 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2144.4 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2146.5 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2148.6 "雷电飞驰" #Ability { id: "B123", source: "安度西亚斯" }
+2154.2 "霹雷" Ability { id: "B126", source: "安度西亚斯" } forcejump "amdusias-loop"
+
+# IGNORED ABILITIES
+# B115 Static Charge - Auto maybe?
+# B117 Static Charge - Auto maybe?
+# B119 Thunderclap Concerto - Paired with B118
+# B11E Thunderclap Concerto - Paired with B11D
+# B121 Bio II - Paired with B120
+# B125 Burst - ???
+# B127 Thunder IV - Paired with B126
+# B12C Shockbolt - Paired with B12B
+# B12D --sync-- ???
+# B6F7 --sync-- ???
+
+# ALL ENCOUNTER ABILITIES
+# B118 Thunderclap Concerto - Back Safe lightning attack
+# B11D Thunderclap Concerto - Front Safe lightning attack
+# B11F Thunder -  ???
+# B120 Bio II - Prepare poison explosions
+# B122 Galloping Thunder - Start dashing
+# B123 Galloping Thunder - Dashes
+# B124 --sync-- - Telegraphs for dashes
+# B126 Thunder IV - Aoe (plus explode remaining poison)
+# B128 Thunder III - Prepare triple hit
+# B129 Thunder III - Actual first hit targeting a player
+# B12A Thunder III - Follow-up hits
+# B12B Shockbolt - Tankbuster
+
+#~~~~~~~~~~~~~~~~~~~~~#
+# Thundergust Griffin #
+#~~~~~~~~~~~~~~~~~~~~~#
+
+# -ii B09C B09F B0A1 B0E8 B0ED B0F0 B0F1 B0F2 B0FB B0FC B75F B760 B761
+# -it "Thundergust Griffin"
+
+# TODO: get a longer pull and confirm loop
+
+# The Town Round will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "14EC" } window 3000,1
+# Sync up to first cast
+3006.1 "电光" StartsUsing { id: "B0EB", source: "雷狮鹫" }
+3011.1 "电光" Ability { id: "B0EB", source: "雷狮鹫" }
+3016.3 "--sync--" Ability { id: "B704", source: "雷狮鹫" }
+3022.9 "高压电" Ability { id: "B0EC", source: "雷狮鹫" }
+3023.9 "落雷" Ability { id: "B708", source: "雷狮鹫" }
+3027.0 "--jump--" Ability { id: "B0EE", source: "雷狮鹫" }
+3034.0 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3037.8 "--jump--" Ability { id: "B0EE", source: "雷狮鹫" }
+3044.8 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3056.6 "黄金爪" Ability { id: "B0F9", source: "雷狮鹫" }
+3063.7 "--sync--" Ability { id: "B704", source: "雷狮鹫" }
+3072.8 "雷光坠击" Ability { id: "B0F5", source: "雷狮鹫" }
+3072.8 "--untargetable--"
+3072.8 "突进" Ability { id: "B0F6", source: "雷狮鹫" }
+3072.9 "雷风" Ability { id: "B7AE", source: "雷狮鹫" }
+3076.2 "雷击" Ability { id: "B0F8", source: "雷狮鹫" }
+3076.3 "--targetable--"
+3082.8 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3092.5 "电光" Ability { id: "B0EB", source: "雷狮鹫" }
+3098.7 "--sync--" Ability { id: "B704", source: "雷狮鹫" }
+3104.9 "电暴" Ability { id: "B0F3", source: "雷狮鹫" }
+3105.5 "雷风" Ability { id: "B0F4", source: "雷风" }
+3112.1 "高压电" Ability { id: "B0EC", source: "雷狮鹫" }
+3113.1 "落雷" Ability { id: "B708", source: "雷狮鹫" }
+3116.5 "--jump--" Ability { id: "B0EE", source: "雷狮鹫" }
+3123.5 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3127.7 "--jump--" Ability { id: "B0EE", source: "雷狮鹫" }
+3134.8 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3146.6 "黄金爪" Ability { id: "B0F9", source: "雷狮鹫" }
+3152.7 "--sync--" Ability { id: "B704", source: "雷狮鹫" }
+3161.9 label "thundergust-loop"
+3161.9 "雷光坠击" Ability { id: "B0F5", source: "雷狮鹫" }
+3161.9 "--untargetable--"
+3161.9 "突进" Ability { id: "B0F6", source: "雷狮鹫" }
+3162.0 "雷风" Ability { id: "B7AE", source: "雷狮鹫" }
+3165.3 "雷击" Ability { id: "B0F8", source: "雷狮鹫" }
+3165.4 "--targetable--"
+3171.9 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3181.6 "电光" Ability { id: "B0EB", source: "雷狮鹫" }
+3187.8 "--sync--" Ability { id: "B704", source: "雷狮鹫" }
+3194.0 "电暴" Ability { id: "B0F3", source: "雷狮鹫" }
+3194.6 "雷风" Ability { id: "B0F4", source: "雷风" }
+3201.2 "高压电" Ability { id: "B0EC", source: "雷狮鹫" }
+3202.2 "落雷" Ability { id: "B708", source: "雷狮鹫" }
+3205.5 "--jump--" Ability { id: "B0EE", source: "雷狮鹫" }
+3212.5 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3216.7 "--jump--" Ability { id: "B0EE", source: "雷狮鹫" }
+3223.7 "雷霆咆哮" Ability { id: "B0EF", source: "雷狮鹫" }
+3235.5 "黄金爪" Ability { id: "B0F9", source: "雷狮鹫" }
+3241.6 "--sync--" Ability { id: "B704", source: "雷狮鹫" }
+3250.8 "雷光坠击" Ability { id: "B0F5", source: "雷狮鹫" } forcejump "thundergust-loop"
+
+# IGNORED ABILITIES
+# B09C --sync--
+# B09F --sync--
+# B0A1 --sync--
+# B0E8 Mistic Ruin
+# B0ED Lightning Bolt - Paired with B708
+# B0F0 Thunderbolt
+# B0F1 Thunderbolt
+# B0F2 Thunderbolt
+# B0FB attack
+# B0FC attack
+# B75F --sync--
+# B760 --sync--
+# B761 --sync--
+
+# ALL ENCOUNTER ABILITIES
+# B0EB Thunderspark - Aoe, sets up deathwall
+# B0EC High Volts - Spread, sets up lightning orbs
+# B0EE --sync-- - Jump to edge
+# B0EF Thundering Roar - Activates lightning orbs
+# B0F3 Storm Surge - Spawn lightning cloud on edge
+# B0F4 Electrifying Flight
+# B0F5 Fulgurous Fall - Knockback out of center
+# B0F6 Rush - Related to Fulgurous Fall
+# B0F8 Electrogenetic Force - Line aoe on return
+# B0F9 Golden Talons - Tank buster
+# B704 --sync-- - ??
+# B708 Lightning Bolt - Places lightning orbs
+# B7AE Electrifying Flight - ???

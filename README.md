@@ -1,6 +1,6 @@
 # DPS统计
 
-最后更新：`2026-05-25`
+最后更新：`2026-05-29`
 
 快速查看：[`README 简洁总结`](md/README-SUMMARY.md)
 
@@ -14,6 +14,7 @@
 - [2026-05-24 NPC 队友识别交接](md/2026-05-24-npc-party-handoff.md)
 - [2026-05-25 队友监控交接](md/2026-05-25-party-monitor-handoff.md)
 - [2026-05-26 战斗流水与技能监控交接](md/2026-05-26-combat-timeline-party-monitor-handoff.md)
+- [2026-05-29 时间轴草稿与 TTS 交接](md/2026-05-29-timeline-draft-tts-handoff.md)
 
 ## 目录 / TOC
 

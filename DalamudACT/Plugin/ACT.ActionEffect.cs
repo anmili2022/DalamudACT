@@ -198,6 +198,8 @@ public sealed partial class ACT
         if (sourceCanResolveToTrackedActor)
             monitorService.RecordSkillUse(sourceActorId, actionId, nowUtc);
 
+        timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+
     }
 
     private unsafe delegate void ReceiveAbilityDelegate(

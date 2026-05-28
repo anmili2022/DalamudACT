@@ -1,0 +1,251 @@
+### THE UNMAKING (EXTREME)
+# ZoneId: 1362
+
+# -ii C0D9 C311 C312 C335 C336 C337 C338 C34A C34C C34D C34F C350 C351 C352 C353 C354 C356 C357 C35B C35C C35F C360 C364 C366 C368 C36D C370 C371 C374 C37B C37D C37F C63F C640 C641
+# -it "Enuo" "Looming Shadow" "Aggressive Shadow" "Soothing Shadow" "Protective Shadow" "Beacon in the Dark"
+# -p C36D:500
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+## Intro
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+9.2 "流星雨" StartsUsing { id: "C381", source: "恩欧" } window 9.2,2
+14.2 "流星雨" Ability { id: "C381", source: "恩欧" }
+
+19.3 "--middle--" Ability { id: "C307", source: "恩欧" }
+29.7 "无之膨胀" #Ability { id: "C339", source: "无之巨漩涡" }
+30.4 "回归波动/回归重波动" Ability { id: ["C33F", "C340"], source: "无之漩涡" }
+43.8 "核心熔毁" Ability { id: "C378", source: "恩欧" }
+49.4 "核心熔毁" Ability { id: "C379", source: "恩欧" }
+
+50.1 "--middle--" Ability { id: "C307", source: "恩欧" }
+50.5 "核心熔毁 (分散)" Ability { id: "C37A", source: "恩欧" }
+57.4 "扩散波动/集束波动" Ability { id: ["C372", "C373"], source: "恩欧" }
+67.8 "无之膨胀" #Ability { id: "C33A", source: "无之巨漩涡" }
+68.6 "回归重波动/回归波动" Ability { id: ["C340", "C33F"], source: "无之漩涡" }
+
+75.0 "--middle--" Ability { id: "C307", source: "恩欧" }
+84.2 "混沌激流 x10" duration 3.6 #Ability { id: "C355", source: "恩欧" }
+
+115.3 "奔流 x7 (直线)" #Ability { id: "C34B", source: "无之漩涡" }
+115.7 "奔流 x7 (黄圈)" #Ability { id: "C34E", source: "恩欧" }
+
+115.7 "--middle--" Ability { id: "C307", source: "恩欧" }
+123.0 "集束波动/扩散波动" Ability { id: ["C373", "C372"], source: "恩欧" }
+134.1 "深度冻结" Ability { id: "C37C", source: "恩欧" }
+141.2 "流星雨" Ability { id: "C381", source: "恩欧" }
+
+147.4 "--north--" Ability { id: "C307", source: "恩欧" }
+154.8 "无之领域" Ability { id: "C35A", source: "恩欧" }
+154.9 "--untargetable--"
+
+## Add phase
+# Add phase timeline is a pain. First towers spawn at a fixed point, but second towers spawn
+# a few seconds after first set of solo adds are killed, and beacon spawns when middle add dies,
+# but that might be delayed if the solo adds aren't killed first.
+174.9 "虚无大冲击" Ability { id: "C33E", source: "虚无巨影" }
+174.9 "--小怪 可选中--"
+# Loop towers from early cast sync
+176.9 "虚无冲击" StartsUsing { id: "C35D", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] } window 2.5,120
+183.9 "虚无冲击" Ability { id: "C35D", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] }
+184.2 "无之涡流" #Ability { id: "C376", source: "恩欧" }
+185.4 "--塔小怪 可选中--"
+# It is expected that the following three lines miss syncs in timeline testing, as which ability happens depends
+# on what roles are soaking towers
+189.1 "疫病诅咒" Ability { id: "C369", source: "虚无之疗影" }
+191.1 "恶魔之瞳" Ability { id: "C367", source: "虚无之攻影" }
+198.3 "高压波动" Ability { id: "C365", source: "虚无之防影" }
+210.5 "--塔小怪 enrage--" #Ability { id: "C35E", source: "虚无巨影" }
+
+# MapEffect fires as looming shadow dies
+300.0 "--sync--" MapEffect { flags: "00200010", location: "01" } window 125,0
+302.5 label "beacon-loop"
+302.5 "无之波动" Ability { id: "C361", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] }
+305.5 "无之波动" Ability { id: "C361", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] }
+308.5 "无之波动" Ability { id: "C361", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] }
+311.5 "无之波动" Ability { id: "C361", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] }
+314.5 "无之波动" Ability { id: "C361", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] }
+317.5 "无之波动" Ability { id: "C361", source: ["Aggressive Shadow", "Soothing Shadow", "Protective Shadow"] } forcejump "beacon-loop"
+
+# MapEffect fires as beacon dies
+486.2 "--sync--" MapEffect { flags: "02000100", location: "01" } window 400,0
+
+## Phase 2
+494.7 "--targetable--"
+505.7 "无光的世界 x5" duration 1.8 #Ability { id: "C36E", source: "恩欧" }
+507.9 "无光的世界" Ability { id: "C36F", source: "恩欧" }
+519.7 "至高无上" Ability { id: "C334", source: "恩欧" }
+
+523.1 "--middle--" Ability { id: "C307", source: "恩欧" }
+533.5 "无之膨胀 x2" #Ability { id: "C33B", source: "恩欧" }
+534.2 "回归波动/回归重波动" Ability { id: ["C33F", "C340"], source: "无之漩涡" }
+549.6 "聚能波动" #Ability { id: "C343", source: "恩欧" }
+560.9 "聚能波动" #Ability { id: "C342", source: "无之巨漩涡" }
+566.9 "暗影神圣" Ability { id: "C37E", source: "恩欧" }
+
+572.1 "--middle--" Ability { id: "C307", source: "恩欧" }
+582.2 "无之膨胀 x2" #Ability { id: "C339", source: "无之巨漩涡" }
+583.1 "回归波动/回归重波动" Ability { id: ["C33F", "C340"], source: "无之漩涡" }
+593.6 "零次元 x3" duration 2.6 #Ability { id: "C380", source: "恩欧" }
+
+601.6 "--middle--" Ability { id: "C307", source: "恩欧" }
+611.7 "奔流 x7 (直线)" #Ability { id: "C34B", source: "无之漩涡" }
+612.1 "核心熔毁" Ability { id: "C378", source: "恩欧" }
+612.1 "奔流 x7 (黄圈)" #Ability { id: "C34E", source: "恩欧" }
+617.5 "核心熔毁" Ability { id: "C379", source: "恩欧" }
+618.5 "核心熔毁 (分散)" Ability { id: "C37A", source: "恩欧" }
+
+623.2 "--middle--" Ability { id: "C307", source: "恩欧" }
+632.2 "混沌激流 x10" duration 3.6 #Ability { id: "C355", source: "恩欧" }
+664.2 "至高无上" Ability { id: "C334", source: "恩欧" }
+
+670.4 "--middle--" Ability { id: "C307", source: "恩欧" }
+682.9 "无之追踪" Ability { id: "C348", source: "恩欧" }
+683.9 "聚能波动" #Ability { id: "C343", source: "恩欧" }
+683.9 "追尾波动 (激活)" duration 16.9 #Ability { id: "BD5B", source: "无之漩涡" }
+705.4 "聚能波动" #Ability { id: "C341", source: "无之巨漩涡" }
+711.4 "扩散波动/集束波动" Ability { id: ["C372", "C373"], source: "恩欧" }
+722.6 "无之追踪" Ability { id: "C348", source: "恩欧" }
+723.6 "聚能波动" #Ability { id: "C342", source: "无之巨漩涡" }
+723.6 "追尾波动 (激活)" duration 16.9 #Ability { id: "BD5B", source: "无之漩涡" }
+
+745.1 "聚能波动" Ability { id: "C341", source: "无之巨漩涡" }
+751.1 "扩散波动/集束波动" Ability { id: ["C372", "C373"], source: "恩欧" }
+760.4 "零次元 x4" duration 3.9 #Ability { id: "C380", source: "恩欧" }
+774.7 "至高无上" Ability { id: "C334", source: "恩欧" }
+
+778.1 "--middle--" Ability { id: "C307", source: "恩欧" }
+788.4 "无之膨胀 x2" #Ability { id: "C339", source: "无之巨漩涡" }
+789.2 "回归波动/回归重波动" Ability { id: ["C33F", "C340"], source: "无之漩涡" }
+804.6 "聚能波动" #Ability { id: "C343", source: "恩欧" }
+815.9 "聚能波动" #Ability { id: "C343", source: "恩欧" }
+821.9 "深度冻结" Ability { id: "C37C", source: "恩欧" }
+
+826.1 "--middle--" Ability { id: "C307", source: "恩欧" }
+836.2 "无之膨胀 x2" #Ability { id: "C339", source: "无之巨漩涡" }
+837.1 "回归波动/回归重波动" Ability { id: ["C33F", "C340"], source: "无之漩涡" }
+847.9 "零次元" duration 3.9 #Ability { id: "C380", source: "恩欧" }
+862.3 "流星雨" Ability { id: "C381", source: "恩欧" }
+872.4 "流星雨" Ability { id: "C381", source: "恩欧" }
+
+878.5 "--middle--" Ability { id: "C307", source: "恩欧" }
+889.6 "至高无上 (狂暴)" Ability { id: "C382", source: "恩欧" }
+
+
+# IGNORED ABILITIES
+# C0D9 Looming Emptiness: VFX or blue circle?
+# C311 --sync--: Enuo autoattack
+# C312 --sync--: Add death animation vfx?
+# C335 Naught Wakes: castbar to signify voids moving
+# C336 --sync--: Void teleport animation VFX
+# C337 Naught Grows: Castbar only
+# C338 Naught Grows: Castbar only
+# C34A Vacuum: VFX for silent torrent lines prep
+# C34C Silent Torrent: Medium line?
+# C34D Silent Torrent: Long line?
+# C34F Silent Torrent: Medium puddle?
+# C350 Silent Torrent: Big/far puddle?
+# C351 Vacuum: VFX for silent torrent lines end
+# C352 Gaze of the Void: Castbar for clockwise
+# C353 Gaze of the Void: Castbar for counter clockwise
+# C354 Gaze of the Void: VFX for glowing orb
+# C356 Burst: Gaze orb soak
+# C357 Violent Burst: Gaze tank orb soak
+# C35B Looming Emptiness: VFX or blue circle?
+# C35C --sync--: Tower add spawn VFX?
+# C35F --sync--: Tank/healer tower add autoattack
+# C360 --sync--: Big add autoattack
+# C364 Weight of Nothing: Tank interrupt, castbar only
+# C366 Demon Eye: Gaze attack castbar
+# C368 Curse of the Flesh: Healer debuff, castbar only
+# C36D Lightless World: P2 transition, castbar only. For some reason ignoring this prevents `-p` from working?
+# C370 Airy Emptiness: Partner stacks, castbar only
+# C371 Dense Emptiness: Healer stacks, castbar only
+# C374 Voidal Turbulence: Add phase cones, castbar only
+# C37B Deep Freeze: Tank flares, castbar only
+# C37D Shrouded Holy: Healer stacks, castbar only
+# C37F Dimension Zero: Line stack, castbar only
+# C63F --sync--: Something related to add phase tank add
+# C640 --sync--: Something related to add phase DPS add
+# C641 --sync--: Something related to add phase healer add
+
+# ALL ENCOUNTER ABILITIES
+# BD5B Endless Chase: Initial telegraphed aoe for chasing puddle
+# C0D9 Looming Emptiness: VFX or blue circle?
+# C307 --sync--: Enuo teleport/jump animation
+# C311 --sync--: Enuo autoattack
+# C312 --sync--: Add death animation vfx?
+# C334 Almagest: raidwide
+# C335 Naught Wakes: castbar to signify voids moving
+# C336 --sync--: Void teleport animation VFX
+# C337 Naught Grows: Castbar only
+# C338 Naught Grows: Castbar only
+# C339 Naught Grows: aoe around boss
+# C33A Naught Grows: donut around boss
+# C33B Naught Grows: aoe around void
+# C33C Naught Grows: donut around void
+# C33E Looming Emptiness: Add phase knockback
+# C33F Return to Nothing: Healer stacks wild charge
+# C340 Great Return to Nothing: Party stack wild charge
+# C341 Passage of Naught: Void portal line attack
+# C342 Passage of Naught: Void portal line attack
+# C343 Passage of Naught: Void portal line attack
+# C348 Naught Hunts: Castbar for chasing puddle
+# C349 Endless Chase: Actual chasing puddle aoe
+# C34A Vacuum: VFX for silent torrent lines prep
+# C34B Silent Torrent: Short line?
+# C34C Silent Torrent: Medium line?
+# C34D Silent Torrent: Long line?
+# C34E Silent Torrent: Small/close puddle?
+# C34F Silent Torrent: Medium puddle?
+# C350 Silent Torrent: Big/far puddle?
+# C351 Vacuum: VFX for silent torrent lines end
+# C352 Gaze of the Void: Castbar for clockwise
+# C353 Gaze of the Void: Castbar for counter clockwise
+# C354 Gaze of the Void: VFX for glowing orb
+# C355 Gaze of the Void: Actual cone attacks
+# C356 Burst: Gaze orb soak
+# C357 Violent Burst: Gaze tank orb soak
+# C35A All for Naught: Phase transition cast, does nothing / VFX only
+# C35B Looming Emptiness: VFX or blue circle?
+# C35C --sync--: Tower add spawn VFX?
+# C35D Empty Shadow: Add phase towers
+# C35E Big Burst: Tower/solo add enrage
+# C35F --sync--: Tank/healer tower add autoattack
+# C360 --sync--: Big add autoattack
+# C361 Nothingness: Add phase line attack
+# C362 Drain Touch: Mechanics failure of some sort?
+# C363 Drain Touch: Mechanics failure of some sort?
+# C364 Weight of Nothing: Tank interrupt, castbar only
+# C365 Weight of Nothing: Tank interrupt, actual hit
+# C366 Demon Eye: Gaze attack castbar
+# C367 Demon Eye: Gaze attack, actual look away ability
+# C368 Curse of the Flesh: Healer debuff, castbar only
+# C369 Curse of the Flesh: Healer debuff, actual hit
+# C36D Lightless World: P2 transition, castbar only
+# C36E Lightless World: P2 transition, small hits
+# C36F Lightless World: P2 transition, big hit
+# C370 Airy Emptiness: Partner stacks, castbar only
+# C371 Dense Emptiness: Healer stacks, castbar only
+# C372 Airy Emptiness: Partner stacks, actual hit
+# C373 Dense Emptiness: Healer stacks, actual hit
+# C374 Voidal Turbulence: Add phase cones, castbar only
+# C376 Voidal Turbulence: Add phase cones, actual hit
+# C378 Meltdown: Puddle bait + pyretic debuff (Chains of Condemnation)
+# C379 Meltdown: Puddle explosion
+# C37A Meltdown: Spread
+# C37B Deep Freeze: Tank flares, castbar only
+# C37C Deep Freeze: Tank flares, actual damage
+# C37D Shrouded Holy: Healer stacks, castbar only
+# C37E Shrouded Holy: Healer stacks, actual damage
+# C37F Dimension Zero: Line stack, castbar only
+# C380 Dimension Zero: Line stack, actual damage
+# C381 Meteorain: raidwide
+# C382 Almagest: 狂暴
+# C63F --sync--: Something related to add phase tank add
+# C640 --sync--: Something related to add phase DPS add
+# C641 --sync--: Something related to add phase healer add
+# C66F Self-destruct: DPS add, DPS check failure

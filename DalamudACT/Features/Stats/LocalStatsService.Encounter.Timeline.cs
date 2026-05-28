@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 
 namespace DalamudACT;
@@ -53,6 +54,116 @@ internal sealed partial class LocalStatsService
         observedCombatTimelineStatusKeys.RemoveWhere(key => !seenStatusKeys.Contains(key));
         if (!combatTimelineStatusRecorderPrimed)
             combatTimelineStatusRecorderPrimed = true;
+    }
+
+    public void PollCombatTimelineHostileCasts(DateTime nowUtc, bool inCombat)
+    {
+        lock (gate)
+        {
+            PollCombatTimelineHostileCastsLocked(nowUtc, inCombat);
+        }
+    }
+
+    private void PollCombatTimelineHostileCastsLocked(DateTime nowUtc, bool inCombat)
+    {
+        if (!config.CombatTimelineRecordingEnabled || !inCombat || !currentEncounter.Started)
+        {
+            observedCombatTimelineCastKeys.Clear();
+            lastCombatTimelineCastPollUtc = default;
+            return;
+        }
+
+        if (nowUtc - lastCombatTimelineCastPollUtc < TimeSpan.FromMilliseconds(100))
+            return;
+
+        lastCombatTimelineCastPollUtc = nowUtc;
+        foreach (var battleChara in DalamudApi.ObjectTable.OfType<IBattleChara>())
+            CaptureCombatTimelineHostileCastLocked(battleChara, nowUtc);
+    }
+
+    private void CaptureCombatTimelineHostileCastLocked(IBattleChara battleChara, DateTime nowUtc)
+    {
+        if (!IsLikelyHostileBattleNpcForTimeline(battleChara))
+            return;
+
+        var actorId = ResolveBattleCharaActorId(battleChara);
+        if (actorId is 0 or InvalidActorId)
+            return;
+
+        var actionId = TryGetCastingActionIdForTimeline(battleChara);
+        if (actionId == 0)
+            return;
+
+        var key = $"{actorId:X8}:{actionId:X8}";
+        if (observedCombatTimelineCastKeys.TryGetValue(key, out var lastSeen)
+            && (nowUtc - lastSeen).TotalSeconds < 3)
+            return;
+
+        observedCombatTimelineCastKeys[key] = nowUtc;
+        var actorName = ResolveCombatTimelineSourceName(actorId, nowUtc);
+        var actionName = ResolveActionNameForCombatTimeline(actionId);
+        var actionText = FormatActionNameWithId(actionName, actionId);
+        AppendCombatTimelineEntryLocked(
+            nowUtc,
+            CombatTimelineEntryKind.Cast,
+            $"{actorName} 开始读条 {actionText}。",
+            actorName,
+            null,
+            false,
+            false,
+            actionText);
+    }
+
+    private static bool IsLikelyHostileBattleNpcForTimeline(object battleChara)
+    {
+        var objectKind = GetObjectPropertyValue(battleChara, "ObjectKind")?.ToString();
+        if (!string.Equals(objectKind, "BattleNpc", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var subKind = GetObjectPropertyValue(battleChara, "SubKind")?.ToString();
+        return string.IsNullOrWhiteSpace(subKind)
+               || subKind.Contains("Enemy", StringComparison.OrdinalIgnoreCase)
+               || subKind.Contains("BattleNpc", StringComparison.OrdinalIgnoreCase)
+               || subKind == "5";
+    }
+
+    private static uint TryGetCastingActionIdForTimeline(object battleChara)
+    {
+        if (GetObjectPropertyValue(battleChara, "IsCasting") is not true)
+            return 0;
+
+        return TryGetUInt32ObjectProperty(battleChara, "CastActionId", "CastActionID", "CurrentCastActionId", "CurrentCastId");
+    }
+
+    private static object? GetObjectPropertyValue(object? instance, string propertyName)
+    {
+        try
+        {
+            return instance?.GetType().GetProperty(propertyName)?.GetValue(instance);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static uint TryGetUInt32ObjectProperty(object instance, params string[] propertyNames)
+    {
+        foreach (var propertyName in propertyNames)
+        {
+            try
+            {
+                var value = GetObjectPropertyValue(instance, propertyName);
+                if (value != null)
+                    return Convert.ToUInt32(value);
+            }
+            catch
+            {
+                // Runtime Dalamud object shapes differ between versions.
+            }
+        }
+
+        return 0;
     }
 
     private void CaptureCombatTimelineFriendlyStatusesLocked(IBattleChara friendlyActor, DateTime nowUtc, ISet<CombatTimelineStatusKey> seenStatusKeys)
@@ -190,5 +301,24 @@ internal sealed partial class LocalStatsService
             return objectName;
 
         return BuildUnknownActorName(actorId, "未知目标");
+    }
+
+    private string ResolveActionNameForCombatTimeline(uint actionId)
+    {
+        if (actionId == 0)
+            return "未知技能";
+
+        try
+        {
+            var sheet = DalamudApi.GameData.GetExcelSheet<Lumina.Excel.Sheets.Action>();
+            if (sheet != null && sheet.TryGetRow(actionId, out var row) && !row.Name.IsEmpty)
+                return row.Name.ExtractText();
+        }
+        catch
+        {
+            // Fall through to the id label if sheet access fails.
+        }
+
+        return $"技能 {actionId:X}";
     }
 }

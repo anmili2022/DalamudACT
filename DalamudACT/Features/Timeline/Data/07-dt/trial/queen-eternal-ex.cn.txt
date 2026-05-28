@@ -1,0 +1,218 @@
+### THE MINSTREL'S BALLAD: SPHENE'S BURDEN
+# ZoneId: 1243
+
+# -ii A008 A009 A00D A00E A00F A010 A011 A018 A026 A027 A02F A030 A053 A054 A056
+# -it "Queen Eternal"
+# -p A04B:1000.0
+
+# Phase one pulled from -r XwHyk2NAKnbzZLf7 -rf 3
+# Phase two pulled from -r GBaArv7yzHnXck8D -rf 17
+# A lot of manual cleanup applied
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# Phase one
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+13.1 "以太税" StartsUsing { id: "A00C", source: "永恒女王" }
+15.8 "以太税" Ability { id: "A00C", source: "永恒女王" } duration 27.8
+28.9 "俱是君恩" Ability { id: "A012", source: "永恒女王" }
+38.1 "俱是君恩" Ability { id: "A012", source: "永恒女王" }
+47.3 "俱是君恩" Ability { id: "A012", source: "永恒女王" }
+59.7 "虚景切换" Ability { id: "A019", source: "永恒女王" } window 59.7,10
+
+# Wind miniphase
+68.8 "风之律法" Ability { id: "A023", source: "永恒女王" }
+73.8 "风爆" Ability { id: "A025", source: "永恒女王" }
+86.8 "合法武力" Ability { id: ["A01E", "A020"], source: "永恒女王" }
+89.9 "合法武力" Ability { id: ["A021", "A022"], source: "永恒女王" }
+93.0 "左/右风" #Ability { id: "A024", source: "永恒女王" }
+100.9 "世界破碎" Ability { id: "A01C", source: "永恒女王" }
+# End wind miniphase
+
+113.0 "诉诸武力" Ability { id: "A00A", source: "永恒女王" }
+116.1 "诉诸武力" Ability { id: "A00B", source: "永恒女王" }
+126.8 "分治法" Ability { id: "A017", source: "永恒女王" } duration 7
+# TODO: Better timeline name here.
+137.9 "分治法" Ability { id: "7729", source: "永恒女王" }
+145.9 "王土" Ability { id: "A04E", source: "永恒女王" }
+159.1 "虚景切换" Ability { id: "A01A", source: "永恒女王" } window 159.1,10
+
+# Earth miniphase
+168.2 "土之律法" Ability { id: "A028", source: "永恒女王" }
+179.3 "合法武力" Ability { id: ["A01E", "A020"], source: "永恒女王" }
+182.4 "合法武力" Ability { id: ["A021", "A022"], source: "永恒女王" }
+187.4 "爆炸" Ability { id: "A029", source: "永恒女王" }
+199.5 "重力帝国" Ability { id: "A02B", source: "永恒女王" }
+200.5 "重力之柱" Ability { id: "A02C", source: "永恒女王" }
+200.5 "重力射线" Ability { id: "A02D", source: "永恒女王" }
+201.4 "爆炸" Ability { id: "A029", source: "永恒女王" }
+205.7 "陨石冲击" Ability { id: "A02E", source: "永恒女王" }
+212.8 "陨石冲击" Ability { id: "A02E", source: "永恒女王" }
+226.9 "重力炸裂 (咏唱)" Ability { id: "A033", source: "永恒女王" }
+226.9 "重力炸裂 1 (球)" Ability { id: "A032", source: "岩石" }
+230.0 "重力炸裂 2 (球)" Ability { id: "A032", source: "岩石" }
+233.1 "重力炸裂 3 (球)" Ability { id: "A032", source: "岩石" }
+236.2 "重力炸裂 4 (球)" Ability { id: "A032", source: "岩石" }
+241.8 "世界破碎" Ability { id: "A01C", source: "永恒女王" }
+# End earth miniphase
+
+254.0 "诉诸武力" Ability { id: "A00A", source: "永恒女王" }
+257.1 "诉诸武力" Ability { id: "A00B", source: "永恒女王" }
+263.2 "终端发射" Ability { id: "A013", source: "永恒女王" }
+269.3 "原子射线 (咏唱)" Ability { id: "A015", source: "永恒女王" }
+275.3 "王法无情" Ability { id: "A014", source: "永恒女王" }
+276.4 "原子射线 (伤害)" Ability { id: "A016", source: "永恒女王" }
+292.5 "绝对君权" Ability { id: "A041", source: "永恒女王" } duration 13.4
+302.4 "绝对君权" Ability { id: "A046", source: "永恒女王" }
+306.6 "绝对君权" Ability { id: "A048", source: "永恒女王" }
+313.5 "绝对君权" Ability { id: "A045", source: "永恒女王" }
+330.7 "虚景切换" Ability { id: "A01B", source: "永恒女王" } window 330.7,10
+
+# Ice miniphase
+339.8 "冰之律法" Ability { id: "A035", source: "永恒女王" }
+340.8 "冰之律法" Ability { id: "A036", source: "永恒女王" }
+357.0 "突进" Ability { id: "A037", source: "冰柱" }
+364.8 "合法武力" Ability { id: ["A01E", "A020"], source: "永恒女王" }
+367.9 "合法武力" Ability { id: ["A021", "A022"], source: "永恒女王" }
+378.0 "冰之律法" Ability { id: "A035", source: "永恒女王" }
+379.0 "冰之律法" Ability { id: "A036", source: "永恒女王" }
+384.1 "阴郁风暴" Ability { id: "A03E", source: "永恒女王" }
+385.1 "冰块" #Ability { id: "A03F", source: "永恒女王" }
+385.1 "横征暴敛" #Ability { id: "A040", source: "永恒女王" }
+391.2 "阴郁风暴" Ability { id: "A03E", source: "永恒女王" }
+392.2 "冰块" #Ability { id: "A03F", source: "永恒女王" }
+392.2 "横征暴敛" #Ability { id: "A040", source: "永恒女王" }
+398.3 "阴郁风暴" Ability { id: "A03E", source: "永恒女王" }
+399.3 "冰块" #Ability { id: "A03F", source: "永恒女王" }
+399.3 "横征暴敛" #Ability { id: "A040", source: "永恒女王" }
+405.4 "阴郁风暴" Ability { id: "A03E", source: "永恒女王" }
+406.4 "冰块" #Ability { id: "A03F", source: "永恒女王" }
+406.4 "横征暴敛" #Ability { id: "A040", source: "永恒女王" }
+414.5 "世界破碎" Ability { id: "A01C", source: "永恒女王" }
+# End ice miniphase
+
+427.5 "诉诸武力" Ability { id: "A00A", source: "永恒女王" }
+430.6 "诉诸武力" Ability { id: "A00B", source: "永恒女王" }
+443.6 "王土" Ability { id: "A04E", source: "永恒女王" }
+457.7 "合法武力" Ability { id: ["A01E", "A020"], source: "永恒女王" }
+460.8 "合法武力" Ability { id: ["A021", "A022"], source: "永恒女王" }
+468.8 "王土" Ability { id: "A04E", source: "永恒女王" }
+486.9 "永恒君权" Ability { id: "A04A", source: "永恒女王" }
+487.1 "永恒君权 (狂暴)" Ability { id: "A04C", source: "永恒女王" }
+
+# Phase two
+1000.0 "永恒君权" Ability { id: "A04B", source: "永恒女王" } window 1000.0,0
+1009.8 "--sync--" Ability { id: "A04D", source: "永恒女王" }
+1024.8 "--targetable--"
+
+# Radical Shift 1
+1039.8 "激进切换" Ability { id: "A04F", source: "永恒女王" }
+1044.9 "激进切换 (分散)" Ability { id: "A050", source: "永恒女王" }
+1058.9 "激进切换" Ability { id: "A04F", source: "永恒女王" }
+1064.0 "激进切换 (分散)" Ability { id: "A050", source: "永恒女王" }
+1072.0 "世界破碎" Ability { id: "7692", source: "永恒女王" }
+
+# Exaflares, front aoe + tank towers
+1083.0 "空间扭曲" Ability { id: "A052", source: "永恒女王" } duration 7.3
+1094.2 "女王之手" Ability { id: "A055", source: "永恒女王" }
+1095.4 "女王之手" Ability { id: "A057", source: "永恒女王" }
+1098.2 "女王之手" Ability { id: "76D2", source: "永恒女王" }
+
+# damage spam
+1099.4 "垂死的记忆 x7" duration 6.6 #Ability { id: "A059", source: "永恒女王" }
+1107.1 "垂死的记忆" Ability { id: "4E4A", source: "永恒女王" }
+1115.2 "放逐射线" Ability { id: "A05A", source: "永恒女王" } duration 6.9
+1125.1 "放逐射线" Ability { id: "A05C", source: "永恒女王" }
+
+# Radical Shift 2
+1147.4 "激进切换" Ability { id: "A04F", source: "永恒女王" }
+1152.5 "激进切换 (分散)" Ability { id: "A050", source: "永恒女王" }
+1166.5 "激进切换" Ability { id: "A04F", source: "永恒女王" }
+1171.6 "激进切换 (分散)" Ability { id: "A050", source: "永恒女王" }
+1179.6 "世界破碎" Ability { id: "7692", source: "永恒女王" }
+
+1200.7 "绝对保全 (狂暴)" Ability { id: "A05D", source: "永恒女王" }
+
+# ALL ENCOUNTER ABILITIES
+# 4E4A Dying Memory
+# 7692 World Shatter
+# 76D2 Tyranny's Grasp
+# 7729 Divide and Conquer
+# A008 --sync-- __P1 autoattack__
+# A009 --sync-- __P2 autoattack__
+# A00A Prosecution of War __Tankbuster__
+# A00B Prosecution of War __Tankbuster__
+# A00C Aethertithe __Initial Cast__
+# A00D Aethertithe __Repeated Hits__
+# A00E Aethertithe __Last Hit__
+# A00F Aethertithe __Extra damage spike__
+# A010 Aethertithe __Extra damage spike__
+# A011 Retribute __LP line stack__
+# A012 Retribute __LP line stack__
+# A013 Coronation
+# A015 Atomic Ray
+# A016 Atomic Ray
+# A017 Divide and Conquer __Individual lines__
+# A018 Divide and Conquer __All lines re-fire__
+# A019 Virtual Shift
+# A01A Virtual Shift
+# A01B Virtual Shift
+# A01C World Shatter
+# A01E Legitimate Force __East safe, then west safe__
+# A020 Legitimate Force __West safe, then east safe__
+# A021 Legitimate Force __Followup hit for A020__
+# A022 Legitimate Force __Followup hit for A01E__
+# A023 Laws of Wind __Does nothing?__
+# A024 --sync-- __East/West Wind of Change knockback__
+# A025 Aeroquell __Healer stacks__
+# A026 Biting Chains __Damage for not breaking chains fast enough__
+# A027 Aero IV __Twister repeated knockback__
+# A028 Laws of Earth __Spawns the gravity pillars__
+# A029 Burst __Tower soak damage__
+# A02B Gravitational Empire
+# A02C Gravity Pillar
+# A02D Gravity Ray
+# A02E Meteor Impact __Cast__
+# A02F Meteor Impact __Actual meteor drops, on platform__
+# A030 Meteor Impact __Actual meteor drops, off platform__
+# A032 --sync-- __Weighty Blow orbs__
+# A033 Weighty Blow __Cast__
+# A035 Laws of Ice __Spawns/respawns bridges__
+# A036 Laws of Ice __Spawns/respawns bridges__
+# A037 Rush
+# A038 Rush
+# A039 Rush
+# A03A Rush
+# A03B Rush __Icecicle failure__
+# A03C Rush __Icecicle failure__
+# A03D Shatter __Icecicle failure__
+# A03E Drear Rising
+# A03F Ice Dart
+# A040 Raised Tribute
+# A041 Absolute Authority __Cast__
+# A042 Absolute Authority __Puddles__
+# A043 Absolute Authority __Puddles__
+# A044 Absolute Authority __Repeated small damage__
+# A045 Absolute Authority __Knockback damage__
+# A046 Absolute Authority __Flare marker damage__
+# A047 Absolute Authority __Stack marker damage__
+# A048 Absolute Authority __Dorito stack damage, success__
+# A049 Absolute Authority __Dorito stack damage, failure__
+# A04A Authority Eternal
+# A04B Authority Eternal
+# A04D --sync--
+# A04E Royal Domain
+# A04F Radical Shift
+# A050 Radical Shift
+# A052 Dimensional Distortion
+# A053 Dimensional Distortion
+# A054 Dimensional Distortion
+# A055 Tyranny's Grasp
+# A056 --sync--
+# A057 Tyranny's Grasp
+# A059 Dying Memory
+# A05A Royal Banishment
+# A05B Royal Banishment
+# A05C Royal Banishment
+# A05D Preservation

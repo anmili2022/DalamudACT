@@ -196,6 +196,7 @@ internal sealed partial class CombatTimelineWindow
         {
             LocalStatsService.CombatTimelineEntryKind.CombatStart => new Vector4(0.48f, 0.92f, 0.60f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Heal => new Vector4(0.40f, 0.92f, 0.72f, 1f),
+            LocalStatsService.CombatTimelineEntryKind.Cast => new Vector4(0.86f, 0.72f, 1f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Status => new Vector4(0.68f, 0.82f, 1f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Failure => new Vector4(1f, 0.84f, 0.42f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Death => new Vector4(1f, 0.52f, 0.52f, 1f),

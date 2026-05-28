@@ -1,0 +1,253 @@
+### HELL ON RAILS (EXTREME)
+# ZoneId: 1308
+
+# -ii B237 B24E B251 B287 B288 B289 B258 B259 B25C B26E B271 B276 B277 B278 B27A B27B B280 B28A B28B B28D B28E B290 B294 B599 B59A
+# -it "Doomtrain" "Aether"
+# -p B24C:500
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+# Car 1
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+12.4 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
+20.4 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+22.4 "等离子射线/超增压排雾"
+25.5 "爆雷/重爆雷"
+31.4 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
+39.4 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+42.4 "超增压排雾/等离子射线"
+44.4 "重爆雷/爆雷"
+52.3 "无控急行" Ability { id: "B270", source: "格莱杨拉波尔" }
+52.5 "--untargetable--"
+
+# Car 2
+56.4 "--sync--" Ability { id: "B249", source: "格莱杨拉波尔" }
+58.4 "--targetable--"
+64.5 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
+69.5 "炮塔出击" Ability { id: "B23C", source: "格莱杨拉波尔" }
+78.6 "雷转质射线" Ability { id: "B273", source: "护卫炮塔" }
+79.5 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+82.5 "等离子射线/超增压排雾"
+84.5 "爆雷/重爆雷"
+90.4 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
+95.2 "雷转质射线" Ability { id: "B273", source: "护卫炮塔" }
+98.1 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+106.8 "雷转质射线" Ability { id: "B273", source: "护卫炮塔" }
+107.7 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+109.7 "超增压排雾/等离子射线"
+112.8 "重爆雷/爆雷"
+120.7 "无控急行" Ability { id: "B270", source: "格莱杨拉波尔" }
+120.9 "--untargetable--"
+
+# Car 3
+124.9 "--sync--" Ability { id: "B249", source: "格莱杨拉波尔" }
+126.9 "--targetable--"
+136.5 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+149.2 "无尽狂奔" Ability { id: "B246", source: "格莱杨拉波尔" }
+152.4 "溢流" Ability { id: "B247", source: "以太晶球" }
+152.8 "--untargetable--"
+
+# Add phase, timings are very, very loose here
+159.8 "--targetable--"
+166.7 "--sync--" HeadMarker { id: '019C' } window 12,12
+174.5 "以太炮/以太冲击波"
+174.6 "以太射线"
+182.8 "--sync--" HeadMarker { id: '019C' } window 12,12
+190.6 "以太炮/以太冲击波"
+190.7 "以太射线"
+197.7 "--sync--" HeadMarker { id: '019C' } window 12,12
+205.5 "以太炮/以太冲击波"
+205.6 "以太射线"
+211.1 "--sync--" HeadMarker { id: '019C' } window 12,12
+218.9 "以太炮/以太冲击波"
+219.0 "以太射线"
+224.1 "--sync--" HeadMarker { id: '019C' } window 12,12
+231.9 "以太炮/以太冲击波"
+232.0 "以太射线"
+234.8 "--untargetable--" NameToggle { name: "Aether" } window 12,12 forcejump "adds-enrage"
+
+# Sync to invisible cast that starts phase change animation
+500.0 "无尽狂奔" Ability { id: "B24C", source: "格莱杨拉波尔" } window 500.0,0
+515.1 "无尽狂奔" Ability { id: "B24D", source: "格莱杨拉波尔" }
+
+# Car 3, again
+515.4 "--targetable--"
+533.4 "冲击波" Ability { id: "B283", source: "格莱杨拉波尔" }
+543.3 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+550.9 "脱轨捶打" Ability { id: "B250", source: "格莱杨拉波尔" } duration 3.5
+559.9 "脱轨" Ability { id: "B28F", source: "格莱杨拉波尔" }
+
+# Car 4
+565.0 "--sync--" Ability { id: "B257", source: "格莱杨拉波尔" }
+571.0 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+575.0 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+585.1 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+587.5 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+592.8 "魔法阵展开" Ability { id: "B9A7", source: "格莱杨拉波尔" }
+604.5 "雷光雨" Ability { id: "B291", source: "格莱杨拉波尔" }
+604.5 "重雷" #Ability { id: "B292", source: "格莱杨拉波尔" }
+618.4 "雷光雨" Ability { id: "B291", source: "格莱杨拉波尔" }
+618.4 "重雷" #Ability { id: "B292", source: "格莱杨拉波尔" }
+632.4 "雷光雨" Ability { id: "B291", source: "格莱杨拉波尔" }
+632.4 "重雷" #Ability { id: "B292", source: "格莱杨拉波尔" }
+645.1 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+647.5 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+649.8 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+653.8 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+662.4 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+672.0 "脱轨捶打" Ability { id: "B284", source: "格莱杨拉波尔" } duration 4.9
+683.1 "脱轨" Ability { id: "B28F", source: "格莱杨拉波尔" }
+
+# Car 5
+688.2 "--sync--" Ability { id: "B257", source: "格莱杨拉波尔" }
+700.2 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+701.2 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
+702.2 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+706.2 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+715.3 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+716.3 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
+722.9 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+731.5 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+732.5 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
+733.5 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+737.5 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+748.6 "脱轨捶打" Ability { id: "B285", source: "格莱杨拉波尔" } duration 6.5
+760.2 "脱轨" Ability { id: "B28F", source: "格莱杨拉波尔" }
+
+# Car 6
+765.3 "--sync--" Ability { id: "B257", source: "格莱杨拉波尔" }
+774.3 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
+779.3 "炮塔出击" Ability { id: "B23C", source: "格莱杨拉波尔" }
+788.4 "雷转质射线" #Ability { id: "B273", source: "护卫炮塔" }
+792.4 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+794.8 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+804.4 "雷转质射线" #Ability { id: "B273", source: "护卫炮塔" }
+807.3 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+808.3 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
+809.3 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+813.3 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+821.5 "雷转质射线" #Ability { id: "B272", source: "护卫炮塔" }
+823.4 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+826.4 "等离子射线/超增压排雾"
+828.4 "爆雷/重爆雷"
+835.9 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+843.3 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
+847.3 "魔法阵展开" Ability { id: "B9A7", source: "格莱杨拉波尔" }
+862.0 "雷光雨" #Ability { id: "B291", source: "格莱杨拉波尔" }
+862.0 "重雷" Ability { id: "B292", source: "格莱杨拉波尔" }
+873.0 "雷光雨" #Ability { id: "B291", source: "格莱杨拉波尔" }
+873.0 "重雷" Ability { id: "B292", source: "格莱杨拉波尔" }
+875.4 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+879.4 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+889.3 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+891.3 "超增压排雾/等离子射线"
+894.4 "重爆雷/爆雷"
+903.5 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+905.9 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
+914.8 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
+916.4 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
+920.4 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+930.4 "脱轨捶打" Ability { id: "B286", source: "格莱杨拉波尔" } duration 7.1
+952.6 "脱轨 (狂暴)" Ability { id: "B28E", source: "格莱杨拉波尔" }
+
+# For sync reasons, adds enrage is after end of fight timeline
+2000.0 label "adds-enrage"
+2004.2 "无尽狂奔" Ability { id: "B24C", source: "格莱杨拉波尔" }
+2019.3 "无尽狂奔 (狂暴)" Ability { id: "B24D", source: "格莱杨拉波尔" }
+
+
+# IGNORED ABILITIES
+# B237 Unlimited Express: VFX
+# B24E Shockwave: VFX
+# B251 Derailment Siege: VFX
+# B287 Derailment Siege: VFX
+# B288 Derailment Siege: VFX
+# B289 Derailment Siege: VFX
+# B258 Hail of Thunder: VFX
+# B259 Hail of Thunder: VFX
+# B25C Lightning Burst: VFX
+# B26E Dead Man's Blastpipe: VFX
+# B271 Electray: Extra spam
+# B276 Electray: Extra spam
+# B277 Thunderous Breath: VFX
+# B278 Thunderous Breath: VFX
+# B27A Headlight: VFX
+# B27B Headlight: VFX
+# B280 Dead Man's Windpipe: VFX
+# B28A Derailment Siege: Followup hits for tower
+# B28B Derailment Siege: Big hit at the end
+# B28D Derail: VFX
+# B28E Derail: VFX
+# B290 Derail: VFX
+# B294 --sync--: Autoattack
+# B599 Derail: VFX
+# B59A Derail: VFX
+
+# ALL ENCOUNTER ABILITIES
+# B237 Unlimited Express
+# B23C Turret Crossing
+# B246 Runaway Train
+# B247 Overdraught
+# B249 --sync--
+# B24C Runaway Train
+# B24D Runaway Train
+# B24E Shockwave
+# B250 Derailment Siege
+# B251 Derailment Siege
+# B257 --sync--
+# B258 Hail of Thunder
+# B259 Hail of Thunder
+# B25C Lightning Burst
+# B25F Dead Man's Overdraught
+# B260 Dead Man's Overdraught
+# B261 Third Rail
+# B262 Third Rail
+# B264 Psychokinesis
+# B265 Plummet
+# B266 Dead Man's Express
+# B267 Plasma Beam
+# B268 Plasma Beam
+# B26A Plasma Beam
+# B26B Plasma
+# B26C Hyperexplosive Plasma
+# B26D Dead Man's Windpipe
+# B26E Dead Man's Blastpipe
+# B26F Dead Man's Blastpipe
+# B270 Unlimited Express
+# B271 Electray
+# B272 Electray
+# B273 Electray
+# B276 Electray
+# B277 Thunderous Breath
+# B278 Thunderous Breath
+# B279 Thunderous Breath
+# B27A Headlight
+# B27B Headlight
+# B27C Headlight
+# B27D Aetherial Ray
+# B280 Dead Man's Windpipe
+# B281 Aetherochar
+# B282 Aetherosote
+# B283 Shockwave
+# B284 Derailment Siege
+# B285 Derailment Siege
+# B286 Derailment Siege
+# B287 Derailment Siege
+# B288 Derailment Siege
+# B289 Derailment Siege
+# B28A Derailment Siege
+# B28B Derailment Siege
+# B28D Derail
+# B28E Derail
+# B28F Derail
+# B290 Derail
+# B291 Hail of Thunder
+# B292 Hyperconductive Plasma
+# B293 Lightning Burst
+# B294 --sync--
+# B599 Derail
+# B59A Derail
+# B9A7 Arcane Revelation

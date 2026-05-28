@@ -1,0 +1,324 @@
+### AAC CRUISERWEIGHT M4 (SAVAGE)
+# ZoneId: 1263
+
+# -ii A921 A922 A39B A39C A39F A3A0 A3B0 A3B1 A3DB A3DD A3DA A3C7 A881 A882 A45D A4CE A92D A92E
+# -ii A3B8 A3C5 A45F A461 A463 A464 A472 A473 A45B A46C A891 A479 A47A A47B A47C A47E A47F A480
+# -ii A481 A486 A488 A4A1 A4A2 A4EE A4F1 A4F2 A4F3 A4F4 A3CF A3CD A3E4 A3E2
+# -p A749:356.8 A82D:606.0
+# -it "Howling Blade" "Wolf of Wind" "Wolf of Stone"
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+14.7 "空间斩" Ability { id: "A74F", source: "剑嚎" } window 10,10
+20.5 "--middle--" Ability { id: "A38F", source: "剑嚎" }
+29.5 "风之魔技/土之魔技" Ability { id: ["A39E", "A39D", "A3A1", "A3A2"], source: "剑嚎" }
+39.6 "扫击群狼剑/旋击群狼剑" Ability { id: ["A911", "A912", "A913", "A914"], source: "剑嚎" }
+40.9 "群狼剑" Ability { id: "A92C", source: "剑嚎" }
+41.0 "扫击群狼剑/旋击群狼剑" Ability { id: ["A930", "A931"], source: "剑嚎" }
+43.0 "群狼剑" Ability { id: ["A398", "A7AF"], source: "剑嚎" }
+43.4 "群狼剑" Ability { id: ["A969", "A96A"], source: "剑嚎" }
+46.0 "群狼剑" Ability { id: ["A399", "A39A"], source: "剑嚎" }
+46.4 "群狼剑" Ability { id: ["A7B1", "A7B2"], source: "剑嚎" }
+52.5 "空间斩" Ability { id: "A74F", source: "剑嚎" }
+58.3 "--middle--" Ability { id: "A38F", source: "剑嚎" }
+66.0 "千年风化" Ability { id: "A3B2", source: "剑嚎" }
+76.8 "暴风" Ability { id: "A3B7", source: "剑嚎" }
+78.2 "千年风啸 1" #Ability { id: "A3B4", source: "风狼首" }
+78.6 "狂风" Ability { id: "A3B3", source: "剑嚎" }
+80.1 "千年风啸 2" #Ability { id: "A3B4", source: "风狼首" }
+82.1 "千年风啸 3" #Ability { id: "A3B4", source: "风狼首" }
+83.7 "狂风" Ability { id: "A3B3", source: "剑嚎" }
+84.3 "千年风啸 4" #Ability { id: "A3B4", source: "风狼首" }
+86.3 "千年风啸 5" #Ability { id: "A3B4", source: "风狼首" }
+92.4 "暴风" Ability { id: "A3B7", source: "剑嚎" }
+94.5 "风狼阵 (塔)" Ability { id: "A3B6", source: "剑嚎" }
+94.6 "千年狂风" Ability { id: "A3B5", source: "风狼首" }
+100.4 "连震击" Ability { id: "A3B9", source: "剑嚎" }
+101.3 "连震击 1" #Ability { id: "A3BB", source: "剑嚎" }
+102.3 "连震击 2" #Ability { id: "A3BB", source: "剑嚎" }
+103.3 "连震击 3" #Ability { id: "A3BB", source: "剑嚎" }
+104.3 "连震击 4" #Ability { id: "A3BB", source: "剑嚎" }
+105.3 "连震击 5" #Ability { id: "A3BB", source: "剑嚎" }
+106.4 "连震击 6" #Ability { id: "A3BB", source: "剑嚎" }
+107.4 "连震击 7" #Ability { id: "A3BB", source: "剑嚎" }
+108.4 "连震击 8" #Ability { id: "A3BB", source: "剑嚎" }
+114.3 "空间斩" Ability { id: "A74F", source: "剑嚎" }
+123.2 "一刀两断" Ability { id: "A3D8", source: "剑嚎" }
+131.3 "--middle--" Ability { id: "A38F", source: "剑嚎" }
+137.9 "大地的呼唤" Ability { id: "A3C4", source: "剑嚎" }
+145.1 "斩空剑" Ability { id: "A751", source: "剑嚎" }
+145.9 "光牙召唤" Ability { id: "A4CC", source: "剑嚎" }
+152.9 "崩塌" Ability { id: "A3C6", source: "剑嚎" }
+158.8 "扫击群狼剑/旋击群狼剑" Ability { id: ["A911", "A912", "A913", "A914"], source: "剑嚎" }
+160.1 "群狼剑" Ability { id: "A92C", source: "剑嚎" }
+160.2 "扫击群狼剑/旋击群狼剑" Ability { id: ["A930", "A931"], source: "剑嚎" }
+162.2 "群狼剑" Ability { id: ["A398", "A7AF"], source: "剑嚎" }
+162.6 "群狼剑" Ability { id: ["A969", "A96A"], source: "剑嚎" }
+165.2 "群狼剑" Ability { id: ["A399", "A39A"], source: "剑嚎" }
+165.6 "群狼剑" Ability { id: ["A7B1", "A7B2"], source: "剑嚎" }
+167.7 "--sync--" Ability { id: "A786", source: "剑嚎" }
+172.4 "--north--" Ability { id: "A38F", source: "剑嚎" }
+
+# Adds
+177.7 "光狼召唤" Ability { id: "A3C8", source: "剑嚎" }
+179.7 "--untargetable--"
+179.7 "--sync--" Ability { id: "A3C9", source: "剑嚎" }
+186.8 "风尘咆哮" Ability { id: "A3DC", source: "土狼首" }
+188.8 "--小怪可选中--"
+196.9 "光狼阵" Ability { id: "A3CC", source: "土狼首" }
+196.9 "--坦克/直线 AOE--"
+210.8 "光狼阵" Ability { id: "A3CC", source: "土狼首" }
+210.8 "--坦克/直线 AOE--"
+224.8 "光狼阵" Ability { id: "A3CC", source: "土狼首" }
+224.8 "--坦克/直线 AOE--"
+240.1 "风之狼吼/土之狼吼" StartsUsing { id: ["A3D0", "A3D3"] } window 10,10
+248.1 "土之狼吼 (狂暴)" Ability { id: "A3D3", source: "土狼首" }
+248.1 "风之狼吼 (狂暴)" Ability { id: "A3D0", source: "风狼首" }
+
+
+# The following enrage casts happen on repeat
+# 248.2 "Forlorn Stone (狂暴)" Ability { id: "A3D5", source: "土狼首" }
+# 248.2 "Forlorn Wind (狂暴)" Ability { id: "A3D2", source: "风狼首" }
+# 250.2 "Forlorn Stone (狂暴)" Ability { id: "A3D4", source: "土狼首" }
+# 250.2 "Forlorn Wind (狂暴)" Ability { id: "A3D1", source: "风狼首" }
+
+# Terrestrial Rage
+# Boss is targetable on MapEffect
+343.8 "--sync--" MapEffect { flags: "00080004", location: "01" } window 400,10
+356.8 "风尘光狼斩" Ability { id: "A749", source: "剑嚎" } window 400,10
+356.9 "风尘光狼斩" Ability { id: "A74A", source: "剑嚎" }
+357.2 "风尘光狼斩" Ability { id: "A74B", source: "剑嚎" }
+359.2 "风尘光狼斩" Ability { id: "A9FE", source: "剑嚎" }
+360.4 "风尘光狼斩" Ability { id: "A3CB", source: "剑嚎" }
+370.2 "--middle--" Ability { id: "A38F", source: "剑嚎" }
+372.9 "光牙召唤" Ability { id: "A4CB", source: "剑嚎" }
+377.9 "大地之怒" Ability { id: "A3BE", source: "剑嚎" }
+384.9 "突进光牙" #Ability { id: "A3D6", source: "光牙" }
+386.2 "大震击" Ability { id: "A3C0", source: "剑嚎" }
+386.2 "巨岩" #Ability { id: "A3BF", source: "剑嚎" }
+387.0 "残影剑" Ability { id: "A3BC", source: "剑嚎" }
+387.4 "突进光牙" #Ability { id: "A3D6", source: "光牙" }
+388.3 "--untargetable--"
+393.0 "大震击" Ability { id: "A3C0", source: "剑嚎" }
+393.0 "巨岩" #Ability { id: "A3BF", source: "剑嚎" }
+395.2 "--targetable--"
+397.9 "风狼豪波" Ability { id: "A78A", source: "风狼首" }
+402.5 "扫击群狼剑/旋击群狼剑" Ability { id: ["A911", "A912", "A913", "A914"], source: "剑嚎" }
+403.8 "群狼剑" Ability { id: "A92C", source: "剑嚎" }
+403.8 "扫击群狼剑/旋击群狼剑" Ability { id: ["A930", "A931"], source: "剑嚎" }
+405.8 "群狼剑" Ability { id: ["A398", "A7AF"], source: "剑嚎" }
+406.2 "群狼剑" Ability { id: ["A969", "A96A"], source: "剑嚎" }
+408.8 "群狼剑" Ability { id: ["A399", "A39A"], source: "剑嚎" }
+409.2 "群狼剑" Ability { id: ["A7B1", "A7B2"], source: "剑嚎" }
+411.3 "--sync--" Ability { id: "A786", source: "剑嚎" }
+412.1 "地烈波" Ability { id: "A78E", source: "土狼首" }
+422.5 "一刀两断" Ability { id: "A3D8", source: "剑嚎" }
+430.6 "--middle--" Ability { id: "A38F", source: "剑嚎" }
+
+# Beckon Moonlight
+436.7 "幻狼召唤" Ability { id: "A3C1", source: "剑嚎" }
+438.7 "--幻影 1--" #Ability { id: ["A3E0", "A3E1"], source: "剑嚎的幻影" }
+439.7 "--幻影 2--" #Ability { id: ["A3E0", "A3E1"], source: "剑嚎的幻影" }
+440.7 "--幻影 3--" #Ability { id: ["A3E0", "A3E1"], source: "剑嚎的幻影" }
+441.7 "--幻影 4--" #Ability { id: ["A3E0", "A3E1"], source: "剑嚎的幻影" }
+443.7 "大地之怒" Ability { id: "A3BE", source: "剑嚎" }
+449.3 "大震击" Ability { id: "A3C0", source: "剑嚎" }
+449.3 "巨岩" #Ability { id: "A3BF", source: "剑嚎" }
+450.7 "幻狼剑 1" #Ability { id: ["A3C2", "A3C3"], source: "剑嚎的幻影" }
+452.7 "幻狼剑 2" #Ability { id: ["A3C2", "A3C3"], source: "剑嚎的幻影" }
+454.7 "幻狼剑 3" #Ability { id: ["A3C2", "A3C3"], source: "剑嚎的幻影" }
+456.7 "幻狼剑 4" #Ability { id: ["A3C2", "A3C3"], source: "剑嚎的幻影" }
+457.7 "大震击" Ability { id: "A3C0", source: "剑嚎" }
+457.7 "巨岩" #Ability { id: "A3BF", source: "剑嚎" }
+457.7 "--middle--" Ability { id: "A38F", source: "剑嚎" }
+461.9 "地烈波" Ability { id: "A792", source: "土狼首" }
+466.8 "风之魔技/土之魔技" Ability { id: ["A39E", "A39D", "A3A1", "A3A2"], source: "剑嚎" }
+475.8 "连震击" Ability { id: "A3B9", source: "剑嚎" }
+476.7 "连震击 1" #Ability { id: "A3BB", source: "剑嚎" }
+477.7 "连震击 2" #Ability { id: "A3BB", source: "剑嚎" }
+478.7 "连震击 3" #Ability { id: "A3BB", source: "剑嚎" }
+479.7 "连震击 4" #Ability { id: "A3BB", source: "剑嚎" }
+480.7 "连震击 5" #Ability { id: "A3BB", source: "剑嚎" }
+481.8 "连震击 6" #Ability { id: "A3BB", source: "剑嚎" }
+482.8 "连震击 7" #Ability { id: "A3BB", source: "剑嚎" }
+483.8 "连震击 8" #Ability { id: "A3BB", source: "剑嚎" }
+489.7 "空间斩" Ability { id: "A74F", source: "剑嚎" }
+504.5 "空间斩" Ability { id: "A74F", source: "剑嚎" }
+505.2 "--middle--" #Ability { id: "A38F", source: "剑嚎" }
+505.2 "--untargetable--"
+505.5 "空间灭斩" StartsUsing { id: "A3F1", source: "剑嚎" } window 10,10
+509.2 "空间灭斩 (狂暴)" Ability { id: "A3F1", source: "剑嚎" }
+
+# Phase 2
+605.0 "--middle--" Ability { id: "A38F", source: "剑嚎" } window 140,0
+606.0 "--sync--" Ability { id: "A82D", source: "剑嚎" } window 610,0
+650.3 "--targetable--"
+662.3 "爆震" Ability { id: "A45A", source: "剑嚎" }
+674.3 "魔光" Ability { id: "A45C", source: "剑嚎" }
+674.3 "闪光炮" Ability { id: "A45E", source: "光牙" }
+685.3 "双牙击" Ability { id: "A4CD", source: "剑嚎" }
+697.4 "摧枯拉朽" Ability { id: ["A460", "A462"], source: "剑嚎" }
+707.4 "魔光" Ability { id: "A45C", source: "剑嚎" }
+707.4 "闪光炮" Ability { id: "A45E", source: "光牙" }
+718.4 "爆震" Ability { id: "A45A", source: "剑嚎" }
+726.6 "刚刃一闪" StartsUsing { id: "A465", source: "剑嚎" } duration 3.7
+731.6 "刚刃一闪" Ability { id: "A466", source: "剑嚎" }
+738.6 "风震魔印" Ability { id: "A467", source: "剑嚎" }
+743.7 "定时震击" #Ability { id: "A469", source: "剑嚎" }
+743.7 "定时风击" #Ability { id: "A468", source: "剑嚎" }
+743.7 "贪狼之剑" #Ability { id: "A46D", source: "剑嚎" }
+748.7 "风狼阵" Ability { id: "A46E", source: "剑嚎" }
+757.5 "风狼阵 (塔)" Ability { id: "A46F", source: "剑嚎" }
+759.8 "魔狼战形·飓风之相" Ability { id: "A82A", source: "剑嚎" }
+
+# Twofold Tempest
+768.9 "双牙暴风击" Ability { id: "A471", source: "剑嚎" }
+772.6 "风爆" duration 11.7 #Ability { id: "A891", source: "剑嚎" }
+776.1 "双牙暴风击" Ability { id: "A474", source: "剑嚎" }
+779.8 "风爆" duration 11.7 #Ability { id: "A891", source: "剑嚎" }
+782.7 "双牙暴风击" Ability { id: "A474", source: "剑嚎" }
+786.4 "风爆" duration 11.7 #Ability { id: "A891", source: "剑嚎" }
+788.6 "双牙暴风击" Ability { id: "A474", source: "剑嚎" }
+792.3 "风爆" duration 11.7 #Ability { id: "A891", source: "剑嚎" }
+799.4 "光牙召唤" Ability { id: "A475", source: "剑嚎" }
+
+# Champion's Circuit
+811.0 "回天动地" Ability { id: ["A477", "A478"], source: "剑嚎" }
+811.0 "连击闪光炮" #Ability { id: "A476", source: "光牙" }
+811.7 "回天动地" Ability { id: "A47D", source: "剑嚎" }
+815.4 "连击闪光炮" #Ability { id: "A476", source: "光牙" }
+816.1 "回天动地" Ability { id: "A482", source: "剑嚎" }
+819.8 "连击闪光炮" #Ability { id: "A476", source: "光牙" }
+820.4 "回天动地" Ability { id: "A482", source: "剑嚎" }
+824.1 "连击闪光炮" #Ability { id: "A476", source: "光牙" }
+824.7 "回天动地" Ability { id: "A482", source: "剑嚎" }
+828.5 "连击闪光炮" #Ability { id: "A476", source: "光牙" }
+828.9 "回天动地" Ability { id: "A482", source: "剑嚎" }
+838.7 "爆震" Ability { id: "A45A", source: "剑嚎" }
+852.7 "魔光" Ability { id: "A45C", source: "剑嚎" }
+852.7 "闪光炮" Ability { id: "A45E", source: "光牙" }
+863.7 "双牙击" Ability { id: "A4CD", source: "剑嚎" }
+878.9 "魔狼战形·咒刃之相" Ability { id: "A82C", source: "剑嚎" }
+
+# Lone Wolf
+884.1 "独狼的诅咒" Ability { id: "A483", source: "剑嚎" }
+894.2 "风狼阵" Ability { id: "A485", source: "剑嚎" }
+902.8 "风狼阵 (塔)" Ability { id: "A487", source: "剑嚎" }
+912.4 "摧枯拉朽" Ability { id: ["A460", "A462"], source: "剑嚎" }
+924.6 "魔光" Ability { id: "A45C", source: "剑嚎" }
+924.6 "闪光炮" Ability { id: "A45E", source: "光牙" }
+939.4 "八连光弹" Ability { id: "AA02", source: "剑嚎" }
+940.5 "八连光弹 1" #Ability { id: "AA03", source: "剑嚎" }
+941.5 "八连光弹 2" #Ability { id: "AA04", source: "剑嚎" }
+942.4 "八连光弹 3" #Ability { id: "AA05", source: "剑嚎" }
+943.3 "八连光弹 4" #Ability { id: "AA06", source: "剑嚎" }
+944.0 "八连光弹 5" #Ability { id: "AA07", source: "剑嚎" }
+944.4 "八连光弹 6" #Ability { id: "AA08", source: "剑嚎" }
+944.8 "八连光弹 7" #Ability { id: "AA09", source: "剑嚎" }
+946.6 "八连光弹 8" #Ability { id: "AA0A", source: "剑嚎" }
+946.9 "刚刃一闪" StartsUsing { id: "A74C", source: "剑嚎" } duration 2.7
+950.9 "刚刃一闪" Ability { id: "A74D", source: "剑嚎" }
+959.1 "八连光弹" Ability { id: "A494", source: "剑嚎" }
+960.1 "八连光弹" Ability { id: "A495", source: "剑嚎" }
+961.1 "八连光弹 2" #Ability { id: "A496", source: "剑嚎" }
+962.0 "八连光弹 3" #Ability { id: "A497", source: "剑嚎" }
+962.9 "八连光弹 4" #Ability { id: "A498", source: "剑嚎" }
+963.5 "八连光弹 5" #Ability { id: "A499", source: "剑嚎" }
+964.1 "八连光弹 6" #Ability { id: "A49A", source: "剑嚎" }
+964.4 "八连光弹 7" #Ability { id: "A49B", source: "剑嚎" }
+966.2 "八连光弹 8" #Ability { id: "A49C", source: "剑嚎" }
+966.4 "刚刃一闪" StartsUsing { id: "A74C", source: "剑嚎" } duration 2.7
+970.5 "刚刃一闪" Ability { id: "A74D", source: "剑嚎" }
+978.6 "八连光弹" Ability { id: "A494", source: "剑嚎" }
+979.6 "八连光弹 1" #Ability { id: "A495", source: "剑嚎" }
+980.6 "八连光弹 2" #Ability { id: "A496", source: "剑嚎" }
+981.5 "八连光弹 3" #Ability { id: "A497", source: "剑嚎" }
+982.4 "八连光弹 4" #Ability { id: "A498", source: "剑嚎" }
+983.0 "八连光弹 5" #Ability { id: "A499", source: "剑嚎" }
+983.6 "八连光弹 6" #Ability { id: "A49A", source: "剑嚎" }
+984.0 "八连光弹 7" #Ability { id: "A49B", source: "剑嚎" }
+985.8 "八连光弹 8" #Ability { id: "A49C", source: "剑嚎" }
+986.1 "刚刃一闪" StartsUsing { id: "A74C", source: "剑嚎" } duration 2.7
+990.1 "刚刃一闪" Ability { id: "A74D", source: "剑嚎" }
+998.2 "八连光弹" Ability { id: "A494", source: "剑嚎" }
+999.2 "八连光弹 1" #Ability { id: "A495", source: "剑嚎" }
+1000.2 "八连光弹 2" #Ability { id: "A496", source: "剑嚎" }
+1001.1 "八连光弹 3" #Ability { id: "A497", source: "剑嚎" }
+1002.0 "八连光弹 4" #Ability { id: "A498", source: "剑嚎" }
+1002.7 "八连光弹 5" #Ability { id: "A499", source: "剑嚎" }
+1003.1 "八连光弹 6" #Ability { id: "A49A", source: "剑嚎" }
+1003.5 "八连光弹 7" #Ability { id: "A49B", source: "剑嚎" }
+1005.3 "八连光弹 8" #Ability { id: "A49C", source: "剑嚎" }
+1005.7 "刚刃一闪" StartsUsing { id: "A74C", source: "剑嚎" } duration 2.7
+1009.6 "刚刃一闪" Ability { id: "A74D", source: "剑嚎" }
+1017.8 "八连光弹" Ability { id: "A494", source: "剑嚎" }
+1018.8 "八连光弹 1" #Ability { id: "A495", source: "剑嚎" }
+1019.8 "八连光弹 2" #Ability { id: "A496", source: "剑嚎" }
+1020.7 "八连光弹 3" #Ability { id: "A497", source: "剑嚎" }
+1021.6 "八连光弹 4" #Ability { id: "A498", source: "剑嚎" }
+1022.3 "八连光弹 5" #Ability { id: "A499", source: "剑嚎" }
+1022.7 "八连光弹 6" #Ability { id: "A49A", source: "剑嚎" }
+1023.1 "八连光弹 7" #Ability { id: "A49B", source: "剑嚎" }
+1024.9 "八连光弹 8" #Ability { id: "A49C", source: "剑嚎" }
+1025.2 "刚刃一闪・终" StartsUsing { id: "A49D", source: "剑嚎" } duration 10
+1035.2 "--untargetable--"
+1036.2 "刚刃一闪・终 (狂暴)" Ability { id: "A49E", source: "剑嚎" }
+
+# IGNORED ABILITIES
+# Phase 1
+# A4EE Attack (Howling Blade)
+# A3DA Extraplanar Pursuit (self-cast)
+# A39F Windfang
+# A3A0 Windfang
+# A3B0 Stonefang
+# A3B1 Stonefang
+# A921 Eminent Reign
+# A922 Revolutionary Reign
+# A92D Wolves' Reign
+# A92E Wolves' Reign
+# A39B Reign (Tank target)
+# A39C Reign (Healer target)
+# A3B8 Aero III
+# A3C5 Terrestrial Titans
+# A7C7 Titanic Pursuit (self-cast)
+# A3DB Howling Havoc (Wolf of Wind)
+# A3DD Howling Havoc (Wolf of Stone)
+# A4F1 Attack (Wolf of Wind)
+# A4F2 Attack (Wolf of Stone)
+# A3CF Stalking Wind
+# A3CD Alpha Wind
+# A3E4 Stalking Stone
+# A3E2 Alpha Stone
+# A881 Wind Surge
+# A882 Sand Surge
+
+# Phase 2
+# A4F3 unknown_a4f3 Related to A4F4, used on primary target of Howling Blade's Attack
+# A4F4 Attack
+# A45B Quake III
+# A45D Ultraviolent Ray
+# A4CE Twinbite
+# A45F Hero's Blow (Left)
+# A461 Hero's Blow (Right)
+# A463 Fanged Maw
+# A464 Fanged Permiter
+# A46C Hunter's Harvest
+# A472 Twofold Tempest
+# A473 Twofold Tempest
+# A891 Wind Surge
+# A479 Champion's Circuit
+# A47A Champion's Circuit
+# A47B Champion's Circuit
+# A47C Champion's Circuit
+# A47E Champion's Circuit
+# A47F Champion's Circuit
+# A480 Champion's Circuit
+# A481 Champion's Circuit
+# A4A1 Champion's Circuit (boss instant cast) clockwise rotation
+# A4A2 Champion's Circuit (boss instant cast) counterclockwise rotation
+# A486 Prowling Gale (1-Person Tower)
+# A488 Prowling Gale (3-Person Tower)

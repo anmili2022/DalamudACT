@@ -58,6 +58,19 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int HistoryPreviewSeconds = 8;
     public bool CombatTimelineRecordingEnabled = false;
     public int CombatTimelineMaxEntries = 500;
+    public bool ShowTimelineWindow = false;
+    public bool LockTimelineWindow = false;
+    public bool TimelineDebugMode = false;
+    public float TimelineWindowOpacity = 0.9f;
+    public int TimelineVisibleSeconds = 90;
+    public int TimelineMaxVisibleEntries = 8;
+    public float TimelineRowGap = 1f;
+    public bool EnableTimelineDailyRoutinesTts = false;
+    public int TimelineTtsLeadSeconds = 5;
+    public TimelineTtsContentMode TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
+    public string ActLogDirectory = @"D:\ff14act\FFXIVLogs";
+    public string ActLogFilePath = string.Empty;
+    public string ActLogEncounterKey = string.Empty;
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
 
     public PartyMonitorConfig PartyMonitor = new();
@@ -178,6 +191,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     [NonSerialized]
     private bool suppressFloatingStyleSettingsSync;
 
+    [NonSerialized]
+    private DateTime lastSaveFailureLogUtc;
+
     public void Initialize(IDalamudPluginInterface pluginInterface)
     {
         this.pluginInterface = pluginInterface;
@@ -189,6 +205,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         CombatTimelineMaxEntries = CombatTimelineMaxEntries < 0
             ? 500
             : Math.Clamp(CombatTimelineMaxEntries, 0, 50000);
+        TimelineWindowOpacity = Math.Clamp(TimelineWindowOpacity, 0f, 1f);
+        TimelineVisibleSeconds = Math.Clamp(TimelineVisibleSeconds <= 0 ? 90 : TimelineVisibleSeconds, 10, 600);
+        TimelineMaxVisibleEntries = Math.Clamp(TimelineMaxVisibleEntries <= 0 ? 8 : TimelineMaxVisibleEntries, 1, 30);
         DpsVisibleCount = Math.Clamp(DpsVisibleCount, 1, 24);
         FloatingStatsPlayerColumnMinWidth = Math.Clamp(FloatingStatsPlayerColumnMinWidth, 0f, 360f);
         FloatingStatsMetricColumnWidth = Math.Clamp(FloatingStatsMetricColumnWidth, 48f, 220f);
@@ -243,6 +262,17 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         FloatingStatsIkegamiWindowHeight = Math.Clamp(FloatingStatsIkegamiWindowHeight, 0f, 4000f);
         FloatingStatsMinimalWindowWidth = Math.Clamp(FloatingStatsMinimalWindowWidth, 0f, 4000f);
         FloatingStatsMinimalWindowHeight = Math.Clamp(FloatingStatsMinimalWindowHeight, 0f, 4000f);
+        TimelineWindowOpacity = Math.Clamp(TimelineWindowOpacity, 0f, 1f);
+        TimelineVisibleSeconds = Math.Clamp(TimelineVisibleSeconds <= 0 ? 90 : TimelineVisibleSeconds, 10, 600);
+        TimelineMaxVisibleEntries = Math.Clamp(TimelineMaxVisibleEntries <= 0 ? 8 : TimelineMaxVisibleEntries, 1, 30);
+        TimelineRowGap = Math.Clamp(TimelineRowGap, 0f, 8f);
+        TimelineTtsLeadSeconds = Math.Clamp(TimelineTtsLeadSeconds <= 0 ? 5 : TimelineTtsLeadSeconds, 1, 30);
+        if (!Enum.IsDefined(typeof(TimelineTtsContentMode), TimelineTtsContentMode))
+            TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
+        if (string.IsNullOrWhiteSpace(ActLogDirectory))
+            ActLogDirectory = @"D:\ff14act\FFXIVLogs";
+        ActLogFilePath ??= string.Empty;
+        ActLogEncounterKey ??= string.Empty;
 
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
             CombatEndRule = CombatEndRule.PartyList;
@@ -548,12 +578,33 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         if (Version < 59)
             PartyMonitor.RemoveDefaultDisabledBuiltInSkills();
 
+        if (Version < 60)
+            TimelineRowGap = 1f;
+
+        if (Version < 61)
+        {
+            EnableTimelineDailyRoutinesTts = false;
+            TimelineTtsLeadSeconds = 5;
+        }
+
+        if (Version < 62)
+            TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
+
+        if (Version < 63 && string.IsNullOrWhiteSpace(ActLogDirectory))
+            ActLogDirectory = @"D:\ff14act\FFXIVLogs";
+
+        if (Version < 64)
+            ActLogFilePath = string.Empty;
+
+        if (Version < 65)
+            ActLogEncounterKey = string.Empty;
+
         SyncSharedColumnSettings();
         EnsureThemeBarColors();
         LogHelper.EnableDebugLog = EnableDebugLog;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 59);
+        Version = Math.Max(Version, 65);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();
@@ -569,8 +620,20 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
     public void Save()
     {
-        pluginInterface?.SavePluginConfig(this);
-        SaveFloatingStyleSettingsFile(FloatingStatsDisplayStyle);
+        try
+        {
+            pluginInterface?.SavePluginConfig(this);
+            SaveFloatingStyleSettingsFile(FloatingStatsDisplayStyle);
+        }
+        catch (Exception ex)
+        {
+            var now = DateTime.UtcNow;
+            if ((now - lastSaveFailureLogUtc).TotalSeconds >= 10)
+            {
+                lastSaveFailureLogUtc = now;
+                LogHelper.Error("配置", ex, "保存插件配置失败，可能是配置文件被占用或权限不足。稍后再次修改设置会重试保存。");
+            }
+        }
     }
 
 

@@ -1,0 +1,123 @@
+### Arcadion (R4N): AAC Light-heavyweight M4
+
+# -ii 90EE 92B3 92B5 92B6 98EA 8A07 8D36 8F97 92C3
+# -it "Wicked Thunder"
+# -p 92B1:1004.7
+
+# 90EE - normal autoattack
+# 8F97 - autoattack when wings are out?
+# 92C9 - teleport
+# 92A7 - Something to do with the tp north, maybe what triggers gun?
+# 92AB - ライトロール - "Right Roll" - boss shooting her right/player left 3/4ths
+# 92AC - レフトロール - "Left Roll" - boss shooting her left/player right 3/4ths
+
+# 92BC/92BD/92BE/92BF - boss cleaves
+# 9A05/9A0F - clone cleaves
+
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+6.9 "宙斯之怒" StartsUsing { id: "92C7", source: "狡雷" } window 10,10
+11.6 "宙斯之怒" Ability { id: "92C7", source: "狡雷" }
+24.7 "侧方电火花" Ability { id: ["92BC", "92BD", "92BE", "92BF"], source: "狡雷" }
+30.8 "--middle--" Ability { id: "92C9", source: "狡雷" }
+35.1 "黑色安息日" Ability { id: "9BBF", source: "狡雷" }
+44.3 "侧方电火花" Ability { id: ["9A05", "9A0F"], source: "狡雷的幻影" }
+46.3 "黑色安息日" Ability { id: "9BBF", source: "狡雷" }
+55.5 "侧方电火花" Ability { id: ["9A05", "9A0F"], source: "狡雷的幻影" }
+62.6 "狡诡摇荡" Ability { id: "92C8", source: "狡雷" }
+68.7 "--north--" Ability { id: "92C9", source: "狡雷" }
+70.1 "--sync--" Ability { id: "92A7", source: "狡雷" }
+77.2 "ライトロール/レフトロール" Ability { id: ["92AB", "92AC"], source: "狡雷" }
+79.2 "奔雷炮" Ability { id: "8A06", source: "狡雷" } duration 7.1
+89.1 "--东/西--" Ability { id: "92C9", source: "狡雷" }
+101.4 "三重加农炮" Ability { id: ["92AD", "92B0"], source: "狡雷" }
+101.8 "狡诡加农炮" Ability { id: ["4E40", "92AE", "92AF", "9BAC", "9BBE"], source: "狡雷" } window 2,0.5
+103.2 "狡诡加农炮" #Ability { id: "9BBE", source: "狡雷" }
+105.1 "狡诡加农炮" #Ability { id: "92AF", source: "狡雷" }
+121.8 "四重加农炮" Ability { id: ["9B4F", "9B55"], source: "狡雷" }
+122.2 "狡诡加农炮" Ability { id: ["4E40", "92AE", "92AF", "9BAC", "9BBE"], source: "狡雷" } window 2,0.5
+123.6 "狡诡加农炮" #Ability { id: "9BBE", source: "狡雷" }
+125.5 "狡诡加农炮" #Ability { id: "9BBE", source: "狡雷" }
+127.4 "狡诡加农炮" #Ability { id: "92AF", source: "狡雷" }
+130.5 "--sync--" Ability { id: "92A8", source: "狡雷" }
+131.3 "雷炸" Ability { id: "92C6", source: "狡雷" }
+139.6 "狡诡落雷" Ability { id: "92C2", source: "狡雷" } duration 5
+148.7 "--middle--" Ability { id: "92C9", source: "狡雷" }
+150.0 "--sync--" Ability { id: "92A9", source: "狡雷" }
+157.1 "--north--" Ability { id: "92C9", source: "狡雷" }
+164.4 "魔女回翔 (咏唱)" Ability { id: "8DE4", source: "狡雷" }
+165.4 "魔女回翔 (伤害)" Ability { id: "92B8", source: "狡雷" }
+175.4 "爆炸" Ability { id: "92B9", source: "狡雷" }
+178.4 "雷炸" Ability { id: "92C6", source: "狡雷" }
+179.4 "爆炸" Ability { id: "92B9", source: "狡雷" }
+182.4 "雷炸" Ability { id: "92C6", source: "狡雷" }
+183.3 "爆炸" Ability { id: "92B9", source: "狡雷" }
+185.4 "--middle--" Ability { id: "92C9", source: "狡雷" }
+186.4 "雷炸" Ability { id: "92C6", source: "狡雷" }
+187.3 "爆炸" Ability { id: "92B9", source: "狡雷" }
+191.3 "爆炸" Ability { id: "92B9", source: "狡雷" }
+193.7 "侧方电火花" Ability { id: ["92BC", "92BD", "92BE", "92BF"], source: "狡雷" }
+196.8 "--sync--" Ability { id: "92AA", source: "狡雷" }
+206.9 "宙斯之怒" Ability { id: "92C7", source: "狡雷" }
+214.1 "--middle--" Ability { id: "92C9", source: "狡雷" }
+
+218.2 label "loop"
+218.2 "黑色安息日" Ability { id: "9BBF", source: "狡雷" }
+227.4 "侧方电火花" Ability { id: ["9A05", "9A0F"], source: "狡雷的幻影" } window 2,1
+229.4 "侧方电火花 (幻影)" #Ability { id: "9A05", source: "狡雷的幻影" }
+231.4 "侧方电火花 (幻影)" #Ability { id: "9A0F", source: "狡雷的幻影" }
+233.4 "侧方电火花 (幻影)" #Ability { id: "9A0F", source: "狡雷的幻影" }
+235.4 "侧方电火花" Ability { id: ["92BC", "92BD", "92BE", "92BF"], source: "狡雷" }
+244.5 "宙斯之怒" Ability { id: "92C7", source: "狡雷" }
+252.7 "狡诡摇荡" Ability { id: "92C8", source: "狡雷" }
+259.8 "--north--" Ability { id: "92C9", source: "狡雷" }
+261.2 "--sync--" Ability { id: "92A7", source: "狡雷" }
+268.2 "ライトロール/レフトロール" Ability { id: ["92AB", "92AC"], source: "狡雷" }
+270.2 "奔雷炮" Ability { id: "8A06", source: "狡雷" } duration 7.1
+280.1 "--sync--" Ability { id: "92C9", source: "狡雷" }
+297.4 "五重加农炮" Ability { id: "9B56", source: "狡雷" }
+297.8 "狡诡加农炮" Ability { id: ["4E40", "92AE", "92AF", "9BAC", "9BBE"], source: "狡雷" } window 2,0.5
+299.2 "狡诡加农炮" #Ability { id: "9BBE", source: "狡雷" }
+301.1 "狡诡加农炮" #Ability { id: "9BAC", source: "狡雷" }
+303.0 "狡诡加农炮" #Ability { id: "9BBE", source: "狡雷" }
+304.9 "狡诡加农炮" #Ability { id: "92AE", source: "狡雷" }
+308.0 "--sync--" Ability { id: "92A8", source: "狡雷" }
+313.8 "雷暴" Ability { id: "92C5", source: "狡雷" }
+320.1 "狡诡落雷" Ability { id: "92C2", source: "狡雷" } duration 5
+330.2 "--middle--" Ability { id: "92C9", source: "狡雷" }
+331.4 "--sync--" Ability { id: "92A9", source: "狡雷" }
+341.4 "黑色安息日" Ability { id: "949C", source: "狡雷" }
+345.6 "--north--" Ability { id: "92C9", source: "狡雷" }
+353.0 "魔女回翔 (咏唱)" Ability { id: "8DE4", source: "狡雷" }
+354.0 "魔女回翔 (伤害)" #Ability { id: "92B8", source: "狡雷" }
+364.0 "爆炸" Ability { id: "92B9", source: "狡雷" }
+368.0 "爆炸" Ability { id: "92B9", source: "狡雷" }
+372.0 "爆炸" Ability { id: "92B9", source: "狡雷" }
+376.0 "爆炸" Ability { id: "92B9", source: "狡雷" }
+376.1 "--middle--" Ability { id: "92C9", source: "狡雷" }
+380.0 "爆炸" Ability { id: "92B9", source: "狡雷" }
+380.4 "猎杀女巫" Ability { id: "92B4", source: "狡雷" } duration 11
+398.5 "碎魂跃 (咏唱)" Ability { id: "92C0", source: "狡雷" }
+398.9 "碎魂跃 (伤害)" Ability { id: "92C1", source: "狡雷" }
+402.0 "--sync--" Ability { id: "92AA", source: "狡雷" }
+412.1 "宙斯之怒" Ability { id: "92C7", source: "狡雷" }
+420.5 "狡诡摇荡" Ability { id: "92C8", source: "狡雷" }
+427.6 "--middle--" Ability { id: "92C9", source: "狡雷" }
+431.7 "黑色安息日" Ability { id: "9BBF", source: "狡雷" } forcejump "loop"
+
+# Soft enrage at 20%
+1000.0 "狡诡聚能加农炮" StartsUsing { id: "92B1", source: "狡雷" } window 1000,0
+1005.0 "狡诡聚能加农炮" Ability { id: "92B1", source: "狡雷" } duration 9.7
+1026.3 "雷炸" Ability { id: "92C6", source: "狡雷" }
+1029.3 "雷炸" Ability { id: "92C6", source: "狡雷" }
+# Loop from the 2nd instance of Wicked Hypercannon since it has a different ID
+1030.3 label "loop2"
+1030.3 "狡诡聚能加农炮" Ability { id: "92B2", source: "狡雷" } duration 9.7
+1051.6 "雷炸" Ability { id: "92C6", source: "狡雷" }
+1054.6 "雷炸" Ability { id: "92C6", source: "狡雷" }
+1055.6 "狡诡聚能加农炮" Ability { id: "92B2", source: "狡雷" } duration 9.7 forcejump "loop2"

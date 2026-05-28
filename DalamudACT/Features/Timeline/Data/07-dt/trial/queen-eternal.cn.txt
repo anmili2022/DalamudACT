@@ -1,0 +1,250 @@
+### THE INTERPHOS
+# ZoneId: 4
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# -ii 8EFD 8F01 8F03 8F06 8F07 8F09 8F0A 8F0B 8F0C 8F14 8F17 8F25 8F30 9A60 9C7B
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+17.7 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" } window 20,20
+20.8 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+28.9 "以太税" Ability { id: "8EFC", source: "永恒女王" }
+39.0 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+46.1 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+53.2 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+63.4 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+71.4 "王权圆舞曲 1" #Ability { id: "8F18", source: "永恒女王" }
+74.4 "王权圆舞曲 2" #Ability { id: "8F18", source: "永恒女王" }
+77.4 "王权圆舞曲 3" #Ability { id: "8F18", source: "永恒女王" }
+80.4 "王权圆舞曲 4" #Ability { id: "8F18", source: "永恒女王" }
+80.4 "诉诸武力" Ability { id: "8EFA", source: "永恒女王" }
+83.4 "王权圆舞曲 5" #Ability { id: "8F18", source: "永恒女王" }
+86.4 "王权圆舞曲 6" #Ability { id: "8F18", source: "永恒女王" }
+89.4 "王权圆舞曲 7" #Ability { id: "8F18", source: "永恒女王" }
+92.4 "王权圆舞曲 8" #Ability { id: "8F18", source: "永恒女王" }
+97.7 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" }
+100.8 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+103.8 "终端回收" Ability { id: "8F16", source: "永恒女王" } # Lock and Key
+
+112.9 "虚景切换" Ability { id: "8EFE", source: "永恒女王" } window 112.9,10
+121.0 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+133.2 "王法无情" Ability { id: "8F1A", source: "永恒女王" }
+145.2 "下行突风" Ability { id: "8F02", source: "永恒女王" }
+156.3 "王权残暴" Ability { id: "8F19", source: "永恒女王" }
+166.3 "强风" Ability { id: "8F04", source: "永恒女王" }
+169.4 "终端回收" Ability { id: "8F16", source: "永恒女王" } # Lock and Key
+
+178.5 "虚景切换" Ability { id: "8F00", source: "永恒女王" } window 178.5,10 # safe because it's a different ID
+188.7 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+194.8 "以太税" Ability { id: "8EFC", source: "永恒女王" }
+200.8 "王法无情" Ability { id: "8F1A", source: "永恒女王" }
+204.8 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+211.9 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+219.0 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+223.8 "终端回收" Ability { id: "8F16", source: "永恒女王" } # Lock and Key
+
+232.9 "诉诸武力" Ability { id: "8EFA", source: "永恒女王" }
+
+# From here we can either go to the Castellation phase,
+# or loop through a quick Force -> Force -> Buster -> Force
+# hold-pattern block.
+
+241.0 "虚景切换" StartsUsing { id: "8EFF", source: "永恒女王" } window 241.0,10 jump "castellationBlock"
+245.7 "虚景切换" Ability { id: "8EFF", source: "永恒女王" }
+
+248.1 label "castellationHold"
+248.1 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" } window 15,15
+251.2 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+259.2 "王土" Ability { id: "8EFB", source: "永恒女王" }
+276.3 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" }
+279.4 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+293.5 "诉诸武力" Ability { id: "8EFA", source: "永恒女王" }
+308.6 "合法武力" Ability { id: "8F20", source: "永恒女王" } window 20,20 forcejump "castellationHold"
+
+
+
+400.0 label "castellationBlock"
+400.0 "虚景切换" StartsUsing { id: "8EFF", source: "永恒女王" } window 175,10
+404.7 "虚景切换" Ability { id: "8EFF", source: "永恒女王" }
+412.8 "护城墙" Ability { id: "8F05", source: "永恒女王" }
+420.5 "激突" Ability { id: "8F08", source: "永恒女王" }
+430.2 "护城墙" Ability { id: "8F05", source: "永恒女王" }
+437.9 "激突" Ability { id: "8F08", source: "永恒女王" }
+446.3 "激突" Ability { id: "8F08", source: "永恒女王" }
+453.3 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" }
+456.4 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+468.5 "虚景切换" Ability { id: "8F00", source: "永恒女王" } window 100,10
+476.7 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+487.8 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" }
+490.9 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+495.8 "王权残暴" Ability { id: "8F19", source: "永恒女王" }
+498.9 "终端回收" Ability { id: "8F16", source: "永恒女王" } # Lock and Key
+
+# It's possible there's a loop here,
+# but across More Than Five logs, we haven't seen one.
+# Royal Domain doesn't seem to be option, but Prosecution Of War definitely is.
+510.0 "王土" Ability { id: "8EFB", source: "永恒女王" }
+512.1 "诉诸武力" Ability { id: "8EFA", source: "永恒女王" }
+
+# Absolute Authority madness
+# Seems to be at a 55-51% HP threshold?
+581.3 "绝对君权" StartsUsing { id: "9A6B", source: "永恒女王" } window 500,10
+600.0 "绝对君权" Ability { id: "9A6B", source: "永恒女王" }
+606.2 "绝对君权" Ability { id: "9A5E", source: "永恒女王" }
+610.3 "绝对君权 (放圈 1)" #Ability { id: "8F0E", source: "永恒女王" }
+610.6 "绝对君权" Ability { id: "9A5F", source: "永恒女王" }
+614.5 "空间掌控：制动" # LosesEffect { effectId: "1022" }
+614.5 "绝对君权 (放圈 2)" #Ability { id: "8F0E", source: "永恒女王" }
+617.7 "绝对君权" Ability { id: "8F10", source: "永恒女王" }
+618.9 "绝对君权 (放圈 3)" #Ability { id: "8F0E", source: "永恒女王" }
+620.3 "绝对君权 (全屏)" Ability { id: "8F0D", source: "永恒女王" }
+639.5 "分治法" Ability { id: "8F1C", source: "永恒女王" } duration 8
+651.1 "分治法 (全体)" #Ability { id: "8F1D", source: "永恒女王" }
+656.7 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+662.8 "以太税 (咏唱)" Ability { id: "8EFC", source: "永恒女王" }
+672.9 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+680.0 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+682.9 "王权残暴" Ability { id: "8F19", source: "永恒女王" }
+687.1 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+691.9 "终端回收" Ability { id: "8F16", source: "永恒女王" } window 30,20 # Lock and Key
+
+# A long two-part block loops until approximately 35%.
+# It is probable but uncertain that Sphene must complete all Regalia
+# and Divide And Conquer casts in this first section before phasing.
+# Yes, this block starts on a non-round number,
+# but it follows exactly on time from the Authority block.
+691.9 label "finalHold"
+699.1 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+707.1 "王权圆舞曲" Ability { id: "8F18", source: "永恒女王" }
+707.2 "诉诸武力" Ability { id: "8EFA", source: "永恒女王" }
+710.2 "王权圆舞曲 2" #Ability { id: "8F18", source: "永恒女王" }
+713.2 "王权圆舞曲 3" #Ability { id: "8F18", source: "永恒女王" }
+716.2 "王权圆舞曲 4" #Ability { id: "8F18", source: "永恒女王" }
+716.4 "分治法" Ability { id: "8F1C", source: "永恒女王" } duration 8
+719.1 "王权圆舞曲 5" #Ability { id: "8F18", source: "永恒女王" }
+722.1 "王权圆舞曲 6" #Ability { id: "8F18", source: "永恒女王" }
+725.2 "王权圆舞曲 7" #Ability { id: "8F18", source: "永恒女王" }
+728.1 "分治法" Ability { id: "8F1D", source: "永恒女王" }
+728.1 "王权圆舞曲 8" #Ability { id: "8F18", source: "永恒女王" }
+730.5 "终端回收" Ability { id: "8F16", source: "永恒女王" } window 20,30 # Lock and Key
+
+# If Sphene is pushed anywhere within this section,
+# she will immediately jump to her second Authority block.
+733.8 "王土" StartsUsing { id: "8EFB", source: "永恒女王" }
+738.5 "王土" Ability { id: "8EFB", source: "永恒女王" }
+753.6 "合法武力" Ability { id: ["8F1E", "8F1F", "8F20", "8F21"], source: "永恒女王" }
+756.7 "合法武力" Ability { id: ["8F22", "8F23"], source: "永恒女王" }
+766.8 "终端发射" Ability { id: "8F15", source: "永恒女王" }
+772.9 "以太税 (咏唱)" Ability { id: "8EFC", source: "永恒女王" }
+783.0 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+790.1 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+792.9 "王权残暴" Ability { id: "8F19", source: "永恒女王" }
+797.2 "以太税" Ability { id: ["8F31", "8F32", "8F33"], source: "永恒女王" }
+802.0 "终端回收" Ability { id: "8F16", source: "永恒女王" } forcejump "finalHold"
+
+
+# Second Absolute Authority is *probably* at a 35% HP threshold?
+900.0 "绝对君权" StartsUsing { id: "9A6B", source: "永恒女王" } window 230,10
+918.7 "绝对君权" Ability { id: "9A6B", source: "永恒女王" }
+924.9 "绝对君权" Ability { id: "9A5E", source: "永恒女王" }
+928.1 "绝对君权" Ability { id: "8F13", source: "永恒女王" }
+928.8 "--untargetable--"
+931.8 "黎明的群星" Ability { id: "98DE", source: "永恒女王" } window 1000,10
+
+# Wuk Lamat gives her Power Of Friendship speech
+
+# This first section of the end block is timed differently.
+1010.8 "--targetable--"
+1021.0 "王冠之力" Ability { id: "9C7A", source: "永恒女王" } window 500,10
+1028.1 "放逐射线" Ability { id: "8F24", source: "永恒女王" } duration 8
+1034.2 "放逐射线 (锥形 1)" #Ability { id: "8F27", source: "永恒女王" }
+1036.2 "放逐射线 (锥形 2)" #Ability { id: "8F27", source: "永恒女王" }
+1047.4 "放逐射线" Ability { id: "8F24", source: "永恒女王" } duration 8
+1053.5 "放逐射线 (锥形 1)" #Ability { id: "8F27", source: "永恒女王" }
+1055.5 "放逐射线 (锥形 2)" #Ability { id: "8F27", source: "永恒女王" }
+
+# So far we have no logs to verify this loop.
+# It's uncertain what will happen here,
+# since the delay between Diadem and Banishment here
+# fits with the dialogue. More data will be needed.
+1068.6 label "diademLoop"
+1068.6 "王冠之力" Ability { id: "9C7A", source: "永恒女王" }
+1093.9 "放逐射线" Ability { id: "8F24", source: "永恒女王" } duration 8
+1100.0 "放逐射线 (锥形 1)" #Ability { id: "8F27", source: "永恒女王" }
+1102.0 "放逐射线 (锥形 2)" #Ability { id: "8F27", source: "永恒女王" }
+1113.2 "放逐射线" Ability { id: "8F24", source: "永恒女王" } duration 8
+1119.3 "放逐射线 (锥形 1)" #Ability { id: "8F27", source: "永恒女王" }
+1121.3 "放逐射线 (锥形 2)" #Ability { id: "8F27", source: "永恒女王" }
+1134.4 "王冠之力" Ability { id: "9C7A", source: "永恒女王" } forcejump "diademLoop"
+
+# IGNORED ABILITIES
+# 8EFD Aethertithe -- Repeated light raidwide
+# 8F01 Downburst -- Point knockback cast
+# 8F03 Powerful Gust -- Side knockback cast
+# 8F06 Besiegement -- Unknown, something with the castle wall rush
+# 8F07 Besiegement -- Unknown, something with the castle wall rush
+# 8F09 Besiegement -- Unknown, something with the castle wall rush
+# 8F0A Besiegement -- Unknown, something with the castle wall rush
+# 8F0B Absolute Authority -- Self-cast for flares?
+# 8F0C Absolute Authority -- Repeated light raidwide
+# 8F14 Absolute Authority -- ???
+# 8F17 Waltz of the Regalia -- Targeted circles pre-cast
+# 8F25 Royal Banishment -- AoE
+# 8F30 --sync-- -- Auto-attack
+# 9A60 Absolute Authority -- Dorito marker failure
+# 9C7B Dynastic Diadem -- Donut AoE?
+
+# ALL ENCOUNTER ABILITIES
+# 8EFA Prosecution Of War -- Tank buster, non-splashing
+# 8EFC Aethertithe -- Pre-cast
+# 8EFD Aethertithe -- Repeated light raidwide
+# 8EFE Virtual Shift -- Arena change to X layout
+# 8EFF Virtual Shift -- Arena change to 2x rectangle layout
+# 8F00 Virtual Shift -- Arena change to standard layout
+# 8F01 Downburst -- Point knockback cast
+# 8F02 Downburst -- Point knockback
+# 8F03 Powerful Gust -- Side knockback cast
+# 8F04 Powerful Gust -- Side knockback
+# 8F05 Castellation -- Generate castle wall
+# 8F06 Besiegement -- Unknown, something with the castle wall rush
+# 8F07 Besiegement -- Unknown, something with the castle wall rush
+# 8F08 Besiegement -- Unknown, something with the castle wall rush
+# 8F09 Besiegement -- Unknown, something with the castle wall rush
+# 8F0A Besiegement -- Unknown, something with the castle wall rush
+# 8F0B Absolute Authority -- Self-cast for flares?
+# 8F0C Absolute Authority -- Repeated light raidwide
+# 8F0D Absolute Authority -- Final raidwide
+# 8F0E Absolute Authority -- Puddles
+# 8F0F Absolute Authority -- Acceleration Bomb; shows as a self-cast in the log
+# 8F10 Absolute Authority -- Cursed Shriek
+# 8F13 Absolute Authority -- Down for the Count
+# 8F14 Absolute Authority -- ???
+# 8F15 Coronation -- Pre-cast for circle/laser sections
+# 8F16 Lock and Key -- Phase change
+# 8F17 Waltz of the Regalia -- Targeted circles pre-cast
+# 8F18 Waltz of the Regalia -- Targeted circles
+# 8F19 Brutal Crown -- Dynamo AoE, centered on small robot helper
+# 8F1A Ruthless Regalia -- Tether laser
+# 8F1C Divide and Conquer -- Targeted laser castbar
+# 8F1D Divide and Conquer -- Targeted lasers
+# 8F1E Legitimate Force -- Left cleave, high hand, low left follow-up
+# 8F1F Legitimate Force -- Left cleave, high hand, low right follow-up
+# 8F20 Legitimate Force -- Right cleave, high hand, low right follow-up
+# 8F21 Legitimate Force -- Right cleave, high hand, low left follow-up
+# 8F22 Legitimate Force -- Left cleave, low hand
+# 8F23 Legitimate Force -- Right cleave, low hand
+# 8F24 Royal Banishment -- AoE + cones castbar
+# 8F25 Royal Banishment -- AoE
+# 8F27 Royal Banishment -- Cones (used for all instances)
+# 8F30 --sync-- -- Auto-attack
+# 8F31 Aethertithe -- Right conal cleave
+# 8F32 Aethertithe -- Center conal cleave
+# 8F33 Aethertithe -- Left conal cleave
+# 98DE Morning Stars -- Cutscene start?
+# 9A5E Absolute Authority -- Flare damage
+# 9A5F Absolute Authority -- Dorito marker
+# 9A60 Absolute Authority -- Dorito marker failure
+# 9A6B Absolute Authority -- self-cast for Absolute Authority phase
+# 9C7A Dynastic Diadem -- Donut AoE pre-cast?
+# 9C7B Dynastic Diadem -- Donut AoE?

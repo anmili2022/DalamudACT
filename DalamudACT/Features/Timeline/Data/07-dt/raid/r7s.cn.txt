@@ -1,0 +1,266 @@
+### AAC CRUISERWEIGHT M3 (SAVAGE)
+# ZoneId: 1261
+
+# -ii A55A A563 A564 A574 A577 A578 A57A A585 A589 A58C A58D A58F A591 A594 A595 A5A2 A5A4 A5A6 A5A7 A5A9 A5AB A5AC A5AD A5B2 A63C A63D A895 A94A
+# -it "Blooming Abomination" "Brute Abombinator"
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+10.5 "野蛮碎击" Ability { id: "A55B", source: "野蛮恨心" } duration 5.2
+23.1 "石制武器" Ability { id: ["A55D", "A55E"], source: "野蛮恨心" }
+32.0 "近侧挥打/远侧挥打" Ability { id: ["A55F", "A560"], source: "野蛮恨心" }
+33.0 "野蛮横扫" Ability { id: ["A561", "A562"], source: "野蛮恨心" }
+34.1 "野蛮挥打" Ability { id: ["A565", "A566"], source: "野蛮恨心" }
+43.3 "孢囊 (咏唱)" Ability { id: "A569", source: "野蛮恨心" }
+46.4 "--中间--" Ability { id: "A516", source: "野蛮恨心" }
+48.4 "孢囊" Ability { id: "A56A", source: "野蛮恨心" }
+52.8 "种弹播撒 (咏唱)" Ability { id: "A56D", source: "野蛮恨心" }
+53.9 "花粉" Ability { id: "A56B", source: "野蛮恨心" }
+56.0 "--adds targetable--"
+56.8 "种弹播撒 (圈 1)" #Ability { id: "A571", source: "野蛮恨心" }
+58.8 "种弹播撒 (圈 2)" #Ability { id: "A571", source: "野蛮恨心" }
+60.8 "种弹播撒" Ability { id: "A56E", source: "野蛮恨心" }
+60.8 "种弹播撒 (圈 3)" #Ability { id: "A571", source: "野蛮恨心" }
+62.8 "种弹播撒 (圈 4)" #Ability { id: "A571", source: "野蛮恨心" }
+65.4 "冲击" Ability { id: "A573", source: "野蛮恨心" }
+65.4 "荆棘缠缚" Ability { id: ["A56F", "A570"], source: "野蛮恨心" }
+70.7 "荆棘蔓延" Ability { id: "A572", source: "野蛮恨心" }
+78.4 "环形突风/交叉突风 (小怪)" #Ability { id: ["A90D", "A90E"], source: "恨心花芽" }
+90.2 "飓风 (小怪 enrage)" #Ability { id: "A56C", source: "恨心花芽" }
+93.4 "石化波动" Ability { id: "A575", source: "野蛮恨心" }
+105.4 "爆炸" Ability { id: "A576", source: "野蛮恨心" }
+108.0 "爆炸 2" #Ability { id: "A576", source: "野蛮恨心" }
+108.6 "石制武器" Ability { id: ["A55D", "A55E"], source: "野蛮恨心" }
+110.6 "爆炸 3" #Ability { id: "A576", source: "野蛮恨心" }
+117.5 "近侧挥打/远侧挥打" Ability { id: ["A55F", "A560"], source: "野蛮恨心" }
+118.5 "野蛮横扫" Ability { id: ["A561", "A562"], source: "野蛮恨心" }
+119.6 "野蛮挥打" Ability { id: ["A565", "A566"], source: "野蛮恨心" }
+127.3 "荆棘挥打" Ability { id: "A579", source: "野蛮恨心" }
+129.3 "荆棘波" Ability { id: "A57B", source: "野蛮恨心" }
+137.6 "--middle--" Ability { id: "A516", source: "野蛮恨心" }
+148.0 "新式超豪华野蛮大乱击" Ability { id: "A57C", source: "野蛮恨心" }
+148.0 "--untargetable--"
+158.6 "藤蔓攀附" Ability { id: "A57D", source: "野蛮恨心" }
+163.3 "--targetable--"
+170.4 "石制武器" Ability { id: ["A57F", "A580"], source: "野蛮恨心" }
+184.4 "野蛮横扫" Ability { id: ["A592", "A593"], source: "野蛮恨心" }
+189.2 "雷击" Ability { id: "A586", source: "野蛮恨心" }
+189.3 "野蛮怒视" Ability { id: "A94C", source: "野蛮恨心" }
+195.2 "荆棘领域" Ability { id: "A587", source: "野蛮恨心" }
+206.3 "荆棘生死战" Ability { id: "A588", source: "野蛮恨心" }
+210.4 "石制武器" Ability { id: ["A57F", "A580"], source: "野蛮恨心" }
+222.5 "野蛮电火花" Ability { id: "A894", source: "野蛮恨心" }
+231.6 "孢子云 (咏唱)" Ability { id: "A58A", source: "野蛮恨心" }
+237.6 "孢子云 1" #Ability { id: "A58B", source: "野蛮恨心" }
+239.6 "孢子云 2" #Ability { id: "A58B", source: "野蛮恨心" }
+241.6 "孢子云 3" #Ability { id: "A58B", source: "野蛮恨心" }
+246.8 "野蛮横扫" Ability { id: ["A592", "A593"], source: "野蛮恨心" }
+251.6 "雷击" Ability { id: "A586", source: "野蛮恨心" }
+251.7 "野蛮怒视" Ability { id: "A94C", source: "野蛮恨心" }
+257.6 "荆棘领域" Ability { id: "A587", source: "野蛮恨心" }
+266.7 "荆棘生死战：楼体" Ability { id: "A596", source: "野蛮恨心" }
+281.1 "野蛮电火花" Ability { id: "A894", source: "野蛮恨心" }
+288.1 "种弹炸裂 (咏唱)" Ability { id: "A597", source: "野蛮恨心" }
+294.2 "种弹炸裂" Ability { id: "A598", source: "野蛮恨心" }
+295.2 "石制武器" Ability { id: ["A57F", "A580"], source: "野蛮恨心" }
+298.9 "荆棘缠缚" Ability { id: ["A599", "A59A"], source: "野蛮恨心" }
+299.2 "种弹炸裂" Ability { id: "A598", source: "野蛮恨心" }
+303.9 "荆棘缠缚" Ability { id: ["A599", "A59A"], source: "野蛮恨心" }
+304.2 "种弹炸裂" Ability { id: "A598", source: "野蛮恨心" }
+308.9 "荆棘缠缚" Ability { id: ["A599", "A59A"], source: "野蛮恨心" }
+309.2 "种弹炸裂" Ability { id: "A598", source: "野蛮恨心" }
+313.9 "荆棘缠缚" Ability { id: ["A599", "A59A"], source: "野蛮恨心" }
+319.1 "种弹重击" Ability { id: "A59B", source: "野蛮恨心" }
+323.8 "荆棘缠缚" Ability { id: ["A59C", "A59D"], source: "野蛮恨心" }
+329.2 "野蛮横扫" Ability { id: ["A592", "A593"], source: "野蛮恨心" }
+334.0 "雷击" Ability { id: "A586", source: "野蛮恨心" }
+334.1 "野蛮怒视" Ability { id: "A94C", source: "野蛮恨心" }
+340.0 "荆棘领域" Ability { id: "A587", source: "野蛮恨心" }
+352.1 "强震冲" Ability { id: "A59E", source: "野蛮恨心" }
+352.1 "--untargetable--"
+369.5 "--targetable--"
+381.5 "野蛮碎击" Ability { id: "A55B", source: "野蛮恨心" } duration 6.2
+391.3 "--middle--" Ability { id: "A516", source: "野蛮恨心" }
+395.3 "双持石制武器" Ability { id: ["A5A0", "A5A1"], source: "野蛮恨心" }
+407.9 "野蛮横扫" Ability { id: ["A5A3", "A5A5"], source: "野蛮恨心" }
+409.0 "荆棘领域" Ability { id: "A639", source: "野蛮恨心" }
+415.0 "藤蔓碎颈臂" Ability { id: ["A5A8", "A5AA"], source: "野蛮恨心" }
+423.3 "野蛮横扫" Ability { id: ["A5A3", "A5A5"], source: "野蛮恨心" }
+426.3 "雷击" Ability { id: "A586", source: "野蛮恨心" }
+426.4 "野蛮怒视" Ability { id: "A95E", source: "野蛮恨心" }
+432.3 "野蛮冲" Ability { id: "A5AE", source: "野蛮恨心" }
+441.5 "野蛮碎击" Ability { id: "A55B", source: "野蛮恨心" } duration 7.2
+454.3 "石制武器" Ability { id: ["A55D", "A55E"], source: "野蛮恨心" }
+463.2 "近侧挥打/远侧挥打" Ability { id: ["A55F", "A560"], source: "野蛮恨心" }
+464.2 "野蛮横扫" Ability { id: ["A561", "A562"], source: "野蛮恨心" }
+465.3 "野蛮挥打" Ability { id: ["A565", "A566"], source: "野蛮恨心" }
+476.5 "荆棘生死战：墙面" Ability { id: "A5B0", source: "野蛮恨心" }
+481.6 "孢囊 (咏唱)" Ability { id: "A569", source: "野蛮恨心" }
+483.7 "--middle--" Ability { id: "A516", source: "野蛮恨心" }
+486.7 "孢囊" Ability { id: "A56A", source: "野蛮恨心" }
+492.3 "花粉" Ability { id: "A56B", source: "野蛮恨心" }
+494.4 "--adds targetable--"
+495.7 "种弹重击" Ability { id: "A59B", source: "野蛮恨心" }
+500.4 "荆棘缠缚" Ability { id: ["A59C", "A59D"], source: "野蛮恨心" }
+512.7 "石化波动" Ability { id: "A575", source: "野蛮恨心" }
+523.8 "种弹播撒 (咏唱)" Ability { id: "A56D", source: "野蛮恨心" }
+527.8 "种弹播撒 (圈 1)" #Ability { id: "A571", source: "野蛮恨心" }
+529.8 "种弹播撒 (圈 2)" #Ability { id: "A571", source: "野蛮恨心" }
+531.8 "种弹播撒" Ability { id: "A56E", source: "野蛮恨心" }
+531.8 "种弹播撒 (圈 3)" #Ability { id: "A571", source: "野蛮恨心" }
+533.8 "种弹播撒 (圈 4)" #Ability { id: "A571", source: "野蛮恨心" }
+538.4 "荆棘缠缚" Ability { id: ["A56F", "A570"], source: "野蛮恨心" }
+538.5 "荆棘蔓延" Ability { id: "A572", source: "野蛮恨心" }
+541.7 "荆棘挥打" Ability { id: "A579", source: "野蛮恨心" }
+543.7 "荆棘波" Ability { id: "A57B", source: "野蛮恨心" }
+550.0 "野蛮碎击" Ability { id: "A55B", source: "野蛮恨心" } duration 7.2
+567.7 "双持石制武器" Ability { id: ["A5A0", "A5A1"], source: "野蛮恨心" }
+573.6 "--middle--" Ability { id: "A516", source: "野蛮恨心" }
+579.6 "种弹炸裂 (咏唱)" Ability { id: "A90A", source: "野蛮恨心" }
+585.7 "种弹炸裂" Ability { id: "A598", source: "野蛮恨心" }
+590.4 "野蛮横扫" Ability { id: ["A5A3", "A5A5"], source: "野蛮恨心" }
+590.8 "荆棘缠缚" Ability { id: ["A599", "A59A"], source: "野蛮恨心" }
+595.4 "藤蔓碎颈臂" Ability { id: ["A5A8", "A5AA"], source: "野蛮恨心" }
+599.8 "种弹炸裂" Ability { id: "A598", source: "野蛮恨心" }
+604.7 "野蛮横扫" Ability { id: ["A5A3", "A5A5"], source: "野蛮恨心" }
+604.9 "荆棘缠缚" Ability { id: ["A599", "A59A"], source: "野蛮恨心" }
+611.2 "野蛮冲" Ability { id: "A5AE", source: "野蛮恨心" }
+617.4 "石制武器" Ability { id: ["A55D", "A55E"], source: "野蛮恨心" }
+626.3 "近侧挥打/远侧挥打" Ability { id: ["A55F", "A560"], source: "野蛮恨心" }
+627.3 "野蛮横扫" Ability { id: ["A561", "A562"], source: "野蛮恨心" }
+628.4 "野蛮挥打" Ability { id: ["A565", "A566"], source: "野蛮恨心" }
+637.4 "野蛮碎击" Ability { id: "A55B", source: "野蛮恨心" } duration 7.2
+653.3 "--middle--" Ability { id: "A516", source: "野蛮恨心" }
+665.6 "究极超豪华野蛮大乱击" Ability { id: "A5B1", source: "野蛮恨心" }
+665.6 "--untargetable--"
+669.5 "究极超豪华野蛮大乱击 (狂暴)" Ability { id: "A5B3", source: "野蛮恨心" }
+
+
+# IGNORED ABILITIES
+# A55A --sync--
+# A563 Brutish Swing
+# A564 Brutish Swing
+# A574 Impact
+# A577 Pulp Smash
+# A578 Pulp Smash
+# A57A It Came from the Dirt
+# A585 Glower Power
+# A589 Abominable Blink
+# A58C Brutish Swing
+# A58D Brutish Swing
+# A58F Brutish Swing
+# A591 Brutish Swing
+# A594 Brutish Swing
+# A595 Brutish Swing
+# A5A2 Brutish Swing
+# A5A4 Brutish Swing
+# A5A6 Brutish Swing
+# A5A7 Lashing Lariat
+# A5A9 Lashing Lariat
+# A5AB Brutish Swing
+# A5AC Brutish Swing
+# A5AD Slaminator
+# A5B2 Special Bombarian Special
+# A63C Brutish Swing
+# A63D Brutish Swing
+# A895 --sync--
+# A94A Glower Power
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# A516 --middle--
+# A55A --sync--
+# A55B Brutal Impact
+# A55C Brutal Impact
+# A55D Stoneringer
+# A55E Stoneringer
+# A55F Smash Here
+# A560 Smash There
+# A561 Brutish Swing
+# A562 Brutish Swing
+# A563 Brutish Swing
+# A564 Brutish Swing
+# A565 Brutal Smash
+# A566 Brutal Smash
+# A569 Spore Sac
+# A56A Spore Sac
+# A56B Pollen
+# A56C Hurricane Force - add enrage
+# A56D Sinister Seeds
+# A56E Sinister Seeds
+# A56F Tendrils of Terror
+# A570 Tendrils of Terror
+# A571 Sinister Seeds
+# A572 Roots of Evil
+# A573 Impact
+# A574 Impact
+# A575 Quarry Swamp
+# A576 Explosion
+# A577 Pulp Smash
+# A578 Pulp Smash
+# A579 Pulp Smash
+# A57A It Came from the Dirt
+# A57B The Unpotted
+# A57C Neo Bombarian Special
+# A57D Grappling Ivy
+# A57F Stoneringer
+# A580 Stoneringer
+# A585 Glower Power
+# A586 Electrogenetic Force
+# A587 Revenge of the Vines
+# A588 Thorny Deathmatch
+# A589 Abominable Blink
+# A58A Sporesplosion
+# A58B Sporesplosion
+# A58C Brutish Swing
+# A58D Brutish Swing
+# A58E Brutish Swing
+# A58F Brutish Swing
+# A591 Brutish Swing
+# A592 Brutish Swing
+# A593 Brutish Swing
+# A594 Brutish Swing
+# A595 Brutish Swing
+# A596 Demolition Deathmatch
+# A597 Strange Seeds
+# A598 Strange Seeds
+# A599 Tendrils of Terror
+# A59A Tendrils of Terror
+# A59B Killer Seeds
+# A59C Tendrils of Terror
+# A59D Tendrils of Terror
+# A59E Powerslam
+# A5A0 Stoneringer 2: Stoneringers
+# A5A1 Stoneringer 2: Stoneringers
+# A5A2 Brutish Swing
+# A5A3 Brutish Swing
+# A5A4 Brutish Swing
+# A5A5 Brutish Swing
+# A5A6 Brutish Swing
+# A5A7 Lashing Lariat
+# A5A8 Lashing Lariat
+# A5A9 Lashing Lariat
+# A5AA Lashing Lariat
+# A5AB Brutish Swing
+# A5AC Brutish Swing
+# A5AD Slaminator
+# A5AE Slaminator
+# A5B0 Debris Deathmatch
+# A5B1 Special Bombarian Special
+# A5B2 Special Bombarian Special
+# A5B3 Special Bombarian Special
+# A639 Revenge of the Vines
+# A63C Brutish Swing
+# A63D Brutish Swing
+# A894 Abominable Blink
+# A895 --sync--
+# A90A Strange Seeds
+# A90D Winding Wildwinds - add donut
+# A90E Crossing Crosswinds - add cross
+# A94A Glower Power
+# A94C Glower Power
+# A95E Glower Power

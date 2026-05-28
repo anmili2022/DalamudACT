@@ -1,0 +1,296 @@
+### 诗人的幻想诗：永远之暗
+# 副本区域ID: 1296
+
+# 忽略技能ID: AE09 AE0A AE11 AE12 AE13 AE1E AE30 AE32 AE34 AE35 AE39 AE3C AE3F AE47 AF13
+# 目标名: "永远之暗" "招死之手"
+# 预期同步点: AE3E:1005
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+7.6 "--sync--" StartsUsing { id: "AE30", source: "永远之暗" }
+14.4 "青之冲击 1" #Ability { id: "AE31", source: "永远之暗" }
+18.5 "青之冲击 2" #Ability { id: "AE31", source: "永远之暗" }
+
+# 死之恐惧 1
+# 死之恐惧咏唱时间约 4.7 秒，伤害快照前约有 0.3 秒动画延迟
+23.8 "--sync--" StartsUsing { id: "AE06", source: "永远之暗" }
+28.8 "死之恐惧" Ability { id: "AE06", source: "永远之暗" }
+31.8 "死之恐惧 (圈)" Ability { id: "AE07", source: "永远之暗" }
+34.6 "压溃" #Ability { id: "AE08", source: "招死之手" }
+39.9 "暗之死腕" Ability { id: "AE44", source: "永远之暗" }
+41.6 "暗气流" Ability { id: "AE0B", source: "永远之暗" }
+
+# 死亡警告 1
+52.3 "死亡警告" Ability { id: ["AE15", "AE16"], source: "永远之暗" } duration 11.1
+58.5 "压溃" Ability { id: "AE17", source: "招死之手" }
+59.4 "黑暗一击" Ability { id: "AE3A", source: "永远之暗" }
+
+69.5 "青魂" Ability { id: "AE0C", source: "永远之暗" }
+77.6 "青之二重波/青之四重波" Ability { id: ["AE0D", "AE0E"], source: "永远之暗" }
+78.8 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+78.9 "青之冲击" Ability { id: ["AE0F", "AE10"], source: "永远之暗" }
+
+# 死之恐惧 2
+84.6 "青魂" Ability { id: "AE0C", source: "永远之暗" }
+87.7 "--sync--" StartsUsing { id: "AE06", source: "永远之暗" }
+92.7 "死之恐惧" Ability { id: "AE06", source: "永远之暗" }
+95.7 "死之恐惧 (圈)" Ability { id: "AE07", source: "永远之暗" }
+98.5 "压溃" #Ability { id: "AE08", source: "招死之手" }
+102.8 "引导之翼" #Ability { id: "AE36", source: "永远之暗" }
+108.9 "压溃" #Ability { id: "AE17", source: "招死之手" }
+113.9 "青之冲击 1" Ability { id: "AE31", source: "永远之暗" }
+118.0 "青之冲击 2" Ability { id: "AE31", source: "永远之暗" }
+124.0 "青之二重波/青之四重波" Ability { id: ["AE0D", "AE0E"], source: "永远之暗" }
+125.2 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+125.3 "青之冲击" Ability { id: ["AE0F", "AE10"], source: "永远之暗" }
+
+# 大十字 1
+140.1 "大十字 (伤害)" Ability { id: "AE18", source: "永远之暗" }
+148.2 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+150.2 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+150.6 "大十字 (直线)" #Ability { id: "AE19", source: "青之魂块" }
+152.6 "大十字 (直线)" #Ability { id: "AE19", source: "青之魂块" }
+154.2 "放电 (塔)" Ability { id: "AE1D", source: "永远之暗" }
+154.2 "大十字 (分散)" Ability { id: "AE1C", source: "永远之暗" }
+157.2 "大十字 (直线)" Ability { id: "AE19", source: "青之魂块" }
+161.2 "大十字 (直线)" Ability { id: "AE19", source: "青之魂块" }
+163.9 "大十字 (直线)" Ability { id: "AE19", source: "青之魂块" }
+165.1 "放电 (塔)" Ability { id: "AE1D", source: "永远之暗" }
+165.1 "大十字 (分散)" Ability { id: "AE1C", source: "永远之暗" }
+172.1 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+173.8 "大十字 (斜角)" Ability { id: "AE1A", source: "青之魂块" }
+174.1 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+184.0 "中子环 (咏唱)" Ability { id: "AE1F", source: "永远之暗" }
+186.7 "中子环 (伤害)" Ability { id: "AE20", source: "永远之暗" }
+
+# 小怪阶段
+199.4 "死之恐惧 (圈)" Ability { id: "AE21", source: "永远之暗" }
+200.1 "--targetable--"
+201.4 "--untargetable--"
+206.5 "压溃 (直线)" duration 37.5 #Ability { id: "AE23", source: "招死之手" }
+207.3 "死之恐惧 (圈)" Ability { id: "AE21", source: "永远之暗" }
+207.9 "--targetable--"
+215.4 "死之恐惧 (圈)" Ability { id: "AE21", source: "永远之暗" }
+216.0 "--targetable--"
+
+# 单人阶段
+250.7 "永远之暗" Ability { id: "AE24", source: "永远之暗" } window 250.7,30
+257.1 "永远之暗" Ability { id: "AE25", source: "永远之暗" }
+260.8 "死之泛滥" Ability { id: "AE27", source: "永远之暗" }
+270.5 "小怪生成" AddedCombatant { npcBaseId: "18701" } window 10,10 jump "solo-phase-dps"
+270.5 "--sync--" AddedCombatant { npcBaseId: "18702" } window 10,10 jump "solo-phase-healer"
+270.5 "--sync--" AddedCombatant { npcBaseId: "18703" } window 10,10 jump "solo-phase-tank"
+
+400.0 label "solo-phase-dps"
+405.5 "压溃" Ability { id: "AE28", source: "招死之手" } window 20,20
+410.6 "压溃" Ability { id: "AE28", source: "招死之手" }
+415.7 "压溃" Ability { id: "AE28", source: "招死之手" }
+420.8 "压溃" Ability { id: "AE28", source: "招死之手" }
+425.9 "压溃" Ability { id: "AE28", source: "招死之手" }
+431.0 "压溃" Ability { id: "AE28", source: "招死之手" }
+436.1 "压溃" Ability { id: "AE28", source: "招死之手" }
+441.2 "压溃" Ability { id: "AE28", source: "招死之手" }
+446.3 "压溃" Ability { id: "AE28", source: "招死之手" }
+
+600.0 label "solo-phase-healer"
+605.5 "撕破" Ability { id: "AE2C", source: "招死之手" } window 20,20
+612.6 "死缠" Ability { id: "AE2D", source: "招死之手" }
+618.7 "压溃" Ability { id: "AE2E", source: "招死之手" }
+624.8 "压溃" Ability { id: "AE2E", source: "招死之手" }
+630.9 "压溃" Ability { id: "AE2E", source: "招死之手" }
+637.0 "压溃" Ability { id: "AE2E", source: "招死之手" }
+643.1 "压溃" Ability { id: "AE2E", source: "招死之手" }
+649.2 "压溃" Ability { id: "AE2E", source: "招死之手" }
+
+800.0 label "solo-phase-tank"
+805.5 "--sync--" StartsUsing { id: "AE2A", source: "招死之手" }
+# 散布 is interruptible, might not go off, so no sync
+810.2 "散布" #StartsUsing { id: "AE2A", source: "招死之手" }
+817.6 "压溃" Ability { id: "AE2B", source: "招死之手" }
+824.7 "压溃" Ability { id: "AE2B", source: "招死之手" }
+831.8 "压溃" Ability { id: "AE2B", source: "招死之手" }
+838.9 "压溃" Ability { id: "AE2B", source: "招死之手" }
+846.0 "压溃" Ability { id: "AE2B", source: "招死之手" }
+
+# P2 开始
+1000.0 "--sync--" StartsUsing { id: "AE3E", source: "永远之暗" } window 1000,0
+1005.0 "黑暗巨腕" Ability { id: "AE3E", source: "永远之暗" }
+1013.1 "引导之翼" Ability { id: "AE36", source: "永远之暗" }
+1019.2 "压溃" #Ability { id: "AE17", source: "招死之手" }
+1021.1 "暗之死腕" Ability { id: "AE44", source: "永远之暗" }
+1022.8 "暗气流" Ability { id: "AE0B", source: "永远之暗" }
+
+# 青之连魂 1
+1044.5 "青之连魂" Ability { id: "AE14", source: "永远之暗" }
+1050.6 "灵魂轮转" Ability { id: "AE42", source: "永远之暗" }
+1061.7 "二重青之波潮/四重青之波潮" Ability { id: ["B06F", "B070"], source: "永远之暗" }
+1062.9 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1065.8 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1068.7 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1071.6 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1071.7 "青之冲击" Ability { id: ["AE0F", "AE10"], source: "永远之暗" }
+
+# 青之环波 1
+1082.5 "青之环波" Ability { id: "AE37", source: "永远之暗" }
+1092.6 "青之环波 1" Ability { id: "AE38", source: "青之魂块" }
+1093.2 "黑暗巨腕" Ability { id: "AE3E", source: "永远之暗" }
+1097.6 "青之环波 2" Ability { id: "AE38", source: "青之魂块" }
+1102.6 "青之环波 3" Ability { id: "AE38", source: "青之魂块" }
+1103.8 "青魂" Ability { id: "AE0C", source: "永远之暗" }
+1107.7 "青之环波 4" Ability { id: "AE38", source: "青之魂块" }
+1112.7 "青之环波 5" Ability { id: "AE38", source: "青之魂块" }
+1118.0 "青之二重波/青之四重波" Ability { id: ["AE0D", "AE0E"], source: "永远之暗" }
+1119.2 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1119.3 "青之冲击" Ability { id: ["AE0F", "AE10"], source: "永远之暗" }
+
+# 群体恐慌
+1131.1 "群体恐慌" Ability { id: "AE33", source: "永远之暗" }
+1138.2 "死亡警告" Ability { id: ["AE15", "AE16"], source: "永远之暗" } duration 11.1
+1144.3 "压溃" Ability { id: "AE17", source: "招死之手" }
+1149.8 "青之冲击 1" Ability { id: "AE31", source: "永远之暗" }
+1153.9 "青之冲击 2" Ability { id: "AE31", source: "永远之暗" }
+1161.0 "暗之死腕" Ability { id: "AE44", source: "永远之暗" }
+1162.7 "暗气流" Ability { id: "AE0B", source: "永远之暗" }
+
+# 青之连魂 2
+1183.3 "青之连魂" Ability { id: "AE14", source: "永远之暗" }
+1189.4 "灵魂轮转" Ability { id: "AE42", source: "永远之暗" }
+1200.5 "二重青之波潮/四重青之波潮" Ability { id: ["B06F", "B070"], source: "永远之暗" }
+1201.7 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1204.6 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1207.5 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1210.4 "青之波动" Ability { id: ["AE40", "B07F", "B080", "B081"], source: "永远之暗" }
+1210.5 "青之冲击" Ability { id: ["AE0F", "AE10"], source: "永远之暗" }
+
+# 死之恐惧 3
+1212.2 "--sync--" StartsUsing { id: "AE06", source: "永远之暗" }
+1217.2 "死之恐惧" Ability { id: "AE06", source: "永远之暗" }
+1220.2 "死之恐惧 (圈)" Ability { id: "AE07", source: "永远之暗" }
+1223.0 "压溃" #Ability { id: "AE08", source: "招死之手" }
+
+# 青之环波 2
+1228.2 "青之环波" Ability { id: "AE37", source: "永远之暗" }
+1236.3 "黑暗巨腕" Ability { id: "AE3E", source: "永远之暗" }
+1238.3 "青之环波 1" Ability { id: "AE38", source: "青之魂块" }
+1243.3 "青之环波 2" Ability { id: "AE38", source: "青之魂块" }
+1246.1 "黑暗巨腕" Ability { id: "AE3E", source: "永远之暗" }
+1248.3 "青之环波 3" Ability { id: "AE38", source: "青之魂块" }
+1253.3 "青之环波 4" Ability { id: "AE38", source: "青之魂块" }
+
+# 死亡警告 2
+1260.6 "死亡警告" Ability { id: ["AE15", "AE16"], source: "永远之暗" } duration 11.1
+1266.8 "压溃" Ability { id: "AE17", source: "招死之手" }
+1267.7 "黑暗一击" Ability { id: "AE3A", source: "永远之暗" }
+1275.8 "暗之死腕" Ability { id: "AE44", source: "永远之暗" }
+1277.5 "暗气流" Ability { id: "AE0B", source: "永远之暗" }
+
+# 大十字 2
+1289.2 "大十字 (伤害)" Ability { id: "AE18", source: "永远之暗" }
+1297.3 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+1299.3 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+1299.7 "大十字 (直线)" #Ability { id: "AE19", source: "青之魂块" }
+1301.7 "大十字 (直线)" #Ability { id: "AE19", source: "青之魂块" }
+1303.3 "放电 (塔)" Ability { id: "AE1D", source: "永远之暗" }
+1303.3 "大十字 (分散)" Ability { id: "AE1C", source: "永远之暗" }
+1306.4 "大十字 (直线)" Ability { id: "AE19", source: "青之魂块" }
+1310.4 "大十字 (直线)" Ability { id: "AE19", source: "青之魂块" }
+1313.2 "大十字 (直线)" Ability { id: "AE19", source: "青之魂块" }
+1314.4 "放电 (塔)" Ability { id: "AE1D", source: "永远之暗" }
+1314.4 "大十字 (分散)" Ability { id: "AE1C", source: "永远之暗" }
+1321.4 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+1323.1 "大十字" Ability { id: "AE1A", source: "青之魂块" }
+1323.4 "大十字 (圈)" #Ability { id: "AE1B", source: "永远之暗" }
+1333.3 "中子环 (咏唱)" Ability { id: "AE1F", source: "永远之暗" }
+1336.0 "中子环 (伤害)" Ability { id: "AE20", source: "永远之暗" }
+
+1355.6 "永远之暗 (狂暴)" Ability { id: "AE45", source: "永远之暗" }
+
+
+# IGNORED ABILITIES
+# AE09 暗之死腕: Boss castbar, doesn't match with actual snapshot from hands
+# AE0A 暗之死腕: Boss castbar, doesn't match with actual snapshot from hands
+# AE11 青之波动: Animation only
+# AE12 青之波动: Animation only
+# AE13 青之波动: Animation only
+# AE1E Electrify: Tower explosion/failure
+# AE30 青之冲击: Fake cast
+# AE32 青之冲击: Fake cast
+# AE34 散布: Tower failure during 群体恐慌
+# AE35 引导之翼: Boss cast, doesn't match with actual snapshot
+# AE39 黑暗一击: Boss castbar, doesn't match with actual snapshot from hands
+# AE3C --sync--: Dount during 大十字
+# AE3F 青之波动: Animation only
+# AE47 --sync--: Autoattack
+# AF13 Macabre Mark: Timing varies, damage from resolving towers
+
+# ALL ENCOUNTER ABILITIES
+# AE06 死之恐惧
+# AE07 死之恐惧
+# AE08 压溃
+# AE09 暗之死腕
+# AE0A 暗之死腕
+# AE0B 暗气流
+# AE0C 青魂
+# AE0D 青之二重波
+# AE0E 青之四重波
+# AE0F 青之冲击
+# AE10 青之冲击
+# AE11 青之波动
+# AE12 青之波动
+# AE13 青之波动
+# AE14 青之连魂
+# AE15 死亡警告: Spawns a middle line that gives bleed.
+# Technically the line becomes active 1.1s after the ability line, and lasts for 10s after that,
+# but adding an extra timeline entry for the duration portion is excessive
+# AE16 死亡警告
+# AE17 压溃
+# AE18 大十字
+# AE19 大十字
+# AE1A 大十字
+# AE1B 大十字
+# AE1C 大十字
+# AE1D 放电
+# AE1E Electrify
+# AE1F 中子环
+# AE20 中子环
+# AE21 死之恐惧
+# AE22 击溃
+# AE23 压溃
+# AE24 永远之暗
+# AE25 永远之暗
+# AE27 死之泛滥
+# AE28 压溃
+# AE2C 撕破
+# AE2D 死缠
+# AE2E 压溃
+# AE2F Invitation
+# AE30 青之冲击
+# AE31 青之冲击
+# AE32 青之冲击
+# AE33 群体恐慌
+# AE34 散布
+# AE35 引导之翼
+# AE36 引导之翼
+# AE37 青之环波
+# AE38 青之环波
+# AE39 黑暗一击
+# AE3A 黑暗一击
+# AE3C --sync--
+# AE3E 黑暗巨腕
+# AE3F 青之波动
+# AE40 青之波动
+# AE42 灵魂轮转
+# AE44 暗之死腕
+# AE45 永远之暗
+# AE47 --sync--
+# AF12 Invitation
+# AF13 Macabre Mark
+# B06F 二重青之波潮
+# B070 四重青之波潮
+# B07F 青之波动
+# B080 青之波动
+# B081 青之波动

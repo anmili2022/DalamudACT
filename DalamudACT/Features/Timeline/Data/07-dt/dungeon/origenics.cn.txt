@@ -1,0 +1,220 @@
+### ORIGENICS
+# ZoneId: 1208
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~#
+# Herpekaris #
+#~~~~~~~~~~~~#
+
+# -ii 8E71 8E72 8E73 8E7A
+# -p 8EA7:1011.1
+
+# The Resource Transport Elevator will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "139C" } window 1000,1
+1006.1 "刺耳尖叫" StartsUsing { id: "8EA7", source: "赫尔佩伽里斯" }
+1011.1 "刺耳尖叫" Ability { id: "8EA7", source: "赫尔佩伽里斯" }
+1017.3 "--north--" Ability { id: "8EA8", source: "赫尔佩伽里斯" }
+1021.7 "毒液喷射" Ability { id: "8E6B", source: "赫尔佩伽里斯" }
+1022.8 "毒液块" Ability { id: "8E6C", source: "赫尔佩伽里斯" }
+# combine Venomspill + Pod Burst, which happen at the same time
+1029.8 "毒液飞散" Ability { id: "9676", source: "赫尔佩伽里斯" }
+1034.9 "毒液飞散" Ability { id: "9677", source: "赫尔佩伽里斯" }
+1039.9 "毒液飞散" Ability { id: "9677", source: "赫尔佩伽里斯" }
+1045.0 "毒液飞散" Ability { id: "9677", source: "赫尔佩伽里斯" }
+
+# begin loop
+1049.2 "--center--" Ability { id: "8EA8", source: "赫尔佩伽里斯" }
+1059.5 "嚣张跋扈" Ability { id: "8E6F", source: "赫尔佩伽里斯" }
+1059.8 "右侧横扫/左侧横扫/后方横扫 1" #Ability { id: ["8E75", "8E76", "8E77"], source: "赫尔佩伽里斯" } window 1.5,1.5
+1061.8 "右侧横扫/左侧横扫/后方横扫 2" #Ability { id: ["8E75", "8E76", "8E77"], source: "赫尔佩伽里斯" } window 1.5,1.5
+1063.8 "右侧横扫/左侧横扫/后方横扫 3" #Ability { id: ["8E75", "8E76", "8E77"], source: "赫尔佩伽里斯" } window 1.5,1.5
+1071.9 "刺耳尖叫" Ability { id: "8EA7", source: "赫尔佩伽里斯" }
+1079.1 "--north--" Ability { id: "8EA8", source: "赫尔佩伽里斯" }
+1083.5 "毒液喷射" Ability { id: "8E6B", source: "赫尔佩伽里斯" }
+1084.6 "毒液块" Ability { id: "8E6C", source: "赫尔佩伽里斯" }
+1091.6 "毒液飞散" Ability { id: "9676", source: "赫尔佩伽里斯" }
+1096.6 "毒液飞散" Ability { id: "9677", source: "赫尔佩伽里斯" }
+1101.7 "毒液飞散" Ability { id: "9677", source: "赫尔佩伽里斯" }
+1106.7 "毒液飞散" Ability { id: "9677", source: "赫尔佩伽里斯" }
+1109.4 "毒液块 (分散)" Ability { id: "9421", source: "赫尔佩伽里斯" }
+1119.6 "念力波动" Ability { id: "8E79", source: "赫尔佩伽里斯" }
+1128.7 "刺耳尖叫" Ability { id: "8EA7", source: "赫尔佩伽里斯" }
+1137.9 "殴打" Ability { id: "8EA6", source: "赫尔佩伽里斯" }
+1149.0 "--center--" Ability { id: "8EA8", source: "赫尔佩伽里斯" } forcejump 1049.2
+
+# IGNORED ABILITIES
+# 8E71 --sync-- (telegraph of Right Sweep)
+# 8E72 --sync-- (telegraph of Left Sweep)
+# 8E73 --sync-- (telegraph of Rear Sweep)
+# 8E7A --sync-- (vfx)
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 8E64 Venomspill
+# 8E65 Venomspill
+# 8E66 Venomspill
+# 8E6B Vasoconstrictor
+# 8E6C Poison Heart
+# 8E6F Writhing Riot
+# 8E71 --sync-- (telegraph of Right Sweep)
+# 8E72 --sync-- (telegraph of Left Sweep)
+# 8E73 --sync-- (telegraph of Rear Sweep)
+# 8E75 Right Sweep
+# 8E76 Left Sweep
+# 8E77 Rear Sweep
+# 8E79 Collective Agony
+# 8E7A --sync-- (vfx)
+# 8EA6 Convulsive Crush
+# 8EA7 Strident Shriek
+# 8EA8 --sync-- (jump)
+# 924B Venomspill
+# 9421 Poison Heart
+# 9676 Pod Burst
+# 9677 Pod Burst
+
+#~~~~~~~~~~#
+# Deceiver #
+#~~~~~~~~~~#
+
+# -ii 8E10 8E11 8E14 8E0D 8E4A 9797 8E0F
+# -p 8E13:2012.1
+
+# The Surveillance Room will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A0" } window 2000,1
+2007.1 "雷转质波动" StartsUsing { id: "8E13", source: "欺骗者" }
+2012.1 "雷转质波动" Ability { id: "8E13", source: "欺骗者" }
+2018.3 "--center--" Ability { id: "8E0A", source: "欺骗者" }
+2028.6 "回旋臂" Ability { id: "8E12", source: "欺骗者" }
+2037.8 "启动援护模块" Ability { id: "8E0B", source: "欺骗者" }
+2051.9 "齐射" Ability { id: "8E15", source: "创生哨兵G9" }
+2069.9 "--center--" Ability { id: "8E0A", source: "欺骗者" }
+2076.2 "启动炮塔" Ability { id: "8E0C", source: "欺骗者" }
+2087.0 "激光炮" Ability { id: "8E0E", source: "欺骗者" }
+2099.3 "激光炮" Ability { id: "8E0E", source: "欺骗者" }
+2100.4 "--north--" Ability { id: "8E0A", source: "欺骗者" }
+2111.3 "急进电涌" Ability { id: "9B38", source: "欺骗者" }
+2113.7 "雷转质射线" Ability { id: "95B0", source: "欺骗者" }
+
+# begin loop
+2120.9 "启动援护模块" Ability { id: "8E0B", source: "欺骗者" }
+2125.0 "--center--" Ability { id: "8E0A", source: "欺骗者" }
+2135.1 "齐射" Ability { id: "8E15", source: "创生哨兵G9" }
+2153.4 "--center--" Ability { id: "8E0A", source: "欺骗者" }
+2159.6 "启动炮塔" Ability { id: "8E0C", source: "欺骗者" }
+2170.4 "激光炮" Ability { id: "8E0E", source: "欺骗者" }
+2182.6 "激光炮" Ability { id: "8E0E", source: "欺骗者" }
+2183.7 "--north--" Ability { id: "8E0A", source: "欺骗者" }
+2194.5 "急进电涌" Ability { id: "9B38", source: "欺骗者" }
+2196.9 "雷转质射线" Ability { id: "95B0", source: "欺骗者" }
+2209.0 "雷转质波动" Ability { id: "8E13", source: "欺骗者" }
+2220.1 "启动援护模块" Ability { id: "8E0B", source: "欺骗者" } forcejump 2120.9
+
+# IGNORED ABILITIES
+# 8E0D Initialize Turrets (vfx; real turret)
+# 8E0F Surge (vfx)
+# 8E10 Bionic Thrash (cast)
+# 8E11 Bionic Thrash (cast)
+# 8E14 Synchroshot (fake android cleave; concurrent with 8E15)
+# 8E4A --sync-- (vfx; flickering turrent)
+# 9797 レーザーガン (fake turret cleave)
+
+# ALL ENCOUNTER ABILITIES
+# 366 attack
+# 369 attack
+# 8E0A --sync-- (jump)
+# 8E0B Initialize Androids
+# 8E0C Initialize Turrets
+# 8E0D Initialize Turrets (vfx; real turret)
+# 8E0E Laser Lash
+# 8E0F Surge (vfx)
+# 8E10 Bionic Thrash (cast)
+# 8E11 Bionic Thrash (cast)
+# 8E12 Bionic Thrash (damage)
+# 8E13 Electrowave
+# 8E14 Synchroshot (fake android cleave; concurrent with 8E15)
+# 8E15 Synchroshot
+# 8E4A --sync-- (vfx; flickering turrent)
+# 95B0 Electray
+# 9797 レーザーガン
+# 9B38 Surge
+
+#~~~~~~~~~~~~~~~~~~~~~~~~#
+# Ambrose the Undeparted #
+#~~~~~~~~~~~~~~~~~~~~~~~~#
+
+# -ii 8E4B 8E51 8E52 98A0 9829 8E4E
+# -p 8E54:3011.1
+
+# The Enhancement Testing Grounds will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A2" } window 3000,1
+3006.1 "念动波" StartsUsing { id: "8E54", source: "实验体安布罗斯" }
+3011.1 "念动波" Ability { id: "8E54", source: "实验体安布罗斯" }
+3017.3 "--center--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3024.4 "压制强攻" Ability { id: "9941", source: "实验体安布罗斯" }
+3030.6 "--北边中央--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3043.5 "念动反应" Ability { id: "8E4C", source: "实验体安布罗斯" }
+3062.7 "--center--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3071.8 "念动力场" Ability { id: "8E50", source: "实验体安布罗斯" }
+3082.9 "电击斩" Ability { id: "8E55", source: "实验体安布罗斯" }
+3085.0 "--center--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3094.1 "念动压制" Ability { id: "988F", source: "实验体安布罗斯" }
+3096.2 "压制强攻" Ability { id: "8E53", source: "实验体安布罗斯" }
+3102.4 "--north--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3111.4 "雷枪投掷" Ability { id: "8E4D", source: "实验体安布罗斯" }
+3122.7 "念动反应" Ability { id: "9811", source: "实验体安布罗斯" }
+3123.4 "突进" #Ability { id: "982A", source: "雷枪" } duration 4.5
+3130.3 "雷枪收回" Ability { id: "8E4F", source: "实验体安布罗斯" }
+3137.4 "--北边中央--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3149.5 "念动反应" Ability { id: "8E4C", source: "实验体安布罗斯" }
+3151.4 "念动涡旋" Ability { id: "8E56", source: "实验体安布罗斯" }
+3173.7 "念动波" Ability { id: "8E54", source: "实验体安布罗斯" }
+
+# begin loop
+3179.9 "--center--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3189.3 "念动压制" Ability { id: "988F", source: "实验体安布罗斯" }
+3191.3 "压制强攻" Ability { id: "8E53", source: "实验体安布罗斯" }
+3194.0 "念动涡旋" Ability { id: "8E56", source: "实验体安布罗斯" }
+3209.6 "念动波" Ability { id: "8E54", source: "实验体安布罗斯" }
+3216.8 "--north--" Ability { id: "8E57", source: "实验体安布罗斯" }
+3225.7 "雷枪投掷" Ability { id: "8E4D", source: "实验体安布罗斯" }
+3237.0 "念动反应" Ability { id: "9811", source: "实验体安布罗斯" }
+3237.7 "突进" #Ability { id: "982A", source: "雷枪" } duration 4.5
+3244.6 "雷枪收回" Ability { id: "8E4F", source: "实验体安布罗斯" }
+3257.6 "电击斩" Ability { id: "8E55", source: "实验体安布罗斯" }
+3264.7 "--center--" Ability { id: "8E57", source: "实验体安布罗斯" } forcejump 3179.9
+
+# IGNORED ABILITIES
+# 8E4B Psychokinesis (cast; concurrent with 8E4C)
+# 8E4E Electrolance Assimilation (vfx)
+# 8E51 Extrasensory Expulsion (concurrent with 8E50/988F)
+# 8E52 Extrasensory Expulsion (concurrent with 8E50/988F)
+# 9829 --sync-- (vfx - lance telegraphs)
+# 98A0 Overwhelming Charge (damage / concurrent with 8E53)
+
+# ALL ENCOUNTER ABILITIES
+# 366 attack
+# 368 attack
+# 8E4B Psychokinesis (cast; concurrent with 8E4C)
+# 8E4C Psychokinesis
+# 8E4D Electrolance
+# 8E4E Electrolance Assimilation (vfx)
+# 8E4F Electrolance Assimilation
+# 8E50 Extrasensory Field (first use; no frontal cleave)
+# 8E51 Extrasensory Expulsion (concurrent with 8E50/988F)
+# 8E52 Extrasensory Expulsion (concurrent with 8E51)
+# 8E53 Overwhelming Charge
+# 8E54 Psychic Wave
+# 8E55 Voltaic Slash
+# 8E56 Whorl of the Mind
+# 8E57 --sync-- (jump)
+# 9811 Psychokinesis
+# 9829 --sync-- (vfx - lance telegraphs)
+# 982A Rush
+# 988F Psychokinetic Charge
+# 98A0 Overwhelming Charge (damage / concurrent with 8E53)
+# 9941 Overwhelming Charge

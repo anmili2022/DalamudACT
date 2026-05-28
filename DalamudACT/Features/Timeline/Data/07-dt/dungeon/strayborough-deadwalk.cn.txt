@@ -1,0 +1,196 @@
+### THE STRAYBOROUGH DEADWALK
+# ZoneId: 4
+
+hideall "--Reset--"
+hideall "--sync--"
+
+
+#~~~~~~~~~~~#
+# LEONOGG 1 #
+#~~~~~~~~~~~#
+
+# -ii 8EB6 9B04 8EB7 8EB5 8EB8 8EBD
+
+# Friendship Round will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13F2" } window 1000,1
+1011.1 "邪雾" Ability { id: "8EB1", source: "好脑袋大王" }
+1018.2 "噩梦降临 (咏唱)" Ability { id: "8EAE", source: "好脑袋大王" }
+1023.2 "噩梦降临 (砸下)" #Ability { id: "8EB4", source: "好脑袋" }
+1025.2 "痴迷" Ability { id: "8EB0", source: "好脑袋大王" } # Morbid Fascination
+1035.6 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" }
+1041.7 "突击命令" Ability { id: "8EF6", source: "好脑袋大王" }
+1053.9 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
+1061.7 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
+1070.4 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" }
+1075.5 "突击命令" Ability { id: "8EF6", source: "好脑袋大王" }
+1082.7 "噩梦逼近" Ability { id: "9B05", source: "好脑袋大王" } # Looming Nightmare
+1084.7 "噩梦逼近" Ability { id: "9B06", source: "好脑袋大王" }
+1086.4 "噩梦逼近 2" #Ability { id: "9B07", source: "好脑袋大王" }
+1088.0 "噩梦逼近 3" #Ability { id: "9B07", source: "好脑袋大王" }
+1089.6 "噩梦逼近 4" #Ability { id: "9B07", source: "好脑袋大王" }
+1091.2 "噩梦逼近 5" #Ability { id: "9B07", source: "好脑袋大王" }
+
+1103.4 label "leonoggLoop"
+1103.4 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" }
+1108.5 "突击命令" Ability { id: "8EF6", source: "好脑袋大王" }
+1115.7 "尖啸" Ability { id: "8EB2", source: "好脑袋大王" }
+1117.5 "尖啸 2" #Ability { id: "8EB3", source: "好脑袋大王" }
+1119.2 "尖啸 3" #Ability { id: "8EB3", source: "好脑袋大王" }
+1126.2 "噩梦逼近" Ability { id: "9B05", source: "好脑袋大王" }
+1128.2 "噩梦逼近" Ability { id: "9B06", source: "好脑袋大王" }
+1129.9 "噩梦逼近 2" #Ability { id: "9B07", source: "好脑袋大王" }
+1131.5 "噩梦逼近 3" #Ability { id: "9B07", source: "好脑袋大王" }
+1133.1 "噩梦逼近 4" #Ability { id: "9B07", source: "好脑袋大王" }
+1139.5 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
+1147.3 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
+1151.3 "邪雾" Ability { id: "8EB1", source: "好脑袋大王" }
+1160.0 "噩梦降临 (咏唱)" Ability { id: "8EAE", source: "好脑袋大王" }
+1165.0 "噩梦降临 (砸下)" #Ability { id: "8EB4", source: "好脑袋" }
+1172.1 "邪雾" Ability { id: "8EB1", source: "好脑袋大王" }
+
+1182.7 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" } window 30,30 forcejump "leonoggLoop"
+
+# IGNORED ABILITIES
+# 8EB5 --sync-- Unknown
+# 8EB6 --sync-- Unknown. Used constantly through the encounter
+# 8EB7 Overattachment -- Collision with noble add
+# 8EB8 Falling Nightmare -- Falling heads, from noble add collision
+# 8EBD Scream -- Unknown. Possibly effects from the pizza slices?
+# 9B04 Evil Scheme -- Exaflare puddles
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 8EAE Falling Nightmare -- Summon falling heads
+# 8EAF Team Spirit -- Summon noble adds
+# 8EB0 Morbid Fascination -- Unknown. Possibly boss black heart animation?
+# 8EB1 Malicious Mist -- Raidwide
+# 8EB2 Scream -- Pizza slice castbar
+# 8EB3 Scream -- Pizza slice ground effects
+# 8EB4 Falling Nightmare -- Falling heads, from summon
+# 8EB5 --sync-- Unknown
+# 8EB6 --sync-- Unknown. Used constantly through the encounter
+# 8EB7 Overattachment -- Collision with noble add
+# 8EB8 Falling Nightmare -- Falling heads, from noble add collision
+# 8EBD Scream -- Unknown. Possibly effects from the pizza slices?
+# 8EF6 Spirited Charge -- Activate noble adds
+# 9B02 Evil Scheme -- Exaflare castbar
+# 9B03 Evil Scheme -- Exaflare floor markers
+# 9B04 Evil Scheme -- Exaflare puddles
+# 9B05 Looming Nightmare -- Chasing AoE castbar
+# 9B06 Looming Nightmare -- Initial chasing AoE
+# 9B07 Looming Nightmare -- Chasing AoE repeated
+
+
+
+#~~~~~~~~~~~~~~~~~#
+# Jack-in-the-pot #
+#~~~~~~~~~~~~~~~~~#
+
+# -ii 8F74 9131
+
+# The Party Plaza will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13F3" } window 2000,1
+2011.0 "茶杯" Ability { id: "8F6C", source: "茶壶里的小丑" }
+2020.1 "附身" Ability { id: "8F71", source: "迷途的幽灵之母" } # Puppet
+2022.1 "旋转茶杯" Ability { id: "8F6D", source: "茶壶里的小丑" }
+2034.2 "捣蛋式款待" Ability { id: "8F70", source: "迷途的幽灵之母" }
+2043.0 "茶杯" Ability { id: "8F6C", source: "茶壶里的小丑" }
+2051.1 "附身" Ability { id: "8F71", source: "迷途的幽灵之母" } # Puppet
+2053.1 "旋转茶杯" Ability { id: "8F6D", source: "茶壶里的小丑" }
+2068.2 "捣蛋式款待" Ability { id: "8F70", source: "迷途的幽灵之母" }
+
+2074.8 label "jackLoop"
+2074.8 "茶壶" Ability { id: "8F72", source: "茶壶里的小丑" }
+2079.5 "倒茶" Ability { id: "8F73", source: "幻光茶壶" }
+2084.5 "倒茶" Ability { id: "8F73", source: "幻光茶壶" }
+2089.5 "倒茶" Ability { id: "8F73", source: "幻光茶壶" }
+2096.9 "最后一滴" Ability { id: "8F76", source: "茶壶里的小丑" }
+2106.3 "茶杯" Ability { id: "8F6C", source: "茶壶里的小丑" }
+2114.4 "附身" Ability { id: "8F71", source: "迷途的幽灵之母" } # Puppet
+2116.4 "旋转茶杯" Ability { id: "8F6D", source: "茶壶里的小丑" }
+2131.5 "捣蛋式款待" Ability { id: "8F70", source: "迷途的幽灵之母" }
+2140.5 "邪恶蒸汽" Ability { id: "8F75", source: "茶壶里的小丑" }
+
+2150.5 "茶壶" Ability { id: "8F72", source: "茶壶里的小丑" } window 30,30 forcejump "jackLoop"
+
+
+# IGNORED ABILITIES
+# 8F74 Mad Tea Party -- Poison teacup expansion
+# 9131 Right Wingblade -- Auto-attack
+
+# ALL ENCOUNTER ABILITIES
+# 8F6C Troubling Teacups -- Summon genies
+# 8F6D Tea Awhirl -- Spinning teacups
+# 8F70 Tricksome Treat -- Ghost explosions after Tea Awhirl
+# 8F71 Puppet -- Ghost testhers to teacups
+# 8F72 Toiling Teapots -- Summon poison teacups
+# 8F73 Piping Pour -- Activate poison teacups
+# 8F74 Mad Tea Party -- Poison teacup expansion
+# 8F75 Sordid Steam -- Raidwide
+# 8F76 Last Drop -- Tank buster
+# 9131 Right Wingblade -- Auto-attack
+
+
+
+#~~~~~~~~~~~#
+# Träumerei #
+#~~~~~~~~~~~#
+
+# -ii 417C 9117 911A 911B
+
+# The Restive Hall will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13F4" } window 3000,1
+3012.0 "痛苦回忆" Ability { id: "9113", source: "梦像" }
+3022.1 "痛苦回忆" Ability { id: "9114", source: "梦像" }
+3027.3 "骚灵" Ability { id: "910C", source: "梦像" }
+3033.4 "悼念游行" Ability { id: "9110", source: "梦像" }
+3034.7 "冲击" #Ability { id: "910D", source: "梦像" }
+3047.4 "邪念" #Ability { id: "9AB7", source: "迷途的幽灵" }
+
+3062.4 label "träumereiLoop"
+3062.4 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" }
+3070.4 "邪恶迷雾" Ability { id: "9130", source: "梦像" }
+3079.5 "悼念游行" Ability { id: "90C9", source: "梦像" }
+3085.6 "消极回忆 (lines 1)" #Ability { id: "91DC", source: "迷途的幽灵之母" }
+3088.2 "消极回忆 (lines 2)" #Ability { id: "91DC", source: "迷途的幽灵之母" }
+3090.6 "痛苦回忆" Ability { id: ["9113", "9114"], source: "梦像" }
+3102.8 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" }
+3111.9 "骚灵" Ability { id: "910C", source: "梦像" }
+3118.9 "冲击" #Ability { id: "910D", source: "梦像" }
+3120.0 "悼念游行" Ability { id: "9110", source: "梦像" }
+3133.9 "邪恶迷雾" #Ability { id: "9112", source: "迷途的幽灵" }
+3133.9 "消极回忆" Ability { id: "91DC", source: "迷途的幽灵之母" }
+3142.9 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" }
+3145.9 "--sync--" Ability { id: "9118", source: "梦像" } # Ghostcrush head marker
+3150.9 "沉重回忆" Ability { id: "9117", source: "梦像" }
+3158.1 "悼念游行" Ability { id: "9110", source: "梦像" }
+3172.1 "邪恶迷雾" #Ability { id: "9112", source: "迷途的幽灵" }
+3174.1 "痛苦回忆" Ability { id: ["9113", "9114"], source: "梦像" }
+
+3185.2 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" } window 30,30 forcejump "träumereiLoop"
+
+# IGNORED ABILITIES
+# 417C 攻撃 -- auto-attack
+# 9116 Ghostcrusher -- Self-cast for stack laser
+# 911A Ghostduster -- Fake spread circles. Kills any players with a ghost debuff
+# 911B Bitter Regret -- Side line attack (middle safe)
+
+# ALL ENCOUNTER ABILITIES
+# 417C 攻撃 -- auto-attack
+# 90C9 Memorial March -- Ghost summoning (lines)
+# 910C Poltergeist -- Wall summoning
+# 910D Impact -- Falling walls
+# 9110 Memorial March -- Ghost summoning (tethers)
+# 9112 Malicious Mist -- Ghost tethers
+# 9113 Bitter Regret -- Middle line attack (sides safe)
+# 9114 Bitter Regret -- Side line attack (middle safe)
+# 9116 Ghostcrusher -- Self-cast for stack laser
+# 9117 Ghostcrusher -- Stack laser. Does *not* kill ghosts
+# 9118 [Ghostcrusher head marker]
+# 9119 Ghostduster -- Self-cast for spread circles
+# 911A Ghostduster -- Fake spread circles. Kills any players with a ghost debuff
+# 911B Bitter Regret -- Side line attack (middle safe)
+# 911C Fleshbuster -- Kills any players without a ghost debuff
+# 9130 Malicious Mist -- Basic raidwide
+# 91DC Bitter Regret -- Line attack from adds
+# 9AB7 Ill Intent -- Ghost tethers

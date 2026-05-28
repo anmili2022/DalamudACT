@@ -1,0 +1,170 @@
+# -r MjxcGWaA73mF8B1J -rf=104
+# -ii 8FF3 8FF5 8FF6 8FF7 8FF8 8FF9 8FE4 8FE6 8FCB 8FFA 9013 9014 9015 901A 900D 900E 900F 9012 9016 8FC7 8FD9 87A2 9002 9003 9006 6854 9566 9567 95B3 8FF4 8FDE 8FDD 8FDF 8FD7 8FD5
+# -p 9008:1006.7 95C3:2005.7 8FD1:3005.7 9007:4003.7
+# -it "Valigarmanda" "Flame-kissed Beacon"
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+6.0 "--sync--" Ability { id: "8FF1", source: "艳翼蛇鸟" }
+18.0 "冰柱突刺" Ability { id: "8FF2|8FF4", source: "艳翼蛇鸟" } duration 11.8
+# Too spammy to display each of these, and too close together to sync properly.
+26.0 "碎裂 x10" #Ability { id: "995D", source: "冰块" } duration 10.8
+
+# Fire mini-phase
+# Skyruin has two separate casts, one for boss animation and one for actual damage.
+# The animation cast time ends while the on-screen cast bar is still running,
+# so sync to but don't display the first ability
+40.7 "拥有生命的天灾" Ability { id: "95C4", source: "艳翼蛇鸟" }
+46.1 "拥有生命的天灾" Ability { id: "8FD4", source: "艳翼蛇鸟" }
+54.8 "三重灾变" Ability { id: "8FE7", source: "艳翼蛇鸟" }
+62.9 "火山弹" Ability { id: "8FE5", source: "艳翼蛇鸟" } duration 4.5
+76.3 "蛇行盘绕/蛇行强袭/蛇行吐息" Ability { id: "8FC8|8FCC|8FD0", source: "艳翼蛇鸟" }
+# Partners
+77.1 "火之灾祸" Ability { id: "8FC4", source: "艳翼蛇鸟" }
+92.3 "山火 (咏唱)" Ability { id: "900C", source: "艳翼蛇鸟" }
+# 9013/9014/9015 are boss positions for cleave
+# 9019 is the buster
+# 901A is the cleave
+# 900D-9012 seem to correspond to boss movement animation?
+# Only worry about the buster here, the rest make the mechanic too spammy
+# The sync time is tweaked to match the snapshot of the last cleave rather than the last buster, for safety
+97.8 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+102.8 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+107.8 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+112.8 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+117.8 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+122.8 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+# Light party stacks + puddles
+131.8 "火之灾变" Ability { id: "8FEF", source: "艳翼蛇鸟" }
+134.8 "火之灾变" Ability { id: "8FEF", source: "艳翼蛇鸟" }
+137.8 "火之灾变" Ability { id: "8FEF", source: "艳翼蛇鸟" }
+155.6 "火山弹" Ability { id: "8FE5", source: "艳翼蛇鸟" }
+167.1 "蛇行盘绕/蛇行强袭/蛇行吐息" Ability { id: "8FC8|8FCC|8FD0", source: "艳翼蛇鸟" }
+# Partners
+167.9 "火之灾祸" Ability { id: "8FC4", source: "艳翼蛇鸟" }
+# Spread
+177.9 "雷之灾变" Ability { id: "8FEA", source: "艳翼蛇鸟" }
+186.8 "灾祸领域" Ability { id: "8FDA", source: "艳翼蛇鸟" }
+# End fire mini-phase
+
+195.0 "灾祸预兆" Ability { id: "9692", source: "艳翼蛇鸟" }
+
+# Add phase
+197.3 "--untargetable--"
+198.3 "--targetable--"
+# Calamitous Echo (9006) is the line stack/wild charge marker
+# Calamitous Cry (9002|9003) is the cast
+# Calamitous Cry (9005) is the damage snapshot
+# Not sure what 87A2/6854 are, they're unnamed. Maybe the cone cleaves on the ground?
+204.2 label "adds-loop"
+204.2 "灾祸之鸣" Ability { id: "9005", source: "艳翼蛇鸟" }
+210.2 "灾祸之鸣" Ability { id: "9005", source: "艳翼蛇鸟" }
+216.2 "灾祸之鸣" Ability { id: "9005", source: "艳翼蛇鸟" }
+222.2 "灾祸之鸣" Ability { id: "9005", source: "艳翼蛇鸟" }
+228.2 "灾祸之鸣" Ability { id: "9005", source: "艳翼蛇鸟" }
+234.2 "灾祸之鸣" Ability { id: "9005", source: "艳翼蛇鸟" } forcejump "adds-loop"
+# End add phase
+
+# Mini-phase-transition out of adds
+# This ability is used when adds are dead, so we can sync to it to exit the loop sooner
+996.3 "--sync--" Ability { id: "9565", source: "火之征兆" }
+1000.0 "图拉尔灾祸" StartsUsing { id: "9008", source: "艳翼蛇鸟" } window 1000,0
+1006.7 "图拉尔灾祸 (咏唱)" Ability { id: "9008", source: "艳翼蛇鸟" }
+1009.8 "图拉尔灾祸 (伤害)" Ability { id: "900A", source: "艳翼蛇鸟" }
+1018.4 "图拉尔灾祸 (伤害)" Ability { id: "900B", source: "艳翼蛇鸟" }
+1026.4 "图拉尔灾祸 (伤害)" Ability { id: "9009", source: "艳翼蛇鸟" }
+
+# Skyruin here indicates either "storm" or "blizzard" phase
+# 95C3 = Storm
+# 8FD1 = Blizzard
+# Since we can't pre-determine the jump via forcejump, provide some entries for users to look at
+1034.5 "拥有生命的天灾 (冰或风暴阶段)"
+1043.2 "三重灾变"
+
+# Storm phase
+# Skyruin has two separate casts, one for boss animation and one for actual damage.
+# The animation cast time ends while the on-screen cast bar is still running,
+# so sync to but don't display the first ability
+2000.0 "拥有生命的天灾" StartsUsing { id: "95C3", source: "艳翼蛇鸟" } window 2000,2000
+2005.7 "拥有生命的天灾" Ability { id: "95C3", source: "艳翼蛇鸟" }
+2011.1 "拥有生命的天灾" Ability { id: "8FD3", source: "艳翼蛇鸟" }
+2019.8 "三重灾变" Ability { id: "8FE7", source: "艳翼蛇鸟" }
+# Light parties
+2031.8 "火之灾变" Ability { id: "8FED", source: "艳翼蛇鸟" }
+# Feathers.
+# 8FDE = the feather spawning
+# 8FDD = castbar, not important
+# The other 6 are the actual feather proximity hits
+2045.0 "骤羽" Ability { id: "901D", source: "艳翼蛇鸟" }
+2048.0 "骤羽" Ability { id: "901E", source: "艳翼蛇鸟" }
+2051.0 "骤羽" Ability { id: "901F", source: "艳翼蛇鸟" }
+2054.0 "骤羽" Ability { id: "9020", source: "艳翼蛇鸟" }
+2057.0 "骤羽" Ability { id: "9021", source: "艳翼蛇鸟" }
+2060.0 "骤羽" Ability { id: "9022", source: "艳翼蛇鸟" }
+# Feathers explode.
+# 8FDF = boss castbar, again not important
+# 8FE1 = actual feather explosion
+2070.1 "灾厄落雷" Ability { id: "8FE1", source: "艳翼蛇鸟" }
+# Spread/ice
+2079.9 "雷之灾变" Ability { id: "8FE9", source: "艳翼蛇鸟" }
+2094.8 "蛇行盘绕/蛇行强袭/蛇行吐息" Ability { id: "8FC8|8FCC|8FD0", source: "艳翼蛇鸟" }
+# Lightning puddles
+2097.9 "雷之灾祸" Ability { id: "8FC1", source: "艳翼蛇鸟" }
+2108.6 "雷鸣吐息" Ability { id: "8FE2", source: "艳翼蛇鸟" }
+2109.5 "雷鸣吐息" Ability { id: "8FE3", source: "艳翼蛇鸟" }
+# Spread/ice
+2119.9 "雷之灾变" Ability { id: "8FE9", source: "艳翼蛇鸟" }
+2135.2 "蛇行盘绕/蛇行强袭/蛇行吐息" Ability { id: "8FC8|8FCC|8FD0", source: "艳翼蛇鸟" }
+# Lightning puddles
+2138.3 "雷之灾祸" Ability { id: "8FC1", source: "艳翼蛇鸟" }
+2144.9 "灾祸领域" Ability { id: "8FD8", source: "艳翼蛇鸟" }
+2155.1 "灾祸冲" Ability { id: "8FFC", source: "艳翼蛇鸟" } # boss animation, don't need to display
+2156.8 "灾祸冲 (塔)" Ability { id: "8FFD", source: "艳翼蛇鸟" }
+2159.2 "灾祸冲" Ability { id: "8FFF", source: "艳翼蛇鸟" }
+2160.8 "灾祸冲" Ability { id: "98DA", source: "艳翼蛇鸟" } # either animation or south AoEs
+# End storm phase
+
+# Ice phase
+# Skyruin has two separate casts, one for boss animation and one for actual damage.
+# The animation cast time ends while the on-screen cast bar is still running,
+# so sync to but don't display the first ability
+3000.0 "拥有生命的天灾" StartsUsing { id: "8FD1", source: "艳翼蛇鸟" } window 3000,0
+3005.7 "拥有生命的天灾" Ability { id: "8FD1", source: "艳翼蛇鸟" }
+3011.1 "拥有生命的天灾" Ability { id: "8FD2", source: "艳翼蛇鸟" }
+3019.8 "三重灾变" Ability { id: "8FE7", source: "艳翼蛇鸟" }
+3031.8 "冰之灾变" Ability { id: "8FEC", source: "艳翼蛇鸟" }
+3031.8 "火之灾变" Ability { id: "8FEE", source: "艳翼蛇鸟" }
+3048.1 "北十字星" Ability { id: "8FDB|8FDC", source: "艳翼蛇鸟" }
+3049.6 "蛇行盘绕/蛇行强袭/蛇行吐息" Ability { id: "8FC8|8FCC|8FD0", source: "艳翼蛇鸟" }
+3055.6 "冰之灾祸" Ability { id: "8FC3", source: "艳翼蛇鸟" }
+3063.9 "雷之灾变" Ability { id: "8FEA", source: "艳翼蛇鸟" }
+3067.5 "--sync--" Ability { id: "8FF1", source: "艳翼蛇鸟" }
+3079.5 "冰柱突刺" Ability { id: "8FF2", source: "艳翼蛇鸟" } duration 11.8
+# Too spammy to display each of these, and too close together to sync properly.
+3087.5 "碎裂 x10" duration 10.8 #Ability { id: "995D", source: "冰块" }
+3115.6 "蛇行盘绕/蛇行强袭/蛇行吐息" Ability { id: "8FC8|8FCC|8FD0", source: "艳翼蛇鸟" }
+3121.6 "冰之灾祸" Ability { id: "8FC3", source: "艳翼蛇鸟" }
+3126.4 "北十字星" Ability { id: "8FDB|8FDC", source: "艳翼蛇鸟" }
+3130.4 "结冰尘" Ability { id: "8FF0", source: "艳翼蛇鸟" }
+3140.7 "雷之灾变" Ability { id: "8FEA", source: "艳翼蛇鸟" }
+3148.4 "灾祸领域" Ability { id: "8FD6", source: "艳翼蛇鸟" }
+3157.7 "冰爪" Ability { id: "8FFB", source: "艳翼蛇鸟" }
+# End Blizzard phase
+
+# Final phase/enrage
+4000.0 "怒不可遏" StartsUsing { id: "9007", source: "艳翼蛇鸟" } window 4000,0
+4003.7 "怒不可遏" Ability { id: "9007", source: "艳翼蛇鸟" }
+4007.0 "怒不可遏" Ability { id: "9945", source: "艳翼蛇鸟" }
+4018.9 "山火 (咏唱)" Ability { id: "900C", source: "艳翼蛇鸟" }
+4024.6 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+4029.6 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+4034.6 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+4039.6 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+4044.6 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+4049.6 "山火" Ability { id: "9019", source: "艳翼蛇鸟" }
+4063.3 "图拉尔灾祸" Ability { id: "924C", source: "艳翼蛇鸟" }
+4066.4 "图拉尔灾祸" Ability { id: "924E", source: "艳翼蛇鸟" }
+4075.0 "图拉尔灾祸" Ability { id: "924F", source: "艳翼蛇鸟" }
+4083.0 "图拉尔灾祸 (狂暴)" Ability { id: "924D", source: "艳翼蛇鸟" }

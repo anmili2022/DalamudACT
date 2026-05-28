@@ -199,6 +199,7 @@ internal sealed partial class CombatTimelineWindow
             TimelineKindFilter.All => true,
             TimelineKindFilter.Damage => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Damage,
             TimelineKindFilter.Heal => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Heal,
+            TimelineKindFilter.Cast => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Cast,
             TimelineKindFilter.Status => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Status,
             TimelineKindFilter.Failure => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Failure,
             TimelineKindFilter.Death => entry.Kind == LocalStatsService.CombatTimelineEntryKind.Death,
@@ -220,6 +221,7 @@ internal sealed partial class CombatTimelineWindow
         {
             TimelineKindFilter.Damage => "伤害",
             TimelineKindFilter.Heal => "治疗",
+            TimelineKindFilter.Cast => "读条",
             TimelineKindFilter.Status => "状态",
             TimelineKindFilter.Failure => "未命中/抵抗",
             TimelineKindFilter.Death => "死亡",

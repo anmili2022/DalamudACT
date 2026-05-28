@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.IoC;
@@ -32,6 +33,93 @@ public sealed class DalamudApi
     [PluginService] public static Dalamud.Plugin.Services.IBuddyList BuddyList { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.ITextureProvider TextureProvider { get; private set; } = null!;
     [PluginService] public static Dalamud.Plugin.Services.ICommandManager Commands { get; private set; } = null!;
+
+    public static bool TrySendChatCommand(string command)
+    {
+        if (string.IsNullOrWhiteSpace(command))
+            return false;
+
+        try
+        {
+            var processCommand = Commands.GetType().GetMethods()
+                .FirstOrDefault(method => method.Name == "ProcessCommand"
+                                          && method.GetParameters().Length == 1
+                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            if (processCommand != null)
+            {
+                processCommand.Invoke(Commands, [command]);
+                return true;
+            }
+
+            var sendMessage = ChatGui.GetType().GetMethods()
+                .FirstOrDefault(method => method.Name == "SendMessage"
+                                          && method.GetParameters().Length == 1
+                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            if (sendMessage != null)
+            {
+                sendMessage.Invoke(ChatGui, [command]);
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("命令", ex, $"发送聊天命令失败：{command}");
+        }
+
+        return false;
+    }
+
+    public static bool IsCommandRegistered(string command)
+    {
+        if (string.IsNullOrWhiteSpace(command))
+            return false;
+
+        try
+        {
+            var commandsProperty = Commands.GetType().GetProperty("Commands", BindingFlags.Public | BindingFlags.Instance);
+            var commands = commandsProperty?.GetValue(Commands) as System.Collections.IDictionary;
+            if (commands != null)
+                return commands.Contains(command);
+
+            var containsCommand = Commands.GetType().GetMethods()
+                .FirstOrDefault(method => method.Name is "ContainsCommand" or "HasCommand"
+                                          && method.GetParameters().Length == 1
+                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            if (containsCommand != null)
+                return containsCommand.Invoke(Commands, [command]) as bool? == true;
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("命令", ex, $"检测命令注册状态失败：{command}");
+        }
+
+        return false;
+    }
+
+    public static void PrintChatMessage(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        try
+        {
+            var print = ChatGui.GetType().GetMethods()
+                .FirstOrDefault(method => method.Name == "Print"
+                                          && method.GetParameters().Length == 1
+                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            if (print != null)
+            {
+                print.Invoke(ChatGui, [message]);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("聊天", ex, $"发送聊天通知失败：{message}");
+        }
+
+        LogHelper.PrintWithModule("时间轴", "通知", message);
+    }
 
     public static uint GetTerritoryTypeId()
         => TryGetUInt32Property(ClientState, "TerritoryType", "TerritoryTypeId", "CurrentTerritoryType");

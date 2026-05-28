@@ -25,6 +25,7 @@ internal sealed partial class CombatTimelineWindow : Window
         All,
         Damage,
         Heal,
+        Cast,
         Status,
         Failure,
         Death,

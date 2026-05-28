@@ -1,0 +1,356 @@
+### AAC CRUISERWEIGHT M1 (SAVAGE)
+# ZoneId: 1257
+
+# -ii 93C1 93C2 93C3 93C8 93C9 A327 A70A A70B A70C A70D A77A
+
+# The X-snap twist syncs are ugly, sorry
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+# Intro
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+9.6 "经典铭心" StartsUsing { id: "A721", source: "热舞绿光" } window 9.6,2
+15.3 "经典铭心" Ability { id: "A722", source: "热舞绿光" }
+20.9 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+27.0 "放入A面/放入B面" Ability { id: ["A780", "A781"], source: "热舞绿光" }
+34.1 "二连指向、定格＆播放/三连指向、定格＆播放/四连指向、定格＆播放" Ability { id: ["A728", "A729", "A72A", "A4DB", "A72B", "A72C", "A72D", "A4DC", "A730", "A731", "A732", "A4DD", "A733", "A734", "A735", "A4DE", "A739", "A73A", "A73B", "A4DF", "A73C", "A73D", "A73E", "A4E0"], source: "热舞绿光" } duration 2
+37.8 "播放" #Ability { id: "A738", source: "热舞绿光" }
+39.6 "播放A面/播放B面" Ability { id: ["A783", "A784"], source: "热舞绿光" }
+46.5 "放入A面/放入B面" Ability { id: ["A780", "A781"], source: "热舞绿光" }
+53.6 "二连指向、定格＆播放/三连指向、定格＆播放/四连指向、定格＆播放" Ability { id: ["A728", "A729", "A72A", "A4DB", "A72B", "A72C", "A72D", "A4DC", "A730", "A731", "A732", "A4DD", "A733", "A734", "A735", "A4DE", "A739", "A73A", "A73B", "A4DF", "A73C", "A73D", "A73E", "A4E0"], source: "热舞绿光" } duration 2
+57.2 "播放" #Ability { id: "A738", source: "热舞绿光" }
+59.0 "播放A面/播放B面" Ability { id: ["A783", "A784"], source: "热舞绿光" }
+65.0 "欢庆时刻" Ability { id: "A723", source: "热舞绿光" }
+
+# Disco Floor 1
+71.1 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+77.2 "激热跳舞街" Ability { id: "A756", source: "热舞绿光" } window 77.2,30
+82.5 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+86.5 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+90.5 "内翻外转/外翻内转" Ability { id: ["A77C", "A77E"], source: "热舞绿光" }
+90.5 "热舞场地" #Ability { id: "A753", source: "热舞绿光" }
+92.9 "内翻外转/外翻内转" Ability { id: ["A77D", "A77F"], source: "热舞绿光" }
+94.6 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+98.6 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+99.5 "放入A面/放入B面" Ability { id: ["A780", "A781"], source: "热舞绿光" }
+102.7 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+106.7 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+110.7 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+114.7 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+116.8 "二连指向、定格＆播放/三连指向、定格＆播放/四连指向、定格＆播放" Ability { id: ["A728", "A729", "A72A", "A4DB", "A72B", "A72C", "A72D", "A4DC", "A730", "A731", "A732", "A4DD", "A733", "A734", "A735", "A4DE", "A739", "A73A", "A73B", "A4DF", "A73C", "A73D", "A73E", "A4E0"], source: "热舞绿光" } duration 2
+118.7 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+120.4 "播放" #Ability { id: "A738", source: "热舞绿光" }
+122.2 "播放A面/播放B面" Ability { id: ["A783", "A784"], source: "热舞绿光" }
+128.2 "欢庆时刻" Ability { id: "A723", source: "热舞绿光" }
+136.0 "经典铭心" Ability { id: "A722", source: "热舞绿光" }
+
+# Ensemble 1
+141.6 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+146.9 "伴舞团" Ability { id: "9A32", source: "热舞绿光" }
+154.9 "登天夜狂热" Ability { id: "A760", source: "热舞绿光" }
+# Set 1
+155.2 "尽情舞蹈！" Ability { id: "9BE4", source: "热舞绿光" }
+# Set 2
+157.9 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+# Set 3
+160.3 "尽情舞蹈！" Ability { id: "A762", source: "热舞绿光" }
+# Set 4
+162.6 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+# Set 5
+165.0 "尽情舞蹈！" Ability { id: "A762", source: "热舞绿光" }
+# Set 6
+167.4 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+# Set 7
+169.8 "尽情舞蹈！" Ability { id: "A762", source: "热舞绿光" }
+# Set 8
+172.2 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+
+174.2 "Fire" Ability { id: "98B5", source: "热舞绿光" }
+174.8 "尽情舞蹈！ (重复)" #Ability { id: "A765", source: "热舞绿光" }
+
+# Debuff and Dodge Dance
+182.2 "放纵劲舞！" # Ability { id: ["A76D", "A76E"], source: "热舞绿光" }
+184.8 "Let's Dance! (半场) 2" #Ability { id: "A76D", source: "热舞绿光" }
+185.7 "毒 1"
+187.4 "Let's Dance! (半场) 3" #Ability { id: "A76E", source: "热舞绿光" }
+189.9 "Let's Dance! (半场) 4" #Ability { id: "A76E", source: "热舞绿光" }
+190.8 "毒 2"
+192.4 "Let's Dance! (半场) 5" #Ability { id: "A76D", source: "热舞绿光" }
+194.9 "Let's Dance! (半场) 6" #Ability { id: "A76E", source: "热舞绿光" }
+195.9 "毒 3"
+197.2 "Let's Dance! (半场) 7" #Ability { id: "A76E", source: "热舞绿光" }
+199.7 "Let's Dance! (半场) 8" #Ability { id: "A76D", source: "热舞绿光" }
+200.8 "毒 4"
+208.7 "在这停顿！" Ability { id: "A76F", source: "热舞绿光" } window 30,30
+
+# Exafloors
+226.9 "放入A面/放入B面" Ability { id: ["A780", "A781"], source: "热舞绿光" }
+232.6 "舞浪全开" Ability { id: "A754", source: "热舞绿光" } duration 39.8
+242.6 "4拍节奏/8拍节奏" Ability { id: ["A75B", "A75D"], source: "热舞绿光" }
+250.6 "4拍节奏/8拍节奏" Ability { id: ["A75B", "A75D"], source: "热舞绿光" }
+253.6 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+260.7 "内翻外转/外翻内转" Ability { id: ["A77C", "A77E"], source: "热舞绿光" }
+263.3 "内翻外转/外翻内转" Ability { id: ["A77D", "A77F"], source: "热舞绿光" }
+270.7 "二连指向、定格＆播放/三连指向、定格＆播放/四连指向、定格＆播放" Ability { id: ["A728", "A729", "A72A", "A4DB", "A72B", "A72C", "A72D", "A4DC", "A730", "A731", "A732", "A4DD", "A733", "A734", "A735", "A4DE", "A739", "A73A", "A73B", "A4DF", "A73C", "A73D", "A73E", "A4E0"], source: "热舞绿光" } duration 2
+274.1 "播放" #Ability { id: "A738", source: "热舞绿光" }
+275.9 "播放A面/播放B面" Ability { id: ["A783", "A784"], source: "热舞绿光" }
+283.6 "经典铭心" Ability { id: "A722", source: "热舞绿光" }
+290.2 "欢庆时刻" Ability { id: "A723", source: "热舞绿光" } window 30,30
+
+# Frogtourage 1
+296.3 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+301.4 "来吧！青蛙舞者！" Ability { id: "A75F", source: "热舞绿光" }
+315.5 "4拍节奏/8拍节奏" Ability { id: ["A75B", "A75D"], source: "热舞绿光" }
+316.0 "太空热步" # 4 casts simultaneously, A773 and A774 IDs
+323.6 "激热跳舞街" Ability { id: "A756", source: "热舞绿光" }
+335.2 "伴舞波动" Ability { id: "A778", source: "热舞绿光" }
+344.6 "放入A面/放入B面" Ability { id: ["A780", "A781"], source: "热舞绿光" }
+345.1 "伴舞波动" Ability { id: "A778", source: "热舞绿光" }
+351.5 "二连指向、定格＆播放/三连指向、定格＆播放/四连指向、定格＆播放" Ability { id: ["A728", "A729", "A72A", "A4DB", "A72B", "A72C", "A72D", "A4DC", "A730", "A731", "A732", "A4DD", "A733", "A734", "A735", "A4DE", "A739", "A73A", "A73B", "A4DF", "A73C", "A73D", "A73E", "A4E0"], source: "热舞绿光" } duration 2
+355.1 "播放" #Ability { id: "A738", source: "热舞绿光" }
+356.9 "播放A面/播放B面" Ability { id: ["A783", "A784"], source: "热舞绿光" }
+362.9 "欢庆时刻" Ability { id: "A723", source: "热舞绿光" } window 30,30
+
+# Ensemble 2
+369.0 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+374.3 "伴舞团" Ability { id: "9A32", source: "热舞绿光" }
+382.3 "返场夜狂热" Ability { id: "A370", source: "热舞绿光" }
+# Set 1
+382.6 "尽情舞蹈！" Ability { id: "9BE4", source: "热舞绿光" }
+# Set 2
+385.3 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+# Set 3
+387.6 "尽情舞蹈！" Ability { id: "A762", source: "热舞绿光" }
+# Set 4
+390.0 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+# Set 5
+392.4 "尽情舞蹈！" Ability { id: "A762", source: "热舞绿光" }
+# Set 6
+394.8 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+# Set 7
+397.2 "尽情舞蹈！" Ability { id: "A762", source: "热舞绿光" }
+# Set 8
+399.6 "尽情舞蹈！" Ability { id: "A763", source: "热舞绿光" }
+
+401.6 "Fire" Ability { id: "98B5", source: "热舞绿光" }
+402.2 "尽情舞蹈！ (重复)" #Ability { id: "A765", source: "热舞绿光" }
+
+# Dodge Dance
+409.6 "彻夜狂欢，放纵劲舞！ 1" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+411.2 "彻夜狂欢，放纵劲舞！ 2" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+412.7 "彻夜狂欢，放纵劲舞！ 3" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+414.2 "彻夜狂欢，放纵劲舞！ 4" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+415.7 "彻夜狂欢，放纵劲舞！ 5" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+417.2 "彻夜狂欢，放纵劲舞！ 6" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+418.7 "彻夜狂欢，放纵劲舞！ 7" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+420.2 "彻夜狂欢，放纵劲舞！ 8" #Ability { id: ["A391", "A392", "A393", "A394"], source: "热舞绿光" }
+428.2 "在这停顿！" Ability { id: "A770", source: "热舞绿光" } window 30,30
+
+# Frogtourage 2
+442.4 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+447.5 "来吧！青蛙舞者！" Ability { id: "A75F", source: "热舞绿光" }
+454.6 "摇摆哈娑" Ability { id: ["A775", "A776"], source: "青蛙舞者" }
+458.7 "摇摆哈娑" Ability { id: ["A775", "A776"], source: "青蛙舞者" }
+462.7 "摇摆哈娑" Ability { id: ["A724", "A725"], source: "热舞绿光" }
+479.3 "太空热步"
+479.4 "伴舞波动" Ability { id: "A778", source: "热舞绿光" }
+495.1 "太空热步"
+495.2 "伴舞波动" Ability { id: "A778", source: "热舞绿光" }
+504.5 "摇摆哈娑" Ability { id: ["A724", "A725"], source: "热舞绿光" }
+512.3 "经典铭心" Ability { id: "A722", source: "热舞绿光" } window 30,30
+
+# Disco Floor 2
+517.9 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+523.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+527.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+530.8 "4拍节奏/8拍节奏" Ability { id: ["A75B", "A75D"], source: "热舞绿光" }
+531.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+535.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+538.9 "内翻外转/外翻内转" Ability { id: ["A77C", "A77E"], source: "热舞绿光" }
+539.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+541.2 "内翻外转/外翻内转" Ability { id: ["A77D", "A77F"], source: "热舞绿光" }
+543.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+547.2 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+550.6 "4拍节奏/8拍节奏" Ability { id: ["A75B", "A75D"], source: "热舞绿光" }
+551.3 "热舞场地" Ability { id: "A753", source: "热舞绿光" }
+
+# Soft 狂暴
+557.9 "欢庆时刻" Ability { id: "A723", source: "热舞绿光" }
+568.0 "欢庆时刻" Ability { id: "A723", source: "热舞绿光" }
+583.0 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+588.3 "舞团终演" Ability { id: "A4E1", source: "热舞绿光" }
+603.4 "高能夜狂热 (狂暴)" Ability { id: "A779", source: "热舞绿光" }
+603.4 "--sync--" Ability { id: "A77B", source: "青蛙舞者" }
+
+
+# IGNORED ABILITIES
+# 93C1 --sync--
+# 93C2 Inside Out
+# 93C3 Inside Out
+# 93C4 Outside In
+# 93C5 Outside In
+# 93C6 --sync--
+# 93C8 Play A-side
+# 93C9 Play B-side
+# 9640 --sync--
+# 9641 --sync--
+# 98B3 --sync--
+# 93D3 --sync--
+# 93D4 --sync--
+# 9BDD Let's Dance!
+# 9BE0 --sync--
+# 9BE1 --sync--
+# 9BE2 --sync--
+# 9BE3 --sync--
+# A327 --sync--
+# A36C --sync--
+# A36D --sync--
+# A36E --sync--
+# A36F --sync--
+# A390 Let's Dance! Remix
+# A395 Let's Dance! Remix
+# A70A --sync--
+# A70B --sync--
+# A70C --sync--
+# A70D --sync--
+# A71D --sync--
+# A71E --sync--
+# A721 Deep Cut
+# A752 Funky Floor
+# A755 Ride the Waves
+# A758 Shame
+# A75C Quarter Beats
+# A75E Eighth Beats
+# A76A Let's Dance!
+# A777 Back-up Dance
+# A77A --sync--
+
+# ALL ENCOUNTER ABILITIES
+# 93C1 --sync--
+# 93C2 Inside Out
+# 93C3 Inside Out
+# 93C4 Outside In
+# 93C5 Outside In
+# 93C6 --sync--
+# 93C8 Play A-side
+# 93C9 Play B-side
+# 93D3 --sync--
+# 93D4 --sync--
+# 9640 --sync--
+# 9641 --sync--
+# 98B3 --sync--
+# 98B5 Fire
+# 9A32 Ensemble Assemble
+# 9A33 Minor Freak Out
+# 9A34 Minor Freak Out
+# 9A36 Minor Freak Out
+# 9BDD Let's Dance!
+# 9BE0 --sync--
+# 9BE1 --sync--
+# 9BE2 --sync--
+# 9BE3 --sync--
+# 9BE4 Get Down!
+# A327 --sync--
+# A36C --sync--
+# A36D --sync--
+# A36E --sync--
+# A36F --sync--
+# A370 Arcady Night Encore
+# A390 Let's Dance! Remix
+# A391 Let's Dance! Remix
+# A392 Let's Dance! Remix
+# A393 Let's Dance! Remix
+# A394 Let's Dance! Remix
+# A395 Let's Dance! Remix
+# A4DB 2-snap Twist & Drop the Needle
+# A4DC 2-snap Twist & Drop the Needle
+# A4DD 3-snap Twist & Drop the Needle
+# A4DE 3-snap Twist & Drop the Needle
+# A4DF 4-snap Twist & Drop the Needle
+# A4E0 4-snap Twist & Drop the Needle
+# A4E1 Frogtourage Finale
+# A6C5 --sync--
+# A70A --sync--
+# A70B --sync--
+# A70C --sync--
+# A70D --sync--
+# A71D --sync--
+# A71E --sync--
+# A721 Deep Cut
+# A722 Deep Cut
+# A723 Celebrate Good Times
+# A724 Do the Hustle
+# A725 Do the Hustle
+# A728 2-snap Twist & Drop the Needle
+# A729 2-snap Twist & Drop the Needle
+# A72A 2-snap Twist & Drop the Needle
+# A72B 2-snap Twist & Drop the Needle
+# A72C 2-snap Twist & Drop the Needle
+# A72D 2-snap Twist & Drop the Needle
+# A72E 2-snap Twist & Drop the Needle
+# A72F 2-snap Twist & Drop the Needle
+# A730 3-snap Twist & Drop the Needle
+# A731 3-snap Twist & Drop the Needle
+# A732 3-snap Twist & Drop the Needle
+# A733 3-snap Twist & Drop the Needle
+# A734 3-snap Twist & Drop the Needle
+# A735 3-snap Twist & Drop the Needle
+# A736 3-snap Twist & Drop the Needle
+# A737 3-snap Twist & Drop the Needle
+# A738 3-snap Twist & Drop the Needle
+# A739 4-snap Twist & Drop the Needle
+# A73A 4-snap Twist & Drop the Needle
+# A73B 4-snap Twist & Drop the Needle
+# A73C 4-snap Twist & Drop the Needle
+# A73D 4-snap Twist & Drop the Needle
+# A73E 4-snap Twist & Drop the Needle
+# A73F 4-snap Twist & Drop the Needle
+# A740 4-snap Twist & Drop the Needle
+# A741 4-snap Twist & Drop the Needle
+# A742 4-snap Twist & Drop the Needle
+# A752 Funky Floor
+# A753 Funky Floor
+# A754 Ride the Waves
+# A755 Ride the Waves
+# A756 Disco Infernal
+# A758 Shame
+# A75B Quarter Beats
+# A75C Quarter Beats
+# A75D Eighth Beats
+# A75E Eighth Beats
+# A75F Frogtourage
+# A760 Arcady Night Fever
+# A761 --sync--
+# A762 Get Down!
+# A763 Get Down!
+# A764 Get Down!
+# A765 Get Down!
+# A766 Freak Out
+# A767 Freak Out
+# A768 Minor Freak Out
+# A769 Major Freak Out
+# A76A Let's Dance!
+# A76D Let's Dance!
+# A76E Let's Dance!
+# A76F Let's Pose!
+# A770 Let's Pose!
+# A773 Moonburn
+# A774 Moonburn
+# A775 Do the Hustle
+# A776 Do the Hustle
+# A777 Back-up Dance
+# A778 Back-up Dance
+# A779 Hi-NRG Fever
+# A77A --sync--
+# A77B --sync--
+# A77C Inside Out
+# A77D Inside Out
+# A77E Outside In
+# A77F Outside In
+# A780 Flip to A-side
+# A781 Flip to B-side
+# A783 Play A-side
+# A784 Play B-side

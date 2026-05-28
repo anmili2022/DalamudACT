@@ -1,0 +1,380 @@
+[
+    {
+        "id":  "alliance-cloud-of-darkness-chaotic",
+        "name":  "暗黑之云诛灭战",
+        "zoneId":  1241,
+        "file":  "07-dt/alliance/cloud_of_darkness_chaotic.txt"
+    },
+    {
+        "id":  "alliance-jeuno-first-walk",
+        "name":  "朱诺：第一巡行",
+        "zoneId":  1248,
+        "file":  "07-dt/alliance/jeuno-first-walk.txt"
+    },
+    {
+        "id":  "deepdungeon-the-final-verse-quantum",
+        "name":  "卓异的悲寂深想战",
+        "zoneId":  1311,
+        "file":  "07-dt/deepdungeon/the_final_verse_quantum.txt"
+    },
+    {
+        "id":  "dungeon-alexandria",
+        "name":  "忆中金曦亚历山德里亚",
+        "zoneId":  1199,
+        "file":  "07-dt/dungeon/alexandria.txt"
+    },
+    {
+        "id":  "dungeon-ihuykatumu",
+        "name":  "丛林竞流生息河岸",
+        "zoneId":  1167,
+        "file":  "07-dt/dungeon/ihuykatumu.txt"
+    },
+    {
+        "id":  "dungeon-meso-terminal",
+        "name":  "永久幽界中央终端",
+        "zoneId":  1292,
+        "file":  "07-dt/dungeon/meso-terminal.txt"
+    },
+    {
+        "id":  "dungeon-mistwake",
+        "name":  "遗忘行路雾之迹",
+        "zoneId":  1314,
+        "file":  "07-dt/dungeon/mistwake.txt"
+    },
+    {
+        "id":  "dungeon-origenics",
+        "name":  "魂魄工厂创生设施",
+        "zoneId":  1208,
+        "file":  "07-dt/dungeon/origenics.txt"
+    },
+    {
+        "id":  "dungeon-skydeep-cenote",
+        "name":  "神圣禁地深空天坑",
+        "zoneId":  1194,
+        "file":  "07-dt/dungeon/skydeep-cenote.txt"
+    },
+    {
+        "id":  "dungeon-strayborough-deadwalk",
+        "name":  "噩梦乐园迷途鬼区",
+        "zoneId":  1204,
+        "file":  "07-dt/dungeon/strayborough-deadwalk.txt"
+    },
+    {
+        "id":  "dungeon-the-underkeep",
+        "name":  "王城古迹永护塔底",
+        "zoneId":  1266,
+        "file":  "07-dt/dungeon/the_underkeep.txt"
+    },
+    {
+        "id":  "dungeon-vanguard",
+        "name":  "前哨基地先锋营",
+        "zoneId":  1198,
+        "file":  "07-dt/dungeon/vanguard.txt"
+    },
+    {
+        "id":  "dungeon-worqor-zormor",
+        "name":  "通天绝壁沃刻佐莫山",
+        "zoneId":  1193,
+        "file":  "07-dt/dungeon/worqor-zormor.txt"
+    },
+    {
+        "id":  "dungeon-yuweyawata",
+        "name":  "废弃据点玉韦亚瓦塔实验站",
+        "zoneId":  1242,
+        "file":  "07-dt/dungeon/yuweyawata.txt"
+    },
+    {
+        "id":  "eureka-occult-crescent-south-horn",
+        "name":  "蜃景幻界新月岛 南征之章",
+        "zoneId":  1252,
+        "file":  "07-dt/eureka/occult_crescent_south_horn.txt"
+    },
+    {
+        "id":  "raid-r10n",
+        "name":  "阿卡狄亚登天斗技场 重量级2",
+        "zoneId":  1322,
+        "file":  "07-dt/raid/r10n.txt"
+    },
+    {
+        "id":  "raid-r10s",
+        "name":  "阿卡狄亚零式登天斗技场 重量级2",
+        "zoneId":  1323,
+        "file":  "07-dt/raid/r10s.txt"
+    },
+    {
+        "id":  "raid-r11n",
+        "name":  "阿卡狄亚登天斗技场 重量级3",
+        "zoneId":  1324,
+        "file":  "07-dt/raid/r11n.txt"
+    },
+    {
+        "id":  "raid-r11s",
+        "name":  "阿卡狄亚零式登天斗技场 重量级3",
+        "zoneId":  1325,
+        "file":  "07-dt/raid/r11s.txt"
+    },
+    {
+        "id":  "raid-r12n",
+        "name":  "阿卡狄亚登天斗技场 重量级4",
+        "zoneId":  1326,
+        "file":  "07-dt/raid/r12n.txt"
+    },
+    {
+        "id":  "raid-r12s",
+        "name":  "阿卡狄亚零式登天斗技场 重量级4",
+        "zoneId":  1327,
+        "file":  "07-dt/raid/r12s.txt"
+    },
+    {
+        "id":  "raid-r1n",
+        "name":  "阿卡狄亚登天斗技场 轻量级1",
+        "zoneId":  1225,
+        "file":  "07-dt/raid/r1n.txt"
+    },
+    {
+        "id":  "raid-r1s",
+        "name":  "阿卡狄亚零式登天斗技场 轻量级1",
+        "zoneId":  1226,
+        "file":  "07-dt/raid/r1s.txt"
+    },
+    {
+        "id":  "raid-r2n",
+        "name":  "阿卡狄亚登天斗技场 轻量级2",
+        "zoneId":  1227,
+        "file":  "07-dt/raid/r2n.txt"
+    },
+    {
+        "id":  "raid-r2s",
+        "name":  "阿卡狄亚零式登天斗技场 轻量级2",
+        "zoneId":  1228,
+        "file":  "07-dt/raid/r2s.txt"
+    },
+    {
+        "id":  "raid-r3n",
+        "name":  "阿卡狄亚登天斗技场 轻量级3",
+        "zoneId":  1229,
+        "file":  "07-dt/raid/r3n.txt"
+    },
+    {
+        "id":  "raid-r3s",
+        "name":  "阿卡狄亚零式登天斗技场 轻量级3",
+        "zoneId":  1230,
+        "file":  "07-dt/raid/r3s.txt"
+    },
+    {
+        "id":  "raid-r4n",
+        "name":  "阿卡狄亚登天斗技场 轻量级4",
+        "zoneId":  1231,
+        "file":  "07-dt/raid/r4n.txt"
+    },
+    {
+        "id":  "raid-r4s",
+        "name":  "阿卡狄亚零式登天斗技场 轻量级4",
+        "zoneId":  1232,
+        "file":  "07-dt/raid/r4s.txt"
+    },
+    {
+        "id":  "raid-r5n",
+        "name":  "阿卡狄亚登天斗技场 中量级1",
+        "zoneId":  1256,
+        "file":  "07-dt/raid/r5n.txt"
+    },
+    {
+        "id":  "raid-r5s",
+        "name":  "阿卡狄亚零式登天斗技场 中量级1",
+        "zoneId":  1257,
+        "file":  "07-dt/raid/r5s.txt"
+    },
+    {
+        "id":  "raid-r6n",
+        "name":  "阿卡狄亚登天斗技场 中量级2",
+        "zoneId":  1258,
+        "file":  "07-dt/raid/r6n.txt"
+    },
+    {
+        "id":  "raid-r6s",
+        "name":  "阿卡狄亚零式登天斗技场 中量级2",
+        "zoneId":  1259,
+        "file":  "07-dt/raid/r6s.txt"
+    },
+    {
+        "id":  "raid-r7n",
+        "name":  "阿卡狄亚登天斗技场 中量级3",
+        "zoneId":  1260,
+        "file":  "07-dt/raid/r7n.txt"
+    },
+    {
+        "id":  "raid-r7s",
+        "name":  "阿卡狄亚零式登天斗技场 中量级3",
+        "zoneId":  1261,
+        "file":  "07-dt/raid/r7s.txt"
+    },
+    {
+        "id":  "raid-r8n",
+        "name":  "阿卡狄亚登天斗技场 中量级4",
+        "zoneId":  1262,
+        "file":  "07-dt/raid/r8n.txt"
+    },
+    {
+        "id":  "raid-r8s",
+        "name":  "阿卡狄亚零式登天斗技场 中量级4",
+        "zoneId":  1263,
+        "file":  "07-dt/raid/r8s.txt"
+    },
+    {
+        "id":  "raid-r9n",
+        "name":  "阿卡狄亚登天斗技场 重量级1",
+        "zoneId":  1320,
+        "file":  "07-dt/raid/r9n.txt"
+    },
+    {
+        "id":  "raid-r9s",
+        "name":  "阿卡狄亚零式登天斗技场 重量级1",
+        "zoneId":  1321,
+        "file":  "07-dt/raid/r9s.txt"
+    },
+    {
+        "id":  "trial-arkveld",
+        "name":  "护锁刃龙狩猎战",
+        "zoneId":  1300,
+        "file":  "07-dt/trial/arkveld.txt"
+    },
+    {
+        "id":  "trial-arkveld-ex",
+        "name":  "护锁刃龙上位狩猎战",
+        "zoneId":  1306,
+        "file":  "07-dt/trial/arkveld-ex.txt"
+    },
+    {
+        "id":  "trial-byakko-un",
+        "name":  "白虎幻巧战",
+        "zoneId":  null,
+        "zoneNameContains":  [
+                                 "TheJadeStoaUnreal"
+                             ],
+        "file":  "07-dt/trial/byakko-un.txt"
+    },
+    {
+        "id":  "trial-doomtrain",
+        "name":  "格莱杨拉波尔歼灭战",
+        "zoneId":  1307,
+        "file":  "07-dt/trial/doomtrain.txt"
+    },
+    {
+        "id":  "trial-doomtrain-ex",
+        "name":  "格莱杨拉波尔歼殛战",
+        "zoneId":  1308,
+        "file":  "07-dt/trial/doomtrain-ex.txt"
+    },
+    {
+        "id":  "trial-enuo",
+        "name":  "恩欧歼灭战",
+        "zoneId":  1361,
+        "file":  "07-dt/trial/enuo.txt"
+    },
+    {
+        "id":  "trial-enuo-ex",
+        "name":  "恩欧歼殛战",
+        "zoneId":  1362,
+        "file":  "07-dt/trial/enuo-ex.txt"
+    },
+    {
+        "id":  "trial-necron-ex",
+        "name":  "永远之暗悲惶歼灭战",
+        "zoneId":  1296,
+        "file":  "07-dt/trial/necron-ex.cn.txt"
+    },
+    {
+        "id":  "trial-queen-eternal",
+        "name":  "永恒女王歼灭战",
+        "zoneId":  1202,
+        "file":  "07-dt/trial/queen-eternal.txt"
+    },
+    {
+        "id":  "trial-queen-eternal-ex",
+        "name":  "永恒女王忆想歼灭战",
+        "zoneId":  1243,
+        "file":  "07-dt/trial/queen-eternal-ex.txt"
+    },
+    {
+        "id":  "trial-seiryu-un",
+        "name":  "青龙幻巧战",
+        "zoneId":  null,
+        "zoneNameContains":  [
+                                 "TheWreathOfSnakesUnreal"
+                             ],
+        "file":  "07-dt/trial/seiryu-un.txt"
+    },
+    {
+        "id":  "trial-shinryu-un",
+        "name":  "神龙幻巧战",
+        "zoneId":  1372,
+        "file":  "07-dt/trial/shinryu-un.txt"
+    },
+    {
+        "id":  "trial-suzaku-un",
+        "name":  "朱雀幻巧战",
+        "zoneId":  null,
+        "zoneNameContains":  [
+                                 "HellsKierUnreal"
+                             ],
+        "file":  "07-dt/trial/suzaku-un.txt"
+    },
+    {
+        "id":  "trial-tsukuyomi-un",
+        "name":  "月读幻巧战",
+        "zoneId":  null,
+        "zoneNameContains":  [
+                                 "TsukuyomisPainUnreal"
+                             ],
+        "file":  "07-dt/trial/tsukuyomi-un.txt"
+    },
+    {
+        "id":  "trial-valigarmanda",
+        "name":  "艳翼蛇鸟歼灭战",
+        "zoneId":  1195,
+        "file":  "07-dt/trial/valigarmanda.txt"
+    },
+    {
+        "id":  "trial-valigarmanda-ex",
+        "name":  "艳翼蛇鸟歼殛战",
+        "zoneId":  1196,
+        "file":  "07-dt/trial/valigarmanda-ex.txt"
+    },
+    {
+        "id":  "trial-zelenia",
+        "name":  "泽莲尼娅歼灭战",
+        "zoneId":  1270,
+        "file":  "07-dt/trial/zelenia.txt"
+    },
+    {
+        "id":  "trial-zelenia-ex",
+        "name":  "泽莲尼娅歼殛战",
+        "zoneId":  1271,
+        "file":  "07-dt/trial/zelenia-ex.txt"
+    },
+    {
+        "id":  "trial-zoraal-ja",
+        "name":  "佐拉加歼灭战",
+        "zoneId":  1200,
+        "file":  "07-dt/trial/zoraal-ja.txt"
+    },
+    {
+        "id":  "trial-zoraal-ja-ex",
+        "name":  "佐拉加歼殛战",
+        "zoneId":  1201,
+        "file":  "07-dt/trial/zoraal-ja-ex.txt"
+    },
+    {
+        "id":  "ultimate-futures-rewritten",
+        "name":  "光暗未来绝境战",
+        "zoneId":  1238,
+        "file":  "07-dt/ultimate/futures_rewritten.txt"
+    },
+    {
+        "id":  "the-aitiascope",
+        "name":  "星海深幽寻因星晶镜",
+        "zoneId":  978,
+        "file":  "06-ew/dungeon/the_aitiascope.cn.txt"
+    }
+]

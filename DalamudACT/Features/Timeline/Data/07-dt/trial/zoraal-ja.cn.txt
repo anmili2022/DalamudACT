@@ -1,0 +1,188 @@
+### Everkeep
+# ZoneId: 1200
+
+# -ii 9351 93A6 9364 9365 9366 9367 937A 936A 936B 936C 936E 936F 9375 9376 8AEF
+# -ic "Fang"
+# -p 9370:300
+
+hideall "--Reset--"
+hideall "--sync--"
+
+##### PHASE 1 #####
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+8.8 "灵魂超载" StartsUsing { id: "934B", source: "佐拉加" }
+13.8 "灵魂超载" Ability { id: "934B", source: "佐拉加" }
+21.1 "--center--" Ability { id: "98E1", source: "佐拉加" }
+27.4 "双锋合刃" Ability { id: "9352", source: "佐拉加" } window 5,1
+29.7 "双锋合刃 (second)" #Ability { id: "9352", source: "佐拉加" }
+37.9 "弑父之愤火" Ability { id: "9353", source: "佐拉加" }
+41.1 "--center--" Ability { id: "98E1", source: "佐拉加" }
+47.2 "灵魂超载" Ability { id: "934B", source: "佐拉加" }
+64.3 "灾祸斩" Ability { id: "934C", source: "佐拉加" }
+73.1 "爆炸" Ability { id: "934D", source: "民众的幻影" }
+78.5 "弑父之愤火" Ability { id: "9353", source: "佐拉加" }
+82.6 "--center--" Ability { id: "98E1", source: "佐拉加" }
+
+# The same ids get used for the Fang swords in close proximity, making syncs unreliable.
+87.5 "利刃寻迹" Ability { id: "934E", source: "佐拉加" } duration 8.5
+95.5 "--center--" Ability { id: "98E1", source: "佐拉加" }
+98.0 "利刃寻迹 (扩大)" duration 8.5
+101.7 "双锋合刃" Ability { id: "9352", source: "佐拉加" } window 5,1
+103.9 "双锋合刃 (second)" #Ability { id: "9352", source: "佐拉加" }
+109.2 "--center--" Ability { id: "98E1", source: "佐拉加" }
+115.4 "灵魂超载" Ability { id: "934B", source: "佐拉加" }
+126.5 "灾祸斩" Ability { id: "934C", source: "佐拉加" }
+134.8 "双锋合刃" Ability { id: "9352", source: "佐拉加" } window 5,1
+135.5 "爆炸" Ability { id: "934D", source: "民众的幻影" }
+137.3 "双锋合刃 (second)" #Ability { id: "9352", source: "佐拉加" }
+
+# mini-loop until phase jump
+144.5 "--center--" Ability { id: "98E1", source: "佐拉加" }
+149.5 "利刃寻迹" Ability { id: "934E", source: "佐拉加" } duration 8.5
+157.5 "--center--" Ability { id: "98E1", source: "佐拉加" }
+160.0 "利刃寻迹 (扩大)" duration 8.5
+163.9 "双锋合刃" Ability { id: "9352", source: "佐拉加" } window 5,1
+166.1 "双锋合刃 (second)" #Ability { id: "9352", source: "佐拉加" }
+175.3 "灾祸斩" Ability { id: "934C", source: "佐拉加" }
+180.4 "--center--" Ability { id: "98E1", source: "佐拉加" } forcejump 144.5
+
+##### INTERMISSION #####
+
+293.0 "灵魂超载" StartsUsing { id: "9370", source: "佐拉加" } window 293,1
+300.0 "灵魂超载" Ability { id: "9370", source: "佐拉加" }
+300.0 "--untargetable--"
+381.8 "--targetable--"
+
+##### PHASE 2 #####
+# Use NpcYell to detect the start of Phase 2 (since fight can reset to here)
+# Zoraal Ja: "This power is proof of my authority!"
+391.3 "--sync--" NpcYell { npcNameId: "2493", npcYellId: "44BF" } window 391.3,20
+399.0 "--center--" Ability { id: "9355", source: "佐拉加" }
+407.1 "回旋惩击" Ability { id: "9363", source: "佐拉加" }
+418.1 "回旋惩击" Ability { id: "9363", source: "佐拉加" }
+425.2 "--center--" Ability { id: "9355", source: "佐拉加" }
+433.3 "新曦世纪" Ability { id: "9354", source: "佐拉加" }
+
+# platforms mini-phase 1
+447.4 "无敌刃" Ability { id: "9357", source: "佐拉加" }
+457.0 "愤恨收割" Ability { id: "9379", source: "佐拉加" }
+465.7 "无敌刃" Ability { id: "9357", source: "佐拉加" }
+473.8 "同步" Ability { id: "9359", source: "佐拉加" }
+481.8 "无敌裂斩" Ability { id: "935A", source: "佐拉加" }
+490.0 "同步" Ability { id: "9359", source: "佐拉加" }
+498.0 "无敌裂斩" Ability { id: "935A", source: "佐拉加" }
+505.2 "通路" Ability { id: "935B", source: "佐拉加" }
+513.3 "利刃召唤" Ability { id: "935E", source: "佐拉加" }
+521.4 "利刃冲" Ability { id: "935F", source: "佐拉加" }
+530.1 "--sync--" Ability { id: "9360", source: "佐拉加" }
+534.7 "利刃冲" Ability { id: "935F", source: "佐拉加" }
+543.4 "--sync--" Ability { id: "9360", source: "佐拉加" }
+549.0 "自我实现" Ability { id: "9356", source: "佐拉加" }
+556.2 "--center--" Ability { id: "9355", source: "佐拉加" }
+
+# arena mini-phase 1
+563.5 "半身残" Ability { id: ["9368", "9369"], source: "佐拉加" }
+575.0 "回旋半身残" Ability { id: "936D", source: "佐拉加" }
+580.8 "爆炎" Ability { id: "9378", source: "佐拉加" }
+587.2 "回旋半身残" Ability { id: "936D", source: "佐拉加" }
+594.2 "--center--" Ability { id: "9355", source: "佐拉加" }
+
+# START OF LOOP
+602.3 "新曦世纪" Ability { id: "9354", source: "佐拉加" }
+
+# platforms mini-phase 2
+616.4 "通路" Ability { id: "935B", source: "佐拉加" }
+624.5 "利刃召唤" Ability { id: "935E", source: "佐拉加" }
+632.6 "利刃冲" Ability { id: "935F", source: "佐拉加" }
+641.3 "--sync--" Ability { id: "9360", source: "佐拉加" }
+642.9 "利刃冲" Ability { id: "935F", source: "佐拉加" }
+651.6 "--sync--" Ability { id: "9360", source: "佐拉加" }
+657.1 "责任之刃" Ability { id: "9374", source: "佐拉加" } duration 6.7
+672.9 "无敌刃" Ability { id: "9357", source: "佐拉加" }
+681.5 "愤恨收割" Ability { id: "9379", source: "佐拉加" }
+691.3 "同步" Ability { id: "9359", source: "佐拉加" }
+699.3 "无敌裂斩" Ability { id: "935A", source: "佐拉加" }
+699.5 "同步" Ability { id: "9359", source: "佐拉加" }
+703.7 "--center--" Ability { id: "9355", source: "佐拉加" }
+707.5 "无敌裂斩" Ability { id: "935A", source: "佐拉加" }
+711.1 "半身残" Ability { id: ["9368", "9369"], source: "佐拉加" }
+719.1 "责任之刃" Ability { id: "9374", source: "佐拉加" } duration 6.7
+735.9 "自我实现" Ability { id: "9356", source: "佐拉加" }
+
+# arena mini-phase 2
+743.0 "--center--" Ability { id: "9355", source: "佐拉加" }
+751.4 "回旋半身残" Ability { id: "936D", source: "佐拉加" }
+757.2 "爆炎" Ability { id: "9378", source: "佐拉加" }
+763.6 "回旋半身残" Ability { id: "936D", source: "佐拉加" }
+773.8 "愤恨收割" Ability { id: "9379", source: "佐拉加" }
+781.6 "--center--" Ability { id: "9355", source: "佐拉加" }
+789.7 "新曦世纪" Ability { id: "9354", source: "佐拉加" } forcejump 602.3
+# END OF LOOP
+
+# IGNORED ABILITIES
+# 8AEF --sync--
+# 9351 Double-edged Swords (cast)
+# 9364 Smiting Circuit (vfx?)
+# 9365 Smiting Circuit (vfx?)
+# 9366 Smiting Circuit (donut/damage - sync to 9363 cast instead)
+# 9367 Smiting Circuit (point-blank/damage - sync to 9363 cast instead)
+# 936A Half Full (damage)
+# 936B Half Circuit (vfx; right cleave)
+# 936C Half Circuit (vfx; left cleave)
+# 936E Half Circuit (dynamo; concurrent with 936D)
+# 936F Half Circuit (chariot; conccurrent with 936D)
+# 9375 Duty's Edge (vfx)
+# 9376 Duty's Edge (damage)
+# 937A Bitter Reaping (damage)
+# 93A6 攻撃 (phase 2 autos)
+
+# ALL ENCOUNTER ABILITIES
+# 1961 attack
+# 8AEF --sync--
+# 934B Soul Overflow
+# 934C Calamity's Edge
+# 934D Burst
+# 934E Vorpal Trail
+# 934F Vorpal Trail
+# 9350 Vorpal Trail
+# 9351 Double-edged Swords
+# 9352 Double-edged Swords
+# 9353 Patricidal Pique
+# 9354 Dawn Of An Age
+# 9355 --sync-- (re-center)
+# 9356 Actualize
+# 9357 Vollok
+# 9358 Chasm Of Vollok
+# 9359 Sync
+# 935A Chasm Of Vollok
+# 935B Gateway
+# 935E Blade Warp
+# 935F Forged Track
+# 9360 --sync--
+# 9361 Forged Track
+# 9362 Forged Track
+# 9363 Smiting Circuit
+# 9364 Smiting Circuit
+# 9365 Smiting Circuit
+# 9366 Smiting Circuit
+# 9367 Smiting Circuit
+# 9368 Half Full
+# 9369 Half Full
+# 936A Half Full
+# 936B Half Circuit
+# 936C Half Circuit
+# 936D Half Circuit
+# 936E Half Circuit
+# 936F Half Circuit
+# 9370 Soul Overflow
+# 9374 Duty's Edge
+# 9375 Duty's Edge
+# 9376 Duty's Edge
+# 9378 Fire III
+# 9379 Bitter Reaping
+# 937A Bitter Reaping
+# 93A6 攻撃
+# 9527 Vorpal Trail
+# 9528 Vorpal Trail
+# 98E1 --sync-- (re-center)

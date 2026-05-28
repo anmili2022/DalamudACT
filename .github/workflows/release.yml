@@ -96,7 +96,7 @@ jobs:
         shell: pwsh
         run: |
           Compress-Archive `
-            -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json `
+            -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json,./output/Timeline `
             -DestinationPath ./DalamudACT.zip `
             -Force
 

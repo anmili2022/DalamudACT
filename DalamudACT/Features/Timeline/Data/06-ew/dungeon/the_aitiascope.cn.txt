@@ -1,0 +1,220 @@
+# 星海深幽：寻因星晶镜
+
+# TODO: 利维亚阶段缺少循环
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~~~~~~~~~~~#
+# LIVIA THE UNDETERRED #
+#~~~~~~~~~~~~~~~~~~~~~~#
+
+# -p 6448:1012
+# -ii 60C3 6444 6446
+
+# 中央观测所即将封锁
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F98" } window 10000,0
+1012.0 "挫败" Ability { id: "6448", source: "迷执爱恋的莉维亚" }
+1022.2 "典雅女神枪" Ability { id: "6449", source: "迷执爱恋的莉维亚" }
+1029.3 "--middle--"
+1037.3 "典雅女神连枪" Ability { id: "644[23]", source: "迷执爱恋的莉维亚" }
+1047.4 "典雅女神连枪" Ability { id: "644[23]", source: "迷执爱恋的莉维亚" }
+1057.8 "典雅女神射击 1" Ability { id: "6445", source: "迷执爱恋的莉维亚" }
+1068.0 "典雅女神射击 2" Ability { id: "6447", source: "以太弹" }
+
+1079.0 "恨且爱" Ability { id: "644B", source: "迷执爱恋的莉维亚" }
+1083.9 "爱之火" Ability { id: "644C", source: "迷执爱恋的莉维亚" }
+1089.1 "恨之火" Ability { id: "644D", source: "迷执爱恋的莉维亚" }
+1094.4 "蔑视" Ability { id: "644A", source: "迷执爱恋的莉维亚" }
+
+1105.6 "挫败" Ability { id: "6448", source: "迷执爱恋的莉维亚" }
+1117.0 "典雅女神射击 1" Ability { id: "6445", source: "迷执爱恋的莉维亚" }
+1127.1 "典雅女神连枪" Ability { id: "644[23]", source: "迷执爱恋的莉维亚" }
+1128.2 "典雅女神射击 2" Ability { id: "6447", source: "以太弹" }
+
+1138.3 "挫败" Ability { id: "6448", source: "迷执爱恋的莉维亚" }
+1150.6 "恨且爱" Ability { id: "644B", source: "迷执爱恋的莉维亚" }
+1155.5 "爱之火" Ability { id: "644C", source: "迷执爱恋的莉维亚" }
+1160.7 "恨之火" Ability { id: "644D", source: "迷执爱恋的莉维亚" }
+1167.7 "典雅女神连枪" Ability { id: "644[23]", source: "迷执爱恋的莉维亚" }
+
+1180.8 "挫败" Ability { id: "6448", source: "迷执爱恋的莉维亚" }
+1194.0 "典雅女神枪" Ability { id: "6449", source: "迷执爱恋的莉维亚" }
+1207.4 "蔑视" Ability { id: "644A", source: "迷执爱恋的莉维亚" }
+1218.8 "典雅女神射击 1" Ability { id: "6445", source: "迷执爱恋的莉维亚" }
+1229.0 "典雅女神射击 2" Ability { id: "6447", source: "以太弹" }
+
+1240.0 "恨且爱" Ability { id: "644B", source: "迷执爱恋的莉维亚" } window 50,50 jump 1079
+1244.9 "爱之火" #Ability { id: "644C", source: "迷执爱恋的莉维亚" }
+1250.1 "恨之火" #Ability { id: "644D", source: "迷执爱恋的莉维亚" }
+1255.4 "蔑视" #Ability { id: "644A", source: "迷执爱恋的莉维亚" }
+
+1266.6 "挫败" #Ability { id: "6448", source: "迷执爱恋的莉维亚" }
+1278.0 "典雅女神射击 1" #Ability { id: "6445", source: "迷执爱恋的莉维亚" }
+1288.1 "典雅女神连枪" #Ability { id: "644[23]", source: "迷执爱恋的莉维亚" }
+1289.2 "典雅女神射击 2" #Ability { id: "6447", source: "以太弹" }
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# RHITAHTYN THE UNSHAKABLE #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+# -p 6455:2012
+# -ii 6454
+
+# Saltcrystal Strings will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F99" } window 10000,0
+2012.0 "冥狱冲击" Ability { id: "6455", source: "强执忠义的里塔提恩" }
+2020.5 "冥狱火花" Ability { id: "6457", source: "强执忠义的里塔提恩" }
+
+# Initial 盾牌穿刺
+2027.7 "--north--" Ability { id: "6458", source: "强执忠义的里塔提恩" }
+2034.0 "布旗" Ability { id: "644E", source: "强执忠义的里塔提恩" }
+2034.0 "冲击" Ability { id: "644F", source: "强执忠义的里塔提恩" }
+2048.1 "盾牌穿刺" Ability { id: "6450", source: "强执忠义的里塔提恩" }
+2051.3 "--middle--" Ability { id: "6458", source: "强执忠义的里塔提恩" }
+2059.5 "冥狱铁砧" Ability { id: "6456", source: "强执忠义的里塔提恩" }
+2065.7 "--sync--" Ability { id: "6458", source: "强执忠义的里塔提恩" }
+2071.0 "榴散弹" Ability { id: "6452", source: "强执忠义的里塔提恩" }
+2086.2 "冥狱火花" Ability { id: "6457", source: "强执忠义的里塔提恩" }
+2098.4 "冥狱冲击" Ability { id: "6455", source: "强执忠义的里塔提恩" }
+
+# 盾牌穿刺 with 榴散弹
+2105.6 "--north--" Ability { id: "6458", source: "强执忠义的里塔提恩" }
+2111.9 "布旗" Ability { id: "644E", source: "强执忠义的里塔提恩" }
+2111.9 "冲击" Ability { id: "644F", source: "强执忠义的里塔提恩" }
+2118.0 "榴散弹" Ability { id: "6452", source: "强执忠义的里塔提恩" }
+2132.2 "盾牌穿刺" Ability { id: "6450", source: "强执忠义的里塔提恩" }
+2135.3 "--middle--" Ability { id: "6458", source: "强执忠义的里塔提恩" }
+2142.4 "冥狱冲击" Ability { id: "6455", source: "强执忠义的里塔提恩" }
+2150.6 "--sync--" Ability { id: "6458", source: "强执忠义的里塔提恩" }
+2155.8 "榴散弹" Ability { id: "6452", source: "强执忠义的里塔提恩" }
+2162.1 "冥狱火花" Ability { id: "6457", source: "强执忠义的里塔提恩" }
+2168.4 "冥狱火花" Ability { id: "6457", source: "强执忠义的里塔提恩" }
+2176.6 "冥狱铁砧" Ability { id: "6456", source: "强执忠义的里塔提恩" }
+2188.7 "冥狱冲击" Ability { id: "6455", source: "强执忠义的里塔提恩" }
+2200.9 "冥狱冲击" Ability { id: "6455", source: "强执忠义的里塔提恩" }
+
+# Guessing this is the loop.  Have only seen up to 2239.8 in logs.
+2210.1 "--north--" Ability { id: "6458", source: "强执忠义的里塔提恩" } window 30,30 jump 2105.6
+2216.4 "布旗" #Ability { id: "644E", source: "强执忠义的里塔提恩" }
+2216.4 "冲击" #Ability { id: "644F", source: "强执忠义的里塔提恩" }
+2222.5 "榴散弹" #Ability { id: "6452", source: "强执忠义的里塔提恩" }
+2236.7 "盾牌穿刺" #Ability { id: "6450", source: "强执忠义的里塔提恩" }
+2239.8 "--middle--" #Ability { id: "6458", source: "强执忠义的里塔提恩" }
+
+
+#~~~~~~~~~~~~~~~~~~#
+# AMON THE UNDYING #
+#~~~~~~~~~~~~~~~~~~#
+
+# -p 6464:3012
+# -ii 6088
+
+# Midnight Downwell will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F9A" } window 10000,0
+3012.0 "暗强音" Ability { id: "6464", source: "邪执外道的亚蒙" }
+3022.2 "强音暴雷 (距离衰减)" Ability { id: "645A", source: "邪执外道的亚蒙" }
+3028.0 "强音暴雷 1" Ability { id: "645B", source: "邪执外道的亚蒙" }
+3034.0 "强音暴雷 2" Ability { id: "645C", source: "邪执外道的亚蒙" }
+3038.4 "正旋舞歌" Ability { id: "645D", source: "邪执外道的亚蒙" }
+3044.5 "回舞歌" Ability { id: "645E", source: "邪执外道的亚蒙" }
+3053.3 "长短句交替" Ability { id: "645F", source: "邪执外道的亚蒙" }
+3061.7 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+3071.8 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+3086.0 "强音喷发" Ability { id: "6468", source: "邪执外道的亚蒙" }
+3091.0 "--sync--" Ability { id: "6467", source: "伊塞勒的灵魂" }
+3093.0 "强音喷发" Ability { id: "6468", source: "邪执外道的亚蒙" }
+
+3105.7 "寒冰的幻想" Ability { id: "6C6C", source: "伊塞勒的灵魂" }
+3111.0 "离场" Ability { id: "6466", source: "邪执外道的亚蒙" }
+# post curtain-call branching
+# TODO: unclear if once post jump it keeps the pattern of 正旋舞歌 vs Thundaga first, or if random.
+# 4/4 pulls that saw this all had the same, but that's not quite enough confidence.
+
+#cactbot-timeline-lint-disable-sync-order
+# -> 正旋舞歌 first, then Thundaga?
+3119.2 "--sync--" StartsUsing { id: "645D", source: "邪执外道的亚蒙" } window 50,50 jump 4119.2
+3122.2 "正旋舞歌?" #Ability { id: "645D", source: "邪执外道的亚蒙" }
+3128.3 "回舞歌?" #Ability { id: "645E", source: "邪执外道的亚蒙" }
+3137.1 "长短句交替?" #Ability { id: "645F", source: "邪执外道的亚蒙" }
+
+# -> Thundaga first, then 正旋舞歌?
+3119.2 "--sync--" StartsUsing { id: "645A", source: "邪执外道的亚蒙" } window 50,50 jump 5119.2
+3124.2 "强音暴雷 (距离衰减)?" #Ability { id: "645A", source: "邪执外道的亚蒙" }
+3130.0 "强音暴雷 1?" #Ability { id: "645B", source: "邪执外道的亚蒙" }
+3136.0 "强音暴雷 2?" #Ability { id: "645C", source: "邪执外道的亚蒙" }
+#cactbot-timeline-lint-enable-sync-order
+
+### 正旋舞歌 -> Thundaga -> shared Eruption section -> (正旋舞歌 or Thundaga)
+4119.2 "--sync--" StartsUsing { id: "645D", source: "邪执外道的亚蒙" }
+4122.2 "正旋舞歌" Ability { id: "645D", source: "邪执外道的亚蒙" }
+4128.3 "回舞歌" Ability { id: "645E", source: "邪执外道的亚蒙" }
+4137.1 "长短句交替" Ability { id: "645F", source: "邪执外道的亚蒙" }
+4146.4 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+4154.5 "暗强音" Ability { id: "6464", source: "邪执外道的亚蒙" }
+4167.7 "强音暴雷 (距离衰减)" Ability { id: "645A", source: "邪执外道的亚蒙" }
+4173.5 "强音暴雷 1" Ability { id: "645B", source: "邪执外道的亚蒙" }
+4179.5 "强音暴雷 2" Ability { id: "645C", source: "邪执外道的亚蒙" }
+4186.9 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+4195.1 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+
+4206.3 "强音喷发" Ability { id: "6085", source: "邪执外道的亚蒙" }
+4210.3 "强音喷发" Ability { id: "6468", source: "邪执外道的亚蒙" }
+4220.5 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+4230.7 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+4238.9 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+4247.0 "暗强音" Ability { id: "6464", source: "邪执外道的亚蒙" }
+4255.1 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+
+#cactbot-timeline-lint-disable-sync-order
+# -> 正旋舞歌 first, then Thundaga?
+4267.3 "--sync--" StartsUsing { id: "645D", source: "邪执外道的亚蒙" } window 50,50 jump 4119.2
+4270.3 "正旋舞歌?" #Ability { id: "645D", source: "邪执外道的亚蒙" }
+4276.4 "回舞歌?" #Ability { id: "645E", source: "邪执外道的亚蒙" }
+4285.2 "长短句交替?" #Ability { id: "645F", source: "邪执外道的亚蒙" }
+
+# -> Thundaga first, then 正旋舞歌?
+4267.3 "--sync--" StartsUsing { id: "645A", source: "邪执外道的亚蒙" } window 50,50 jump 5119.2
+4272.3 "强音暴雷 (距离衰减)?" #Ability { id: "645A", source: "邪执外道的亚蒙" }
+4278.1 "强音暴雷 1?" #Ability { id: "645B", source: "邪执外道的亚蒙" }
+4284.1 "强音暴雷 2?" #Ability { id: "645C", source: "邪执外道的亚蒙" }
+#cactbot-timeline-lint-enable-sync-order
+
+### Thundaga -> 正旋舞歌 -> shared Eruption section -> (正旋舞歌 or Thundaga)
+5119.2 "--sync--" StartsUsing { id: "645A", source: "邪执外道的亚蒙" }
+5124.2 "强音暴雷" Ability { id: "645A", source: "邪执外道的亚蒙" }
+5130.0 "强音暴雷" Ability { id: "645B", source: "邪执外道的亚蒙" }
+5136.0 "强音暴雷" Ability { id: "645C", source: "邪执外道的亚蒙" }
+5143.4 "左侧强音爆炎" Ability { id: "6461", source: "邪执外道的亚蒙" }
+5151.6 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+5162.8 "正旋舞歌" Ability { id: "645D", source: "邪执外道的亚蒙" }
+5168.9 "回舞歌" Ability { id: "645E", source: "邪执外道的亚蒙" }
+5177.7 "长短句交替" Ability { id: "645F", source: "邪执外道的亚蒙" }
+5187.0 "右侧强音爆炎" Ability { id: "6460", source: "邪执外道的亚蒙" }
+5195.2 "暗强音" Ability { id: "6464", source: "邪执外道的亚蒙" }
+
+5206.3 "强音喷发" Ability { id: "6085", source: "邪执外道的亚蒙" }
+5210.3 "强音喷发" Ability { id: "6468", source: "邪执外道的亚蒙" }
+5220.5 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+5230.7 "左侧强音爆炎/右侧强音爆炎" Ability { id: "646[01]", source: "邪执外道的亚蒙" }
+5238.9 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+5247.0 "暗强音" Ability { id: "6464", source: "邪执外道的亚蒙" }
+5255.1 "间歇" Ability { id: "6465", source: "邪执外道的亚蒙" }
+
+#cactbot-timeline-lint-disable-sync-order
+# -> 正旋舞歌 first, then Thundaga?
+5267.3 "--sync--" StartsUsing { id: "645D", source: "邪执外道的亚蒙" } window 50,50 jump 4119.2
+5270.3 "正旋舞歌?" #Ability { id: "645D", source: "邪执外道的亚蒙" }
+5276.4 "回舞歌?" #Ability { id: "645E", source: "邪执外道的亚蒙" }
+5285.2 "长短句交替?" #Ability { id: "645F", source: "邪执外道的亚蒙" }
+
+# -> Thundaga first, then 正旋舞歌?
+5267.3 "--sync--" StartsUsing { id: "645A", source: "邪执外道的亚蒙" } window 50,50 jump 5119.2
+5272.3 "强音暴雷 (距离衰减)?" #Ability { id: "645A", source: "邪执外道的亚蒙" }
+5278.1 "强音暴雷 1?" #Ability { id: "645B", source: "邪执外道的亚蒙" }
+5284.1 "强音暴雷 2?" #Ability { id: "645C", source: "邪执外道的亚蒙" }
+#cactbot-timeline-lint-enable-sync-order

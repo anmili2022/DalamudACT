@@ -26,6 +26,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>DalamudACT.json</TargetPath>
     </None>
+    <None Include="Features\Timeline\Data\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>Timeline\Data\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </None>
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,0 +1,250 @@
+### VANGUARD
+# ZoneId: 1198
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~~~~~~~~~~~~#
+# Vanguard Commander R8 #
+#~~~~~~~~~~~~~~~~~~~~~~~#
+
+# -ii 8E33 8ED3 8ED4 8ED5 8ED6 8ED7 8EDC 9140 9147
+# -p 8EDB:1011.0
+
+# The Central Garage will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1333" } window 1000,1
+1006.0 "雷转质波动" StartsUsing { id: "8EDB", source: "先锋营指挥官R8" }
+1011.0 "雷转质波动" Ability { id: "8EDB", source: "先锋营指挥官R8" }
+1027.9 "高速机动" Ability { id: ["8ECF", "8ED0", "98E4", "98E5"], source: "先锋营指挥官R8" }
+1029.3 "高速回旋" Ability { id: ["8ED1", "8ED2", "98E6", "98E7"], source: "先锋营指挥官R8" }
+1039.7 "召集小队" Ability { id: "8ED8", source: "先锋营指挥官R8" }
+1047.3 "突进" Ability { id: "8ED9", source: "先锋营哨兵R8" }
+1053.9 "雷转质波动" Ability { id: "8EDB", source: "先锋营指挥官R8" }
+1060.0 "召集小队" Ability { id: "8ED8", source: "先锋营指挥官R8" }
+1070.6 "空袭" Ability { id: "8EDA", source: "先锋营哨兵R8" }
+
+# begin loop
+1085.0 "高速机动" Ability { id: ["8ECF", "8ED0", "98E4", "98E5"], source: "先锋营指挥官R8" }
+1086.4 "高速回旋" Ability { id: ["8ED1", "8ED2", "98E6", "98E7"], source: "先锋营指挥官R8" }
+1096.8 "召集小队" Ability { id: "8ED8", source: "先锋营指挥官R8" }
+1103.9 "雷转质激射" Ability { id: "8EDD", source: "先锋营指挥官R8" }
+1104.3 "突进" Ability { id: "8ED9", source: "先锋营哨兵R8" } # Rush
+1111.0 "召集小队" Ability { id: "8ED8", source: "先锋营指挥官R8" }
+1126.6 "空袭" Ability { id: "8EDA", source: "先锋营哨兵R8" }
+1130.6 "空袭" Ability { id: "8EDA", source: "先锋营哨兵R8" }
+1140.0 "雷转质波动" Ability { id: "8EDB", source: "先锋营指挥官R8" }
+1158.9 "高速机动" Ability { id: ["8ECF", "8ED0", "98E4", "98E5"], source: "先锋营指挥官R8" } forcejump 1085
+
+# IGNORED ABILITIES
+# 8E33 --sync-- (autos)
+# 8ED3 Enhanced Mobility (simultaneous with 8ECF)
+# 8ED4 Enhanced Mobility (simultaneous with 98E5)
+# 8ED5 Rapid Rotary (damage)
+# 8ED6 Rapid Rotary (damage)
+# 8ED7 Rapid Rotary (damage)
+# 8EDC Electrosurge (cast)
+# 9140 Enhanced Mobility (simultaneous with 8ED0)
+# 9147 Enhanced Mobility (simultaneous with 98E4)
+
+# ALL ENCOUNTER ABILITIES
+# 8E33 --sync--
+# 8ECF Enhanced Mobility
+# 8ED0 Enhanced Mobility
+# 8ED1 Rapid Rotary
+# 8ED2 Rapid Rotary
+# 8ED3 Enhanced Mobility
+# 8ED4 Enhanced Mobility
+# 8ED5 Rapid Rotary
+# 8ED6 Rapid Rotary
+# 8ED7 Rapid Rotary
+# 8ED8 Dispatch
+# 8ED9 Rush
+# 8EDA Aerial Offensive
+# 8EDB Electrowave
+# 8EDC Electrosurge
+# 8EDD Electrosurge
+# 9140 Enhanced Mobility
+# 9147 Enhanced Mobility
+# 98E4 Enhanced Mobility
+# 98E5 Enhanced Mobility
+# 98E6 Rapid Rotary
+# 98E7 Rapid Rotary
+
+#~~~~~~~~~~~#
+# Protector #
+#~~~~~~~~~~~#
+
+# -ii 9121 91E0 91E7 91DF 911F 91E4 91E3
+# -ic "Explosive Turrent" "Laser Turret"
+# -p 9129:2011.1
+
+# Explosive Turrent (9124 - Shock) & Laser Turrent (9123 - Homing Cannon)
+# get extremely spammy.  It's better to just ignore these combatants and
+# do an unsync'd '(ground AoEs)' for the duration of their spam.
+# Same with Laser Turret's Blast Cannon (911F).
+
+# The Safety Inspection Chamber will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1334" } window 2000,1
+2006.1 "雷转质波动" StartsUsing { id: "9129", source: "保护者" }
+2011.1 "雷转质波动" Ability { id: "9129", source: "保护者" }
+2018.2 "照射检测" Ability { id: "9122", source: "保护者" }
+2025.4 "(地面 AoE)" duration 11
+2041.3 "拦截电网" Ability { id: "911D", source: "保护者" }
+2049.4 "旋回式冲击炮" Ability { id: "9127", source: "保护者" } duration 13.2
+2049.4 "雷转质回旋" Ability { id: "91E6", source: "保护者" }
+2051.6 "轰炸" Ability { id: "9868", source: "保护者" }
+# The next Electrowhirls & Bombardments are concurrent, so combine them
+2054.8 "雷转质回旋" Ability { id: "9128", source: "保护者" }
+2058.1 "雷转质回旋" Ability { id: "9128", source: "保护者" }
+2061.3 "雷转质回旋" Ability { id: "9128", source: "保护者" }
+2068.6 "湍雷" Ability { id: "912A", source: "保护者" }
+2076.0 "赋予加速度炸弹" Ability { id: "911E", source: "保护者" }
+2083.4 "冲击炮" duration 9.6
+2097.9 "照射检测" Ability { id: "9122", source: "保护者" }
+2105.1 "(地面 AoE)" duration 11
+2124.7 "重击式冲击炮/追踪式闪雷" Ability { id: ["91E1","91E5"], source: "保护者" }
+
+# begin loop
+2138.9 "雷转质波动" Ability { id: "9129", source: "保护者" }
+2153.3 "赋予加速度炸弹" Ability { id: "911E", source: "保护者" }
+2160.7 "冲击炮" duration 9.6
+2175.2 "照射检测" Ability { id: "9122", source: "保护者" }
+2182.4 "(地面 AoE)" duration 11
+2202.1 "重击式冲击炮/追踪式闪雷" Ability { id: ["91E1","91E5"], source: "保护者" }
+2213.3 "雷转质波动" Ability { id: "9129", source: "保护者" } forcejump 2138.9
+
+# IGNORED ABILITIES
+# 911F Blast Cannon (persistent line cleaves)
+# 9121 --sync--
+# 91E0 Battery Circuit (persistent rotating AoE)
+# 91E3 --sync--
+# 91E4 Tracking Bolt (cast)
+# 91E7 Battery Circuit (initial conal, concurrent with 9127)
+
+# ALL ENCOUNTER ABILITIES
+# 36E attack
+# 911D Fulminous Fence
+# 911E Motion Sensor
+# 911F Blast Cannon
+# 9121 --sync--
+# 9122 Search and Destroy
+# 9123 Homing Cannon
+# 9124 Shock
+# 9126 Electrostatic Contact
+# 9127 Battery Circuit
+# 9128 Electrowhirl
+# 9129 Electrowave
+# 912A Rapid Thunder
+# 91DF --sync--
+# 91E0 Battery Circuit
+# 91E1 Heavy Blast Cannon
+# 91E3 --sync--
+# 91E4 Tracking Bolt
+# 91E5 Tracking Bolt
+# 91E6 Electrowhirl
+# 91E7 Battery Circuit
+# 9868 Bombardment
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Zander the Snakeskinner #
+#~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+# -ii 8EE4 8EE5 8EE6 8EE7 8EE9 8EEA 8EEB 8EEC 8EF0 8EF1 9948 9949
+# -it "Zander the Snakeskinner"
+# -p 8EF2:3011.1
+# -p 8EE0:3500.0
+
+# ** PHASE 1 **
+# The Vanguard Control Room will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1335" } window 3000,1
+3006.1 "雷转质升温" StartsUsing { id: "8EF2", source: "蟒蛇将 詹德" }
+3011.1 "雷转质升温" Ability { id: "8EF2", source: "蟒蛇将 詹德" }
+3021.9 "祸魂剑" Ability { id: "8EDE", source: "蟒蛇将 詹德" }
+3028.9 "爆炸" Ability { id: "8EDF", source: "蟒蛇将 詹德" }
+3038.0 "利剑斩" Ability { id: "8EF3", source: "蟒蛇将 詹德" }
+
+# Use numbering on the Sabers/Bursts since they overlap
+# begin p1 loop
+3047.6 "祸魂剑" Ability { id: "8EDE", source: "蟒蛇将 詹德" }
+3052.8 "祸魂剑" Ability { id: "8EDE", source: "蟒蛇将 詹德" }
+3054.6 "爆炸" Ability { id: "8EDF", source: "蟒蛇将 詹德" }
+3058.2 "祸魂剑" Ability { id: "8EDE", source: "蟒蛇将 詹德" }
+3059.9 "祸魂冲击" Ability { id: "9422", source: "蟒蛇将 詹德" }
+3060.0 "爆炸" Ability { id: "8EDF", source: "蟒蛇将 詹德" }
+3063.6 "祸魂剑" Ability { id: "8EDE", source: "蟒蛇将 詹德" }
+3065.4 "爆炸" Ability { id: "8EDF", source: "蟒蛇将 詹德" }
+3070.4 "祸魂冲击" Ability { id: "9422", source: "蟒蛇将 詹德" }
+3070.6 "爆炸" Ability { id: "8EDF", source: "蟒蛇将 詹德" }
+3076.7 "雷转质升温" Ability { id: "8EF2", source: "蟒蛇将 詹德" }
+3086.9 "利剑斩" Ability { id: "8EF3", source: "蟒蛇将 詹德" }
+3104.5 "祸魂剑" Ability { id: "8EDE", source: "蟒蛇将 詹德" } forcejump 3047.6
+
+# ** PHASE 2 **
+3500.0 "--sync--" Ability { id: "8EE0", source: "蟒蛇将 詹德" } window 500,0
+3506.1 "--sync--" Ability { id: "8EE1", source: "蟒蛇将 詹德" }
+3519.2 "--sync--" Ability { id: "8EE2", source: "蟒蛇将 詹德" }
+3524.2 "--targetable--"
+3535.3 "融魂前倾斩" Ability { id: "914E", source: "蟒蛇将 詹德" }
+
+# begin p2 loop
+3546.1 "曲蛇融魂斩" Ability { id: ["8EE3", "8EE8"], source: "蟒蛇将 詹德" } duration 3.1
+3554.3 "曲蛇融魂斩" Ability { id: ["8EE3", "8EE8"], source: "蟒蛇将 詹德" } duration 3.1
+3564.9 "暗影弹" Ability { id: "8EF5", source: "蟒蛇将 詹德" }
+3573.6 "前尾祸剑击/后尾祸剑击" Ability { id: ["8EED", "8EEE"], source: "蟒蛇将 詹德" }
+3579.8 "前尾祸剑击/后尾祸剑击" Ability { id: ["8EED", "8EEE"], source: "蟒蛇将 詹德" }
+3580.7 "爆炸" Ability { id: "8EEF", source: "蟒蛇将 詹德" }
+3586.1 "前尾祸剑击/后尾祸剑击" Ability { id: ["8EED", "8EEE"], source: "蟒蛇将 詹德" }
+3587.0 "爆炸" Ability { id: "8EEF", source: "蟒蛇将 詹德" }
+3592.4 "前尾祸剑击/后尾祸剑击" Ability { id: ["8EED", "8EEE"], source: "蟒蛇将 詹德" }
+3593.3 "爆炸" Ability { id: "8EEF", source: "蟒蛇将 詹德" }
+3599.5 "爆炸" Ability { id: "8EEF", source: "蟒蛇将 詹德" }
+3611.5 "嘶嚎" Ability { id: "8EF4", source: "蟒蛇将 詹德" }
+3628.3 "曲蛇融魂斩" Ability { id: "8EE3", source: "蟒蛇将 詹德" } forcejump 3546.1
+
+# IGNORED ABILITIES
+# 8EE4 Syntheslither (follow-up cleave)
+# 8EE5 Syntheslither (follow-up cleave)
+# 8EE6 Syntheslither (follow-up cleave)
+# 8EE7 Syntheslither (follow-up cleave)
+# 8EE9 Syntheslither (follow-up cleave)
+# 8EEA Syntheslither (follow-up cleave)
+# 8EEB Syntheslither (follow-up cleave)
+# 8EEC Syntheslither (follow-up cleave)
+# 8EF0 Slitherbane Foreguard (concurrent)
+# 8EF1 Slitherbane Rearguard (concurrent)
+# 9948 --sync-- (p1 autos)
+# 9949 --sync-- (p2 autos)
+
+# ALL ENCOUNTER ABILITIES
+# 366 attack
+# 8EDE Soulbane Saber
+# 8EDF Burst
+# 8EE0 --sync--
+# 8EE1 --sync--
+# 8EE2 --sync--
+# 8EE3 Syntheslither
+# 8EE4 Syntheslither
+# 8EE5 Syntheslither
+# 8EE6 Syntheslither
+# 8EE7 Syntheslither
+# 8EE8 Syntheslither
+# 8EE9 Syntheslither
+# 8EEA Syntheslither
+# 8EEB Syntheslither
+# 8EEC Syntheslither
+# 8EED Slitherbane Foreguard
+# 8EEE Slitherbane Rearguard
+# 8EEF Burst
+# 8EF0 Slitherbane Foreguard
+# 8EF1 Slitherbane Rearguard
+# 8EF2 Electrothermia
+# 8EF3 Saber Rush
+# 8EF4 Screech
+# 8EF5 Shade Shot
+# 914E Syntheslean
+# 9422 Soulbane Shock
+# 9948 --sync--
+# 9949 --sync--

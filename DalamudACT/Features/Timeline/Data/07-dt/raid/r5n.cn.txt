@@ -1,0 +1,238 @@
+### AAC CRUISERWEIGHT (M1)
+# ZoneId: 1256
+
+# @TODO: There are definitely more IDs for 2-snap and 4-snap twist, see:
+# https://v2.xivapi.com/api/search?sheets=Action&fields=Name,Cast100ms&query=Name=%222-snap%20Twist%22
+# https://v2.xivapi.com/api/search?sheets=Action&fields=Name,Cast100ms&query=Name=%224-snap%20Twist%22
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+7.9 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+10.4 "摇摆哈娑" StartsUsing { id: ["A6C9", "A6CA"], source: "热舞绿光" } window 10.6,2
+15.3 "摇摆哈娑" Ability { id: ["A6C9", "A6CA"], source: "热舞绿光" }
+21.4 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+28.5 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" }
+30.1 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+32.1 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+39.7 "四连指向＆定格" Ability { id: ["A6DC", "A6DE", "A6E1"], source: "热舞绿光" }
+40.7 "四连指向＆定格" Ability { id: "A6E2", source: "热舞绿光" }
+41.1 "四连指向＆定格" Ability { id: "A6E3", source: "热舞绿光" }
+41.5 "四连指向＆定格" Ability { id: "A6E4", source: "热舞绿光" }
+43.1 "四连指向＆定格" Ability { id: "A6E5", source: "热舞绿光" }
+50.4 "经典铭心" Ability { id: "A6C7", source: "热舞绿光" }
+56.0 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+61.3 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+65.3 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+69.3 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+73.3 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+74.3 "1拍节奏" Ability { id: "A6FF", source: "热舞绿光" }
+76.4 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+77.4 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+82.5 "激热跳舞街" Ability { id: "A6F9", source: "热舞绿光" }
+99.6 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+108.8 "摇摆哈娑" Ability { id: ["A6C9", "A6CA"], source: "热舞绿光" }
+128.0 "欢庆时刻" Ability { id: "A6C8", source: "热舞绿光" }
+137.7 "舞浪全开" Ability { id: "A6F7", source: "热舞绿光" } duration 34.3
+157.6 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+164.8 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" }
+166.3 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+168.4 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+174.0 "欢庆时刻" Ability { id: "A6C8", source: "热舞绿光" }
+180.2 "--north--" Ability { id: "A6C5", source: "热舞绿光" }
+185.5 "伴舞团" Ability { id: "9A30", source: "热舞绿光" }
+192.4 "登天夜狂热" Ability { id: "A705", source: "热舞绿光" }
+203.8 "Stone" Ability { id: "98B4", source: "热舞绿光" }
+212.7 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+214.7 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+216.6 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+218.5 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+220.4 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+222.3 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+224.2 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+226.1 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+233.3 "在这停顿！" Ability { id: "A719", source: "热舞绿光" }
+247.5 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+252.8 "来吧！青蛙舞者！" Ability { id: "A704", source: "热舞绿光" }
+267.4 "太空热步" Ability { id: "A720", source: "热舞绿光" }
+269.4 "8拍节奏" Ability { id: "A703", source: "热舞绿光" }
+277.7 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+281.7 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+284.7 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+285.7 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+289.7 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+291.8 "四连指向＆定格" Ability { id: ["A6DC", "A6DE", "A6E1"], source: "热舞绿光" }
+292.8 "四连指向＆定格" Ability { id: "A6E2", source: "热舞绿光" }
+293.2 "四连指向＆定格" Ability { id: "A6E3", source: "热舞绿光" }
+293.5 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+293.5 "四连指向＆定格" Ability { id: "A6E4", source: "热舞绿光" }
+295.1 "四连指向＆定格" Ability { id: "A6E5", source: "热舞绿光" }
+297.5 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+303.6 "欢庆时刻" Ability { id: "A6C8", source: "热舞绿光" }
+309.7 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+315.8 "激热跳舞街" Ability { id: "A6F9", source: "热舞绿光" }
+320.9 "来吧！青蛙舞者！" Ability { id: "A704", source: "热舞绿光" }
+335.2 "四连指向＆定格" Ability { id: ["A6DC", "A6DE", "A6E1"], source: "热舞绿光" }
+335.4 "太空热步" Ability { id: ["A71F", "A720"], source: "热舞绿光" }
+336.3 "四连指向＆定格" Ability { id: "A6E2", source: "热舞绿光" }
+336.7 "四连指向＆定格" Ability { id: "A6E3", source: "热舞绿光" }
+337.1 "四连指向＆定格" Ability { id: "A6E4", source: "热舞绿光" }
+338.7 "四连指向＆定格" Ability { id: "A6E5", source: "热舞绿光" }
+348.5 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" } window 5,5
+350.1 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+352.1 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+359.1 "太空热步" Ability { id: ["A71F", "A720"], source: "热舞绿光" }
+368.8 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" }
+370.4 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+372.4 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+378.7 "经典铭心" Ability { id: "A6C7", source: "热舞绿光" }
+
+384.3 label "loop"
+384.3 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+389.6 "伴舞团" Ability { id: "9A30", source: "热舞绿光" }
+396.6 "登天夜狂热" Ability { id: "A705", source: "热舞绿光" }
+408.1 "Stone" Ability { id: "98B4", source: "热舞绿光" }
+417.1 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+419.1 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+421.0 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+422.9 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+424.8 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+426.7 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+428.6 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+430.5 "放纵劲舞！" #Ability { id: "9BDC", source: "热舞绿光" }
+437.7 "在这停顿！" Ability { id: "A71A", source: "热舞绿光" }
+455.5 "舞浪全开" Ability { id: "A6F7", source: "热舞绿光" } duration 34.3
+475.4 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+482.6 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" }
+484.2 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+486.2 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+491.8 "欢庆时刻" Ability { id: "A6C8", source: "热舞绿光" }
+497.9 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+504.0 "激热跳舞街" Ability { id: "A6F9", source: "热舞绿光" }
+509.1 "来吧！青蛙舞者！" Ability { id: "A704", source: "热舞绿光" }
+523.3 "四连指向＆定格" Ability { id: ["A6DC", "A6DE", "A6E1"], source: "热舞绿光" }
+523.7 "太空热步" Ability { id: ["A71F", "A720"], source: "热舞绿光" }
+524.4 "四连指向＆定格" Ability { id: "A6E2", source: "热舞绿光" }
+524.8 "四连指向＆定格" Ability { id: "A6E3", source: "热舞绿光" }
+525.2 "四连指向＆定格" Ability { id: "A6E4", source: "热舞绿光" }
+526.8 "四连指向＆定格" Ability { id: "A6E5", source: "热舞绿光" }
+536.6 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" }
+538.2 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+540.2 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+547.2 "太空热步" Ability { id: ["A71F", "A720"], source: "热舞绿光" }
+554.8 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+558.8 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+561.8 "--middle--" Ability { id: "A6C5", source: "热舞绿光" }
+562.8 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+566.8 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+
+568.9 "二连指向＆定格/四连指向＆定格"
+568.9 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" } jump "2snap"
+568.9 "四连指向＆定格" Ability { id: ["A6DC", "A6DE", "A6E1"], source: "热舞绿光" } jump "4snap"
+
+650.0 label "2snap"
+650.0 "二连指向＆定格" Ability { id: ["A4D5", "A6CC", "A6CD", "A6D0"], source: "热舞绿光" }
+651.6 "二连指向＆定格" Ability { id: "A6D1", source: "热舞绿光" }
+652.0 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+653.7 "二连指向＆定格" Ability { id: "A6D2", source: "热舞绿光" }
+656.1 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+663.2 "欢庆时刻" Ability { id: "A6C8", source: "热舞绿光" }
+671.0 "经典铭心" Ability { id: "A6C7", source: "热舞绿光" }
+676.6 "--sync--" Ability { id: "A6C5", source: "热舞绿光" } forcejump "loop"
+
+750.0 label "4snap"
+750.0 "四连指向＆定格" Ability { id: ["A6DC", "A6DE", "A6E1"], source: "热舞绿光" }
+751.0 "四连指向＆定格" Ability { id: "A6E2", source: "热舞绿光" }
+751.4 "四连指向＆定格" Ability { id: "A6E3", source: "热舞绿光" }
+751.7 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+751.8 "四连指向＆定格" Ability { id: "A6E4", source: "热舞绿光" }
+753.4 "四连指向＆定格" Ability { id: "A6E5", source: "热舞绿光" }
+755.8 "热舞场地" Ability { id: "A6F6", source: "热舞绿光" }
+762.9 "欢庆时刻" Ability { id: "A6C8", source: "热舞绿光" }
+770.7 "经典铭心" Ability { id: "A6C7", source: "热舞绿光" }
+776.3 "--sync--" Ability { id: "A6C5", source: "热舞绿光" } forcejump "loop"
+
+# IGNORED ABILITIES
+# A6F8 Ride the Waves - Followup hits
+# A6C6 Deep Cut - castbar
+# A6F5 Funky Floor - castbar
+# A6FE Full Beat - castbar
+# A6FB Shame - Mechanic failure
+# A706 --sync-- - Arcady Night Fever/Let's Dance, initial animation?
+# 93C0 --sync-- - Arcady Night Fever/Let's Dance, initial animation?
+# 93C1 --sync-- - Arcady Night Fever/Let's Dance, boss pointing?
+# A70C --sync-- - Arcady Night Fever/Let's Dance, unknown
+# A70D --sync-- - Arcady Night Fever/Let's Dance, unknown
+# 9409 --sync-- - Arcady Night Fever/Let's Dance, unknown
+# 9415 --sync-- - Arcady Night Fever/Let's Dance, unknown
+# 942A --sync-- - Arcady Night Fever/Let's Dance, unknown
+# 93CB --sync-- - Arcady Night Fever/Let's Dance, unknown
+# 93CC --sync-- - Arcady Night Fever/Let's Dance, unknown
+# A717 Let's Dance! - Arcady Night Fever/Let's Dance, animations
+# A718 Let's Dance! - Arcady Night Fever/Let's Dance, animations
+# A714 Let's Dance! - Let's Dance castbar
+# 93D3 --sync-- - Let's Dance animations
+# 93D4 --sync-- - Let's Dance animations
+# A71D --sync-- - Frogtourage clones appear
+# A71E --sync-- - Frogtourage clone animation
+# A702 Eighth Beats - castbar
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 93C0 --sync--
+# 93C1 --sync--
+# 93CB --sync--
+# 93CC --sync--
+# 93D3 --sync--
+# 93D4 --sync--
+# 9409 --sync--
+# 9415 --sync--
+# 942A --sync--
+# 98B4 Stone
+# 9A30 Ensemble Assemble
+# 9BDC Let's Dance!
+# A4D5 2-snap Twist
+# A6C5 --sync--
+# A6C6 Deep Cut
+# A6C7 Deep Cut
+# A6C8 Celebrate Good Times
+# A6C9 Do the Hustle
+# A6CA Do the Hustle
+# A6CC 2-snap Twist
+# A6CD 2-snap Twist
+# A6D0 2-snap Twist
+# A6D1 2-snap Twist
+# A6D2 2-snap Twist
+# A6DC 4-snap Twist
+# A6DE 4-snap Twist
+# A6E2 4-snap Twist
+# A6E3 4-snap Twist
+# A6E4 4-snap Twist
+# A6E5 4-snap Twist
+# A6F5 Funky Floor
+# A6F6 Funky Floor
+# A6F7 Ride the Waves
+# A6F8 Ride the Waves
+# A6F9 Disco Infernal
+# A6FB Shame
+# A6FE Full Beat
+# A6FF Full Beat
+# A702 Eighth Beats
+# A703 Eighth Beats
+# A704 Frogtourage
+# A705 Arcady Night Fever
+# A706 --sync--
+# A70C --sync--
+# A70D --sync--
+# A714 Let's Dance!
+# A717 Let's Dance!
+# A718 Let's Dance!
+# A719 Let's Pose!
+# A71A Let's Pose!
+# A71D --sync--
+# A71E --sync--
+# A71F Moonburn
+# A720 Moonburn

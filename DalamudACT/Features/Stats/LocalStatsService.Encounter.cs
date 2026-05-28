@@ -17,11 +17,13 @@ internal sealed partial class LocalStatsService
     private DateTime enteredCombatWithoutDataSinceUtc;
     private DateTime lastNoDataCombatDiagnosticUtc;
     private DateTime lastCombatTimelineStatusPollUtc;
+    private DateTime lastCombatTimelineCastPollUtc;
     private int encounterFinalizedVersion;
     private bool latestInCombatHint;
     private bool suppressStaleDisplayUntilNextCombatStart;
     private bool combatTimelineStatusRecorderPrimed;
     private readonly HashSet<CombatTimelineStatusKey> observedCombatTimelineStatusKeys = new();
+    private readonly Dictionary<string, DateTime> observedCombatTimelineCastKeys = new(StringComparer.Ordinal);
 
     public CombatDataWrapper? CurrentCombatData { get; private set; }
 

@@ -24,9 +24,12 @@ internal sealed partial class SettingsWindow : Window
     private readonly Action openMainWindow;
     private readonly Action toggleFloatingStatsPanel;
     private readonly Action openCombatTimelineWindow;
+    private readonly TimelineService? timelineService;
     private readonly Dictionary<string, float> adaptiveChildHeights = new();
     private string floatingStyleShareCode = string.Empty;
     private string floatingStyleTransferStatusText = string.Empty;
+    private string timelineDraftStatusText = string.Empty;
+    private List<TimelineLogEncounterOption> timelineLogEncounterOptions = new();
     private string customFriendlyNpcNameInput = string.Empty;
     private string customFriendlyNpcStatusText = string.Empty;
     private readonly Dictionary<uint, string> customSkillActionIdInputs = new();
@@ -41,6 +44,7 @@ internal sealed partial class SettingsWindow : Window
         PluginConfiguration config,
         LocalStatsService statsService,
         PartyMonitorService? monitorService,
+        TimelineService? timelineService,
         Action openMainWindow,
         Action toggleFloatingStatsPanel,
         Action openCombatTimelineWindow)
@@ -49,6 +53,7 @@ internal sealed partial class SettingsWindow : Window
         this.config = config;
         this.statsService = statsService;
         this.monitorService = monitorService;
+        this.timelineService = timelineService;
         this.openMainWindow = openMainWindow;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
@@ -79,7 +84,9 @@ internal sealed partial class SettingsWindow : Window
         DrawWindowSection();
         DrawFloatingPanelSection();
         DrawPartyMonitorSection();
+        DrawTimelineStyleSection();
         DrawMaintenanceSection();
+        DrawCommandHelpSection();
     }
 
 }

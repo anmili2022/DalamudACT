@@ -1,0 +1,255 @@
+### YUWEYAWATA FIELD STATION
+# ZoneId: 1242
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+#~~~~~~~~~~~~~~~~~~#
+# Lindblum Zaghnal #
+#~~~~~~~~~~~~~~~~~~#
+
+# -ii 9EB8 9EBA A0A2
+# -it "Raw Electrope"
+# -p 9EBB:1010.1
+
+# The Crystal Quarry will be sealed off
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1408" } window 1000,1
+1005.1 "广域放电" StartsUsing { id: "9EBB", source: "林德布鲁姆扎戈斧龙" }
+1010.1 "广域放电" Ability { id: "9EBB", source: "林德布鲁姆扎戈斧龙" }
+1017.5 "--sync--" Ability { id: "9EAE", source: "林德布鲁姆扎戈斧龙" }
+1022.7 "刺牙" Ability { id: "A132", source: "林德布鲁姆扎戈斧龙" }
+1032.4 "线状放电" Ability { id: "9EB1", source: "林德布鲁姆扎戈斧龙" }
+1035.4 "线状放电" Ability { id: "9EB1", source: "林德布鲁姆扎戈斧龙" }
+1038.4 "线状放电" Ability { id: "9EB1", source: "林德布鲁姆扎戈斧龙" }
+1043.8 "投掷" Ability { id: "9EB0", source: "林德布鲁姆扎戈斧龙" }
+1045.8 "放电" Ability { id: "9EB2", source: "林德布鲁姆扎戈斧龙" }
+1047.1 "线状放电" Ability { id: "A0A1", source: "林德布鲁姆扎戈斧龙" } duration 7.6
+1048.3 "线状放电" Ability { id: "9EB3", source: "林德布鲁姆扎戈斧龙" }
+1054.9 "线状放电" Ability { id: "9EB3", source: "林德布鲁姆扎戈斧龙" }
+1057.2 "百雷" Ability { id: "9EBC", source: "林德布鲁姆扎戈斧龙" }
+1057.8 "百雷" Ability { id: "9EBD", source: "林德布鲁姆扎戈斧龙" }
+1063.6 "--sync--" Ability { id: "9EAE", source: "林德布鲁姆扎戈斧龙" }
+1068.9 "刺牙" Ability { id: "9EB6", source: "林德布鲁姆扎戈斧龙" }
+1071.0 "对地放电" Ability { id: "A133", source: "林德布鲁姆扎戈斧龙" }
+1072.3 "--小怪 1 可选中--"
+1079.0 "对地放电" Ability { id: "9EB7", source: "林德布鲁姆扎戈斧龙" }
+1081.0 "--小怪 2 可选中--"
+1088.1 "对地放电" Ability { id: "9EB7", source: "林德布鲁姆扎戈斧龙" }
+1089.1 "落雷 x3" duration 2 #Ability { id: "9EBE", source: "林德布鲁姆扎戈斧龙" }
+1089.5 "--小怪 3 可选中--"
+1099.8 "落雷 x3" duration 2 #Ability { id: "9EBE", source: "林德布鲁姆扎戈斧龙" }
+1110.5 "对地放电" Ability { id: "A12A", source: "林德布鲁姆扎戈斧龙" }
+1116.2 "--sync--" Ability { id: "9EAE", source: "林德布鲁姆扎戈斧龙" }
+
+# loop
+1116.2 label "zaghnal-loop"
+1121.6 "刺牙" Ability { id: "A132", source: "林德布鲁姆扎戈斧龙" }
+1131.3 "线状放电" Ability { id: "9EB1", source: "林德布鲁姆扎戈斧龙" }
+1134.3 "线状放电" Ability { id: "9EB1", source: "林德布鲁姆扎戈斧龙" }
+1137.3 "线状放电" Ability { id: "9EB1", source: "林德布鲁姆扎戈斧龙" }
+1142.7 "投掷" Ability { id: "9EB0", source: "林德布鲁姆扎戈斧龙" }
+1144.7 "放电" Ability { id: "9EB2", source: "林德布鲁姆扎戈斧龙" }
+1146.0 "线状放电" Ability { id: "A0A1", source: "林德布鲁姆扎戈斧龙" } duration 7.6
+1147.2 "线状放电" Ability { id: "9EB3", source: "林德布鲁姆扎戈斧龙" }
+1153.8 "线状放电" Ability { id: "9EB3", source: "林德布鲁姆扎戈斧龙" }
+1156.1 "百雷" Ability { id: "9EBC", source: "林德布鲁姆扎戈斧龙" }
+1156.7 "百雷" Ability { id: "9EBD", source: "林德布鲁姆扎戈斧龙" }
+1162.4 "--sync--" Ability { id: "9EAE", source: "林德布鲁姆扎戈斧龙" }
+1169.7 "广域放电" Ability { id: "9EBB", source: "林德布鲁姆扎戈斧龙" }
+1182.5 "百雷" Ability { id: "9EBC", source: "林德布鲁姆扎戈斧龙" }
+1182.9 "百雷" Ability { id: "9EBD", source: "林德布鲁姆扎戈斧龙" }
+1183.9 "落雷 x3" duration 2 #Ability { id: "9EBE", source: "林德布鲁姆扎戈斧龙" }
+1193.9 "--sync--" Ability { id: "9EAE", source: "林德布鲁姆扎戈斧龙" } forcejump "zaghnal-loop"
+
+# IGNORED ABILITIES
+# 9EB8 Sparking Fissure
+# 9EBA Electrify
+# A0A2 Line Voltage
+
+# ALL ENCOUNTER ABILITIES
+# 368 attack
+# 9EAE --sync--
+# 9EB0 Caber Toss - castbar of pillar being tossed
+# 9EB1 Line Voltage - multiple line aoes from pillar, gives vuln stack
+# 9EB2 Cell Shock - damage from circular pillar aoe, gives vuln stack
+# 9EB3 Line Voltage - fat line aoe, gives vuln stack
+# 9EB6 Gore - boss digging into ground
+# 9EB7 Sparking Fissure - no cast raidwide
+# 9EB8 Sparking Fissure - boss self-cast
+# 9EBA Electrify - raidwide from adds (interrupted on death), gives vuln stack
+# 9EBB Electrical Overload - raidwide
+# 9EBC Lightning Storm - self-cast, spread aoe markers
+# 9EBD Lightning Storm - damage from spread aoes
+# 9EBE Lightning Bolt - ground aoe, gives vuln stack
+# A0A1 Line Voltage - line aoe self-cast?
+# A0A2 Line Voltage - skinny line aoe, gives vuln stack
+# A12A Sparking Fissure - long cast big raidwide
+# A132 Gore - boss digging into pillar
+# A133 Sparking Fissure - short cast raidwide
+
+
+#~~~~~~~~~~~~~~~~~~~~#
+# Overseer Kanilokka #
+#~~~~~~~~~~~~~~~~~~~~#
+
+# -ii 9ED3
+# -it "Overseer Kanilokka"
+# -p 9ED2:2010.1
+
+# The Soul Center will be sealed off
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1409" } window 2000,1
+2005.1 "黑暗之魂" StartsUsing { id: "9ED2", source: "卡尼洛喀站长" }
+2010.1 "黑暗之魂" Ability { id: "9ED2", source: "卡尼洛喀站长" }
+2019.0 "灵魂释放" Ability { id: "9EBF", source: "卡尼洛喀站长" }
+2020.0 "灵魂释放" Ability { id: "9EC0", source: "卡尼洛喀站长" }
+2025.1 "灵魂飞掠 x8" duration 10.6 #Ability { id: "9EC2", source: "站员的亡魂" }
+2040.4 "幽魂泛滥" Ability { id: "9EC3", source: "卡尼洛喀站长" } window 10,10
+2041.7 "幽魂泛滥" Ability { id: "9EC4", source: "卡尼洛喀站长" }
+2053.5 "昏暗" Ability { id: "9ECE", source: "卡尼洛喀站长" }
+2053.9 "昏暗" Ability { id: "9ED0", source: "卡尼洛喀站长" }
+2055.9 "昏暗" Ability { id: "9ECF", source: "卡尼洛喀站长" }
+2056.3 "昏暗" Ability { id: "9ED1", source: "卡尼洛喀站长" }
+2062.3 "幽魂之泪" Ability { id: "9EC9", source: "卡尼洛喀站长" }
+2069.4 "恍惚的叫声" Ability { id: "9EC5", source: "卡尼洛喀站长" }
+2070.2 "--untargetable--"
+2086.5 "死灵危机" Ability { id: "9EC6", source: "卡尼洛喀站长" }
+2088.1 "--targetable--"
+2096.8 "血爆" Ability { id: "9EC7", source: "卡尼洛喀站长" }
+2106.9 "灵魂释放" Ability { id: "9EBF", source: "卡尼洛喀站长" }
+
+# loop
+2106.9 label "kanilokka-loop"
+2107.9 "灵魂释放" Ability { id: "9EC0", source: "卡尼洛喀站长" }
+2113.0 "灵魂飞掠 x8" duration 10.6 #Ability { id: "9EC2", source: "站员的亡魂" }
+2116.5 "幽魂之泪" Ability { id: "9EC9", source: "卡尼洛喀站长" } window 4,4
+2123.1 "幽魂之泪" Ability { id: "9EC9", source: "卡尼洛喀站长" }
+2130.6 "昏暗" Ability { id: "9ECE", source: "卡尼洛喀站长" } window 10,10
+2131.2 "昏暗" Ability { id: "9ED0", source: "卡尼洛喀站长" }
+2133.2 "昏暗" Ability { id: "9ECF", source: "卡尼洛喀站长" }
+2133.8 "昏暗" Ability { id: "9ED1", source: "卡尼洛喀站长" }
+2134.0 "失魂" Ability { id: "9ECB", source: "卡尼洛喀站长" }
+2143.9 "黑暗之魂" Ability { id: "9ED2", source: "卡尼洛喀站长" }
+2153.6 "血爆" Ability { id: "9EC7", source: "卡尼洛喀站长" }
+2162.7 "血爆" Ability { id: "9EC7", source: "卡尼洛喀站长" }
+2174.0 "灵魂释放" Ability { id: "9EBF", source: "卡尼洛喀站长" } forcejump "kanilokka-loop"
+
+# IGNORED ABILITIES
+# 9ED3 --sync--
+
+# ALL ENCOUNTER ABILITIES
+# 9EBF Free Spirits - boss self-cast
+# 9EC0 Free Spirits - raidwide, spawns bleed-wall surrounding arena
+# 9EC1 Soulweave - line aoe counter-clockwise, gives vuln stack
+# 9EC2 Soulweave - line aoe clockwise, gives vuln stack
+# 9EC3 Phantom Flood - boss self-cast
+# 9EC4 Phantom Flood - donut aoe, gives vuln stack
+# 9EC5 Lost Hope - inflicts Temporary Misdirection
+# 9EC6 Necrohazard - proximity raidwide from center of room, aggressive fall-off
+# 9EC7 Bloodburst - raidwide
+# 9EC9 Telltale Tears - spread aoes on dps/healer
+# 9ECB Soul Douse - party stack
+# 9ECE Dark II - boss-self cast?
+# 9ECF Dark II - boss-self cast?
+# 9ED0 Dark II - cone aoe damage (first set), gives vuln stack
+# 9ED1 Dark II - cone aoe damage (second set), gives vuln stack
+# 9ED2 Dark Souls - tankbuster
+# 9ED3 --sync-- - boss auto attack
+
+
+#~~~~~~~~~~~#
+# Lunipyati #
+#~~~~~~~~~~~#
+
+# -ii 9EAD
+# -p 9EA4:3011.4
+
+# The Dust Yoke will be sealed off
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "140A" } window 3000,1
+3006.4 "暴怒连爪" StartsUsing { id: "9EA4", source: "鲁尼皮亚提" }
+3011.4 "暴怒连爪" Ability { id: "9EA4", source: "鲁尼皮亚提" } duration 2.4
+3011.8 "暴怒连爪" Ability { id: "9EA5", source: "鲁尼皮亚提" }
+3020.1 "--sync--" Ability { id: "9EAC", source: "鲁尼皮亚提" }
+3027.5 "稳如兔山" Ability { id: "9E9B", source: "鲁尼皮亚提" }
+3032.7 "舞动的岩石" StartsUsing { id: "9E9F", source: "鲁尼皮亚提" } window 10,10 jump "lunipyati-boulder-dance"
+3037.7 "跃动的大地" StartsUsing { id: "9E9E", source: "鲁尼皮亚提" } window 10,10 jump "lunipyati-leaping-earth"
+
+# Leaping Earth first
+3100.0 label "lunipyati-leaping-earth"
+3101.5 "跃动的大地 (弧线)" duration 3.7 #Ability { id: "9E9E", source: "鲁尼皮亚提" }
+3101.8 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3105.3 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3112.7 "跃动的大地 (弧线)" duration 3.7 #Ability { id: "9E9E", source: "鲁尼皮亚提" }
+3113.3 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3116.8 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3122.8 "跃动的大地 (螺旋)" duration 5.1 #Ability { id: "9E9E", source: "鲁尼皮亚提" }
+3123.2 "--sync--" Ability { id: "9ED5", source: "鲁尼皮亚提" }
+3138.8 "舞动的岩石" Ability { id: "9E9F", source: "鲁尼皮亚提" } duration 4.4
+3140.3 "舞动的岩石" Ability { id: "9EA0", source: "鲁尼皮亚提" }
+3151.8 "舞动的岩石" Ability { id: "9E9F", source: "鲁尼皮亚提" } duration 4.4
+3153.3 "舞动的岩石" Ability { id: "9EA0", source: "鲁尼皮亚提" }
+3158.8 "岩石突击" Ability { id: "9EA7", source: "鲁尼皮亚提" }
+3161.9 "刨坑" StartsUsing { id: "9E9C", source: "鲁尼皮亚提" } window 10,10 forcejump "lunipyati-merge"
+
+# Boulder Dance first
+3300.0 label "lunipyati-boulder-dance"
+3306.0 "舞动的岩石" Ability { id: "9E9F", source: "鲁尼皮亚提" } duration 4.4
+3307.3 "舞动的岩石" Ability { id: "9EA0", source: "鲁尼皮亚提" }
+3319.0 "舞动的岩石" Ability { id: "9E9F", source: "鲁尼皮亚提" } duration 4.4
+3320.3 "舞动的岩石" Ability { id: "9EA0", source: "鲁尼皮亚提" }
+3326.0 "岩石突击" Ability { id: "9EA7", source: "鲁尼皮亚提" }
+3337.7 "跃动的大地 (弧线)" duration 3.7 #Ability { id: "9E9E", source: "鲁尼皮亚提" }
+3338.0 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3341.4 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3348.8 "跃动的大地 (弧线)" duration 3.7 #Ability { id: "9E9E", source: "鲁尼皮亚提" }
+3349.4 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3352.9 "--sync--" Ability { id: "9ED6", source: "鲁尼皮亚提" }
+3358.9 "跃动的大地 (螺旋)" duration 5.1 #Ability { id: "9E9E", source: "鲁尼皮亚提" }
+3359.3 "--sync--" Ability { id: "9ED5", source: "鲁尼皮亚提" }
+3366.9 "刨坑" StartsUsing { id: "9E9C", source: "鲁尼皮亚提" } window 10,10 forcejump "lunipyati-merge"
+
+# merge
+3500.0 label "lunipyati-merge"
+3507.0 "刨坑" Ability { id: "9E9C", source: "鲁尼皮亚提" }
+3509.1 "刨坑" Ability { id: "9E9D", source: "鲁尼皮亚提" }
+
+# loop
+3525.1 label "lunipyati-loop"
+3525.1 "残虐咆哮" Ability { id: "9EA2", source: "鲁尼皮亚提" }
+3526.7 "岩石冲击" duration 9 #Ability { id: "9EA3", source: "鲁尼皮亚提" }
+3535.3 "--sync--" Ability { id: "9EAC", source: "鲁尼皮亚提" }
+3542.0 "暴怒连爪" Ability { id: "9EA4", source: "鲁尼皮亚提" } duration 2.4
+3542.4 "暴怒连爪" Ability { id: "9EA5", source: "鲁尼皮亚提" }
+3547.5 "岩石突击" Ability { id: "9EA7", source: "鲁尼皮亚提" }
+3554.2 "图拉尔崩石" Ability { id: "9EA8", source: "鲁尼皮亚提" }
+3562.6 "音嚎" Ability { id: "9EAA", source: "鲁尼皮亚提" }
+3571.7 "音嚎" Ability { id: "9EAA", source: "鲁尼皮亚提" }
+3580.8 "唾液飞溅" Ability { id: "9EAB", source: "鲁尼皮亚提" }
+3599.9 "残虐咆哮" Ability { id: "9EA2", source: "鲁尼皮亚提" } forcejump "lunipyati-loop"
+
+# IGNORED ABILITIES
+# 9EAD --sync--
+
+# ALL ENCOUNTER ABILITIES
+# 9E9B Leporine Loaf - raidwide, spawns bleed-wall surrounding arena
+# 9E9C Crater Carve - self-cast
+# 9E9D Crater Carve - damage, creates hole in center of arena
+# 9E9E Leaping Earth - damage from radiating spiral aoes
+# 9E9F Boulder Dance - damage from Boulder Dance source aoe, gives vuln stack
+# 9EA0 Boulder Dance - damage from Boulder Dance target aoe, gives vuln stack
+# 9EA1 Boulder Dance - continuous damage from standing in Boulder Dance aoe (source or target)
+# 9EA2 Beastly Roar - proximity raidwide from under boss
+# 9EA3 Rock Blast - chasing aoe from boss around edge of arena, gives vuln stack
+# 9EA4 Raging Claw - self-cast
+# 9EA5 Raging Claw - first frontal cleave (high damage)
+# 9EA6 Raging Claw - follow-up frontal cleaves (lesser damage)
+# 9EA7 Jagged Edge - spread aoes
+# 9EA8 Turali Stone IV - party stack
+# 9EAA Sonic Howl - raidwide
+# 9EAB Slabber - tankbuster
+# 9EAC --sync--
+# 9EAD --sync-- - boss auto attack
+# 9ED5 --sync--
+# 9ED6 --sync--

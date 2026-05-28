@@ -31,6 +31,7 @@ public sealed partial class ACT : IDalamudPlugin
     private readonly IDalamudPluginInterface pluginInterface;
     private readonly LocalStatsService statsService;
     private readonly PartyMonitorService monitorService;
+    private readonly TimelineService timelineService;
     private readonly PluginUI ui;
     private readonly ExcelSheet<TerritoryType> territorySheet;
     private readonly ExcelSheet<Action> actionSheet;
@@ -65,10 +66,12 @@ public sealed partial class ACT : IDalamudPlugin
 
         statsService = new LocalStatsService(Configuration);
         monitorService = new PartyMonitorService(Configuration, statsService);
+        timelineService = new TimelineService(Configuration);
         InstallHooks();
 
-        ui = new PluginUI(Configuration, statsService, monitorService);
+        ui = new PluginUI(Configuration, statsService, monitorService, timelineService);
         RegisterCommands();
+        RegisterChatHandlers();
         pluginInterface.UiBuilder.Draw += ui.Draw;
         pluginInterface.UiBuilder.OpenMainUi += ui.OpenMainWindow;
         pluginInterface.UiBuilder.OpenConfigUi += ui.ToggleSettingsWindow;
@@ -82,6 +85,7 @@ public sealed partial class ACT : IDalamudPlugin
         pluginInterface.UiBuilder.Draw -= ui.Draw;
         pluginInterface.UiBuilder.OpenMainUi -= ui.OpenMainWindow;
         pluginInterface.UiBuilder.OpenConfigUi -= ui.ToggleSettingsWindow;
+        UnregisterChatHandlers();
         UnregisterCommands();
         ui.Dispose();
         DisposeHooks();
@@ -95,8 +99,12 @@ public sealed partial class ACT : IDalamudPlugin
         {
             _ = framework;
             statsService.WarmOwnerCacheFromObjectTable();
-            statsService.Update(GetPlaceName(), DalamudApi.Conditions.Any(ConditionFlag.InCombat));
+            var zoneName = GetPlaceName();
+            var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
+            statsService.Update(zoneName, inCombat);
+            statsService.PollCombatTimelineHostileCasts(DateTime.UtcNow, inCombat);
             monitorService.Update();
+            timelineService.Update(inCombat, DalamudApi.GetTerritoryTypeId(), zoneName);
             frameworkUpdateFaulted = false;
         }
         catch (Exception ex)

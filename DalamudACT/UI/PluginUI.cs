@@ -13,34 +13,41 @@ internal sealed class PluginUI : IDisposable
     private readonly FloatingStatsWindow floatingStatsWindow;
     private readonly CombatTimelineWindow combatTimelineWindow;
     private readonly PartyMonitorWindow partyMonitorWindow;
+    private readonly TimelineService timelineService;
+    private readonly TimelineWindow timelineWindow;
     private bool windowDrawFaulted;
 
-    public PluginUI(PluginConfiguration config, LocalStatsService statsService, PartyMonitorService monitorService)
+    public PluginUI(PluginConfiguration config, LocalStatsService statsService, PartyMonitorService monitorService, TimelineService timelineService)
     {
         this.config = config;
+        this.timelineService = timelineService;
 
         mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
-        settingsWindow = new SettingsWindow(config, statsService, monitorService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
+        settingsWindow = new SettingsWindow(config, statsService, monitorService, timelineService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
         partyMonitorWindow = new PartyMonitorWindow(config, monitorService, ToggleSettingsWindow);
+        timelineWindow = new TimelineWindow(config, timelineService, ToggleSettingsWindow);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);
         AddWindow(windowSystem, floatingStatsWindow);
         AddWindow(windowSystem, combatTimelineWindow);
         AddWindow(windowSystem, partyMonitorWindow);
+        AddWindow(windowSystem, timelineWindow);
 
         mainWindow.IsOpen = false;
         settingsWindow.IsOpen = false;
         floatingStatsWindow.IsOpen = config.ShowStatsPanel;
         combatTimelineWindow.IsOpen = false;
         partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
+        timelineWindow.IsOpen = config.ShowTimelineWindow;
     }
 
     public void Draw()
     {
         SyncPartyMonitorVisibility();
+        SyncTimelineVisibility();
 
         try
         {
@@ -74,6 +81,13 @@ internal sealed class PluginUI : IDisposable
         }
     }
 
+    private void SyncTimelineVisibility()
+    {
+        var shouldShow = config.ShowTimelineWindow && (config.TimelineDebugMode || timelineService.HasTimeline);
+        if (timelineWindow.IsOpen != shouldShow)
+            timelineWindow.IsOpen = shouldShow;
+    }
+
     public void ToggleSettingsWindow()
         => settingsWindow.IsOpen = !settingsWindow.IsOpen;
 
@@ -85,6 +99,13 @@ internal sealed class PluginUI : IDisposable
         partyMonitorWindow.IsOpen = nextState;
         config.PartyMonitor.EnablePartyMonitor = nextState;
         config.PartyMonitor.ShowPartyMonitorWindow = nextState;
+        config.Save();
+    }
+
+    public void ToggleTimelineWindow()
+    {
+        config.ShowTimelineWindow = !config.ShowTimelineWindow;
+        timelineWindow.IsOpen = config.ShowTimelineWindow && (config.TimelineDebugMode || timelineService.HasTimeline);
         config.Save();
     }
 

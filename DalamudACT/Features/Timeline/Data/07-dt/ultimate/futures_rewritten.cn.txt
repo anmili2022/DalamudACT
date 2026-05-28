@@ -1,0 +1,506 @@
+### FUTURES REWRITTEN (ULTIMATE)
+# ZoneId: 1238
+
+# -ii 9CB4 9CD8 9CD9 9CC9 9CCA 9CCC 9CCD 9CCF 9CE5 9CE6 9CE9 9CF0 9D0C 9D0E 9D13
+# -p 9CFF:215.3 9D22:500.0 9D72:1041.0
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+13.9 "暴风破" Ability { id: ["9CD0", "9CD4"], source: "绝命战士" } # Cyclonic Break castbar
+14.6 "暴风破" Ability { id: "9CD1", source: "绝命战士" }
+16.6 "暴风破 2 (后续)" #Ability { id: "9CD2", source: "绝命战士" }
+16.6 "罪炎/罪雷" Ability { id: ["9CD3", "9CD5"], source: "绝命战士" }
+18.6 "暴风破 3 (后续)" #Ability { id: "9CD2", source: "绝命战士" }
+20.6 "暴风破 4 (后续)" #Ability { id: "9CD2", source: "绝命战士" }
+24.4 "连锁爆印铭刻" Ability { id: "9CE8", source: "绝命战士" }
+28.5 "--center--" Ability { id: "9CED", source: "绝命战士" }
+35.2 "乐园绝技" Ability { id: ["9CDA", "9CDB"], source: "绝命战士" }
+35.2 "--untargetable--"
+
+40.6 "爆印" Ability { id: "9CE9", source: "绝命战士" }
+49.5 "爆破领域" Ability { id: "9CDD", source: "绝命战士的幻影" } # Blasting Zone castbar
+50.4 "罪爆炎/罪暴雷" Ability { id: ["9CDF", "9CE0"], source: ["Fatebreaker", "Fatebreaker's Image"] }
+50.5 "爆破领域" Ability { id: "9CDE", source: "绝命战士的幻影" }
+55.9 "暴风破" Ability { id: ["9D89", "9D8A"], source: "绝命战士的幻影" } # Cyclonic Break castbar
+56.6 "暴风破" Ability { id: "9CD1", source: "绝命战士的幻影" }
+58.6 "暴风破 2 (后续)" #Ability { id: "9CD2", source: "绝命战士的幻影" }
+58.6 "罪炎/罪雷" Ability { id: ["9CD3", "9CD5"], source: ["Fatebreaker", "Fatebreaker's Image"] }
+60.6 "暴风破 3 (后续)" #Ability { id: "9CD2", source: "绝命战士的幻影" }
+62.6 "暴风破 4 (后续)" #Ability { id: "9CD2", source: "绝命战士的幻影" }
+63.8 "光轮召唤" Ability { id: ["9CD6", "9CD7"], source: "绝命战士的幻影" }
+64.8 "燃烧击" Ability { id: "9CE3", source: "绝命战士的幻影" }
+66.5 "雷燃爆" Ability { id: "9CE4", source: "绝命战士的幻影" }
+70.8 "燃烧击" Ability { id: "9CE1", source: "绝命战士的幻影" }
+72.8 "火燃爆" Ability { id: "9CE2", source: "绝命战士的幻影" }
+75.4 "浮游拘束" Ability { id: "9CEB", source: "绝命战士的幻影" }
+78.6 "罪炎" Ability { id: "9CE7", source: "绝命战士的幻影" }
+
+79.8 "--targetable--"
+86.0 "光焰圆光" Ability { id: "9CEA", source: "绝命战士" }
+101.4 "罪壤断" Ability { id: ["9CC9", "9CCC"], source: "绝命战士" } # This is manually left in since it's a visible castbar.
+102.2 "浮游拘束 1" #Ability { id: "9CEB", source: "绝命战士" }
+105.2 "浮游拘束 2" #Ability { id: "9CEB", source: "绝命战士的幻影" }
+105.5 "罪冰焰/罪雷 1" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士" }
+107.5 "浮游拘束 3" #Ability { id: "9CEB", source: "绝命战士的幻影" }
+108.4 "罪冰焰/罪雷 2" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士的幻影" }
+109.9 "浮游拘束 4" #Ability { id: "9CEB", source: "绝命战士的幻影" }
+110.8 "罪冰焰/罪雷 3" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士" }
+113.3 "罪冰焰/罪雷 4" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士的幻影" }
+121.3 "光焰圆光" Ability { id: "9CEA", source: "绝命战士" }
+
+129.9 "连锁爆印铭刻" Ability { id: "9CE8", source: "绝命战士" }
+132.3 "--center--" Ability { id: "9CED", source: "绝命战士" }
+141.3 "燃烧击" Ability { id: ["9CC1", "9CC5"], source: "绝命战士" }
+143.1 "火燃爆/雷燃爆" #Ability { id: ["9CC2", "9CC6"], source: "绝命战士" }
+# TODO: Add all tower explosion IDs
+145.1 "爆炸" #Ability { id: "9CBD", source: "绝命战士" }
+150.5 "光焰圆光" StartsUsing { id: "9CC0", source: "绝命战士" } # Burnished Glory
+160.2 "光焰圆光 (狂暴)" Ability { id: "9CC0", source: "绝命战士" }
+
+# Phase Two
+# Source actors are elided on some lines where stale data can make P1 actors fill it in.
+# Ability IDs should be sufficient in those cases.
+# Sync on the map change
+200.0 "--sync--" MapEffect { flags: "00020001", location: "17" } window 200,5
+204.1 "--targetable--"
+210.3 "四剑斩" StartsUsing { id: "9CFF", source: "希瓦·米特隆" }
+215.3 "四剑斩" Ability { id: "9CFF", source: "希瓦·米特隆" }
+219.4 "四剑斩" Ability { id: "9D00", source: "希瓦·米特隆" }
+224.5 "--跳南--" Ability { id: "9CEF", source: "希瓦·米特隆" }
+228.8 "镜中显影" Ability { id: "9CF4", source: "希瓦·米特隆" }
+235.9 "钻石星尘" Ability { id: "9D05", source: "希瓦·米特隆" }
+239.0 "--untargetable--"
+244.6 "阔斧回旋踢/镰形回旋踢" Ability { id: ["9D0A", "9D0B"], source: "巫女的镜像" }
+245.5 "光之海啸" Ability { id: "9D0E" }
+247.2 "冰石" Ability { id: "9D07" }
+247.6 "冰柱冲击" Ability { id: "9D06" }
+248.4 "--center--" Ability { id: "9CEF" }
+251.5 "天降一击" Ability { id: "9D0F", source: "希瓦·米特隆" }
+251.6 "冰柱冲击" Ability { id: "9D06" }
+254.2 "冰针" Ability { id: "9D08" }
+254.6 "罪神圣 (咏唱)" Ability { id: "9D10", source: "巫女的镜像" }
+255.5 "冰柱冲击" Ability { id: "9D06" }
+255.5 "罪神圣 1 (圈)" #Ability { id: "9D11", source: "希瓦·米特隆" }
+256.9 "罪神圣 2 (圈)" #Ability { id: "9D11", source: "巫女的镜像" }
+258.5 "罪神圣 3 (圈)" #Ability { id: "9D11", source: "巫女的镜像" }
+260.1 "罪神圣 4 (圈)" #Ability { id: "9D11", source: "巫女的镜像" }
+263.9 "冰霜护甲/闪光护甲" Ability { id: ["9CF8", "9CF9"], source: ["Oracle's Reflection", "Usurper Of Frost"] }
+270.5 "静寂的双剑技/闲寂的双剑技" Ability { id: ["9D01", "9D02"], source: "巫女的镜像" }
+272.6 "闲寂的双剑技/静寂的双剑技" Ability { id: ["9D03", "9D04"], source: "巫女的镜像" }
+276.2 "--targetable--"
+283.3 "神圣射线" Ability { id: "9D12", source: "希瓦·米特隆" }
+293.0 "镜中奇遇" Ability { id: "9CF3", source: "希瓦·米特隆" }
+307.1 "镰形回旋踢" Ability { id: "9D0B", source: "希瓦·米特隆" }
+317.2 "连锁反射：镰形回旋踢" Ability { id: "9D0D", source: "冰面镜" }
+323.3 "强放逐" Ability { id: ["9D1C", "9D1D"], source: "希瓦·米特隆" }
+326.4 "--center--" Ability { id: "9CEF", source: "希瓦·米特隆" }
+332.7 "光之失控" Ability { id: "9D14", source: "希瓦·米特隆" }
+335.7 "--untargetable--"
+340.7 "光流侵蚀 1" #Ability { id: "9D1A", source: "希瓦·米特隆" }
+342.3 "光流侵蚀 2" #Ability { id: "9D1A", source: "希瓦·米特隆" }
+343.9 "光流侵蚀 3" #Ability { id: "9D1A", source: "希瓦·米特隆" }
+344.0 "侵蚀光" Ability { id: "9D15", source: "希瓦·米特隆" }
+345.4 "光流侵蚀 4" #Ability { id: "9D1A", source: "希瓦·米特隆" }
+347.0 "光流侵蚀 5" #Ability { id: "9D1A", source: "希瓦·米特隆" }
+349.8 "光爆" Ability { id: "9D19", source: "希瓦·米特隆" }
+352.2 "爆炸 1" #Ability { id: "9D1B", source: "圣光" }
+355.2 "爆炸 2" #Ability { id: "9D1B", source: "圣光" }
+358.8 "侵蚀光" Ability { id: "9D15", source: "希瓦·米特隆" }
+361.9 "强放逐" Ability { id: ["9D1C", "9D1D"], source: "希瓦·米特隆" }
+364.9 "--targetable--"
+370.8 "光之海啸" Ability { id: "9CFC", source: "希瓦·米特隆" }
+376.2 "--center--" Ability { id: "9CEF", source: "希瓦·米特隆" }
+390.1 "绝对零度 (狂暴)" Ability { id: "9D8D", source: "希瓦·米特隆" }
+
+# Adds Phase
+# The Heimal Storm casts from the Crystals of Light will stop once they all are killed.
+392.4 "寒波" Ability { id: "9D21", source: "希瓦·米特隆" }
+411.4 "--adds targetable--"
+424.4 "罪冰封" Ability { id: "9D42", source: "暗水晶" } window 424.4,2.5
+425.4 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+428.6 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+429.6 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
+431.8 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+434.7 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
+434.9 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+438.1 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+439.9 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
+441.3 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+444.5 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+445.2 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
+447.7 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
+450.5 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
+455.7 "光之泛滥 (狂暴)" Ability { id: "9D43", source: "永久冰晶" } # interrupted once <50% HP
+
+# Phase Three
+488.8 "--sync--" WasDefeated { target: 'Ice Veil' } window 488.8,5
+500.0 "融合光波" Ability { id: "9D22", source: "希瓦·米特隆" } window 500,5
+514.3 "--targetable--"
+518.3 "地狱审判" Ability { id: "9D49", source: "暗之巫女" }
+521.4 "--sync--" Ability { id: "9CB5", source: "暗之巫女" }
+532.4 "时间压缩·绝" Ability { id: "9D4A", source: "暗之巫女" }
+544.2 "黑暗爆炎" Ability { id: "9D54" }
+549.4 "罪熔毁" Ability { id: "9D2B" } duration 10.2
+554.3 "黑暗爆炎" Ability { id: "9D54" }
+559.4 "罪熔毁" Ability { id: "9D2B" } duration 10.2
+564.3 "黑暗爆炎" Ability { id: "9D54" }
+570.4 "罪熔毁" Ability { id: "9D2B" } duration 10.2
+573.2 "(眩晕 + 回返)" GainsEffect { effectId: "1043" }
+576.2 "暗影之眼" Ability { id: "9D56" }
+580.1 "破盾一击" Ability { id: "9D5E", source: "暗之巫女" }
+588.5 "脉冲星震波" Ability { id: "9D5A", source: "暗之巫女" }
+596.8 "黑色光环" Ability { id: "9D62", source: "暗之巫女" }
+605.9 "延迟咏唱·递进" Ability { id: "9D4D", source: "暗之巫女" }
+621.2 "启示" Ability { id: "9D68", source: "暗之巫女" }
+624.8 "黑暗狂水" Ability { id: "9D4F", source: "暗之巫女" }
+626.3 "碎灵一击" Ability { id: "9D60", source: "暗之巫女" }
+629.5 "--sync--" Ability { id: "9CB5", source: "暗之巫女" }
+635.2 "启示 (x6)" duration 10.0
+637.9 "暗炎喷发" Ability { id: "9D52", source: "暗之巫女" }
+643.7 "黑暗狂水" Ability { id: "9D4F", source: "暗之巫女" }
+646.0 "暗夜舞蹈" Ability { id: "9CF6", source: "暗之巫女" }
+648.9 "暗夜舞蹈" Ability { id: "9CF7", source: "暗之巫女" }
+652.8 "黑暗狂水" Ability { id: "9D4F", source: "暗之巫女" }
+658.2 "脉冲星震波" Ability { id: "9D5A", source: "暗之巫女" }
+672.0 "记忆终结 (狂暴)" Ability { id: "9D6C", source: "暗之巫女" }
+675.4 "--untargetable--"
+
+# Phase Four
+680.8 "--targetable--"
+686.3 "赋形" StartsUsing { id: "9D36", source: "希瓦·米特隆" } window 686.3,5
+689.2 "赋形" Ability { id: "9D36", source: "希瓦·米特隆" }
+700.4 "圣龙护甲" Ability { id: "9CFA" }
+702.9 "天光轮回" Ability { id: "9D2D", source: "希瓦·米特隆" } duration 5.1
+705.4 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
+706.2 "--巫女可选中--"
+708.6 "--sync--" Ability { id: "9CEF", source: "希瓦·米特隆" }
+714.9 "光与暗的龙诗" Ability { id: "9D2F", source: "希瓦·米特隆" }
+726.1 "侵蚀光" Ability { id: "9D15", source: "希瓦·米特隆" }
+727.0 "光之波动" Ability { id: "9CFE", source: "希瓦·米特隆" }
+729.1 "碎灵一击" Ability { id: "9D60", source: "暗之巫女" }
+729.5 "碎灵一击 (伤害)" Ability { id: "9D61", source: "暗之巫女" }
+734.1 "黑暗狂水" Ability { id: "9D4F" }
+737.7 "真夜舞蹈" Ability { id: "9D5C", source: "暗之巫女" }
+741.0 "真夜舞蹈" Ability { id: "9D5D", source: "暗之巫女" }
+744.4 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
+745.4 "--巫女中央--" Ability { id: "9CB5", source: "暗之巫女" }
+750.7 "死亡轮回" Ability { id: "9D6E", source: "暗之巫女" } duration 3.9
+760.8 "无尽顿悟" Ability { id: "9D70", source: "暗之巫女" }
+765.1 "--归位--" Ability { id: "9CB5", source: "暗之巫女" }
+776.3 "时间结晶" Ability { id: "9D30", source: "希瓦·米特隆" }
+779.3 "--希瓦·米特隆不可选中--"
+780.3 "--巫女不可选中--"
+782.4 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
+788.3 "巨漩涡" Ability { id: "9D6B" }
+789.3 "黑暗狂水" Ability { id: "9D4F" }
+791.3 "黑暗冰封" Ability { id: "9D57" }
+793.4 "--sync--" Ability { id: "9CEF", source: "希瓦·米特隆" }
+793.9 "巨漩涡" Ability { id: "9D6B" }
+794.3 "黑暗神圣" Ability { id: "9D55" }
+797.7 "光之巨浪" Ability { id: "9D3B" } duration 6
+798.8 "巨漩涡" Ability { id: "9D6B" }
+799.8 "--sync--" Ability { id: "9CEF", source: "希瓦·米特隆" }
+804.0 "光之巨浪" Ability { id: "9D3B" } duration 6
+808.2 "寂灭" Ability { id: "9D59", source: "暗之巫女" }
+810.2 "(放置回返)"
+813.8 "碎灵一击" Ability { id: "9D61", source: "暗之巫女" }
+817.2 "(眩晕 + 回返)"
+819.4 "神圣之翼" Ability { id: "9D8C", source: "希瓦·米特隆" }
+824.0 "神圣之翼" Ability { id: "9D8C", source: "希瓦·米特隆" }
+828.1 "--center--" Ability { id: "9CB5", source: "暗之巫女" }
+829.4 "--targetable--"
+833.3 "死亡轮回" Ability { id: "9D6E", source: "暗之巫女" } duration 3.9
+841.3 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
+843.3 "无尽顿悟" Ability { id: "9D70", source: "暗之巫女" }
+846.5 "记忆终结/绝对零度" StartsUsing { id: ["9D71", "9D35"] }
+856.5 "记忆终结/绝对零度 (狂暴)" Ability { id: ["9D71","9D35"] }
+
+# Cutscene
+# TODO: Replace `ActorControlExtra` sync with dialog packet for "You endure? ..." (once available from OP)
+956.0 "--sync--" ActorControlExtra { category: "0197", param1: "1E43" } window 150,5 # limited lookbehind due to re-use
+962.0 "(眩晕 + 动画)" Ability { id: "9D28" } window 962,5
+
+# Phase 5
+1029.6 "--targetable--"
+1034.8 "光尘之剑" StartsUsing { id: "9D72", source: "潘多拉·米特隆" } window 1034.8,5
+1040.8 "光尘之剑" Ability { id: "9D72", source: "潘多拉·米特隆" }
+
+# Depending on where the Path of Darkness/Light starts, the duration can range from 18.3s to 22.5s
+# The tail end of this is largely irrelevant since the abilities are used at the far perimeter of the arena.
+# But to simplify, use a duration of 20.4 (the midpoint).
+1052.0 "暗之波动" Ability { id: "9CB6", source: "潘多拉·米特隆" } duration 20.4
+1067.8 "死亡轮回" Ability { id: "9D76", source: "潘多拉·米特隆" }
+1076.0 "复乐园" Ability { id: "9D7F", source: "潘多拉·米特隆" }
+1086.0 "光与暗的孤翼" Ability { id: ["9D29", "9D79"], source: "潘多拉·米特隆" }
+1086.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
+1089.9 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
+1093.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
+1107.4 "星灵之剑" Ability { id: "9D7C", source: "潘多拉·米特隆" } duration 2.7
+1112.0 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
+1116.6 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
+1121.2 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
+1141.7 "潘多拉魔盒" Ability { id: "9D86", source: "潘多拉·米特隆" }
+1153.8 "光尘之剑" Ability { id: "9D72", source: "潘多拉·米特隆" }
+1164.9 "暗之波动" Ability { id: "9CB6", source: "潘多拉·米特隆" } duration 20.4
+1180.7 "死亡轮回" Ability { id: "9D76", source: "潘多拉·米特隆" }
+1193.0 "复乐园" Ability { id: "9D7F", source: "潘多拉·米特隆" }
+1203.0 "光与暗的孤翼" Ability { id: ["9D29", "9D79"], source: "潘多拉·米特隆" }
+1203.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
+1206.9 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
+1210.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
+1219.2 "星灵之剑" Ability { id: "9D7C", source: "潘多拉·米特隆" } duration 2.7
+1223.8 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
+1228.4 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
+1233.0 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
+1244.3 "光尘之剑" Ability { id: "9D72", source: "潘多拉·米特隆" }
+1255.3 "暗之波动" Ability { id: "9CB6", source: "潘多拉·米特隆" } duration 20.4
+1271.3 "死亡轮回" Ability { id: "9D76", source: "潘多拉·米特隆" }
+1279.8 "失乐园" StartsUsing { id: "9D88", source: "潘多拉·米特隆" }
+1301.3 "失乐园 (狂暴)" Ability { id: "9D88", source: "潘多拉·米特隆" }
+
+# IGNORED ABILITIES
+# Fatebreaker
+# 9CB4 --sync--: Auto-attack
+# 9CC9 Fall Of Faith: Tether castbar, fire
+# 9CCA Solemn Charge: Rush to tether target, clones
+# 9CCC Fall Of Faith: Tether castbar, lightning
+# 9CCD Solemn Charge: Rush to tether target, Fatebreaker
+# 9CCF Bow Shock: Lightning bait cones (Sinsmite follow-up)
+# 9CD8 Brightfire: Turn Of The Heavens circle explosions
+# 9CD9 Brightfire: Turn Of The Heavens circle explosions
+# 9CE5 Bound of Faith: Roots + lifts tether target
+# 9CE6 Solemn Charge: Rush to tether target, clones, Turn Of The Heavens
+# 9CE9 Burn Mark: Tower failure
+
+# Usurper Of Frost
+# 9CF0 --sync--: Auto-attack
+# 9D0C Reflected Scythe Kick: Blue mirror copy of Scythe Kick
+# 9D0E The House Of Light: Mirror Proteans
+# 9D13 Hallowed Ray: Stack laser resolves
+
+# ALL ENCOUNTER ABILITIES
+# 9CB2 attack
+# 9CB3 --sync--: Auto-attack
+# 9CB4 --sync--: Auto-attack
+# 9CB5 --sync--: P4 boss jump
+# 9CB6 the Path of Darkness
+# 9CB7 Cruel Path of Light
+# 9CB8 Cruel Path of Darkness
+# 9CB9 Icecrusher
+# 9CBA Explosion: Tower damage
+# 9CBB Explosion: Tower damage
+# 9CBC Explosion: Tower damage
+# 9CBD Explosion: Tower damage
+# 9CBE Explosion: Tower damage
+# 9CBF Explosion: Tower damage
+# 9CC0 Burnished Glory: 狂暴
+# 9CC1 Burnt Strike: Guillotine cleave, fire
+# 9CC2 Blastburn: Fire Burnt Strike knockback
+# 9CC3 Explosion: Tower damage
+# 9CC4 Unmitigated Explosion
+# 9CC5 Burnt Strike: Guillotine cleave, lightning
+# 9CC6 Burnout: Lightning Burnt Strike expansion
+# 9CC7 Explosion: Tower damage
+# 9CC8 Unmitigated Explosion
+# 9CC9 Fall Of Faith: Tether castbar, fire
+# 9CCA Solemn Charge: Rush to tether target, clones
+# 9CCB Sinsmoke
+# 9CCC Fall Of Faith: Tether castbar, lightning
+# 9CCD Solemn Charge: Rush to tether target, Fatebreaker
+# 9CCE Sinsmite: Tether damage, lightning
+# 9CCF Bow Shock: Lightning bait cones (Sinsmite follow-up)
+# 9CD0 Cyclonic Break: Protean castbar, fire
+# 9CD1 Cyclonic Break: Protean, targeted
+# 9CD2 Cyclonic Break: Protean, follow-up
+# 9CD3 Sinsmoke: Protean follow-up, pairs
+# 9CD4 Cyclonic Break: Protean castbar, lightning
+# 9CD5 Sinsmite: Protean follow-up, spreads
+# 9CD6 Turn Of The Heavens: Emote for Brightfire circle expansion, fire
+# 9CD7 Turn Of The Heavens: Emote for Brightfire circle expansion, lightning
+# 9CD8 Brightfire: Turn Of The Heavens circle explosions
+# 9CD9 Brightfire: Turn Of The Heavens circle explosions
+# 9CDA Utopian Sky: Intermission/trio castbar, fire
+# 9CDB Utopian Sky: Intermission/trio castbar, lightning
+# 9CDC Sinblaze: Tether damage, fire
+# 9CDD Blasting Zone: Utopian Sky line AoE castbar
+# 9CDE Blasting Zone: Utopian Sky line AoEs
+# 9CDF Sinbound Fire III: Utopian Sky light party stacks
+# 9CE0 Sinbound Thunder III: Utopian Sky spreads
+# 9CE1 Burnt Strike: Utopian Sky guillotine cleave, fire
+# 9CE2 Blastburn: Utopian Sky fire Burnt Strike knockback
+# 9CE3 Burnt Strike: Utopian Sky guillotine cleave, lightning
+# 9CE4 Burnout: Utopian Sky lightning Burnt Strike expansion
+# 9CE5 Bound of Faith: Utopian Sky -- Roots + lifts tether target
+# 9CE6 Solemn Charge: Utopian Sky -- Rush to tether target, clones
+# 9CE7 Sinsmoke: Utopian Sky fire tether damage
+# 9CE8 Powder Mark Trail: Splashing tank buster
+# 9CE9 Burn Mark: Tower failure
+# 9CEA Burnished Glory: Raidwide + bleed
+# 9CEB Floating Fetters: Roots + lifts tether target
+# 9CEC --sync--: probably also a jump/center
+# 9CED --sync--: --center--
+# 9CEE Edge of Oblivion
+# 9CEF --sync--: P1/P4 boss jump
+# 9CF0 --sync--: Auto-attack
+# 9CF1 --sync--: Auto-attack
+# 9CF2 --sync--: Auto-attack
+# 9CF3 Mirror, Mirror: Summon mirrors
+# 9CF4 Mirror Image: Summon Shiva clone
+# 9CF5 Darkest Dance
+# 9CF6 Darkest Dance
+# 9CF7 Darkest Dance
+# 9CF8 Frost Armor: Slippery floor cast
+# 9CF9 Shining Armor: Gaze attack from Shiva and clone
+# 9CFA Drachen Armor
+# 9CFB the Path of Light
+# 9CFC the House of Light: Final P2 Protean castbar
+# 9CFD the House of Light: Final P2 Protean castbar
+# 9CFE the Path of Light
+# 9CFF Quadruple Slap: Shiva tankbuster hit 1
+# 9D00 Quadruple Slap: Shiva tankbuster hit 2
+# 9D01 Twin Stillness: Front -> back cleave combo, front hit
+# 9D02 Twin Silence: Back -> front cleave combo, back hit
+# 9D03 Twin Silence: Back -> front cleave combo, front hit
+# 9D04 Twin Stillness: Front -> back cleave combo, back hit
+# 9D05 Diamond Dust: Raidwide
+# 9D06 Icicle Impact: Shiva circles
+# 9D07 Frigid Stone: Shiva stars land
+# 9D08 Frigid Needle: Shiva star explosions cast (no visible castbar)
+# 9D09 Frigid Needle: Shiva star explosions
+# 9D0A Axe Kick: Chariot AoE
+# 9D0B Scythe Kick: Dynamo AoE
+# 9D0C Reflected Scythe Kick: Blue mirror copy of Scythe Kick
+# 9D0D Reflected Scythe Kick: Red mirror copy of Scythe Kick
+# 9D0E The House Of Light: Mirror Proteans
+# 9D0F Heavenly Strike: Knockback
+# 9D10 Sinbound Holy: Healer stack puddles castbar
+# 9D11 Sinbound Holy: Healer stack puddles
+# 9D12 Hallowed Ray: Stack laser castbar
+# 9D13 Hallowed Ray: Stack laser resolves
+# 9D14 Light Rampant: Raidwide
+# 9D15 Bright Hunger: Light Rampant tower resolution
+# 9D16 Inescapable Illumination: Lightsteep stacks x5?
+# 9D17 Refulgent Fate: Light Rampant chain break
+# 9D18 Lightsteep: Light Rampant stack addition
+# 9D19 Powerful Light: Light Rampant 4/4 stack orbs
+# 9D1A Luminous Hammer: Light Rampant puddles
+# 9D1B Burst: Light Rampant large puddle AoEs
+# 9D1C Banish III: P2 partner stacks cast (no visible castbar)
+# 9D1D Banish III: P2 spreads cast (no visible castbar)
+# 9D1E Banish III: P2 partner stacks
+# 9D1F Banish III Divided: P2 spreads
+# 9D20 Absolute Zero: P2 phase end castbar, raidwide
+# 9D21 Swelling Frost
+# 9D22 Junction
+# 9D23 Hallowed Wings
+# 9D24 Hallowed Wings
+# 9D25 Hallowed Wings
+# 9D26 Hallowed Wings
+# 9D27 --sync--: probably also a jump/center
+# 9D28 --sync--: probably also a jump/center
+# 9D29 Wings Dark and Light
+# 9D2A Polarizing Paths
+# 9D2B Sinbound Meltdown
+# 9D2C Sinbound Fire
+# 9D2D Akh Rhai
+# 9D2E Akh Rhai
+# 9D2F Darklit Dragonsong
+# 9D30 Crystallize Time
+# 9D31 Longing of the Lost
+# 9D32 Joyless Dragonsong
+# 9D33 Joyless Dragonsong
+# 9D34
+# 9D35 Absolute Zero
+# 9D36 Materialization
+# 9D37 Akh Morn
+# 9D38 Akh Morn
+# 9D39 Morn Afah
+# 9D3A Morn Afah
+# 9D3B Tidal Light
+# 9D3C Tidal Light
+# 9D3D Tidal Light
+# 9D3E
+# 9D3F Hiemal Storm
+# 9D40 Hiemal Storm
+# 9D41 Hiemal Ray
+# 9D42 Sinbound Blizzard III
+# 9D43 Endless Ice Age
+# 9D44 Depths of Oblivion
+# 9D45 Memory Paradox
+# 9D46 Sinbound Blizzard III
+# 9D47 Paradise Lost
+# 9D48
+# 9D49 Hell's Judgment
+# 9D4A Ultimate Relativity
+# 9D4B Return
+# 9D4C Return IV
+# 9D4D Spell-in-Waiting Refrain
+# 9D4E Dark Water III
+# 9D4F Dark Water III
+# 9D50 Dark Water III
+# 9D51 Dark Eruption
+# 9D52 Dark Eruption
+# 9D53 Dark Eruption
+# 9D54 Dark Fire III
+# 9D55 Unholy Darkness
+# 9D56 Shadoweye
+# 9D57 Dark Blizzard III
+# 9D58 Dark Aero III
+# 9D59 Quietus
+# 9D5A Shockwave Pulsar
+# 9D5B Somber Dance
+# 9D5C Somber Dance
+# 9D5D Somber Dance
+# 9D5E Shell Crusher
+# 9D5F Shell Crusher
+# 9D60 Spirit Taker
+# 9D61 Spirit Taker
+# 9D62 Black Halo
+# 9D63 Sinbound Meltdown
+# 9D64 Sinbound Meltdown
+# 9D65 Speed
+# 9D66 Quicken
+# 9D67 Slow
+# 9D68 Apocalypse
+# 9D69 Apocalypse
+# 9D6A Crystallize Time
+# 9D6B Maelstrom
+# 9D6C Memory's End
+# 9D6D Darklit Dragonsong
+# 9D6E Akh Morn
+# 9D6F Akh Morn
+# 9D70 Morn Afah
+# 9D71 Memory's End
+# 9D72 Fulgent Blade
+# 9D73 the Path of Light
+# 9D74 the Path of Light
+# 9D75 the Path of Darkness
+# 9D76 Akh Morn
+# 9D77 Akh Morn
+# 9D78 Akh Morn
+# 9D79 Wings Dark and Light
+# 9D7A Wings Dark and Light
+# 9D7B Wings Dark and Light
+# 9D7C Polarizing Strikes
+# 9D7D Cruel Path of Light
+# 9D7E Cruel Path of Darkness
+# 9D7F Paradise Regained
+# 9D80 Explosion
+# 9D81 Unmitigated Explosion
+# 9D82 Twin Poles
+# 9D83 Twin Poles
+# 9D84 Twin Poles
+# 9D85 Twin Poles
+# 9D86 Pandora's Box
+# 9D87 Paradise Lost
+# 9D88 Paradise Lost
+# 9D89 Cyclonic Break: Utopian Sky Protean castbar, fire
+# 9D8A Cyckonic Break: Utopian Sky Protean castbar, lightning
+# 9D8B Fated Burn Mark
+# 9D8C Hallowed Wings
+# 9D8D Absolute Zero
+# 9D8E Absolute Zero
+# 9D8F Memory's End
+# 9D90 Memory's End

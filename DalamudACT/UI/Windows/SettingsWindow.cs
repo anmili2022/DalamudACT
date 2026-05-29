@@ -29,6 +29,7 @@ internal sealed partial class SettingsWindow : Window
     private string floatingStyleShareCode = string.Empty;
     private string floatingStyleTransferStatusText = string.Empty;
     private string timelineRemoteStatusText = string.Empty;
+    private string timelineForceLoadPath = string.Empty;
     private bool timelineRemoteOperationRunning;
     private string customFriendlyNpcNameInput = string.Empty;
     private string customFriendlyNpcStatusText = string.Empty;

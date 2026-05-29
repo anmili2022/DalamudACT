@@ -18,6 +18,7 @@ public sealed class StatusObserverConfig
     public bool ShowTargetStatuses = true;
     public bool HidePermanentStatuses = true;
     public bool ShowSourceInfo = true;
+    public bool ShowStatusIdUnderIcon = false;
     public int SelfMaxStatuses = 40;
     public int TargetMaxStatuses = 40;
     public List<uint> FavoriteStatusIds = new();

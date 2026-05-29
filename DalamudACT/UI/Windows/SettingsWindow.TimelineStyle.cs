@@ -20,6 +20,9 @@ internal sealed partial class SettingsWindow
             16.8f,
             () =>
             {
+                DrawForceLoadTimelineControls();
+                ImGui.Separator();
+
                 var visibleSeconds = config.TimelineVisibleSeconds;
                 if (ImGui.SliderInt("时间轴显示未来秒数", ref visibleSeconds, 10, 600))
                 {
@@ -102,7 +105,7 @@ internal sealed partial class SettingsWindow
                     });
 
                 ImGui.SameLine();
-                if (ImGui.Button("下载全部时间轴"))
+                if (ImGui.Button("更新时间轴"))
                     RunTimelineRemoteOperation(async cancellationToken =>
                     {
                         if (timelineService == null)
@@ -120,7 +123,7 @@ internal sealed partial class SettingsWindow
                     ImGui.TextUnformatted("下载中...");
                 }
 
-                DrawCompactHelp("在线时间轴说明", "刷新当前副本时间轴只下载当前区域匹配的时间轴；下载全部时间轴会下载索引中的所有时间轴，用于离线使用或批量更新。在线缓存位置为 pluginConfigs/DalamudACT/Timeline/RemoteCache/Data，用户手动时间轴仍然优先。 ");
+                DrawCompactHelp("在线时间轴说明", "刷新当前副本时间轴只下载当前区域匹配的时间轴；更新时间轴会下载索引中的所有时间轴，用于离线使用或批量更新。在线缓存位置为 pluginConfigs/DalamudACT/Timeline/RemoteCache/Data，用户手动时间轴仍然优先。 ");
 
                 if (!string.IsNullOrWhiteSpace(timelineRemoteStatusText))
                     ImGui.TextWrapped(timelineRemoteStatusText);
@@ -160,6 +163,34 @@ internal sealed partial class SettingsWindow
     private Progress<string> CreateTimelineRemoteProgress()
         => new(message => timelineRemoteStatusText = message);
 
+    private void DrawForceLoadTimelineControls()
+    {
+        ImGui.TextUnformatted("强制加载时间轴");
+        if (timelineService == null)
+        {
+            ImGui.TextDisabled("时间轴服务未初始化。");
+            return;
+        }
+
+        ImGui.SetNextItemWidth(-1f);
+        ImGui.InputText("##force_load_timeline_path", ref timelineForceLoadPath, 512);
+
+        if (ImGui.Button("强制加载时间轴"))
+            timelineRemoteStatusText = timelineService.ForceLoadTimelineFile(timelineForceLoadPath);
+
+        ImGui.SameLine();
+        if (ImGui.Button("取消强制加载"))
+            timelineRemoteStatusText = timelineService.ClearForcedTimeline();
+
+        if (timelineService.HasForcedTimeline)
+        {
+            ImGui.SameLine();
+            ImGui.TextDisabled("当前：强制加载中");
+        }
+
+        DrawCompactHelp("强制加载说明", "输入或粘贴 .txt / .cn.txt 时间轴文件完整路径后加载，忽略当前副本 ZoneId。用于测试时间轴文件。取消后恢复按当前区域自动匹配。 ");
+    }
+
     private void DrawTimelineTtsCorrectionsEditor()
     {
         config.EnsureTimelineTtsCorrections();
@@ -169,54 +200,12 @@ internal sealed partial class SettingsWindow
         DrawCompactHelp("TTS纠偏说明", "发送 TTS 前会按列表把原词替换成纠偏词。纠偏会作用在完整文本中，例如“地动山摇”命中“地动 -> 帝动”后会播报为“帝动山摇”。");
 
         var removeIndex = -1;
-        if (ImGui.BeginTable("##timeline_tts_corrections", 4, ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings))
+        for (var i = 0; i < config.TimelineTtsCorrections.Count; i++)
         {
-            ImGui.TableSetupColumn("启用", ImGuiTableColumnFlags.WidthFixed, 46f);
-            ImGui.TableSetupColumn("原词");
-            ImGui.TableSetupColumn("纠偏词");
-            ImGui.TableSetupColumn("操作", ImGuiTableColumnFlags.WidthFixed, 54f);
-            ImGui.TableHeadersRow();
-
-            for (var i = 0; i < config.TimelineTtsCorrections.Count; i++)
-            {
-                var rule = config.TimelineTtsCorrections[i];
-                ImGui.PushID(i);
-                ImGui.TableNextRow();
-
-                ImGui.TableSetColumnIndex(0);
-                var enabled = rule.Enabled;
-                if (ImGui.Checkbox("##enabled", ref enabled))
-                {
-                    rule.Enabled = enabled;
-                    config.Save();
-                }
-
-                ImGui.TableSetColumnIndex(1);
-                var from = rule.From ?? string.Empty;
-                ImGui.SetNextItemWidth(-1f);
-                if (ImGui.InputText("##from", ref from, 64))
-                {
-                    rule.From = from;
-                    config.Save();
-                }
-
-                ImGui.TableSetColumnIndex(2);
-                var to = rule.To ?? string.Empty;
-                ImGui.SetNextItemWidth(-1f);
-                if (ImGui.InputText("##to", ref to, 64))
-                {
-                    rule.To = to;
-                    config.Save();
-                }
-
-                ImGui.TableSetColumnIndex(3);
-                if (ImGui.SmallButton("删除"))
-                    removeIndex = i;
-
-                ImGui.PopID();
-            }
-
-            ImGui.EndTable();
+            var rule = config.TimelineTtsCorrections[i];
+            ImGui.PushID(i);
+            DrawTtsCorrectionRuleRow(rule, i, ref removeIndex);
+            ImGui.PopID();
         }
 
         if (removeIndex >= 0 && removeIndex < config.TimelineTtsCorrections.Count)
@@ -228,6 +217,53 @@ internal sealed partial class SettingsWindow
         if (ImGui.Button("新增纠偏"))
         {
             config.TimelineTtsCorrections.Add(new TtsCorrectionRule { From = string.Empty, To = string.Empty, Enabled = true });
+            config.Save();
+        }
+    }
+
+    private void DrawTtsCorrectionRuleRow(TtsCorrectionRule rule, int index, ref int removeIndex)
+    {
+        var style = ImGui.GetStyle();
+        var availableWidth = ImGui.GetContentRegionAvail().X;
+        var inputWidth = Math.Clamp((availableWidth - 112f - style.ItemSpacing.X * 4f) * 0.5f, 90f, 180f);
+
+        if (index > 0)
+            ImGui.Separator();
+
+        var enabled = rule.Enabled;
+        if (ImGui.Checkbox("启用", ref enabled))
+        {
+            rule.Enabled = enabled;
+            config.Save();
+        }
+
+        ImGui.SameLine(0f, 10f);
+        ImGui.TextDisabled($"规则 {index + 1}");
+        ImGui.SameLine(0f, 12f);
+        if (ImGui.SmallButton("删除"))
+            removeIndex = index;
+
+        ImGui.TextDisabled("原词");
+        ImGui.SameLine(inputWidth + style.ItemSpacing.X + 20f);
+        ImGui.TextDisabled("纠偏词");
+
+        var from = rule.From ?? string.Empty;
+        ImGui.SetNextItemWidth(inputWidth);
+        if (ImGui.InputText("##from", ref from, 64, ImGuiInputTextFlags.AutoSelectAll))
+        {
+            rule.From = from;
+            config.Save();
+        }
+
+        ImGui.SameLine(0f, 6f);
+        ImGui.TextUnformatted("→");
+        ImGui.SameLine(0f, 6f);
+
+        var to = rule.To ?? string.Empty;
+        ImGui.SetNextItemWidth(inputWidth);
+        if (ImGui.InputText("##to", ref to, 64, ImGuiInputTextFlags.AutoSelectAll))
+        {
+            rule.To = to;
             config.Save();
         }
     }

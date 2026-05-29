@@ -36,7 +36,7 @@ internal sealed partial class TimelineMechanicHintProvider
                     continue;
 
                 ParseBundle(File.ReadAllText(path));
-                LogHelper.Info("时间轴", $"已从 cactbot 静态提取 {hintsByActionId.Count} 个机制类型映射。 ");
+                LogHelper.Debug("时间轴", $"已从 cactbot 静态提取 {hintsByActionId.Count} 个机制类型映射。 ");
                 return;
             }
             catch (Exception ex)

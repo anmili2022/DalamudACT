@@ -9,7 +9,6 @@ namespace DalamudACT;
 internal sealed class MainWindow : Window
 {
     private static readonly string PluginVersion = typeof(MainWindow).Assembly.GetName().Version?.ToString() ?? "未知版本";
-    private const int MaxRecentSummaryItems = 4;
     private const ImGuiTableFlags SummaryTableFlags =
         ImGuiTableFlags.RowBg | ImGuiTableFlags.BordersInnerH | ImGuiTableFlags.NoSavedSettings;
 
@@ -61,14 +60,6 @@ internal sealed class MainWindow : Window
             "查看当前本地统计的数据来源、插件状态和战斗结束判定。",
             8.8f,
             DrawRuntimeSummary);
-
-        ImGui.Spacing();
-        DrawCard(
-            "##main_recent_status_card",
-            "最近状态摘要",
-            "快速查看最近几条信息 / 警告 / 错误日志，无需切到设置页即可了解刚发生的操作与异常。",
-            8.2f,
-            DrawRecentStatusSummary);
 
         ImGui.Spacing();
         DrawCard(
@@ -150,13 +141,6 @@ internal sealed class MainWindow : Window
         {
             ImGui.EndTable();
         }
-    }
-
-    private void DrawRecentStatusSummary()
-    {
-        LogUiHelper.DrawRecentLogToolbar();
-        ImGui.Spacing();
-        LogUiHelper.DrawRecentLogList(MaxRecentSummaryItems);
     }
 
     private void DrawCard(string id, string title, string description, float heightInLines, Action drawContent)

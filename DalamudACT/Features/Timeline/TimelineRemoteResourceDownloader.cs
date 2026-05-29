@@ -110,7 +110,10 @@ internal sealed class TimelineRemoteResourceDownloader
     }
 
     public static string GetCacheDataDirectory()
-        => Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "RemoteCache", "Data");
+        => Path.Combine(GetCacheRootDirectory(), "Data");
+
+    public static string GetCacheRootDirectory()
+        => Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "RemoteCache");
 
     private static string GetCacheIndexPath()
         => Path.Combine(GetCacheDataDirectory(), "timeline-index.json");

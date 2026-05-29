@@ -257,21 +257,9 @@ internal sealed class PartyMonitorService
         var fromDict = GetFoodFromDict(actorId);
         if (fromDict > 0f) return fromDict;
 
-        try
-        {
-            var raw = chara.GetType().GetProperty("StatusList")?.GetValue(chara);
-            var reflected = GetFoodRemainingFromStatusListObject(raw);
-            if (reflected > 0f)
-                return reflected;
-
-            raw = chara.GetType().GetProperty("Statuses")?.GetValue(chara);
-            reflected = GetFoodRemainingFromStatusListObject(raw);
-            if (reflected > 0f)
-                return reflected;
-        }
-        catch
-        {
-        }
+        var reflected = GetFoodRemainingFromStatuses(StatusReflectionAccessor.GetStatuses(chara));
+        if (reflected > 0f)
+            return reflected;
 
         var localName = DalamudApi.GetLocalPlayerName()?.Trim();
         if (!string.IsNullOrWhiteSpace(name)
@@ -300,27 +288,8 @@ internal sealed class PartyMonitorService
 
     private static float GetLocalPlayerFoodRemaining()
     {
-        try
-        {
-            var localPlayer = DalamudApi.GetLocalPlayerBattleChara();
-            if (localPlayer == null)
-                return 0f;
-
-            var raw = localPlayer.GetType().GetProperty("StatusList")?.GetValue(localPlayer);
-            var reflected = GetFoodRemainingFromStatusListObject(raw);
-            if (reflected > 0f)
-                return reflected;
-
-            raw = localPlayer.GetType().GetProperty("Statuses")?.GetValue(localPlayer);
-            reflected = GetFoodRemainingFromStatusListObject(raw);
-            if (reflected > 0f)
-                return reflected;
-        }
-        catch
-        {
-        }
-
-        return 0f;
+        var localPlayer = DalamudApi.GetLocalPlayerBattleChara();
+        return localPlayer == null ? 0f : GetFoodRemainingFromStatuses(StatusReflectionAccessor.GetStatuses(localPlayer));
     }
 
     private float GetFoodFromDict(uint actorId)
@@ -380,42 +349,18 @@ internal sealed class PartyMonitorService
         return remaining;
     }
 
-    private static float GetFoodRemainingFromStatusListObject(object? statusList)
+    private static float GetFoodRemainingFromStatuses(IReadOnlyList<object> statuses)
     {
-        if (statusList == null)
-            return 0f;
-
         var remaining = 0f;
-        var length = ReadIntProperty(statusList, "Length");
-        if (length <= 0)
-            length = ReadIntProperty(statusList, "Count");
-
-        for (var i = 0; i < length; i++)
+        foreach (var status in statuses)
         {
-            var status = ReadIndexedValue(statusList, i);
-            if (status == null)
-                continue;
-
-            var statusId = ReadUIntProperty(status, "StatusId");
-            if (statusId == 0)
-                statusId = ReadUIntProperty(status, "Id");
-
-            var category = 0u;
-            try
-            {
-                var gameDataRef = status.GetType().GetProperty("GameData")?.GetValue(status);
-                var gameData = gameDataRef?.GetType().GetProperty("Value")?.GetValue(gameDataRef);
-                if (gameData != null)
-                    category = ReadUIntProperty(gameData, "StatusCategory");
-            }
-            catch
-            {
-            }
+            var statusId = StatusReflectionAccessor.GetStatusId(status);
+            var category = StatusReflectionAccessor.GetCategory(status);
 
             if (statusId != FoodStatusId && category != FoodStatusCategory)
                 continue;
 
-            var statusRemaining = ReadFloatProperty(status, "RemainingTime");
+            var statusRemaining = StatusReflectionAccessor.GetRemainingTime(status);
             if (statusRemaining > remaining)
                 remaining = statusRemaining;
         }
@@ -423,56 +368,8 @@ internal sealed class PartyMonitorService
         return remaining;
     }
 
-    private static object? ReadIndexedValue(object instance, int index)
-    {
-        try
-        {
-            return instance.GetType().GetProperty("Item")?.GetValue(instance, [index]);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static int ReadIntProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
-            return value == null ? 0 : Convert.ToInt32(value);
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
     private static uint ReadUIntProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
-            return value == null ? 0 : Convert.ToUInt32(value);
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    private static float ReadFloatProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
-            return value == null ? 0f : Convert.ToSingle(value);
-        }
-        catch
-        {
-            return 0f;
-        }
-    }
+        => StatusReflectionAccessor.GetUInt32(instance, propertyName);
 
     private List<SkillCooldownState> BuildSkillStates(
         uint actorId, uint jobId, SkillCategory category,

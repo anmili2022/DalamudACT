@@ -298,7 +298,7 @@ internal sealed partial class LocalStatsService
 
     private void UpdateNoDataCombatDiagnostics(DateTime nowUtc, bool inCombat)
     {
-        if (!LogHelper.EnableDebugLog)
+        if (!LogHelper.IsDebugEnabled(DebugLogModule.DamageStats))
         {
             enteredCombatWithoutDataSinceUtc = default;
             lastNoDataCombatDiagnosticUtc = default;

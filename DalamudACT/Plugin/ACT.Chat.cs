@@ -8,29 +8,34 @@ namespace DalamudACT;
 public sealed partial class ACT
 {
     private Delegate? chatMessageDelegate;
+    private Delegate? logMessageDelegate;
 
     private void RegisterChatHandlers()
     {
+        RegisterLogMessageHandler();
+
         try
         {
-            var eventInfo = DalamudApi.ChatGui.GetType().GetEvent("ChatMessage");
+            var eventInfo = ChatReflectionAccessor.GetEvent(DalamudApi.ChatGui, "ChatMessage");
             var handlerType = eventInfo?.EventHandlerType;
             var methodInfo = ResolveChatMessageHandler(handlerType);
+            LogHelper.Debug("时间轴", $"ChatMessage 事件签名：{ChatReflectionAccessor.DescribeDelegate(handlerType)}，处理器：{methodInfo?.Name ?? "无"}。 ");
             if (eventInfo == null || handlerType == null || methodInfo == null)
             {
                 LogHelper.Warning("时间轴", "当前 Dalamud 运行时未暴露可用的聊天消息事件，SystemLogMessage 时间轴同步已跳过。");
-                return;
             }
-
-            chatMessageDelegate = Delegate.CreateDelegate(handlerType, this, methodInfo, false);
-            if (chatMessageDelegate == null)
+            else
             {
-                LogHelper.Warning("时间轴", "聊天消息事件签名与当前插件不兼容，SystemLogMessage 时间轴同步已跳过。");
-                return;
-            }
+                chatMessageDelegate = Delegate.CreateDelegate(handlerType, this, methodInfo, false);
+                if (chatMessageDelegate == null)
+                {
+                    LogHelper.Warning("时间轴", "聊天消息事件签名与当前插件不兼容，SystemLogMessage 时间轴同步已跳过。 ");
+                    return;
+                }
 
-            eventInfo.AddEventHandler(DalamudApi.ChatGui, chatMessageDelegate);
-            LogHelper.Info("时间轴", "已接入聊天系统消息同步。 ");
+                ChatReflectionAccessor.AddEventHandler(DalamudApi.ChatGui, "ChatMessage", chatMessageDelegate);
+                LogHelper.Debug("时间轴", "已接入聊天系统消息同步。 ");
+            }
         }
         catch (Exception ex)
         {
@@ -42,11 +47,14 @@ public sealed partial class ACT
     private void UnregisterChatHandlers()
     {
         if (chatMessageDelegate == null)
+        {
+            UnregisterLogMessageHandler();
             return;
+        }
 
         try
         {
-            DalamudApi.ChatGui.GetType().GetEvent("ChatMessage")?.RemoveEventHandler(DalamudApi.ChatGui, chatMessageDelegate);
+            ChatReflectionAccessor.RemoveEventHandler(DalamudApi.ChatGui, "ChatMessage", chatMessageDelegate);
         }
         catch
         {
@@ -54,13 +62,61 @@ public sealed partial class ACT
         }
 
         chatMessageDelegate = null;
+        UnregisterLogMessageHandler();
+    }
+
+    private void RegisterLogMessageHandler()
+    {
+        try
+        {
+            var eventInfo = ChatReflectionAccessor.GetEvent(DalamudApi.ChatGui, "LogMessage");
+            var handlerType = eventInfo?.EventHandlerType;
+            var methodInfo = ResolveLogMessageHandler(handlerType);
+            LogHelper.Debug("时间轴", $"LogMessage 事件签名：{ChatReflectionAccessor.DescribeDelegate(handlerType)}，处理器：{methodInfo?.Name ?? "无"}。 ");
+            if (eventInfo == null || handlerType == null || methodInfo == null)
+                return;
+
+            logMessageDelegate = Delegate.CreateDelegate(handlerType, this, methodInfo, false);
+            if (logMessageDelegate == null)
+                return;
+
+            ChatReflectionAccessor.AddEventHandler(DalamudApi.ChatGui, "LogMessage", logMessageDelegate);
+            LogHelper.Debug("时间轴", "已接入 LogMessage 系统消息同步。 ");
+        }
+        catch (Exception ex)
+        {
+            logMessageDelegate = null;
+            LogHelper.Debug("时间轴", ex, "接入 LogMessage 系统消息失败。 ");
+        }
+    }
+
+    private void UnregisterLogMessageHandler()
+    {
+        if (logMessageDelegate == null)
+            return;
+
+        try
+        {
+            ChatReflectionAccessor.RemoveEventHandler(DalamudApi.ChatGui, "LogMessage", logMessageDelegate);
+        }
+        catch
+        {
+        }
+
+        logMessageDelegate = null;
     }
 
     private MethodInfo? ResolveChatMessageHandler(Type? handlerType)
     {
         var invoke = handlerType?.GetMethod("Invoke");
         var parameters = invoke?.GetParameters();
-        if (parameters == null || parameters.Length < 5)
+        if (parameters == null)
+            return null;
+
+        if (parameters.Length == 1)
+            return GetType().GetMethod(nameof(OnHandleableChatMessage), BindingFlags.Instance | BindingFlags.NonPublic);
+
+        if (parameters.Length < 5)
             return null;
 
         var secondParameterType = parameters[1].ParameterType;
@@ -68,6 +124,16 @@ public sealed partial class ACT
             ? nameof(OnChatMessageWithSenderId)
             : nameof(OnChatMessageWithTimestamp);
         return GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+    }
+
+    private MethodInfo? ResolveLogMessageHandler(Type? handlerType)
+    {
+        var invoke = handlerType?.GetMethod("Invoke");
+        var parameters = invoke?.GetParameters();
+        if (parameters == null || parameters.Length != 1)
+            return null;
+
+        return GetType().GetMethod(nameof(OnLogMessage), BindingFlags.Instance | BindingFlags.NonPublic);
     }
 
     private void OnChatMessageWithSenderId(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -85,21 +151,66 @@ public sealed partial class ACT
     private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
         => OnChatMessageWithTimestamp(type, timestamp, ref sender, ref message, ref isHandled);
 
+    private void OnHandleableChatMessage(object message)
+    {
+        try
+        {
+            var text = ChatReflectionAccessor.ExtractChatMessageText(message);
+            if (string.IsNullOrWhiteSpace(text) || !text.Contains("封锁", StringComparison.Ordinal))
+                return;
+
+            var logKind = ChatReflectionAccessor.GetLogKind(message);
+            LogHelper.Debug("时间轴", $"收到新版聊天封锁提示：logKind={logKind}, text={text}");
+            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow, IsSystemLikeChatKind(logKind));
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("时间轴", ex, "处理新版聊天时间轴同步失败。 ");
+        }
+    }
+
+    private void OnLogMessage(object message)
+    {
+        try
+        {
+            var text = ChatReflectionAccessor.ExtractLogMessageText(message);
+            if (string.IsNullOrWhiteSpace(text) || !text.Contains("封锁", StringComparison.Ordinal))
+                return;
+
+            var logKind = ChatReflectionAccessor.GetLogKind(message);
+            LogHelper.Debug("时间轴", $"收到 LogMessage 封锁提示：logKind={logKind}, text={text}");
+            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow, allowFallbackToNextSystemLog: true);
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("时间轴", ex, "处理 LogMessage 时间轴同步失败。 ");
+        }
+    }
+
     private void HandleTimelineChatMessage(XivChatType type, ref SeString sender, ref SeString message, ref bool isHandled)
     {
         _ = sender;
         _ = isHandled;
 
-        if (type != XivChatType.SystemMessage)
-            return;
-
         try
         {
-            timelineService.ObserveSystemLogMessage(message.TextValue ?? message.ToString(), DateTime.UtcNow);
+            var text = message.TextValue ?? message.ToString();
+            if (type != XivChatType.SystemMessage && !text.Contains("封锁", StringComparison.Ordinal))
+                return;
+
+            if (text.Contains("封锁", StringComparison.Ordinal))
+                LogHelper.Debug("时间轴", $"收到聊天封锁提示：type={type}, text={text}");
+            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow, type == XivChatType.SystemMessage);
         }
         catch (Exception ex)
         {
             LogHelper.Debug("时间轴", ex, "处理系统日志时间轴同步失败。");
         }
     }
+
+    private static bool IsSystemLikeChatKind(string logKind)
+        => logKind.Contains("System", StringComparison.OrdinalIgnoreCase)
+           || logKind.Contains("Notice", StringComparison.OrdinalIgnoreCase)
+           || logKind.Contains("Progress", StringComparison.OrdinalIgnoreCase);
+
 }

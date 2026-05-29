@@ -78,20 +78,99 @@ internal sealed partial class SettingsWindow
             LogHelper.Info("设置", enableDebugLog ? "已从设置中启用调试日志。" : "已从设置中关闭调试日志。");
         }
 
-        DrawCompactHelp("日志写入规则", "开启后，会把调试（Debug）与详细（Verbose）日志写入 Dalamud 插件日志。");
-        ImGui.TextDisabled($"当前状态：{(config.EnableDebugLog ? "已开启" : "已关闭")}");
-
-        if (!ImGui.CollapsingHeader("最近日志摘要"))
+        ImGui.SameLine(0f, 16f);
+        ImGui.TextDisabled("日志频道");
+        ImGui.SameLine(0f, 6f);
+        var logChannel = (int)config.LogChannel;
+        ImGui.SetNextItemWidth(130f);
+        if (ImGui.Combo("##plugin_log_channel", ref logChannel, "关闭\0Info(/xllog)\0Debug\0Echo\0ErrorMessage\0SystemMessage\0"))
         {
-            ImGui.TextDisabled(LogUiHelper.HasRecentLogs
-                ? "默认先收起最近日志摘要；需要查看最近输出时再展开。"
-                : "当前没有最近日志摘要。");
-            return;
+            config.LogChannel = (PluginLogChannel)logChannel;
+            LogHelper.Channel = config.LogChannel;
+            config.Save();
+            LogHelper.Info("设置", $"日志频道已切换为 {GetLogChannelLabel(config.LogChannel)}。");
         }
 
-        LogUiHelper.DrawRecentLogToolbar();
-        LogUiHelper.DrawRecentLogList(10);
+        ImGui.Dummy(new Vector2(0f, 4f));
+        ImGui.TextDisabled("调试日志分组");
+        DrawDebugLogModuleCheckbox(DebugLogModule.PluginHook);
+        ImGui.SameLine(0f, 12f);
+        DrawDebugLogModuleCheckbox(DebugLogModule.Timeline);
+        ImGui.SameLine(0f, 12f);
+        DrawDebugLogModuleCheckbox(DebugLogModule.StatusObserver);
+        ImGui.SameLine(0f, 12f);
+        DrawDebugLogModuleCheckbox(DebugLogModule.CommandChat);
+
+        DrawDebugLogModuleCheckbox(DebugLogModule.Configuration);
+        ImGui.SameLine(0f, 12f);
+        DrawDebugLogModuleCheckbox(DebugLogModule.DamageStats);
+        ImGui.SameLine(0f, 12f);
+        DrawDebugLogModuleCheckbox(DebugLogModule.Dot);
+
+        DrawCompactHelp("日志写入规则", "启用调试日志只控制 Debug/Verbose 是否写入 /xllog。分组开关只在启用调试日志后生效；伤害统计和 DoT 属于战斗高频日志，默认关闭。日志频道控制插件聊天通知输出位置；Info(/xllog) 表示只写入 Dalamud 日志，不往游戏聊天框输出。 ");
+        ImGui.TextDisabled($"当前状态：{(config.EnableDebugLog ? "已开启" : "已关闭")}");
     }
+
+    private void DrawDebugLogModuleCheckbox(DebugLogModule module)
+    {
+        var enabled = config.EnabledDebugLogModules.HasFlag(module);
+        if (!config.EnableDebugLog)
+            ImGui.BeginDisabled();
+
+        if (ImGui.Checkbox(LogHelper.GetDebugLogModuleLabel(module), ref enabled))
+        {
+            if (enabled)
+                config.EnabledDebugLogModules |= module;
+            else
+                config.EnabledDebugLogModules &= ~module;
+
+            config.EnabledDebugLogModules &= DebugLogModule.All;
+            LogHelper.EnabledDebugLogModules = config.EnabledDebugLogModules;
+            config.Save();
+            LogHelper.Info("设置", $"调试日志分组已更新：{BuildDebugLogModuleSummary(config.EnabledDebugLogModules)}。");
+        }
+
+        if (!config.EnableDebugLog)
+            ImGui.EndDisabled();
+    }
+
+    private static string BuildDebugLogModuleSummary(DebugLogModule modules)
+    {
+        if (modules == DebugLogModule.None)
+            return "未选择";
+
+        var labels = new System.Collections.Generic.List<string>();
+        foreach (var module in DebugLogModules)
+        {
+            if (modules.HasFlag(module))
+                labels.Add(LogHelper.GetDebugLogModuleLabel(module));
+        }
+
+        return string.Join("、", labels);
+    }
+
+    private static readonly DebugLogModule[] DebugLogModules =
+    {
+        DebugLogModule.PluginHook,
+        DebugLogModule.Timeline,
+        DebugLogModule.DamageStats,
+        DebugLogModule.Dot,
+        DebugLogModule.StatusObserver,
+        DebugLogModule.CommandChat,
+        DebugLogModule.Configuration,
+    };
+
+    private static string GetLogChannelLabel(PluginLogChannel channel)
+        => channel switch
+        {
+            PluginLogChannel.None => "关闭",
+            PluginLogChannel.Info => "Info(/xllog)",
+            PluginLogChannel.Debug => "Debug",
+            PluginLogChannel.Echo => "Echo",
+            PluginLogChannel.ErrorMessage => "ErrorMessage",
+            PluginLogChannel.SystemMessage => "SystemMessage",
+            _ => channel.ToString(),
+        };
 
     private void DrawMaintenanceActionGrid()
     {
@@ -144,9 +223,8 @@ internal sealed partial class SettingsWindow
             return;
         }
 
-        var rawStatusList = localPlayer.GetType().GetProperty("StatusList")?.GetValue(localPlayer)
-                            ?? localPlayer.GetType().GetProperty("Statuses")?.GetValue(localPlayer);
-        if (rawStatusList == null)
+        var statuses = StatusReflectionAccessor.GetStatuses(localPlayer);
+        if (statuses.Count == 0)
         {
             LogHelper.PrintErrorWithModule("调试", "BUFF", "未读取到本地玩家 StatusList/Statuses。请检查当前 Dalamud API 版本。 ");
             return;
@@ -160,105 +238,24 @@ internal sealed partial class SettingsWindow
         LogHelper.PrintWithModule("调试", "BUFF", $"开始打印当前BUFF：name={name}，actorId=0x{actorId:X8}，job={localPlayer.ClassJob.RowId}。");
 
         var printed = 0;
-        var length = ReadIntProperty(rawStatusList, "Length");
-        if (length <= 0)
-            length = ReadIntProperty(rawStatusList, "Count");
-
-        for (var i = 0; i < length; i++)
+        for (var i = 0; i < statuses.Count; i++)
         {
-            var status = ReadIndexedValue(rawStatusList, i);
-            if (status == null)
-                continue;
+            var status = statuses[i];
 
-            var statusId = ReadUIntProperty(status, "StatusId");
-            if (statusId == 0)
-                statusId = ReadUIntProperty(status, "Id");
+            var statusId = StatusReflectionAccessor.GetStatusId(status);
             if (statusId == 0)
                 continue;
 
             printed++;
-            var statusName = "未知";
-            var category = 0u;
-            try
-            {
-                var gameDataRef = status.GetType().GetProperty("GameData")?.GetValue(status);
-                var gameData = gameDataRef?.GetType().GetProperty("Value")?.GetValue(gameDataRef);
-                statusName = gameData?.GetType().GetProperty("Name")?.GetValue(gameData)?.ToString() ?? statusName;
-                category = ReadUIntProperty(gameData!, "StatusCategory");
-            }
-            catch
-            {
-            }
+            var statusName = StatusReflectionAccessor.GetName(status);
+            var category = StatusReflectionAccessor.GetCategory(status);
 
             LogHelper.PrintWithModule(
                 "调试",
                 "BUFF",
-                $"#{i:00} id={statusId} name={statusName} category={category} remaining={ReadFloatProperty(status, "RemainingTime"):0.0}s param={ReadProperty(status, "Param")} stacks={ReadProperty(status, "StackCount")} source=0x{ReadUIntProperty(status, "SourceId"):X8} actor=0x{ReadUIntProperty(status, "ActorId"):X8}.");
+                $"#{i:00} id={statusId} name={statusName} category={category} remaining={StatusReflectionAccessor.GetRemainingTime(status):0.0}s param={StatusReflectionAccessor.ReadPropertyText(status, "Param")} stacks={StatusReflectionAccessor.ReadPropertyText(status, "StackCount")} source=0x{StatusReflectionAccessor.GetSourceId(status):X8} actor=0x{StatusReflectionAccessor.GetActorId(status):X8}.");
         }
 
         LogHelper.PrintWithModule("调试", "BUFF", $"当前BUFF打印完成，共 {printed} 个非空状态。食物通常应关注 id/category/remaining 字段。");
-    }
-
-    private static string ReadProperty(object instance, string propertyName)
-    {
-        try
-        {
-            return instance.GetType().GetProperty(propertyName)?.GetValue(instance)?.ToString() ?? "-";
-        }
-        catch
-        {
-            return "-";
-        }
-    }
-
-    private static object? ReadIndexedValue(object instance, int index)
-    {
-        try
-        {
-            return instance.GetType().GetProperty("Item")?.GetValue(instance, [index]);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static int ReadIntProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
-            return value == null ? 0 : Convert.ToInt32(value);
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    private static float ReadFloatProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
-            return value == null ? 0f : Convert.ToSingle(value);
-        }
-        catch
-        {
-            return 0f;
-        }
-    }
-
-    private static uint ReadUIntProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
-            return value == null ? 0 : Convert.ToUInt32(value);
-        }
-        catch
-        {
-            return 0;
-        }
     }
 }

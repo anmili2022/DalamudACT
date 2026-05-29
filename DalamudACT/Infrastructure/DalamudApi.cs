@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.IoC;
@@ -41,20 +40,14 @@ public sealed class DalamudApi
 
         try
         {
-            var processCommand = Commands.GetType().GetMethods()
-                .FirstOrDefault(method => method.Name == "ProcessCommand"
-                                          && method.GetParameters().Length == 1
-                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            var processCommand = ReflectionMethodCache.GetMethod(Commands.GetType(), "ProcessCommand", typeof(string));
             if (processCommand != null)
             {
                 processCommand.Invoke(Commands, [command]);
                 return true;
             }
 
-            var sendMessage = ChatGui.GetType().GetMethods()
-                .FirstOrDefault(method => method.Name == "SendMessage"
-                                          && method.GetParameters().Length == 1
-                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            var sendMessage = ReflectionMethodCache.GetMethod(ChatGui.GetType(), "SendMessage", typeof(string));
             if (sendMessage != null)
             {
                 sendMessage.Invoke(ChatGui, [command]);
@@ -76,15 +69,12 @@ public sealed class DalamudApi
 
         try
         {
-            var commandsProperty = Commands.GetType().GetProperty("Commands", BindingFlags.Public | BindingFlags.Instance);
+            var commandsProperty = ReflectionPropertyCache.GetProperty(Commands.GetType(), "Commands");
             var commands = commandsProperty?.GetValue(Commands) as System.Collections.IDictionary;
             if (commands != null)
                 return commands.Contains(command);
 
-            var containsCommand = Commands.GetType().GetMethods()
-                .FirstOrDefault(method => method.Name is "ContainsCommand" or "HasCommand"
-                                          && method.GetParameters().Length == 1
-                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            var containsCommand = ReflectionMethodCache.GetMethod(Commands.GetType(), ["ContainsCommand", "HasCommand"], typeof(string));
             if (containsCommand != null)
                 return containsCommand.Invoke(Commands, [command]) as bool? == true;
         }
@@ -103,10 +93,7 @@ public sealed class DalamudApi
 
         try
         {
-            var print = ChatGui.GetType().GetMethods()
-                .FirstOrDefault(method => method.Name == "Print"
-                                          && method.GetParameters().Length == 1
-                                          && method.GetParameters()[0].ParameterType == typeof(string));
+            var print = ReflectionMethodCache.GetMethod(ChatGui.GetType(), "Print", typeof(string));
             if (print != null)
             {
                 print.Invoke(ChatGui, [message]);
@@ -252,7 +239,9 @@ public sealed class DalamudApi
     {
         try
         {
-            return instance?.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(instance);
+            return instance == null
+                ? null
+                : ReflectionPropertyCache.GetProperty(instance.GetType(), propertyName)?.GetValue(instance);
         }
         catch
         {

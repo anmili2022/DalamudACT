@@ -66,7 +66,7 @@ internal sealed class MainForm : Form
         logPathTextBox.Text = ResolveLatestLog(defaultActLogDirectory) ?? string.Empty;
         outputDirectoryTextBox.Text = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         resourceDirectoryTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DalamudACT", "Timeline", "Resource");
-        timelineDataDirectoryTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XIVLauncherCN", "pluginConfigs", "DalamudACT", "Timeline", "Data");
+        timelineDataDirectoryTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "XIVLauncherCN", "pluginConfigs", "DalamudACT", "Timeline", "RemoteCache", "Data");
 
         ConfigureGrid();
         LayoutControls();
@@ -134,7 +134,7 @@ internal sealed class MainForm : Form
         panel.Controls.Add(promoteDraftTextBox, 1, 3);
         panel.Controls.Add(browsePromoteDraftButton, 2, 3);
         panel.Controls.Add(promoteDraftButton, 3, 3);
-        panel.Controls.Add(new Label { Text = "时间轴目录", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 4);
+        panel.Controls.Add(new Label { Text = "转正目录", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 4);
         panel.Controls.Add(timelineDataDirectoryTextBox, 1, 4);
         panel.Controls.Add(browseTimelineDataButton, 2, 4);
 

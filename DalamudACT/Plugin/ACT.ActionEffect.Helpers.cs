@@ -17,10 +17,10 @@ public sealed partial class ACT
         => (effect.Param0 & 0x40) != 0;
 
     private static bool IsUsableActorId(uint actorId)
-        => actorId is not 0 and not InvalidActorId;
+        => ActorIdentityAccessor.IsUsableActorId(actorId);
 
     private static uint NormalizeEventActorId(uint actorId)
-        => IsUsableActorId(actorId) ? actorId : 0;
+        => ActorIdentityAccessor.NormalizeActorId(actorId);
 
     private static uint NormalizeEventActorId(GameObjectId actorId)
     {
@@ -33,18 +33,7 @@ public sealed partial class ACT
         if (gameObject == null)
             return 0;
 
-        var actorId = unchecked((uint)(gameObject.GameObjectId & uint.MaxValue));
-        if (IsUsableActorId(actorId))
-            return actorId;
-
-        var reflectedObjectId = TryGetReflectedActorId(gameObject, "ObjectId");
-        if (IsUsableActorId(reflectedObjectId))
-            return reflectedObjectId;
-
-        if (IsUsableActorId(gameObject.EntityId))
-            return gameObject.EntityId;
-
-        return 0;
+        return ActorIdentityAccessor.GetBestActorId(gameObject);
     }
 
     private static bool MatchesEventActorId(IGameObject? gameObject, uint actorId)
@@ -52,15 +41,7 @@ public sealed partial class ACT
         if (gameObject == null || !IsUsableActorId(actorId))
             return false;
 
-        var gameObjectActorId = unchecked((uint)(gameObject.GameObjectId & uint.MaxValue));
-        if (IsUsableActorId(gameObjectActorId) && gameObjectActorId == actorId)
-            return true;
-
-        var reflectedObjectId = TryGetReflectedActorId(gameObject, "ObjectId");
-        if (IsUsableActorId(reflectedObjectId) && reflectedObjectId == actorId)
-            return true;
-
-        return IsUsableActorId(gameObject.EntityId) && gameObject.EntityId == actorId;
+        return ActorIdentityAccessor.MatchesActorId(gameObject, actorId);
     }
 
     private static IGameObject? ResolveEventActorObject(uint actorId, nint characterAddress)
@@ -93,23 +74,6 @@ public sealed partial class ACT
         }
 
         return null;
-    }
-
-    private static uint TryGetReflectedActorId(object? instance, string propertyName)
-    {
-        if (instance == null)
-            return 0;
-
-        try
-        {
-            var property = instance.GetType().GetProperty(propertyName);
-            var rawValue = property?.GetValue(instance);
-            return rawValue == null ? 0 : unchecked((uint)(Convert.ToUInt64(rawValue) & uint.MaxValue));
-        }
-        catch
-        {
-            return 0;
-        }
     }
 
     private bool TryObserveFriendlyCombatant(uint preferredActorId, IGameObject? gameObject, out uint actorId)
@@ -209,7 +173,7 @@ public sealed partial class ACT
         bool anyTargetTracked,
         string actionName)
     {
-        if (!LogHelper.EnableDebugLog)
+        if (!LogHelper.IsDebugEnabled(DebugLogModule.DamageStats))
             return;
 
         var nowUtc = DateTime.UtcNow;
@@ -225,7 +189,7 @@ public sealed partial class ACT
             ? null
             : DalamudApi.ObjectTable.CreateObjectReference(sourceCharacterAddress);
         var sourceObjectGameObjectId = sourceObject?.GameObjectId.ToString() ?? "0";
-        var sourceObjectId = TryGetReflectedActorId(sourceObject, "ObjectId");
+        var sourceObjectId = ActorIdentityAccessor.GetReflectedActorId(sourceObject, "ObjectId");
         var sourceEntityId = sourceObject?.EntityId ?? 0;
         var sourceObjectName = sourceObject?.Name.TextValue?.Trim() ?? string.Empty;
         var targetObject = firstTargetId == 0 ? null : DalamudApi.ObjectTable.SearchByEntityId(firstTargetId);

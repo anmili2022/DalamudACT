@@ -37,7 +37,7 @@ internal sealed partial class LocalStatsService
         string message,
         bool includeRecentSummary = true)
     {
-        if (!LogHelper.EnableDebugLog)
+        if (!LogHelper.IsDebugEnabled(DebugLogModule.Dot))
             return;
 
         var key = $"player-dot:{diagnosticKey}";
@@ -59,8 +59,8 @@ internal sealed partial class LocalStatsService
                 playerDotDiagnosticLogTimestamps.Remove(staleKey);
         }
 
-        // 这组日志是短期现场对账用的聚焦诊断。仍然受 EnableDebugLog 控制，
+        // 这组日志是短期现场对账用的聚焦诊断。仍然受调试日志与 DoT 分组控制，
         // 但使用 Info 级别写出，避免 Dalamud 当前日志级别不落 Debug 时无法在 dalamud.log 中检索到。
-        LogHelper.Info("统计", $"DOT诊断：{message}");
+        LogHelper.Info("DoT", $"DOT诊断：{message}");
     }
 }

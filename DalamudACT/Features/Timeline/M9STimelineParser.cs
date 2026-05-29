@@ -14,6 +14,7 @@ internal static partial class M9STimelineParser
     private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant)\b", RegexOptions.Compiled);
     private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
     private static readonly Regex IdRegex = new(@"id\s*:\s*\""(?<id>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
+    private static readonly Regex Param1Regex = new(@"param1\s*:\s*\""(?<param1>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex DurationRegex = new(@"duration\s+(?<duration>\d+(?:\.\d+)?)", RegexOptions.Compiled);
     private static readonly Regex SourceRegex = new(@"source\s*:\s*\""(?<source>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex JumpRegex = new(@"jump\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|(?<label>\S+))", RegexOptions.Compiled);
@@ -31,13 +32,20 @@ internal static partial class M9STimelineParser
         var replacements = ParseChineseReplacements(script);
         var entries = new List<TimelineEntry>();
         var labels = new Dictionary<string, float>(StringComparer.Ordinal);
+        string? pendingComment = null;
         using var reader = new StringReader(timelineMatch.Groups["body"].Value.Replace("\r\n", "\n"));
         while (reader.ReadLine() is { } line)
         {
+            if (TryCaptureComment(line, ref pendingComment))
+                continue;
+
             ParseLabelLine(line, labels);
-            var entry = ParseTimelineLine(line, replacements);
+            var entry = ParseTimelineLine(line, replacements, pendingComment);
             if (entry != null)
+            {
                 entries.Add(entry);
+                pendingComment = null;
+            }
         }
 
         entries.Sort(static (left, right) => left.TimeSeconds.CompareTo(right.TimeSeconds));
@@ -48,20 +56,27 @@ internal static partial class M9STimelineParser
     {
         var entries = new List<TimelineEntry>();
         var labels = new Dictionary<string, float>(StringComparer.Ordinal);
+        string? pendingComment = null;
         using var reader = new StringReader(File.ReadAllText(path).Replace("\r\n", "\n"));
         while (reader.ReadLine() is { } line)
         {
+            if (TryCaptureComment(line, ref pendingComment))
+                continue;
+
             ParseLabelLine(line, labels);
-            var entry = ParseTimelineLine(line, new Dictionary<string, string>());
+            var entry = ParseTimelineLine(line, new Dictionary<string, string>(), pendingComment);
             if (entry != null)
+            {
                 entries.Add(entry);
+                pendingComment = null;
+            }
         }
 
         entries.Sort(static (left, right) => left.TimeSeconds.CompareTo(right.TimeSeconds));
         return new TimelineDefinition(id, name, entries, labels);
     }
 
-    private static TimelineEntry? ParseTimelineLine(string line, IReadOnlyDictionary<string, string> replacements)
+    private static TimelineEntry? ParseTimelineLine(string line, IReadOnlyDictionary<string, string> replacements, string? pendingComment)
     {
         var trimmed = line.Trim();
         if (trimmed.Length == 0 || trimmed.StartsWith('#') || trimmed.StartsWith("hideall", StringComparison.Ordinal))
@@ -84,13 +99,26 @@ internal static partial class M9STimelineParser
         var source = sourceMatch.Success ? Unescape(sourceMatch.Groups["source"].Value) : null;
         var displayText = ApplyChineseReplacements(text, replacements);
         var mechanicHint = ParseMechanicHint(rest);
+        var systemLogId = ParseSystemLogId(rest);
+        var systemLogParam1 = ParseSystemLogParam1(rest);
+        var systemLogTextHint = eventType == "SystemLogMessage" ? pendingComment : null;
         var isInternal = text.StartsWith("--", StringComparison.Ordinal);
         var isSync = text.Contains("sync", StringComparison.OrdinalIgnoreCase);
         var hidden = isInternal || isSync || rest.TrimStart().StartsWith('#');
         var jumpMatch = JumpRegex.Match(rest);
         var jumpLabel = jumpMatch.Success ? Unescape(jumpMatch.Groups["label"].Value) : null;
 
-        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, hidden, isSync, jumpLabel);
+        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, hidden, isSync, jumpLabel);
+    }
+
+    private static bool TryCaptureComment(string line, ref string? pendingComment)
+    {
+        var trimmed = line.Trim();
+        if (!trimmed.StartsWith('#'))
+            return false;
+
+        pendingComment = trimmed.TrimStart('#').Trim();
+        return true;
     }
 
     private static void ParseLabelLine(string line, Dictionary<string, float> labels)
@@ -121,6 +149,18 @@ internal static partial class M9STimelineParser
             AddActionId(ids, idMatch.Groups["id"].Value);
 
         return ids;
+    }
+
+    private static string? ParseSystemLogId(string rest)
+    {
+        var match = IdRegex.Match(rest);
+        return match.Success ? match.Groups["id"].Value.ToUpperInvariant() : null;
+    }
+
+    private static string? ParseSystemLogParam1(string rest)
+    {
+        var match = Param1Regex.Match(rest);
+        return match.Success ? match.Groups["param1"].Value.ToUpperInvariant() : null;
     }
 
     private static void AddActionId(List<uint> ids, string rawId)

@@ -11,6 +11,9 @@ internal sealed record TimelineEntry(
     string? Source,
     float? DurationSeconds,
     string? MechanicHint,
+    string? SystemLogId,
+    string? SystemLogParam1,
+    string? SystemLogTextHint,
     bool Hidden,
     bool IsSync,
     string? JumpLabel);

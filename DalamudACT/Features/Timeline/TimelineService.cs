@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,6 +26,7 @@ internal sealed class TimelineService
     private float lastSystemLogSyncTimeSeconds;
     private readonly HashSet<string> spokenTtsKeys = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DateTime> lastInstantTtsByActionKey = new(StringComparer.Ordinal);
+    private string? forcedTimelinePath;
 
     public TimelineService(PluginConfiguration config)
     {
@@ -36,6 +38,8 @@ internal sealed class TimelineService
     public string DefinitionName => definition?.Name ?? "时间轴";
 
     public bool HasTimeline => definition != null;
+
+    public bool HasForcedTimeline => !string.IsNullOrWhiteSpace(forcedTimelinePath);
 
     public string DebugText
     {
@@ -63,6 +67,27 @@ internal sealed class TimelineService
 
     public Task<string> DownloadAllTimelinesAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
         => remoteResources.DownloadAllAsync(progress, cancellationToken);
+
+    public string ForceLoadTimelineFile(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return "请选择要强制加载的时间轴文件。";
+
+        path = path.Trim().Trim('"');
+        if (!File.Exists(path))
+            return $"时间轴文件不存在：{path}";
+
+        forcedTimelinePath = path;
+        LoadForcedTimeline(Path.GetFileNameWithoutExtension(path), path);
+        return statusText;
+    }
+
+    public string ClearForcedTimeline()
+    {
+        forcedTimelinePath = null;
+        ReloadCurrentTimeline();
+        return "已取消强制加载时间轴。";
+    }
 
     public void Update(bool inCombat, uint zoneId, string zoneName)
     {
@@ -96,7 +121,7 @@ internal sealed class TimelineService
         lastInstantTtsByActionKey.Clear();
     }
 
-    public void ObserveSystemLogMessage(string message, DateTime nowUtc)
+    public void ObserveSystemLogMessage(string message, DateTime nowUtc, bool allowFallbackToNextSystemLog = true)
     {
         if (definition == null || string.IsNullOrWhiteSpace(message))
             return;
@@ -104,10 +129,7 @@ internal sealed class TimelineService
         if (!message.Contains("被封锁", StringComparison.Ordinal) && !message.Contains("封锁", StringComparison.Ordinal))
             return;
 
-        var syncEntry = definition.Entries
-            .Where(entry => entry.EventType == "SystemLogMessage" && entry.TimeSeconds > Math.Max(0f, lastSystemLogSyncTimeSeconds) + 1f)
-            .OrderBy(entry => entry.TimeSeconds)
-            .FirstOrDefault();
+        var syncEntry = ResolveSystemLogSyncEntry(message, allowFallbackToNextSystemLog);
         if (syncEntry == null)
             return;
 
@@ -115,7 +137,75 @@ internal sealed class TimelineService
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = syncEntry.TimeSeconds;
         spokenTtsKeys.Clear();
-        statusText = $"已同步：{definition.Name} / 区域封锁提示";
+        LogHelper.Debug("时间轴", $"SystemLogMessage 同步命中：time={syncEntry.TimeSeconds:0.0}, id={syncEntry.SystemLogId ?? "-"}, param1={syncEntry.SystemLogParam1 ?? "-"}, hint={syncEntry.SystemLogTextHint ?? "-"}, message={message}");
+        statusText = string.IsNullOrWhiteSpace(syncEntry.SystemLogTextHint)
+            ? $"已同步：{definition.Name} / 区域封锁提示"
+            : $"已同步：{definition.Name} / {syncEntry.SystemLogTextHint}";
+    }
+
+    private TimelineEntry? ResolveSystemLogSyncEntry(string message, bool allowFallbackToNextSystemLog)
+    {
+        if (definition == null)
+            return null;
+
+        var candidates = definition.Entries
+            .Where(entry => entry.EventType == "SystemLogMessage" && entry.TimeSeconds > Math.Max(0f, lastSystemLogSyncTimeSeconds) + 1f)
+            .OrderBy(entry => entry.TimeSeconds)
+            .ToList();
+        if (candidates.Count == 0)
+            return null;
+
+        var normalizedMessage = NormalizeSystemLogText(message);
+        var textMatched = candidates.FirstOrDefault(entry => IsSystemLogTextMatch(normalizedMessage, entry.SystemLogTextHint));
+        if (textMatched != null)
+            return textMatched;
+
+        return allowFallbackToNextSystemLog ? candidates.FirstOrDefault() : null;
+    }
+
+    private static bool IsSystemLogTextMatch(string normalizedMessage, string? hint)
+    {
+        var normalizedHint = NormalizeSystemLogText(hint);
+        if (string.IsNullOrWhiteSpace(normalizedHint))
+            return false;
+
+        return normalizedMessage.Contains(normalizedHint, StringComparison.Ordinal)
+               || normalizedHint.Contains(normalizedMessage, StringComparison.Ordinal)
+               || GetSystemLogLocationFragment(normalizedHint) is { Length: > 0 } fragment
+               && normalizedMessage.Contains(fragment, StringComparison.Ordinal);
+    }
+
+    private static string NormalizeSystemLogText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        return Regex.Replace(text, @"^\[\d{1,2}:\d{2}\]", string.Empty)
+            .Replace(" ", string.Empty, StringComparison.Ordinal)
+            .Replace("。", string.Empty, StringComparison.Ordinal)
+            .Replace(".", string.Empty, StringComparison.Ordinal)
+            .Replace("，", string.Empty, StringComparison.Ordinal)
+            .Replace(",", string.Empty, StringComparison.Ordinal)
+            .Trim();
+    }
+
+    private static string GetSystemLogLocationFragment(string text)
+    {
+        var normalized = NormalizeSystemLogText(text);
+        const string prefix = "距";
+        const string sealedSuffix = "被封锁还有15秒";
+        if (normalized.StartsWith(prefix, StringComparison.Ordinal) && normalized.EndsWith(sealedSuffix, StringComparison.Ordinal))
+            return normalized[prefix.Length..^sealedSuffix.Length];
+
+        const string willSealSuffix = "即将封锁";
+        if (normalized.EndsWith(willSealSuffix, StringComparison.Ordinal))
+            return normalized[..^willSealSuffix.Length];
+
+        const string sealedOffSuffix = "willbesealedoff";
+        if (normalized.EndsWith(sealedOffSuffix, StringComparison.OrdinalIgnoreCase))
+            return normalized[..^sealedOffSuffix.Length];
+
+        return normalized;
     }
 
     public void ObserveAbility(uint actionId, DateTime nowUtc, uint sourceId = 0)
@@ -204,66 +294,14 @@ internal sealed class TimelineService
 
         foreach (var battleChara in DalamudApi.ObjectTable.OfType<Dalamud.Game.ClientState.Objects.Types.IBattleChara>())
         {
-            if (!IsLikelyHostileBattleNpc(battleChara))
+            if (!BattleCharaReflectionAccessor.IsLikelyHostileBattleNpc(battleChara))
                 continue;
 
-            var actionId = TryGetCastingActionId(battleChara);
+            var actionId = BattleCharaReflectionAccessor.GetCastingActionId(battleChara);
             if (actionId == 0)
                 continue;
 
-            ProcessInstantTtsWithoutTimeline(actionId, TryGetActorId(battleChara), DateTime.UtcNow);
-        }
-    }
-
-    private static bool IsLikelyHostileBattleNpc(object battleChara)
-    {
-        var objectKind = GetPropertyValue(battleChara, "ObjectKind")?.ToString();
-        if (!string.Equals(objectKind, "BattleNpc", StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        var subKind = GetPropertyValue(battleChara, "SubKind")?.ToString();
-        return string.IsNullOrWhiteSpace(subKind)
-               || subKind.Contains("Enemy", StringComparison.OrdinalIgnoreCase)
-               || subKind.Contains("BattleNpc", StringComparison.OrdinalIgnoreCase)
-               || subKind == "5";
-    }
-
-    private static uint TryGetCastingActionId(object battleChara)
-    {
-        if (!TryGetBoolProperty(battleChara, "IsCasting"))
-            return 0;
-
-        return TryGetUInt32Property(battleChara, "CastActionId", "CastActionID", "CurrentCastActionId", "CurrentCastId");
-    }
-
-    private static uint TryGetActorId(object battleChara)
-        => TryGetUInt32Property(battleChara, "EntityId", "ObjectId")
-           is var entityId && entityId != 0
-            ? entityId
-            : unchecked((uint)TryGetUInt64Property(battleChara, "GameObjectId"));
-
-    private static object? GetPropertyValue(object? instance, string propertyName)
-    {
-        try
-        {
-            return instance?.GetType().GetProperty(propertyName)?.GetValue(instance);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static bool TryGetBoolProperty(object instance, string propertyName)
-    {
-        try
-        {
-            var value = GetPropertyValue(instance, propertyName);
-            return value is bool boolValue && boolValue;
-        }
-        catch
-        {
-            return false;
+            ProcessInstantTtsWithoutTimeline(actionId, BattleCharaReflectionAccessor.GetActorId(battleChara), DateTime.UtcNow);
         }
     }
 
@@ -273,28 +311,9 @@ internal sealed class TimelineService
         {
             try
             {
-                var value = GetPropertyValue(instance, propertyName);
+                var value = instance.GetType().GetProperty(propertyName)?.GetValue(instance);
                 if (value != null)
                     return Convert.ToUInt32(value);
-            }
-            catch
-            {
-                // Try the next runtime property name.
-            }
-        }
-
-        return 0;
-    }
-
-    private static ulong TryGetUInt64Property(object instance, params string[] propertyNames)
-    {
-        foreach (var propertyName in propertyNames)
-        {
-            try
-            {
-                var value = GetPropertyValue(instance, propertyName);
-                if (value != null)
-                    return Convert.ToUInt64(value);
             }
             catch
             {
@@ -339,6 +358,15 @@ internal sealed class TimelineService
 
     private void EnsureTimelineForZone(uint zoneId, string zoneName)
     {
+        if (!string.IsNullOrWhiteSpace(forcedTimelinePath))
+        {
+            loadedZoneId = zoneId;
+            loadedZoneName = zoneName;
+            if (definition == null)
+                LoadForcedTimeline(Path.GetFileNameWithoutExtension(forcedTimelinePath), forcedTimelinePath);
+            return;
+        }
+
         if (loadedZoneId == zoneId && string.Equals(loadedZoneName, zoneName, StringComparison.Ordinal))
             return;
 
@@ -379,6 +407,17 @@ internal sealed class TimelineService
         }
 
         statusText = $"未找到时间轴文件：{candidate.FileName}";
+    }
+
+    private void LoadForcedTimeline(string name, string path)
+    {
+        startedAtUtc = null;
+        displayOffsetSeconds = 0f;
+        lastSystemLogSyncTimeSeconds = 0f;
+        spokenTtsKeys.Clear();
+        definition = M9STimelineParser.ParseTimelineTextFile("forced", name, path);
+        sourcePath = path;
+        statusText = $"已强制加载 {definition.Entries.Count} 条：{name}";
     }
 
     private float? ResolveJumpTargetTime(TimelineEntry entry)
@@ -492,6 +531,7 @@ internal sealed class TimelineService
     private static IEnumerable<string> GetTimelineIndexCandidatePaths()
     {
         yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", "timeline-index.json");
+        yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), "timeline-index.json");
         yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), "timeline-index.json");
         yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", "timeline-index.json");
         yield return Path.Combine(Environment.CurrentDirectory, "DalamudACT", "Features", "Timeline", "Data", "timeline-index.json");
@@ -502,6 +542,7 @@ internal sealed class TimelineService
         foreach (var candidateFileName in GetLocalizedFileNameCandidates(fileName))
         {
             yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", candidateFileName);
+            yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), candidateFileName);
             yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), candidateFileName);
             yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", candidateFileName);
             yield return Path.Combine(Environment.CurrentDirectory, "DalamudACT", "Features", "Timeline", "Data", candidateFileName);
@@ -547,4 +588,5 @@ internal sealed class TimelineService
             return ZoneNameContains.Any(fragment => zoneName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
         }
     }
+
 }

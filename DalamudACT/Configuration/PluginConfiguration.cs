@@ -76,6 +76,8 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
     };
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
+    public DebugLogModule EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;
+    public PluginLogChannel LogChannel = PluginLogChannel.Info;
 
     public PartyMonitorConfig PartyMonitor = new();
     public StatusObserverConfig StatusObserver = new();
@@ -595,12 +597,21 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         if (Version < 62)
             TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
 
+        if (!Enum.IsDefined(typeof(PluginLogChannel), LogChannel))
+            LogChannel = PluginLogChannel.Info;
+
+        EnabledDebugLogModules &= DebugLogModule.All;
+        if (EnabledDebugLogModules == DebugLogModule.None)
+            EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;
+
         SyncSharedColumnSettings();
         EnsureThemeBarColors();
         LogHelper.EnableDebugLog = EnableDebugLog;
+        LogHelper.EnabledDebugLogModules = EnabledDebugLogModules;
+        LogHelper.Channel = LogChannel;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 65);
+        Version = Math.Max(Version, 66);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();

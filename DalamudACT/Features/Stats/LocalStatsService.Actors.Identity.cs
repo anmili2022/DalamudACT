@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Objects.Types;
 
@@ -7,6 +6,9 @@ namespace DalamudACT;
 
 internal sealed partial class LocalStatsService
 {
+    private static ulong TryGetGameObjectId(IGameObject? gameObject)
+        => ActorIdentityAccessor.GetGameObjectId(gameObject);
+
     private static uint ResolveBuddyActorId(IBuddyMember buddy)
         => ResolveBuddyActorId(buddy, buddy.GameObject);
 
@@ -15,42 +17,32 @@ internal sealed partial class LocalStatsService
         return GetBuddyIdentity(buddy, gameObject).ResolveActorId();
     }
 
-    private static ulong TryGetGameObjectId(IGameObject? gameObject)
-    {
-        if (gameObject == null)
-            return 0UL;
-
-        try
-        {
-            return Convert.ToUInt64(gameObject.GameObjectId, CultureInfo.InvariantCulture);
-        }
-        catch
-        {
-            return 0UL;
-        }
-    }
-
     private static ActorIdentity GetGameObjectIdentity(IGameObject? gameObject)
     {
-        var gameObjectId = TryGetGameObjectId(gameObject);
+        var gameObjectId = ActorIdentityAccessor.GetGameObjectId(gameObject);
         // ActionEffectHandler 这条统计链路里拿到的是低 32 位 ID。
         // 因此内部 actorId 口径继续保留 uint，但对象回查优先使用完整的 ulong GameObjectId。
-        var actorId = gameObjectId == 0 ? 0 : unchecked((uint)(gameObjectId & uint.MaxValue));
+        var actorId = ActorIdentityAccessor.NormalizeActorId(gameObjectId);
         // 某些运行时/对象实现会额外暴露 ObjectId，但接口层不一定直接声明。
         // 单人解限、NPC 队友、信赖等场景里，ActionEffect 的 sourceId / targetId
         // 可能更接近这个 ObjectId，而不是低 32 位 GameObjectId。
-        var objectId = TryGetPropertyActorId(gameObject, "ObjectId");
-        var entityId = gameObject?.EntityId ?? 0;
+        var objectId = ActorIdentityAccessor.GetReflectedActorId(gameObject, "ObjectId");
+        var entityId = ActorIdentityAccessor.NormalizeActorId(gameObject?.EntityId ?? 0);
         return new ActorIdentity(gameObjectId, actorId, objectId != 0 ? objectId : entityId, entityId);
     }
+
+    private static uint TryConvertActorId(object? rawValue)
+        => ActorIdentityAccessor.GetReflectedActorId(new RawActorIdBox(rawValue), nameof(RawActorIdBox.Value));
+
+    private readonly record struct RawActorIdBox(object? Value);
 
     private static ActorIdentity GetPartyMemberIdentity(Dalamud.Game.ClientState.Party.IPartyMember member, IGameObject? gameObject)
     {
         var gameObjectIdentity = GetGameObjectIdentity(gameObject);
-        var objectId = TryGetPropertyActorId(member, "EntityId");
+        var objectId = ActorIdentityAccessor.GetReflectedActorId(member, "EntityId");
         if (objectId == 0)
-            objectId = TryGetPropertyActorId(member, "ObjectId");
-        var entityId = TryGetPropertyActorId(member, "EntityId");
+            objectId = ActorIdentityAccessor.GetReflectedActorId(member, "ObjectId");
+        var entityId = ActorIdentityAccessor.GetReflectedActorId(member, "EntityId");
         return new ActorIdentity(
             gameObjectIdentity.GameObjectId,
             gameObjectIdentity.ActorId,
@@ -61,10 +53,10 @@ internal sealed partial class LocalStatsService
     private static ActorIdentity GetBuddyIdentity(IBuddyMember buddy, IGameObject? gameObject)
     {
         var gameObjectIdentity = GetGameObjectIdentity(gameObject);
-        var objectId = TryGetPropertyActorId(buddy, "EntityId");
+        var objectId = ActorIdentityAccessor.GetReflectedActorId(buddy, "EntityId");
         if (objectId == 0)
-            objectId = TryGetPropertyActorId(buddy, "ObjectId");
-        var entityId = TryGetPropertyActorId(buddy, "EntityId");
+            objectId = ActorIdentityAccessor.GetReflectedActorId(buddy, "ObjectId");
+        var entityId = ActorIdentityAccessor.GetReflectedActorId(buddy, "EntityId");
         return new ActorIdentity(
             gameObjectIdentity.GameObjectId,
             gameObjectIdentity.ActorId,
@@ -83,37 +75,6 @@ internal sealed partial class LocalStatsService
 
         var actorId = identity.ResolveActorId();
         return actorId is 0 or InvalidActorId ? null : FindObjectByActorId(actorId) as IBattleChara;
-    }
-
-    private static uint TryGetPropertyActorId(object? instance, string propertyName)
-    {
-        if (instance == null)
-            return 0;
-
-        try
-        {
-            var property = instance.GetType().GetProperty(propertyName);
-            return TryConvertActorId(property?.GetValue(instance));
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    private static uint TryConvertActorId(object? rawValue)
-    {
-        if (rawValue == null)
-            return 0;
-
-        try
-        {
-            return unchecked((uint)(Convert.ToUInt64(rawValue, CultureInfo.InvariantCulture) & uint.MaxValue));
-        }
-        catch
-        {
-            return 0;
-        }
     }
 
     private static ActorIdentity GetLocalPlayerIdentity()

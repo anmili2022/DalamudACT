@@ -153,7 +153,7 @@ internal sealed partial class LocalStatsService
             && !hasMatchingActiveState
             && preferredActionId.HasValue
             && PlayerDotCatalog.IsKnownPlayerDotAction(preferredActionId.Value)
-            && LogHelper.EnableDebugLog
+            && LogHelper.IsDebugEnabled(DebugLogModule.Dot)
             && nowUtc - lastPlayerDotDebugLogUtc >= PlayerDotDebugLogThrottle)
         {
             try

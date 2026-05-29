@@ -223,35 +223,7 @@ internal static partial class StatsPanel
         if (gameObject == null || actorId is 0 or InvalidActorId)
             return false;
 
-        var gameObjectLow32 = gameObject.GameObjectId == 0
-            ? 0
-            : NormalizeActorId(unchecked((uint)(gameObject.GameObjectId & uint.MaxValue)));
-        if (gameObjectLow32 != 0 && gameObjectLow32 == actorId)
-            return true;
-
-        var objectId = TryGetReflectedActorId(gameObject, "ObjectId");
-        if (objectId != 0 && objectId == actorId)
-            return true;
-
-        var entityId = NormalizeActorId(gameObject.EntityId);
-        return entityId != 0 && entityId == actorId;
-    }
-
-    private static uint TryGetReflectedActorId(object? instance, string propertyName)
-    {
-        if (instance == null)
-            return 0;
-
-        try
-        {
-            var property = instance.GetType().GetProperty(propertyName);
-            var rawValue = property?.GetValue(instance);
-            return rawValue == null ? 0 : NormalizeActorId(Convert.ToUInt32(rawValue, CultureInfo.InvariantCulture));
-        }
-        catch
-        {
-            return 0;
-        }
+        return ActorIdentityAccessor.MatchesActorId(gameObject, actorId);
     }
 
     private static uint NormalizeActorId(uint actorId)

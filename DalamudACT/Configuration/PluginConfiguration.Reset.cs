@@ -37,6 +37,8 @@ public sealed partial class PluginConfiguration
             new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
         };
         EnableDebugLog = LogHelper.DefaultEnableDebugLog;
+        EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;
+        LogChannel = PluginLogChannel.Info;
         StatusObserver = new StatusObserverConfig();
         ShowDpsTab = true;
         ShowHpsTab = true;
@@ -141,5 +143,7 @@ public sealed partial class PluginConfiguration
         SelfHighlightColor = SelfHighlightColorMode.SunlightYellow;
         CustomFriendlyNpcNames = new List<string>();
         LogHelper.EnableDebugLog = EnableDebugLog;
+        LogHelper.EnabledDebugLogModules = EnabledDebugLogModules;
+        LogHelper.Channel = LogChannel;
     }
 }

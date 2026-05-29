@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
 
 namespace DalamudACT;
 
@@ -11,9 +11,6 @@ namespace DalamudACT;
 internal static class LogHelper
 {
     private const string ChatTag = "DPS统计";
-    private const int MaxRecentLogCount = 10;
-    private static readonly object Gate = new();
-    private static readonly Queue<RecentLogEntry> RecentLogQueue = new();
 
     public static bool DefaultEnableDebugLog
     {
@@ -28,24 +25,17 @@ internal static class LogHelper
     }
 
     public static bool EnableDebugLog { get; set; } = DefaultEnableDebugLog;
+    public static DebugLogModule EnabledDebugLogModules { get; set; } = DefaultDebugLogModules;
+    public static PluginLogChannel Channel { get; set; } = PluginLogChannel.Info;
 
-    public static IReadOnlyList<RecentLogEntry> RecentLogs
-    {
-        get
-        {
-            lock (Gate)
-                return RecentLogQueue.ToArray();
-        }
-    }
+    public const DebugLogModule DefaultDebugLogModules =
+        DebugLogModule.PluginHook | DebugLogModule.Timeline | DebugLogModule.StatusObserver | DebugLogModule.CommandChat | DebugLogModule.Configuration;
 
-    public static IReadOnlyList<string> RecentInfos
-        => RecentLogs.Select(static entry => entry.Message).ToArray();
+    public static bool IsDebugEnabled(DebugLogModule module)
+        => EnableDebugLog && module != DebugLogModule.None && EnabledDebugLogModules.HasFlag(module);
 
-    public static void ClearRecentLogs()
-    {
-        lock (Gate)
-            RecentLogQueue.Clear();
-    }
+    public static bool IsDebugEnabled(string module)
+        => IsDebugEnabled(ResolveDebugLogModule(module));
 
     public static void Verbose(string message)
     {
@@ -56,7 +46,12 @@ internal static class LogHelper
     }
 
     public static void Verbose(string module, string message)
-        => Verbose(FormatMessage(module, message));
+    {
+        if (!IsDebugEnabled(module))
+            return;
+
+        DalamudApi.Log.Verbose(FormatMessage(GetDebugLogModuleLabel(module), message));
+    }
 
     public static void Verbose(Exception exception, string message)
     {
@@ -67,7 +62,12 @@ internal static class LogHelper
     }
 
     public static void Verbose(string module, Exception exception, string message)
-        => Verbose(exception, FormatMessage(module, message));
+    {
+        if (!IsDebugEnabled(module))
+            return;
+
+        DalamudApi.Log.Verbose(exception, FormatMessage(GetDebugLogModuleLabel(module), message));
+    }
 
     public static void Debug(string message)
     {
@@ -78,19 +78,28 @@ internal static class LogHelper
     }
 
     public static void Debug(string module, string message)
-        => Debug(FormatMessage(module, message));
+    {
+        if (!IsDebugEnabled(module))
+            return;
+
+        DalamudApi.Log.Debug(FormatMessage(GetDebugLogModuleLabel(module), message));
+    }
 
     public static void DebugRecent(string message)
     {
         if (!EnableDebugLog)
             return;
 
-        EnqueueRecentLog(LogLevelLabel.Debug, message);
         DalamudApi.Log.Debug(message);
     }
 
     public static void DebugRecent(string module, string message)
-        => DebugRecent(FormatMessage(module, message));
+    {
+        if (!IsDebugEnabled(module))
+            return;
+
+        DalamudApi.Log.Debug(FormatMessage(GetDebugLogModuleLabel(module), message));
+    }
 
     public static void Debug(Exception exception, string message)
     {
@@ -101,11 +110,47 @@ internal static class LogHelper
     }
 
     public static void Debug(string module, Exception exception, string message)
-        => Debug(exception, FormatMessage(module, message));
+    {
+        if (!IsDebugEnabled(module))
+            return;
+
+        DalamudApi.Log.Debug(exception, FormatMessage(GetDebugLogModuleLabel(module), message));
+    }
+
+    public static string GetDebugLogModuleLabel(DebugLogModule module)
+        => module switch
+        {
+            DebugLogModule.PluginHook => "插件/Hook",
+            DebugLogModule.Timeline => "时间轴",
+            DebugLogModule.DamageStats => "伤害统计",
+            DebugLogModule.Dot => "DoT",
+            DebugLogModule.StatusObserver => "状态监控",
+            DebugLogModule.CommandChat => "命令/聊天",
+            DebugLogModule.Configuration => "配置/设置",
+            _ => module.ToString(),
+        };
+
+    private static string GetDebugLogModuleLabel(string module)
+        => GetDebugLogModuleLabel(ResolveDebugLogModule(module));
+
+    private static DebugLogModule ResolveDebugLogModule(string module)
+    {
+        var normalized = module.Trim();
+        return normalized switch
+        {
+            "插件" or "Hook" or "插件/Hook" => DebugLogModule.PluginHook,
+            "时间轴" => DebugLogModule.Timeline,
+            "统计" or "伤害统计" => DebugLogModule.DamageStats,
+            "DoT" or "DOT" or "dot" => DebugLogModule.Dot,
+            "状态监控" or "状态观察" => DebugLogModule.StatusObserver,
+            "命令" or "聊天" or "命令/聊天" => DebugLogModule.CommandChat,
+            "设置" or "配置" or "配置/设置" => DebugLogModule.Configuration,
+            _ => DebugLogModule.Configuration,
+        };
+    }
 
     public static void Info(string message)
     {
-        EnqueueRecentLog(LogLevelLabel.Info, message);
         DalamudApi.Log.Info(message);
     }
 
@@ -114,7 +159,6 @@ internal static class LogHelper
 
     public static void Info(Exception exception, string message)
     {
-        EnqueueRecentLog(LogLevelLabel.Info, message);
         DalamudApi.Log.Info(exception, message);
     }
 
@@ -123,7 +167,6 @@ internal static class LogHelper
 
     public static void Warning(string message)
     {
-        EnqueueRecentLog(LogLevelLabel.Warning, message);
         DalamudApi.Log.Warning(message);
     }
 
@@ -132,7 +175,6 @@ internal static class LogHelper
 
     public static void Warning(Exception exception, string message)
     {
-        EnqueueRecentLog(LogLevelLabel.Warning, message);
         DalamudApi.Log.Warning(exception, message);
     }
 
@@ -141,7 +183,6 @@ internal static class LogHelper
 
     public static void Error(string message)
     {
-        EnqueueRecentLog(LogLevelLabel.Error, message);
         DalamudApi.Log.Error(message);
     }
 
@@ -150,7 +191,6 @@ internal static class LogHelper
 
     public static void Error(Exception exception, string message)
     {
-        EnqueueRecentLog(LogLevelLabel.Error, message);
         DalamudApi.Log.Error(exception, message);
     }
 
@@ -181,16 +221,6 @@ internal static class LogHelper
     public static void PrintErrorWithModule(string module, string title, string message)
         => PrintCore(module, title, message, isError: true);
 
-    private static void EnqueueRecentLog(string level, string message)
-    {
-        lock (Gate)
-        {
-            RecentLogQueue.Enqueue(new RecentLogEntry(DateTime.Now, level, message));
-            while (RecentLogQueue.Count > MaxRecentLogCount)
-                RecentLogQueue.Dequeue();
-        }
-    }
-
     private static void PrintCore(string? module, string? title, string message, bool isError)
     {
         var normalizedTitle = NormalizeTitle(title);
@@ -213,27 +243,50 @@ internal static class LogHelper
                 Info(module!, mergedMessage);
         }
 
-        TryPrintChat(message, isError, ComposeChatTitle(module, normalizedTitle));
+        TryPrintChannel(message, isError, ComposeChatTitle(module, normalizedTitle));
     }
 
-    private static void TryPrintChat(string message, bool isError, string? title)
+    private static void TryPrintChannel(string message, bool isError, string? title)
     {
         try
         {
+            if (Channel == PluginLogChannel.None)
+                return;
+
             var tag = string.IsNullOrWhiteSpace(title)
                 ? ChatTag
                 : $"{ChatTag} · {title!.Trim()}";
 
-            if (isError)
-                DalamudApi.ChatGui.PrintError(message, tag);
-            else
-                DalamudApi.ChatGui.Print(message, tag);
+            if (Channel == PluginLogChannel.Info)
+            {
+                if (isError)
+                    DalamudApi.Log.Error(FormatMessage(tag, message));
+                else
+                    DalamudApi.Log.Info(FormatMessage(tag, message));
+                return;
+            }
+
+            DalamudApi.ChatGui.Print(new XivChatEntry
+            {
+                Type = ToXivChatType(Channel, isError),
+                Message = new SeStringBuilder().AddText($"[{tag}] {message}").Build(),
+            });
         }
         catch (Exception ex)
         {
-            DalamudApi.Log.Warning(ex, FormatMessage("日志", $"向聊天框输出插件消息失败。消息内容：{message}"));
+            DalamudApi.Log.Warning(ex, FormatMessage("日志", $"输出插件消息失败。消息内容：{message}"));
         }
     }
+
+    private static XivChatType ToXivChatType(PluginLogChannel channel, bool isError)
+        => channel switch
+        {
+            PluginLogChannel.Debug => XivChatType.Debug,
+            PluginLogChannel.Echo => XivChatType.Echo,
+            PluginLogChannel.ErrorMessage => XivChatType.ErrorMessage,
+            PluginLogChannel.SystemMessage => XivChatType.SystemMessage,
+            _ => isError ? XivChatType.ErrorMessage : XivChatType.Debug,
+        };
 
     private static string FormatMessage(string module, string message)
     {
@@ -269,8 +322,6 @@ internal static class LogHelper
             ? trimmed
             : $"{trimmed}：";
     }
-
-    public sealed record RecentLogEntry(DateTime TimestampLocal, string Level, string Message);
 
     public static class LogLevelLabel
     {

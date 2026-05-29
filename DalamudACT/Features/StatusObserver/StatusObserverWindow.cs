@@ -8,17 +8,28 @@ namespace DalamudACT;
 
 internal sealed class StatusObserverWindow : Window
 {
-    private const ImGuiWindowFlags BaseFlags = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoBackground;
+    private const ImGuiWindowFlags BaseFlags = ImGuiWindowFlags.NoCollapse
+                                             | ImGuiWindowFlags.NoTitleBar
+                                             | ImGuiWindowFlags.NoBackground;
+    private const float MinimumExpandedWidth = 220f;
+    private const int AutoResizeIconColumns = 8;
     private const float PanelPaddingX = 8f;
     private const float PanelPaddingY = 7f;
-    private const float IconSize = 30f;
+    private const float CollapsedPanelHeight = 34f;
+    private const float IconWidth = 25f;
+    private const float IconHeight = 30f;
+    private const float IconIdTextHeight = 14f;
     private const float IconGap = 5f;
     private static readonly Vector4 PanelBorderColor = new(0.70f, 0.82f, 0.90f, 0.18f);
-    private static readonly Vector4 TitleColor = new(0.96f, 0.98f, 1f, 1f);
+    private static readonly Vector4 TitleColor = new(0.21f, 0.85f, 1f, 1f);
+    private static readonly Vector4 SectionTitleColor = new(0.96f, 0.98f, 1f, 1f);
     private static readonly Vector4 FavoriteColor = new(1f, 0.88f, 0.25f, 1f);
     private readonly PluginConfiguration config;
     private readonly StatusObserverService service;
     private readonly Action openSettings;
+    private bool collapsed;
+    private bool restoreExpandedSize;
+    private Vector2 expandedWindowSize = new(430f, 360f);
 
     public StatusObserverWindow(PluginConfiguration config, StatusObserverService service, Action openSettings)
         : base("状态监控###StatusObserverWindow", BaseFlags)
@@ -33,19 +44,25 @@ internal sealed class StatusObserverWindow : Window
     public override void PreDraw()
     {
         BgAlpha = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
+        Flags = BuildWindowFlags();
     }
 
     public override void Draw()
     {
-        Flags = config.StatusObserver.LockWindow
-            ? BaseFlags | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize
-            : BaseFlags;
+        if (collapsed)
+            ImGui.SetScrollY(0f);
 
+        ApplyLockedAutoResizeWidthHint();
+        ApplyCollapsedWindowSize();
         DrawPanelBackground();
+        HandleContextClick();
         ImGui.SetCursorPos(new Vector2(PanelPaddingX, PanelPaddingY));
 
-        if (!config.StatusObserver.LockWindow && ImGui.Button("设置"))
-            openSettings();
+        if (DrawWindowHeader())
+            ToggleCollapsed();
+
+        if (collapsed)
+            return;
 
         if (config.StatusObserver.ShowSelfStatuses)
             DrawStatusSection("自身状态", service.GetSelfStatuses(), "self");
@@ -54,10 +71,24 @@ internal sealed class StatusObserverWindow : Window
             DrawStatusSection("目标状态", service.GetTargetStatuses(), "target");
     }
 
+    private ImGuiWindowFlags BuildWindowFlags()
+    {
+        var flags = BaseFlags;
+        if (collapsed)
+            flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
+        if (!config.StatusObserver.LockWindow)
+            return flags;
+
+        flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
+        if (!collapsed)
+            flags |= ImGuiWindowFlags.AlwaysAutoResize;
+        return flags;
+    }
+
     private void DrawStatusSection(string title, IReadOnlyList<StatusObserverEntry> entries, string id)
     {
         ImGui.Separator();
-        ImGui.PushStyleColor(ImGuiCol.Text, TitleColor);
+        ImGui.PushStyleColor(ImGuiCol.Text, SectionTitleColor);
         ImGui.TextUnformatted(title);
         ImGui.PopStyleColor();
         if (entries.Count == 0)
@@ -132,8 +163,10 @@ internal sealed class StatusObserverWindow : Window
 
     private void DrawIconStatusSection(IReadOnlyList<StatusObserverEntry> entries, string id)
     {
-        var availableWidth = Math.Max(IconSize, ImGui.GetContentRegionAvail().X);
-        var columns = Math.Max(1, (int)((availableWidth + IconGap) / (IconSize + IconGap)));
+        var availableWidth = config.StatusObserver.LockWindow
+            ? GetLockedIconContentWidth(entries.Count)
+            : Math.Max(IconWidth, ImGui.GetContentRegionAvail().X);
+        var columns = Math.Max(1, (int)((availableWidth + IconGap) / (IconWidth + IconGap)));
 
         for (var i = 0; i < entries.Count; i++)
         {
@@ -149,7 +182,9 @@ internal sealed class StatusObserverWindow : Window
         var pos = ImGui.GetCursorScreenPos();
         var drawList = ImGui.GetWindowDrawList();
         var min = pos;
-        var max = pos + new Vector2(IconSize, IconSize);
+        var iconSize = new Vector2(IconWidth, IconHeight);
+        var itemSize = new Vector2(IconWidth, GetIconItemHeight());
+        var max = pos + iconSize;
         var frameColor = entry.IsFavorite
             ? new Vector4(1f, 0.80f, 0.18f, 0.92f)
             : new Vector4(0.14f, 0.20f, 0.26f, 0.92f);
@@ -157,18 +192,28 @@ internal sealed class StatusObserverWindow : Window
         drawList.AddRect(min, max, ImGui.ColorConvertFloat4ToU32(frameColor), 3f, ImDrawFlags.None, 1.4f);
 
         ImGui.PushID($"{id}_{index}_{entry.StatusId}_{entry.SourceId}");
-        if (!KamiIconLoader.TryDrawIconId(entry.IconId, new Vector2(IconSize, IconSize)))
+        ImGui.InvisibleButton("##status_icon_item", itemSize);
+        var icon = KamiIconLoader.GetIconId(entry.IconId);
+        if (icon != default)
+            drawList.AddImage(icon, min, max);
+        else
         {
-            ImGui.Dummy(new Vector2(IconSize, IconSize));
             var label = entry.StatusId.ToString();
             var textSize = ImGui.CalcTextSize(label);
-            drawList.AddText(min + (new Vector2(IconSize, IconSize) - textSize) * 0.5f, ImGui.ColorConvertFloat4ToU32(Vector4.One), label);
+            drawList.AddText(min + (iconSize - textSize) * 0.5f, ImGui.ColorConvertFloat4ToU32(Vector4.One), label);
         }
 
-        if (entry.StackCount > 0)
-            DrawIconOverlayText(drawList, min + new Vector2(3f, 0f), entry.StackCount.ToString());
         if (entry.RemainingSeconds > 0f)
-            DrawIconOverlayText(drawList, min + new Vector2(3f, IconSize - 14f), FormatIconRemaining(entry.RemainingSeconds));
+            DrawIconOverlayText(drawList, min + new Vector2(3f, IconHeight - 14f), FormatIconRemaining(entry.RemainingSeconds));
+
+        if (config.StatusObserver.ShowStatusIdUnderIcon)
+        {
+            var idText = entry.StatusId.ToString();
+            var textSize = ImGui.CalcTextSize(idText);
+            var textPos = min + new Vector2(MathF.Max(0f, (IconWidth - textSize.X) * 0.5f), IconHeight + 1f);
+            drawList.AddText(textPos + new Vector2(1f, 1f), ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.82f)), idText);
+            drawList.AddText(textPos, ImGui.ColorConvertFloat4ToU32(Vector4.One), idText);
+        }
 
         if (ImGui.IsItemHovered())
             DrawStatusTooltip(entry);
@@ -186,6 +231,9 @@ internal sealed class StatusObserverWindow : Window
 
     private static string FormatIconRemaining(float seconds)
         => seconds >= 60f ? $"{(int)(seconds / 60f)}m" : $"{Math.Ceiling(seconds):0}";
+
+    private float GetIconItemHeight()
+        => IconHeight + (config.StatusObserver.ShowStatusIdUnderIcon ? IconIdTextHeight : 0f);
 
     private static void DrawStatusTooltip(StatusObserverEntry entry)
     {
@@ -253,5 +301,99 @@ internal sealed class StatusObserverWindow : Window
         var opacity = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
         drawList.AddRectFilled(min, max, ImGui.ColorConvertFloat4ToU32(new Vector4(0.03f, 0.05f, 0.07f, 0.90f * opacity)), 4f);
         drawList.AddRect(min, max, ImGui.ColorConvertFloat4ToU32(new Vector4(PanelBorderColor.X, PanelBorderColor.Y, PanelBorderColor.Z, PanelBorderColor.W * opacity)), 4f);
+    }
+
+    private void HandleContextClick()
+    {
+        if (config.StatusObserver.LockWindow)
+            return;
+
+        if (ImGui.IsWindowHovered(ImGuiHoveredFlags.RootAndChildWindows) && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+            openSettings();
+    }
+
+    private void ApplyCollapsedWindowSize()
+    {
+        if (collapsed)
+        {
+            ImGui.SetWindowSize(new Vector2(Math.Max(ImGui.GetWindowWidth(), 140f), CollapsedPanelHeight), ImGuiCond.Always);
+            return;
+        }
+
+        if (!restoreExpandedSize)
+            return;
+
+        ImGui.SetWindowSize(new Vector2(Math.Max(expandedWindowSize.X, 140f), Math.Max(expandedWindowSize.Y, 120f)), ImGuiCond.Always);
+        restoreExpandedSize = false;
+    }
+
+    private void ApplyLockedAutoResizeWidthHint()
+    {
+        if (!config.StatusObserver.LockWindow || collapsed)
+            return;
+
+        var width = config.StatusObserver.DisplayMode == StatusObserverDisplayMode.Icon
+            ? GetLockedIconWindowWidth()
+            : MinimumExpandedWidth;
+        ImGui.SetNextWindowSize(new Vector2(width, 0f), ImGuiCond.Always);
+    }
+
+    private float GetLockedIconWindowWidth()
+    {
+        var entries = 0;
+        if (config.StatusObserver.ShowSelfStatuses)
+            entries += service.GetSelfStatuses().Count;
+        if (config.StatusObserver.ShowTargetStatuses)
+            entries += service.GetTargetStatuses().Count;
+
+        var contentWidth = GetLockedIconContentWidth(entries);
+        return Math.Max(MinimumExpandedWidth, contentWidth + PanelPaddingX * 2f + ImGui.GetStyle().WindowPadding.X * 2f);
+    }
+
+    private static float GetLockedIconContentWidth(int entryCount)
+    {
+        var columns = Math.Clamp(entryCount <= 0 ? AutoResizeIconColumns : entryCount, 1, AutoResizeIconColumns);
+        return columns * IconWidth + Math.Max(0, columns - 1) * IconGap;
+    }
+
+    private void ToggleCollapsed()
+    {
+        if (!collapsed)
+            expandedWindowSize = ImGui.GetWindowSize();
+
+        collapsed = !collapsed;
+        restoreExpandedSize = !collapsed;
+    }
+
+    private bool DrawWindowHeader()
+    {
+        DrawShadowText("状态监控", TitleColor, true);
+        var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(collapsed ? "左键展开状态监控" : "左键折叠状态监控");
+
+        var y = ImGui.GetCursorScreenPos().Y - 2f;
+        var minX = ImGui.GetCursorScreenPos().X;
+        var maxX = ImGui.GetWindowPos().X + ImGui.GetWindowWidth() - PanelPaddingX;
+        ImGui.GetWindowDrawList().AddLine(
+            new Vector2(minX, y),
+            new Vector2(maxX, y),
+            ImGui.ColorConvertFloat4ToU32(new Vector4(TitleColor.X, TitleColor.Y, TitleColor.Z, 0.62f)),
+            1f);
+        ImGui.Dummy(new Vector2(0f, 3f));
+        return clicked;
+    }
+
+    private static void DrawShadowText(string text, Vector4 color, bool bold = false)
+    {
+        var pos = ImGui.GetCursorScreenPos();
+        var drawList = ImGui.GetWindowDrawList();
+        var shadow = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.82f));
+        var textColor = ImGui.ColorConvertFloat4ToU32(color);
+        drawList.AddText(pos + new Vector2(1f, 1f), shadow, text);
+        drawList.AddText(pos, textColor, text);
+        if (bold)
+            drawList.AddText(pos + new Vector2(0.6f, 0f), textColor, text);
+        ImGui.Dummy(ImGui.CalcTextSize(text));
     }
 }

@@ -16,7 +16,8 @@ internal sealed record TimelineEntry(
     string? SystemLogTextHint,
     bool Hidden,
     bool IsSync,
-    string? JumpLabel);
+    string? JumpLabel,
+    float? JumpTimeSeconds);
 
 internal sealed record TimelineDefinition(
     string Id,

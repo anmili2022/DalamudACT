@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace DalamudACT;
 
-internal static partial class M9STimelineParser
+internal static partial class TimelineParser
 {
     private static readonly Regex TimelineBlockRegex = new(@"timeline\s*:\s*`(?<body>[\s\S]*?)`", RegexOptions.Compiled);
     private static readonly Regex TimelineLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+\""(?<text>[^\""\\]*(?:\\.[^\""\\]*)*)\""(?<rest>.*)$", RegexOptions.Compiled);
@@ -106,9 +106,21 @@ internal static partial class M9STimelineParser
         var isSync = text.Contains("sync", StringComparison.OrdinalIgnoreCase);
         var hidden = isInternal || isSync || rest.TrimStart().StartsWith('#');
         var jumpMatch = JumpRegex.Match(rest);
-        var jumpLabel = jumpMatch.Success ? Unescape(jumpMatch.Groups["label"].Value) : null;
+        var jumpRaw = jumpMatch.Success ? Unescape(jumpMatch.Groups["label"].Value) : null;
+        var jumpTimeSeconds = TryParseJumpTime(jumpRaw);
+        var jumpLabel = jumpTimeSeconds.HasValue ? null : jumpRaw;
 
-        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, hidden, isSync, jumpLabel);
+        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, hidden, isSync, jumpLabel, jumpTimeSeconds);
+    }
+
+    private static float? TryParseJumpTime(string? rawJump)
+    {
+        if (string.IsNullOrWhiteSpace(rawJump))
+            return null;
+
+        return float.TryParse(rawJump, NumberStyles.Float, CultureInfo.InvariantCulture, out var timeSeconds)
+            ? timeSeconds
+            : null;
     }
 
     private static bool TryCaptureComment(string line, ref string? pendingComment)

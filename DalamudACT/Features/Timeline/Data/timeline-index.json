@@ -30,6 +30,12 @@
         "file":  "07-dt/dungeon/ihuykatumu.txt"
     },
     {
+        "id":  "dungeon-klythios",
+        "name":  "军工要地克吕提俄斯魔导工厂",
+        "zoneId":  1345,
+        "file":  "07-dt/dungeon/klythios.txt"
+    },
+    {
         "id":  "dungeon-meso-terminal",
         "name":  "永久幽界中央终端",
         "zoneId":  1292,

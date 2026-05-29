@@ -11,6 +11,7 @@ namespace DalamudACT;
 
 internal sealed class TimelineService
 {
+    private const float AbilitySyncMaxDriftSeconds = 12f;
     private readonly PluginConfiguration config;
     private readonly TimelineMechanicHintProvider mechanicHints = new();
     private readonly AeAssistResourceDownloader aeAssistResources = new();
@@ -133,11 +134,12 @@ internal sealed class TimelineService
         if (syncEntry == null)
             return;
 
-        startedAtUtc = nowUtc - TimeSpan.FromSeconds(syncEntry.TimeSeconds);
+        var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
+        startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
         displayOffsetSeconds = 0f;
-        lastSystemLogSyncTimeSeconds = syncEntry.TimeSeconds;
+        lastSystemLogSyncTimeSeconds = Math.Max(syncEntry.TimeSeconds, targetTime);
         spokenTtsKeys.Clear();
-        LogHelper.Debug("时间轴", $"SystemLogMessage 同步命中：time={syncEntry.TimeSeconds:0.0}, id={syncEntry.SystemLogId ?? "-"}, param1={syncEntry.SystemLogParam1 ?? "-"}, hint={syncEntry.SystemLogTextHint ?? "-"}, message={message}");
+        LogHelper.Debug("时间轴", $"SystemLogMessage 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, id={syncEntry.SystemLogId ?? "-"}, param1={syncEntry.SystemLogParam1 ?? "-"}, hint={syncEntry.SystemLogTextHint ?? "-"}, message={message}");
         statusText = string.IsNullOrWhiteSpace(syncEntry.SystemLogTextHint)
             ? $"已同步：{definition.Name} / 区域封锁提示"
             : $"已同步：{definition.Name} / {syncEntry.SystemLogTextHint}";
@@ -219,7 +221,8 @@ internal sealed class TimelineService
             return;
         }
 
-        var current = startedAtUtc.HasValue ? (float)(nowUtc - startedAtUtc.Value).TotalSeconds : 0f;
+        var wasRunning = startedAtUtc.HasValue;
+        var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
         var syncEntry = definition.Entries
             .Where(entry => entry.ActionIds.Contains(actionId))
             .OrderBy(entry => Math.Abs(entry.TimeSeconds - current))
@@ -228,6 +231,14 @@ internal sealed class TimelineService
             return;
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
+        if (wasRunning && Math.Abs(targetTime - current) > AbilitySyncMaxDriftSeconds)
+        {
+            LogHelper.Debug(
+                "时间轴",
+                $"忽略技能同步大幅回跳：actionId={actionId:X}, current={current:0.0}, target={targetTime:0.0}, entry={syncEntry.DisplayText}");
+            return;
+        }
+
         startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = Math.Max(lastSystemLogSyncTimeSeconds, targetTime);
@@ -395,7 +406,7 @@ internal sealed class TimelineService
                 if (!File.Exists(path))
                     continue;
 
-                definition = M9STimelineParser.ParseTimelineTextFile(candidate.Id, candidate.Name, path);
+                definition = TimelineParser.ParseTimelineTextFile(candidate.Id, candidate.Name, path);
                 sourcePath = path;
                 statusText = $"已加载 {definition.Entries.Count} 条：{candidate.Name}";
                 return;
@@ -415,13 +426,16 @@ internal sealed class TimelineService
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
-        definition = M9STimelineParser.ParseTimelineTextFile("forced", name, path);
+        definition = TimelineParser.ParseTimelineTextFile("forced", name, path);
         sourcePath = path;
         statusText = $"已强制加载 {definition.Entries.Count} 条：{name}";
     }
 
     private float? ResolveJumpTargetTime(TimelineEntry entry)
     {
+        if (entry.JumpTimeSeconds.HasValue)
+            return entry.JumpTimeSeconds.Value;
+
         if (definition == null || string.IsNullOrWhiteSpace(entry.JumpLabel))
             return null;
 
@@ -507,6 +521,8 @@ internal sealed class TimelineService
         if (timelineIndex != null)
             return timelineIndex;
 
+        var entries = new List<TimelineIndexEntry>();
+        var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var path in GetTimelineIndexCandidatePaths())
         {
             try
@@ -514,9 +530,15 @@ internal sealed class TimelineService
                 if (!File.Exists(path))
                     continue;
 
-                timelineIndex = JsonSerializer.Deserialize<List<TimelineIndexEntry>>(File.ReadAllText(path), TimelineJsonOptions)
-                                ?? [];
-                return timelineIndex;
+                var loadedEntries = JsonSerializer.Deserialize<List<TimelineIndexEntry>>(File.ReadAllText(path), TimelineJsonOptions)
+                                    ?? [];
+                foreach (var entry in loadedEntries)
+                {
+                    if (string.IsNullOrWhiteSpace(entry.Id) || !seenIds.Add(entry.Id))
+                        continue;
+
+                    entries.Add(entry);
+                }
             }
             catch (Exception ex)
             {
@@ -524,7 +546,7 @@ internal sealed class TimelineService
             }
         }
 
-        timelineIndex = [];
+        timelineIndex = entries;
         return timelineIndex;
     }
 

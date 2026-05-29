@@ -1,0 +1,108 @@
+# 军工要地克吕提俄斯魔导工厂
+# ZoneId: 1345
+
+hideall "--Reset--"
+hideall "--sync--"
+
+# .*is no longer sealed
+0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
+
+
+#~~~~~~~~~~~~#
+# 装甲之眼 #
+#~~~~~~~~~~~~#
+
+# 距花冠广场被封锁还有15秒。
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F98" } window 10000,0
+1012.0 "石化光束" Ability { id: ["C400", "C402"], source: "装甲之眼" }
+1022.2 "石化光束" Ability { id: ["C3FF", "C401"], source: "装甲之眼" }
+1038.4 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
+1057.9 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
+1067.5 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
+1072.6 "对地导弹" Ability { id: "BF02", source: "装甲之眼" }
+1080.7 "石化光束" Ability { id: ["C400", "C402"], source: "装甲之眼" }
+1097.7 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
+1109.3 "对人导弹" Ability { id: "BF03", source: "装甲之眼" }
+1126.7 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
+1131.8 "对地导弹" Ability { id: "BF02", source: "装甲之眼" }
+1139.9 "石化光束" Ability { id: ["C3FF", "C401"], source: "装甲之眼" }
+1157.0 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
+1168.7 "对人导弹" Ability { id: "BF03", source: "装甲之眼" }
+
+
+#~~~~~~~~~~#
+# 乔尔特 #
+#~~~~~~~~~~#
+
+# 距材料存放场被封锁还有15秒。
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F99" } window 10000,0
+2012.0 "暗黑冲击" Ability { id: "BEF4", source: "乔尔特" }
+2024.7 "肉弹" Ability { id: ["BEE4", "C4E0"], source: "乔尔特" }
+2029.8 "肉压杀" Ability { id: "BEED", source: "乔尔特" }
+2030.2 "肉弹" Ability { id: "BEEC", source: "乔尔特" }
+2044.3 "呕吐" Ability { id: "C4B9", source: "乔尔特" }
+2056.1 "肉压杀" Ability { id: "BEEF", source: "乔尔特" }
+2059.1 "肉压杀" Ability { id: "BEF0", source: "乔尔特" }
+2062.1 "肉压杀" Ability { id: "BEF0", source: "乔尔特" }
+2065.1 "肉压杀" Ability { id: "BEF0", source: "乔尔特" }
+2066.4 "肉压杀" Ability { id: "BEF1", source: "乔尔特" }
+2078.5 "暗黑冲击" Ability { id: "BEF4", source: "乔尔特" }
+2091.2 "肉弹" Ability { id: ["BEE6", "C4E0"], source: "乔尔特" }
+2096.3 "肉弹" Ability { id: ["BEE9", "BEEC"], source: "乔尔特" }
+2101.5 "肉压杀" Ability { id: "BEED", source: "乔尔特" }
+2102.1 "肉弹" Ability { id: "BEEC", source: "乔尔特" }
+2110.1 "黑暗喷流" Ability { id: ["C4F1", "BEF5"], source: "乔尔特" }
+2115.7 "黑暗重爆" Ability { id: "BEF6", source: "乔尔特" }
+2122.4 "呕吐" Ability { id: "C4B9", source: "乔尔特" }
+2139.6 "肉压杀" Ability { id: "BEEF", source: "乔尔特" }
+2142.7 "肉压杀" Ability { id: "BEF0", source: "乔尔特" }
+2145.7 "肉压杀" Ability { id: "BEF0", source: "乔尔特" }
+2148.6 "肉压杀" Ability { id: "BEF0", source: "乔尔特" }
+2149.8 "肉压杀" Ability { id: "BEF1", source: "乔尔特" }
+2161.9 "暗黑冲击" Ability { id: "BEF4", source: "乔尔特" }
+
+
+#~~~~~~~~#
+# 玛帕斯 #
+#~~~~~~~~#
+
+# 距兵器试验场被封锁还有15秒。
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F9A" } window 10000,0
+3012.0 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
+3021.7 "废料干涉" Ability { id: "BF19", source: "玛帕斯" }
+3022.5 "飞来" Ability { id: "BF25", source: "玛帕斯" }
+3032.2 "机偶提线" Ability { id: "BF1A", source: "玛帕斯" }
+3032.7 "废料光环" Ability { id: ["BF26", "BF27"], source: "玛帕斯" }
+3041.6 "机偶提线" Ability { id: "BF1A", source: "玛帕斯" }
+3042.2 "废料瘴气" Ability { id: ["BF28", "BF29"], source: "玛帕斯" }
+3052.1 "贪食之线" Ability { id: "BF21", source: "玛帕斯" }
+3071.2 "废料干涉" Ability { id: "BF19", source: "玛帕斯" }
+3072.0 "飞来" Ability { id: "BF25", source: "玛帕斯" }
+3080.6 "机偶双控" Ability { id: "BF1B", source: "玛帕斯" }
+3081.2 "废料瘴气" Ability { id: ["BF28", "BF29"], source: "玛帕斯" }
+3081.2 "废料光环" Ability { id: ["BF26", "BF27"], source: "玛帕斯" }
+3088.5 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
+3097.7 "提线" Ability { id: "BF23", source: "玛帕斯" }
+3109.1 "影戏" Ability { id: ["C48B", "C48A"], source: "玛帕斯" }
+3128.1 "废料干涉" Ability { id: "BF19", source: "玛帕斯" }
+3128.9 "飞来" Ability { id: "BF25", source: "玛帕斯" }
+3146.6 "机偶操控" Ability { id: "BF1D", source: "玛帕斯" }
+3146.8 "废料瘴气" Ability { id: "BF2E", source: "废料比布鲁斯" }
+3146.8 "废料光环" Ability { id: "BF2B", source: "废料石像鬼" }
+3148.1 "废料光环" Ability { id: "BF2C", source: "玛帕斯" }
+3148.1 "废料瘴气" Ability { id: "BF2F", source: "玛帕斯" }
+3154.5 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
+3169.6 "机偶操控" Ability { id: "BF1D", source: "玛帕斯" }
+3169.9 "废料瘴气" Ability { id: "BF2E", source: "废料比布鲁斯" }
+3169.9 "废料光环" Ability { id: "BF2B", source: "废料石像鬼" }
+3171.2 "废料光环" Ability { id: "BF2C", source: "玛帕斯" }
+3171.2 "废料瘴气" Ability { id: "BF2F", source: "玛帕斯" }
+3175.6 "愤怒之线" Ability { id: "BF20", source: "玛帕斯" }
+3182.2 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
+3200.3 "废料干涉" Ability { id: "BF19", source: "玛帕斯" }
+3201.0 "飞来" Ability { id: "BF25", source: "玛帕斯" }
+3209.7 "机偶双控" Ability { id: "BF1B", source: "玛帕斯" }
+3210.3 "废料瘴气" Ability { id: ["BF28", "BF29"], source: "玛帕斯" }
+3210.3 "废料光环" Ability { id: ["BF26", "BF27"], source: "玛帕斯" }
+3217.9 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
+3227.0 "提线" Ability { id: "BF23", source: "玛帕斯" }

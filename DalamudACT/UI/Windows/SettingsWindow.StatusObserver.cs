@@ -8,27 +8,35 @@ internal sealed partial class SettingsWindow
 {
     private void DrawStatusObserverSection()
     {
-        if (!DrawFirstLevelHeader("状态观察"))
+        if (!DrawFirstLevelHeader("状态监控"))
             return;
 
         DrawSettingCard(
             "##status_observer_card",
-            "状态ID观察",
+            "状态ID监控",
             "实时查看自身和当前目标身上的状态，用于确认 Buff/Debuff 的 StatusId。右键状态行可复制或关注。",
-            13f,
+            14.5f,
             () =>
             {
                 var show = config.StatusObserver.ShowWindow;
-                if (ImGui.Checkbox("显示状态观察窗口", ref show))
+                if (ImGui.Checkbox("显示状态监控窗口", ref show))
                 {
                     config.StatusObserver.ShowWindow = show;
                     config.Save();
                 }
 
                 var locked = config.StatusObserver.LockWindow;
-                if (ImGui.Checkbox("锁定状态观察窗口", ref locked))
+                if (ImGui.Checkbox("锁定状态监控窗口", ref locked))
                 {
                     config.StatusObserver.LockWindow = locked;
+                    config.Save();
+                }
+
+                var displayMode = (int)config.StatusObserver.DisplayMode;
+                const string displayModeLabels = "文字模式\0图标模式\0";
+                if (ImGui.Combo("状态监控显示模式", ref displayMode, displayModeLabels))
+                {
+                    config.StatusObserver.DisplayMode = (StatusObserverDisplayMode)displayMode;
                     config.Save();
                 }
 

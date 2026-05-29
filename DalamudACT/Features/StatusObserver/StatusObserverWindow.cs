@@ -8,13 +8,20 @@ namespace DalamudACT;
 
 internal sealed class StatusObserverWindow : Window
 {
-    private const ImGuiWindowFlags BaseFlags = ImGuiWindowFlags.NoCollapse;
+    private const ImGuiWindowFlags BaseFlags = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoBackground;
+    private const float PanelPaddingX = 8f;
+    private const float PanelPaddingY = 7f;
+    private const float IconSize = 30f;
+    private const float IconGap = 5f;
+    private static readonly Vector4 PanelBorderColor = new(0.70f, 0.82f, 0.90f, 0.18f);
+    private static readonly Vector4 TitleColor = new(0.96f, 0.98f, 1f, 1f);
+    private static readonly Vector4 FavoriteColor = new(1f, 0.88f, 0.25f, 1f);
     private readonly PluginConfiguration config;
     private readonly StatusObserverService service;
     private readonly Action openSettings;
 
     public StatusObserverWindow(PluginConfiguration config, StatusObserverService service, Action openSettings)
-        : base("状态观察###StatusObserverWindow", BaseFlags)
+        : base("状态监控###StatusObserverWindow", BaseFlags)
     {
         this.config = config;
         this.service = service;
@@ -23,11 +30,19 @@ internal sealed class StatusObserverWindow : Window
         SizeCondition = ImGuiCond.FirstUseEver;
     }
 
+    public override void PreDraw()
+    {
+        BgAlpha = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
+    }
+
     public override void Draw()
     {
         Flags = config.StatusObserver.LockWindow
             ? BaseFlags | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize
             : BaseFlags;
+
+        DrawPanelBackground();
+        ImGui.SetCursorPos(new Vector2(PanelPaddingX, PanelPaddingY));
 
         if (!config.StatusObserver.LockWindow && ImGui.Button("设置"))
             openSettings();
@@ -42,10 +57,18 @@ internal sealed class StatusObserverWindow : Window
     private void DrawStatusSection(string title, IReadOnlyList<StatusObserverEntry> entries, string id)
     {
         ImGui.Separator();
+        ImGui.PushStyleColor(ImGuiCol.Text, TitleColor);
         ImGui.TextUnformatted(title);
+        ImGui.PopStyleColor();
         if (entries.Count == 0)
         {
             ImGui.TextDisabled(id == "target" ? "无目标或目标没有可显示状态。" : "没有可显示状态。 ");
+            return;
+        }
+
+        if (config.StatusObserver.DisplayMode == StatusObserverDisplayMode.Icon)
+        {
+            DrawIconStatusSection(entries, id);
             return;
         }
 
@@ -75,7 +98,7 @@ internal sealed class StatusObserverWindow : Window
     private void DrawStatusRow(StatusObserverEntry entry)
     {
         ImGui.TableNextRow();
-        var textColor = entry.IsFavorite ? new Vector4(1f, 0.88f, 0.25f, 1f) : Vector4.One;
+        var textColor = entry.IsFavorite ? FavoriteColor : Vector4.One;
         ImGui.PushStyleColor(ImGuiCol.Text, textColor);
         try
         {
@@ -105,6 +128,74 @@ internal sealed class StatusObserverWindow : Window
         {
             ImGui.PopStyleColor();
         }
+    }
+
+    private void DrawIconStatusSection(IReadOnlyList<StatusObserverEntry> entries, string id)
+    {
+        var availableWidth = Math.Max(IconSize, ImGui.GetContentRegionAvail().X);
+        var columns = Math.Max(1, (int)((availableWidth + IconGap) / (IconSize + IconGap)));
+
+        for (var i = 0; i < entries.Count; i++)
+        {
+            if (i > 0 && i % columns != 0)
+                ImGui.SameLine(0f, IconGap);
+
+            DrawStatusIcon(entries[i], id, i);
+        }
+    }
+
+    private void DrawStatusIcon(StatusObserverEntry entry, string id, int index)
+    {
+        var pos = ImGui.GetCursorScreenPos();
+        var drawList = ImGui.GetWindowDrawList();
+        var min = pos;
+        var max = pos + new Vector2(IconSize, IconSize);
+        var frameColor = entry.IsFavorite
+            ? new Vector4(1f, 0.80f, 0.18f, 0.92f)
+            : new Vector4(0.14f, 0.20f, 0.26f, 0.92f);
+        drawList.AddRectFilled(min, max, ImGui.ColorConvertFloat4ToU32(new Vector4(0.04f, 0.06f, 0.08f, 0.92f)), 3f);
+        drawList.AddRect(min, max, ImGui.ColorConvertFloat4ToU32(frameColor), 3f, ImDrawFlags.None, 1.4f);
+
+        ImGui.PushID($"{id}_{index}_{entry.StatusId}_{entry.SourceId}");
+        if (!KamiIconLoader.TryDrawIconId(entry.IconId, new Vector2(IconSize, IconSize)))
+        {
+            ImGui.Dummy(new Vector2(IconSize, IconSize));
+            var label = entry.StatusId.ToString();
+            var textSize = ImGui.CalcTextSize(label);
+            drawList.AddText(min + (new Vector2(IconSize, IconSize) - textSize) * 0.5f, ImGui.ColorConvertFloat4ToU32(Vector4.One), label);
+        }
+
+        if (entry.StackCount > 0)
+            DrawIconOverlayText(drawList, min + new Vector2(3f, 0f), entry.StackCount.ToString());
+        if (entry.RemainingSeconds > 0f)
+            DrawIconOverlayText(drawList, min + new Vector2(3f, IconSize - 14f), FormatIconRemaining(entry.RemainingSeconds));
+
+        if (ImGui.IsItemHovered())
+            DrawStatusTooltip(entry);
+        DrawContextMenu(entry);
+        ImGui.PopID();
+    }
+
+    private static void DrawIconOverlayText(ImDrawListPtr drawList, Vector2 pos, string text)
+    {
+        var shadow = ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 1f));
+        var color = ImGui.ColorConvertFloat4ToU32(Vector4.One);
+        drawList.AddText(pos + new Vector2(1f, 1f), shadow, text);
+        drawList.AddText(pos, color, text);
+    }
+
+    private static string FormatIconRemaining(float seconds)
+        => seconds >= 60f ? $"{(int)(seconds / 60f)}m" : $"{Math.Ceiling(seconds):0}";
+
+    private static void DrawStatusTooltip(StatusObserverEntry entry)
+    {
+        ImGui.BeginTooltip();
+        ImGui.TextUnformatted($"{entry.Name} ({entry.StatusId})");
+        ImGui.TextUnformatted($"剩余：{FormatRemaining(entry.RemainingSeconds)}");
+        ImGui.TextUnformatted($"层数：{(entry.StackCount == 0 ? "-" : entry.StackCount.ToString())}");
+        ImGui.TextUnformatted($"Param：{(entry.Param == 0 ? "-" : entry.Param.ToString())}");
+        ImGui.TextUnformatted($"来源：{(entry.SourceId == 0 ? "-" : entry.SourceIsSelf ? "自己" : entry.SourceId.ToString("X8"))}");
+        ImGui.EndTooltip();
     }
 
     private void DrawContextMenu(StatusObserverEntry entry)
@@ -152,5 +243,15 @@ internal sealed class StatusObserverWindow : Window
             return $"{(int)(seconds / 60f):00}:{(int)(seconds % 60f):00}";
 
         return $"{seconds:0.0}s";
+    }
+
+    private void DrawPanelBackground()
+    {
+        var drawList = ImGui.GetWindowDrawList();
+        var min = ImGui.GetWindowPos();
+        var max = min + ImGui.GetWindowSize();
+        var opacity = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
+        drawList.AddRectFilled(min, max, ImGui.ColorConvertFloat4ToU32(new Vector4(0.03f, 0.05f, 0.07f, 0.90f * opacity)), 4f);
+        drawList.AddRect(min, max, ImGui.ColorConvertFloat4ToU32(new Vector4(PanelBorderColor.X, PanelBorderColor.Y, PanelBorderColor.Z, PanelBorderColor.W * opacity)), 4f);
     }
 }

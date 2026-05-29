@@ -256,7 +256,7 @@ internal sealed partial class SettingsWindow
                 DrawCommandHelpRow("/dps settings", "切换设置面板。");
                 DrawCommandHelpRow("/dps dps", "切换 DPS 统计悬浮窗。");
                 DrawCommandHelpRow("/dps skills", "切换队友技能监控悬浮窗。");
-                DrawCommandHelpRow("/dps status", "切换状态观察窗口。");
+                DrawCommandHelpRow("/dps status", "切换状态监控窗口。");
                 DrawCommandHelpRow("/dps timeline", "切换时间轴悬浮窗。");
                 DrawCommandHelpRow("/dps time", "切换时间轴悬浮窗。");
 

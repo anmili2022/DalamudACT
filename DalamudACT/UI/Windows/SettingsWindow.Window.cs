@@ -85,7 +85,7 @@ internal sealed partial class SettingsWindow
                 }
 
                 var partyOpacity = config.PartyMonitor.PartyMonitorOpacity;
-                if (ImGui.SliderFloat("队友监控窗口透明度", ref partyOpacity, 0f, 1f))
+                if (ImGui.SliderFloat("技能监控窗口透明度", ref partyOpacity, 0f, 1f))
                 {
                     config.PartyMonitor.PartyMonitorOpacity = partyOpacity;
                     config.Save();
@@ -129,6 +129,13 @@ internal sealed partial class SettingsWindow
                 if (ImGui.SliderFloat("时间轴窗口透明度", ref timelineOpacity, 0f, 1f))
                 {
                     config.TimelineWindowOpacity = timelineOpacity;
+                    config.Save();
+                }
+
+                var statusMonitorOpacity = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
+                if (ImGui.SliderFloat("状态监控悬浮窗透明度", ref statusMonitorOpacity, 0f, 1f))
+                {
+                    config.StatusObserver.WindowOpacity = statusMonitorOpacity;
                     config.Save();
                 }
 

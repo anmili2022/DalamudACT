@@ -8,7 +8,7 @@ public sealed partial class ACT
     {
         DalamudApi.Commands.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "DPS统计：settings 设置；dps DPS悬浮窗；skills 技能监控；status 状态观察；timeline/time 时间轴；help 帮助。",
+            HelpMessage = "DPS统计：settings 设置；dps DPS悬浮窗；skills 技能监控；status 状态监控；timeline/time 时间轴；help 帮助。",
         });
     }
 
@@ -59,6 +59,7 @@ public sealed partial class ACT
             case "buff":
             case "状态":
             case "状态观察":
+            case "状态监控":
                 ui.ToggleStatusObserverWindow();
                 return;
             default:
@@ -69,6 +70,6 @@ public sealed partial class ACT
 
     private static void PrintCommandHelp()
     {
-        LogHelper.PrintWithModule("命令", "宏", "可用宏命令：/dps help 显示帮助；/dps settings 切换设置面板；/dps dps 切换DPS统计悬浮窗；/dps skills 切换技能监控悬浮窗；/dps status 切换状态观察窗口；/dps timeline 或 /dps time 切换时间轴悬浮窗。 ");
+        LogHelper.PrintWithModule("命令", "宏", "可用宏命令：/dps help 显示帮助；/dps settings 切换设置面板；/dps dps 切换DPS统计悬浮窗；/dps skills 切换技能监控悬浮窗；/dps status 切换状态监控窗口；/dps timeline 或 /dps time 切换时间轴悬浮窗。 ");
     }
 }

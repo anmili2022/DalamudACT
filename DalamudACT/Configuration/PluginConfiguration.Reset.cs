@@ -30,9 +30,6 @@ public sealed partial class PluginConfiguration
         EnableTimelineDailyRoutinesTts = false;
         TimelineTtsLeadSeconds = 5;
         TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
-        ActLogDirectory = @"D:\ff14act\FFXIVLogs";
-        ActLogFilePath = string.Empty;
-        ActLogEncounterKey = string.Empty;
         EnableDebugLog = LogHelper.DefaultEnableDebugLog;
         ShowDpsTab = true;
         ShowHpsTab = true;

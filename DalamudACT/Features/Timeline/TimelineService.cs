@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace DalamudACT;
 
@@ -11,6 +12,7 @@ internal sealed class TimelineService
     private readonly PluginConfiguration config;
     private readonly TimelineMechanicHintProvider mechanicHints = new();
     private readonly AeAssistResourceDownloader aeAssistResources = new();
+    private readonly TimelineRemoteResourceDownloader remoteResources = new();
     private TimelineDefinition? definition;
     private IReadOnlyList<TimelineIndexEntry>? timelineIndex;
     private DateTime? startedAtUtc;
@@ -54,6 +56,12 @@ internal sealed class TimelineService
     private float DisplayTimeSeconds => CurrentTimeSeconds + displayOffsetSeconds;
 
     public bool IsRunning => startedAtUtc.HasValue;
+
+    public Task<string> RefreshCurrentZoneTimelineAsync()
+        => remoteResources.RefreshCurrentZoneAsync(loadedZoneId, loadedZoneName);
+
+    public Task<string> DownloadAllTimelinesAsync()
+        => remoteResources.DownloadAllAsync();
 
     public void Update(bool inCombat, uint zoneId, string zoneName)
     {
@@ -474,6 +482,7 @@ internal sealed class TimelineService
     private static IEnumerable<string> GetTimelineIndexCandidatePaths()
     {
         yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", "timeline-index.json");
+        yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), "timeline-index.json");
         yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", "timeline-index.json");
         yield return Path.Combine(Environment.CurrentDirectory, "DalamudACT", "Features", "Timeline", "Data", "timeline-index.json");
     }
@@ -483,6 +492,7 @@ internal sealed class TimelineService
         foreach (var candidateFileName in GetLocalizedFileNameCandidates(fileName))
         {
             yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", candidateFileName);
+            yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), candidateFileName);
             yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", candidateFileName);
             yield return Path.Combine(Environment.CurrentDirectory, "DalamudACT", "Features", "Timeline", "Data", candidateFileName);
         }

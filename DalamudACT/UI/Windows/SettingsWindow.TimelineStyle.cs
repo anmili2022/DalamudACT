@@ -1,5 +1,6 @@
-using System.Linq;
+using System;
 using System.Numerics;
+using System.Threading.Tasks;
 using Dalamud.Bindings.ImGui;
 
 namespace DalamudACT;
@@ -47,7 +48,6 @@ internal sealed partial class SettingsWindow
                     if (enableTts && !DalamudApi.IsCommandRegistered("/pdr"))
                     {
                         config.EnableTimelineDailyRoutinesTts = false;
-                        timelineDraftStatusText = "未检测到 DailyRoutines：请先安装并启用 DailyRoutines 插件，再开启 TTS。";
                         DalamudApi.PrintChatMessage("[DPS统计] 未检测到 DailyRoutines：请先安装并启用 DailyRoutines 插件，再开启时间轴 TTS。");
                     }
                     else
@@ -79,107 +79,73 @@ internal sealed partial class SettingsWindow
                 DrawCompactHelp("样式说明", "时间条间隔只控制每条机制之间的距离；时间轴窗口透明度仍在“窗口设置”里控制，并且只影响黑色窗体背景。DailyRoutines TTS 需要已安装并启用 Daily Routines，实际发送命令格式为 /pdr tts 文本。 ");
 
                 ImGui.Separator();
-                ImGui.TextUnformatted("ACT日志生成草稿");
+                ImGui.TextUnformatted("在线时间轴");
 
-                var actLogDirectory = config.ActLogDirectory ?? string.Empty;
-                ImGui.SetNextItemWidth(-1f);
-                if (ImGui.InputText("##act_log_directory", ref actLogDirectory, 512))
+                if (timelineRemoteOperationRunning)
                 {
-                    config.ActLogDirectory = actLogDirectory;
-                    config.Save();
+                    ImGui.BeginDisabled();
                 }
 
-                var actLogFilePath = config.ActLogFilePath ?? string.Empty;
-                ImGui.SetNextItemWidth(-1f);
-                if (ImGui.InputText("##act_log_file_path", ref actLogFilePath, 512))
-                {
-                    config.ActLogFilePath = actLogFilePath;
-                    config.Save();
-                }
-
-                if (ImGui.Button("选择日志文件"))
-                {
-                    if (WindowsFileDialog.TryPickLogFile(config.ActLogDirectory ?? string.Empty, out var selectedPath, out var errorMessage))
+                if (ImGui.Button("刷新当前副本时间轴"))
+                    RunTimelineRemoteOperation(async () =>
                     {
-                        config.ActLogFilePath = selectedPath;
-                        config.ActLogDirectory = System.IO.Path.GetDirectoryName(selectedPath) ?? string.Empty;
-                        config.Save();
-                        timelineDraftStatusText = $"已选择日志文件：{selectedPath}";
-                    }
-                    else if (!string.IsNullOrWhiteSpace(errorMessage))
-                    {
-                        timelineDraftStatusText = $"选择日志文件失败：{errorMessage}";
-                    }
-                }
+                        if (timelineService == null)
+                            return "时间轴服务未初始化。";
+
+                        var message = await timelineService.RefreshCurrentZoneTimelineAsync().ConfigureAwait(false);
+                        timelineService.ReloadCurrentTimeline();
+                        return message;
+                    });
 
                 ImGui.SameLine();
-                if (ImGui.Button("使用最新日志"))
+                if (ImGui.Button("下载全部时间轴"))
+                    RunTimelineRemoteOperation(async () =>
+                    {
+                        if (timelineService == null)
+                            return "时间轴服务未初始化。";
+
+                        var message = await timelineService.DownloadAllTimelinesAsync().ConfigureAwait(false);
+                        timelineService.ReloadCurrentTimeline();
+                        return message;
+                    });
+
+                if (timelineRemoteOperationRunning)
                 {
-                    config.ActLogFilePath = string.Empty;
-                    config.Save();
-                    timelineDraftStatusText = "已切换为使用目录中的最新 Network*.log。";
+                    ImGui.EndDisabled();
+                    ImGui.SameLine();
+                    ImGui.TextUnformatted("下载中...");
                 }
 
-                var selectedLog = string.IsNullOrWhiteSpace(config.ActLogFilePath)
-                    ? "当前：使用目录中的最新 Network*.log"
-                    : $"当前：{config.ActLogFilePath}";
-                ImGui.TextWrapped(selectedLog);
+                DrawCompactHelp("在线时间轴说明", "刷新当前副本时间轴只下载当前区域匹配的时间轴；下载全部时间轴会下载索引中的所有时间轴，用于离线使用或批量更新。在线缓存位置为 pluginConfigs/DalamudACT/Timeline/RemoteCache/Data，用户手动时间轴仍然优先。 ");
 
-                if (ImGui.Button("刷新战斗列表"))
-                {
-                    timelineLogEncounterOptions = TimelineLogImporter.GetEncounterOptions(config, out var refreshMessage).ToList();
-                    timelineDraftStatusText = refreshMessage;
-                    if (timelineLogEncounterOptions.Count > 0 && !timelineLogEncounterOptions.Any(option => option.Key == config.ActLogEncounterKey))
-                    {
-                        config.ActLogEncounterKey = timelineLogEncounterOptions[0].Key;
-                        config.Save();
-                    }
-                }
-
-                var selectedEncounterLabel = timelineLogEncounterOptions.FirstOrDefault(option => option.Key == config.ActLogEncounterKey)?.Label
-                                             ?? (string.IsNullOrWhiteSpace(config.ActLogEncounterKey) ? "未选择：默认使用最新战斗" : config.ActLogEncounterKey);
-                if (BeginLabeledCombo("选择战斗", "##act_log_encounter", selectedEncounterLabel))
-                {
-                    try
-                    {
-                        if (ImGui.Selectable("未选择：默认使用最新战斗", string.IsNullOrWhiteSpace(config.ActLogEncounterKey)))
-                        {
-                            config.ActLogEncounterKey = string.Empty;
-                            config.Save();
-                        }
-
-                        foreach (var option in timelineLogEncounterOptions)
-                        {
-                            var selected = option.Key == config.ActLogEncounterKey;
-                            if (ImGui.Selectable(option.Label, selected))
-                            {
-                                config.ActLogEncounterKey = option.Key;
-                                config.Save();
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        ImGui.EndCombo();
-                    }
-                }
-
-                if (ImGui.Button("生成时间轴草稿"))
-                    timelineDraftStatusText = TimelineLogImporter.GenerateLatestDraft(config);
-
-                ImGui.SameLine();
-                if (ImGui.Button("打开草稿目录"))
-                    timelineDraftStatusText = TimelineLogImporter.OpenGeneratedDirectory();
-
-                ImGui.SameLine();
-                if (ImGui.Button("刷新额外资源"))
-                    timelineDraftStatusText = AeAssistResourceDownloader.RefreshResourcesForSettings();
-
-                DrawCompactHelp("日志目录", "第一行填写 ACT 的 FFXIVLogs 目录，例如 D:\\ff14act\\FFXIVLogs。第二行可直接填写具体日志文件路径；选择日志文件后会优先读取选中文件；点击“使用最新日志”后回退为读取目录中的最新 Network*.log。刷新战斗列表后可按开始时间选择具体一场战斗生成草稿；未选择时默认使用最新战斗。额外资源会保存到 Timeline/Resource，用于生成草稿时标注 AOE/死刑。 ");
-
-                if (!string.IsNullOrWhiteSpace(timelineDraftStatusText))
-                    ImGui.TextWrapped(timelineDraftStatusText);
+                if (!string.IsNullOrWhiteSpace(timelineRemoteStatusText))
+                    ImGui.TextWrapped(timelineRemoteStatusText);
             });
+    }
+
+    private void RunTimelineRemoteOperation(Func<Task<string>> operation)
+    {
+        if (timelineRemoteOperationRunning)
+            return;
+
+        timelineRemoteOperationRunning = true;
+        timelineRemoteStatusText = "下载中...";
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                timelineRemoteStatusText = await operation().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                timelineRemoteStatusText = $"在线时间轴操作失败：{ex.Message}";
+                LogHelper.Warning("时间轴", ex, "在线时间轴操作失败。 ");
+            }
+            finally
+            {
+                timelineRemoteOperationRunning = false;
+            }
+        });
     }
 
     private void DrawCommandHelpSection()

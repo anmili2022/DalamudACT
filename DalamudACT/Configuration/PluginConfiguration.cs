@@ -68,9 +68,6 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public bool EnableTimelineDailyRoutinesTts = false;
     public int TimelineTtsLeadSeconds = 5;
     public TimelineTtsContentMode TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
-    public string ActLogDirectory = @"D:\ff14act\FFXIVLogs";
-    public string ActLogFilePath = string.Empty;
-    public string ActLogEncounterKey = string.Empty;
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
 
     public PartyMonitorConfig PartyMonitor = new();
@@ -269,11 +266,6 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         TimelineTtsLeadSeconds = Math.Clamp(TimelineTtsLeadSeconds <= 0 ? 5 : TimelineTtsLeadSeconds, 1, 30);
         if (!Enum.IsDefined(typeof(TimelineTtsContentMode), TimelineTtsContentMode))
             TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
-        if (string.IsNullOrWhiteSpace(ActLogDirectory))
-            ActLogDirectory = @"D:\ff14act\FFXIVLogs";
-        ActLogFilePath ??= string.Empty;
-        ActLogEncounterKey ??= string.Empty;
-
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
             CombatEndRule = CombatEndRule.PartyList;
 
@@ -589,15 +581,6 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
         if (Version < 62)
             TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
-
-        if (Version < 63 && string.IsNullOrWhiteSpace(ActLogDirectory))
-            ActLogDirectory = @"D:\ff14act\FFXIVLogs";
-
-        if (Version < 64)
-            ActLogFilePath = string.Empty;
-
-        if (Version < 65)
-            ActLogEncounterKey = string.Empty;
 
         SyncSharedColumnSettings();
         EnsureThemeBarColors();

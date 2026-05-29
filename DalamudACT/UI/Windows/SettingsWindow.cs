@@ -28,8 +28,8 @@ internal sealed partial class SettingsWindow : Window
     private readonly Dictionary<string, float> adaptiveChildHeights = new();
     private string floatingStyleShareCode = string.Empty;
     private string floatingStyleTransferStatusText = string.Empty;
-    private string timelineDraftStatusText = string.Empty;
-    private List<TimelineLogEncounterOption> timelineLogEncounterOptions = new();
+    private string timelineRemoteStatusText = string.Empty;
+    private bool timelineRemoteOperationRunning;
     private string customFriendlyNpcNameInput = string.Empty;
     private string customFriendlyNpcStatusText = string.Empty;
     private readonly Dictionary<uint, string> customSkillActionIdInputs = new();

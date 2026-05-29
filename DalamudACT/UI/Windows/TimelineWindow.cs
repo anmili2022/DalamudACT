@@ -83,8 +83,8 @@ internal sealed class TimelineWindow : Window
         var barMax = new Vector2(rowMax.X, rowMax.Y);
         var isUrgent = row.Seconds <= 5f && !row.IsStatus && !string.IsNullOrWhiteSpace(row.Name);
         var barColor = isUrgent
-            ? new Vector4(0.86f, 0.08f, 0.36f, 0.94f)
-            : new Vector4(0.28f, 0.22f, 0.76f, 0.86f);
+            ? new Vector4(244f / 255f, 143f / 255f, 177f / 255f, 0.94f)
+            : new Vector4(127f / 255f, 168f / 255f, 232f / 255f, 0.86f);
         var rowBackground = new Vector4(0f, 0f, 0f, 0.86f * opacity);
 
         drawList.AddRectFilled(rowMin, rowMax, ToU32(rowBackground), 0f);

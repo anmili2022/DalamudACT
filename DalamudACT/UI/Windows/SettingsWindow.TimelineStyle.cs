@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using Dalamud.Bindings.ImGui;
 
@@ -74,42 +75,45 @@ internal sealed partial class SettingsWindow
                 }
 
                 if (ImGui.Button("测试TTS"))
-                    DalamudApi.TrySendChatCommand("/pdr tts 欢迎使用DPS统计");
+                    DalamudApi.TrySendChatCommand($"/pdr tts {config.ApplyTimelineTtsCorrections("欢迎使用DPS统计")}");
+
+                DrawTimelineTtsCorrectionsEditor();
 
                 DrawCompactHelp("样式说明", "时间条间隔只控制每条机制之间的距离；时间轴窗口透明度仍在“窗口设置”里控制，并且只影响黑色窗体背景。DailyRoutines TTS 需要已安装并启用 Daily Routines，实际发送命令格式为 /pdr tts 文本。 ");
 
                 ImGui.Separator();
                 ImGui.TextUnformatted("在线时间轴");
 
-                if (timelineRemoteOperationRunning)
+                var remoteOperationRunning = timelineRemoteOperationRunning;
+                if (remoteOperationRunning)
                 {
                     ImGui.BeginDisabled();
                 }
 
                 if (ImGui.Button("刷新当前副本时间轴"))
-                    RunTimelineRemoteOperation(async () =>
+                    RunTimelineRemoteOperation(async cancellationToken =>
                     {
                         if (timelineService == null)
                             return "时间轴服务未初始化。";
 
-                        var message = await timelineService.RefreshCurrentZoneTimelineAsync().ConfigureAwait(false);
+                        var message = await timelineService.RefreshCurrentZoneTimelineAsync(CreateTimelineRemoteProgress(), cancellationToken).ConfigureAwait(false);
                         timelineService.ReloadCurrentTimeline();
                         return message;
                     });
 
                 ImGui.SameLine();
                 if (ImGui.Button("下载全部时间轴"))
-                    RunTimelineRemoteOperation(async () =>
+                    RunTimelineRemoteOperation(async cancellationToken =>
                     {
                         if (timelineService == null)
                             return "时间轴服务未初始化。";
 
-                        var message = await timelineService.DownloadAllTimelinesAsync().ConfigureAwait(false);
+                        var message = await timelineService.DownloadAllTimelinesAsync(CreateTimelineRemoteProgress(), cancellationToken).ConfigureAwait(false);
                         timelineService.ReloadCurrentTimeline();
                         return message;
                     });
 
-                if (timelineRemoteOperationRunning)
+                if (remoteOperationRunning)
                 {
                     ImGui.EndDisabled();
                     ImGui.SameLine();
@@ -123,7 +127,7 @@ internal sealed partial class SettingsWindow
             });
     }
 
-    private void RunTimelineRemoteOperation(Func<Task<string>> operation)
+    private void RunTimelineRemoteOperation(Func<CancellationToken, Task<string>> operation)
     {
         if (timelineRemoteOperationRunning)
             return;
@@ -132,9 +136,14 @@ internal sealed partial class SettingsWindow
         timelineRemoteStatusText = "下载中...";
         _ = Task.Run(async () =>
         {
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMinutes(3));
             try
             {
-                timelineRemoteStatusText = await operation().ConfigureAwait(false);
+                timelineRemoteStatusText = await operation(timeoutCts.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                timelineRemoteStatusText = "在线时间轴操作超时，请稍后重试。";
             }
             catch (Exception ex)
             {
@@ -146,6 +155,81 @@ internal sealed partial class SettingsWindow
                 timelineRemoteOperationRunning = false;
             }
         });
+    }
+
+    private Progress<string> CreateTimelineRemoteProgress()
+        => new(message => timelineRemoteStatusText = message);
+
+    private void DrawTimelineTtsCorrectionsEditor()
+    {
+        config.EnsureTimelineTtsCorrections();
+
+        ImGui.Separator();
+        ImGui.TextUnformatted("TTS纠偏");
+        DrawCompactHelp("TTS纠偏说明", "发送 TTS 前会按列表把原词替换成纠偏词。纠偏会作用在完整文本中，例如“地动山摇”命中“地动 -> 帝动”后会播报为“帝动山摇”。");
+
+        var removeIndex = -1;
+        if (ImGui.BeginTable("##timeline_tts_corrections", 4, ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings))
+        {
+            ImGui.TableSetupColumn("启用", ImGuiTableColumnFlags.WidthFixed, 46f);
+            ImGui.TableSetupColumn("原词");
+            ImGui.TableSetupColumn("纠偏词");
+            ImGui.TableSetupColumn("操作", ImGuiTableColumnFlags.WidthFixed, 54f);
+            ImGui.TableHeadersRow();
+
+            for (var i = 0; i < config.TimelineTtsCorrections.Count; i++)
+            {
+                var rule = config.TimelineTtsCorrections[i];
+                ImGui.PushID(i);
+                ImGui.TableNextRow();
+
+                ImGui.TableSetColumnIndex(0);
+                var enabled = rule.Enabled;
+                if (ImGui.Checkbox("##enabled", ref enabled))
+                {
+                    rule.Enabled = enabled;
+                    config.Save();
+                }
+
+                ImGui.TableSetColumnIndex(1);
+                var from = rule.From ?? string.Empty;
+                ImGui.SetNextItemWidth(-1f);
+                if (ImGui.InputText("##from", ref from, 64))
+                {
+                    rule.From = from;
+                    config.Save();
+                }
+
+                ImGui.TableSetColumnIndex(2);
+                var to = rule.To ?? string.Empty;
+                ImGui.SetNextItemWidth(-1f);
+                if (ImGui.InputText("##to", ref to, 64))
+                {
+                    rule.To = to;
+                    config.Save();
+                }
+
+                ImGui.TableSetColumnIndex(3);
+                if (ImGui.SmallButton("删除"))
+                    removeIndex = i;
+
+                ImGui.PopID();
+            }
+
+            ImGui.EndTable();
+        }
+
+        if (removeIndex >= 0 && removeIndex < config.TimelineTtsCorrections.Count)
+        {
+            config.TimelineTtsCorrections.RemoveAt(removeIndex);
+            config.Save();
+        }
+
+        if (ImGui.Button("新增纠偏"))
+        {
+            config.TimelineTtsCorrections.Add(new TtsCorrectionRule { From = string.Empty, To = string.Empty, Enabled = true });
+            config.Save();
+        }
     }
 
     private void DrawCommandHelpSection()
@@ -172,6 +256,7 @@ internal sealed partial class SettingsWindow
                 DrawCommandHelpRow("/dps settings", "切换设置面板。");
                 DrawCommandHelpRow("/dps dps", "切换 DPS 统计悬浮窗。");
                 DrawCommandHelpRow("/dps skills", "切换队友技能监控悬浮窗。");
+                DrawCommandHelpRow("/dps status", "切换状态观察窗口。");
                 DrawCommandHelpRow("/dps timeline", "切换时间轴悬浮窗。");
                 DrawCommandHelpRow("/dps time", "切换时间轴悬浮窗。");
 

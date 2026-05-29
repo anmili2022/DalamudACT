@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
@@ -68,9 +69,16 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public bool EnableTimelineDailyRoutinesTts = false;
     public int TimelineTtsLeadSeconds = 5;
     public TimelineTtsContentMode TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
+    public List<TtsCorrectionRule> TimelineTtsCorrections = new()
+    {
+        new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
+        new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
+        new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
+    };
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
 
     public PartyMonitorConfig PartyMonitor = new();
+    public StatusObserverConfig StatusObserver = new();
 
     public bool ShowDpsTab = true;
     public bool ShowHpsTab = true;
@@ -266,6 +274,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         TimelineTtsLeadSeconds = Math.Clamp(TimelineTtsLeadSeconds <= 0 ? 5 : TimelineTtsLeadSeconds, 1, 30);
         if (!Enum.IsDefined(typeof(TimelineTtsContentMode), TimelineTtsContentMode))
             TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
+        EnsureTimelineTtsCorrections();
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
             CombatEndRule = CombatEndRule.PartyList;
 
@@ -595,6 +604,40 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
     public bool HasAnyVisibleStatsTab()
         => ShowDpsTab || ShowHpsTab || ShowTakenTab || ShowOverviewTab || ShowHistoryTab;
+
+    public void EnsureTimelineTtsCorrections()
+    {
+        TimelineTtsCorrections ??= new List<TtsCorrectionRule>();
+        AddDefaultTtsCorrection("AOE", "范围攻击");
+        AddDefaultTtsCorrection("地火", "帝火");
+        AddDefaultTtsCorrection("地动", "帝动");
+    }
+
+    public string ApplyTimelineTtsCorrections(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        EnsureTimelineTtsCorrections();
+        var corrected = text;
+        foreach (var rule in TimelineTtsCorrections)
+        {
+            if (!rule.Enabled || string.IsNullOrWhiteSpace(rule.From))
+                continue;
+
+            corrected = corrected.Replace(rule.From, rule.To ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return corrected;
+    }
+
+    private void AddDefaultTtsCorrection(string from, string to)
+    {
+        if (TimelineTtsCorrections.Any(rule => string.Equals(rule.From, from, StringComparison.Ordinal)))
+            return;
+
+        TimelineTtsCorrections.Add(new TtsCorrectionRule { From = from, To = to, Enabled = true });
+    }
 
     public static bool UsesLegacyFloatingTableLayout(FloatingStatsDisplayStyle style)
         => style == FloatingStatsDisplayStyle.Classic;

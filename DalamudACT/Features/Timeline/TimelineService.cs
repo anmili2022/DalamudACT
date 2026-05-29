@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DalamudACT;
@@ -57,11 +58,11 @@ internal sealed class TimelineService
 
     public bool IsRunning => startedAtUtc.HasValue;
 
-    public Task<string> RefreshCurrentZoneTimelineAsync()
-        => remoteResources.RefreshCurrentZoneAsync(loadedZoneId, loadedZoneName);
+    public Task<string> RefreshCurrentZoneTimelineAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+        => remoteResources.RefreshCurrentZoneAsync(loadedZoneId, loadedZoneName, progress, cancellationToken);
 
-    public Task<string> DownloadAllTimelinesAsync()
-        => remoteResources.DownloadAllAsync();
+    public Task<string> DownloadAllTimelinesAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+        => remoteResources.DownloadAllAsync(progress, cancellationToken);
 
     public void Update(bool inCombat, uint zoneId, string zoneName)
     {
@@ -160,8 +161,9 @@ internal sealed class TimelineService
             return;
 
         lastInstantTtsByActionKey[key] = nowUtc;
-        if (!DalamudApi.TrySendChatCommand($"/pdr tts {hint}"))
-            LogHelper.Debug("时间轴", $"无时间轴即时 TTS 发送失败：{hint} / actionId={actionId:X}");
+        var ttsHint = ApplyTtsCorrections(hint);
+        if (!DalamudApi.TrySendChatCommand($"/pdr tts {ttsHint}"))
+            LogHelper.Debug("时间轴", $"无时间轴即时 TTS 发送失败：{ttsHint} / actionId={actionId:X}");
     }
 
     private static double GetInstantTtsDedupeSeconds(uint actionId)
@@ -407,7 +409,7 @@ internal sealed class TimelineService
                 continue;
 
             var hint = GetMechanicHint(entry);
-            var text = SanitizeTtsText(BuildTtsText(hint, entry.DisplayText));
+            var text = SanitizeTtsText(ApplyTtsCorrections(BuildTtsText(hint, entry.DisplayText)));
             if (string.IsNullOrWhiteSpace(text))
                 continue;
 
@@ -429,6 +431,14 @@ internal sealed class TimelineService
             TimelineTtsContentMode.SkillOnly => skillName,
             _ => string.IsNullOrWhiteSpace(hint) ? skillName : $"{hint}，{skillName}",
         };
+
+    private string ApplyTtsCorrections(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return string.Empty;
+
+        return config.ApplyTimelineTtsCorrections(text);
+    }
 
     private string? GetMechanicHint(TimelineEntry entry)
         => string.IsNullOrWhiteSpace(entry.MechanicHint)

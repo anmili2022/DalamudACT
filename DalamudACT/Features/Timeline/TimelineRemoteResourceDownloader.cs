@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DalamudACT;
@@ -17,30 +18,37 @@ internal sealed class TimelineRemoteResourceDownloader
         PropertyNameCaseInsensitive = true,
     };
 
-    public async Task<string> RefreshCurrentZoneAsync(uint zoneId, string zoneName)
+    public async Task<string> RefreshCurrentZoneAsync(uint zoneId, string zoneName, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
     {
-        var entries = await DownloadIndexAsync().ConfigureAwait(false);
+        progress?.Report("正在下载在线时间轴索引...");
+        var entries = await DownloadIndexAsync(cancellationToken).ConfigureAwait(false);
         var entry = entries.FirstOrDefault(item => item.Matches(zoneId, zoneName));
         if (entry == null)
             return string.IsNullOrWhiteSpace(zoneName)
                 ? $"当前区域没有在线时间轴：{zoneId}。"
                 : $"当前区域没有在线时间轴：{zoneName} ({zoneId})。";
 
-        var downloaded = await DownloadTimelineFileAsync(entry.File).ConfigureAwait(false);
+        progress?.Report($"正在下载当前副本时间轴：{entry.Name}...");
+        var downloaded = await DownloadTimelineFileAsync(entry.File, cancellationToken).ConfigureAwait(false);
         return downloaded
             ? $"已刷新当前副本时间轴：{entry.Name}。"
             : $"刷新当前副本时间轴失败：{entry.Name}。";
     }
 
-    public async Task<string> DownloadAllAsync()
+    public async Task<string> DownloadAllAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
     {
-        var entries = await DownloadIndexAsync().ConfigureAwait(false);
+        progress?.Report("正在下载在线时间轴索引...");
+        var entries = await DownloadIndexAsync(cancellationToken).ConfigureAwait(false);
         var success = 0;
         var failed = 0;
+        var total = entries.Count;
 
-        foreach (var entry in entries)
+        for (var i = 0; i < entries.Count; i++)
         {
-            if (await DownloadTimelineFileAsync(entry.File).ConfigureAwait(false))
+            cancellationToken.ThrowIfCancellationRequested();
+            var entry = entries[i];
+            progress?.Report($"正在下载在线时间轴 {i + 1}/{total}：{entry.Name}");
+            if (await DownloadTimelineFileAsync(entry.File, cancellationToken).ConfigureAwait(false))
                 success++;
             else
                 failed++;
@@ -49,27 +57,31 @@ internal sealed class TimelineRemoteResourceDownloader
         return $"全部在线时间轴下载完成：成功 {success}，失败 {failed}。";
     }
 
-    private static async Task<List<TimelineIndexEntry>> DownloadIndexAsync()
+    private static async Task<List<TimelineIndexEntry>> DownloadIndexAsync(CancellationToken cancellationToken)
     {
-        using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-        var json = await client.GetStringAsync($"{ResourceBaseUrl}/timeline-index.json").ConfigureAwait(false);
+        using var client = CreateHttpClient();
+        var json = await client.GetStringAsync($"{ResourceBaseUrl}/timeline-index.json", cancellationToken).ConfigureAwait(false);
         Directory.CreateDirectory(GetCacheDataDirectory());
-        await File.WriteAllTextAsync(GetCacheIndexPath(), json, new UTF8Encoding(false)).ConfigureAwait(false);
+        await File.WriteAllTextAsync(GetCacheIndexPath(), json, new UTF8Encoding(false), cancellationToken).ConfigureAwait(false);
         return JsonSerializer.Deserialize<List<TimelineIndexEntry>>(json, JsonOptions) ?? [];
     }
 
-    private static async Task<bool> DownloadTimelineFileAsync(string fileName)
+    private static async Task<bool> DownloadTimelineFileAsync(string fileName, CancellationToken cancellationToken)
     {
+        using var client = CreateHttpClient();
         foreach (var candidate in GetLocalizedFileNameCandidates(fileName))
         {
             try
             {
-                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-                var text = await client.GetStringAsync($"{ResourceBaseUrl}/{candidate.Replace('\\', '/')}").ConfigureAwait(false);
+                var text = await client.GetStringAsync($"{ResourceBaseUrl}/{candidate.Replace('\\', '/')}", cancellationToken).ConfigureAwait(false);
                 var targetPath = Path.Combine(GetCacheDataDirectory(), candidate);
                 Directory.CreateDirectory(Path.GetDirectoryName(targetPath) ?? GetCacheDataDirectory());
-                await File.WriteAllTextAsync(targetPath, text, new UTF8Encoding(false)).ConfigureAwait(false);
+                await File.WriteAllTextAsync(targetPath, text, new UTF8Encoding(false), cancellationToken).ConfigureAwait(false);
                 return true;
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -79,6 +91,9 @@ internal sealed class TimelineRemoteResourceDownloader
 
         return false;
     }
+
+    private static HttpClient CreateHttpClient()
+        => new() { Timeout = TimeSpan.FromSeconds(8) };
 
     private static IEnumerable<string> GetLocalizedFileNameCandidates(string fileName)
     {

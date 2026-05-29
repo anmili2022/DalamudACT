@@ -13,6 +13,8 @@ internal sealed class PluginUI : IDisposable
     private readonly FloatingStatsWindow floatingStatsWindow;
     private readonly CombatTimelineWindow combatTimelineWindow;
     private readonly PartyMonitorWindow partyMonitorWindow;
+    private readonly StatusObserverService statusObserverService;
+    private readonly StatusObserverWindow statusObserverWindow;
     private readonly TimelineService timelineService;
     private readonly TimelineWindow timelineWindow;
     private bool windowDrawFaulted;
@@ -27,6 +29,8 @@ internal sealed class PluginUI : IDisposable
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
         partyMonitorWindow = new PartyMonitorWindow(config, monitorService, ToggleSettingsWindow);
+        statusObserverService = new StatusObserverService(config);
+        statusObserverWindow = new StatusObserverWindow(config, statusObserverService, ToggleSettingsWindow);
         timelineWindow = new TimelineWindow(config, timelineService, ToggleSettingsWindow);
 
         AddWindow(windowSystem, mainWindow);
@@ -34,6 +38,7 @@ internal sealed class PluginUI : IDisposable
         AddWindow(windowSystem, floatingStatsWindow);
         AddWindow(windowSystem, combatTimelineWindow);
         AddWindow(windowSystem, partyMonitorWindow);
+        AddWindow(windowSystem, statusObserverWindow);
         AddWindow(windowSystem, timelineWindow);
 
         mainWindow.IsOpen = false;
@@ -41,12 +46,14 @@ internal sealed class PluginUI : IDisposable
         floatingStatsWindow.IsOpen = config.ShowStatsPanel;
         combatTimelineWindow.IsOpen = false;
         partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
+        statusObserverWindow.IsOpen = config.StatusObserver.ShowWindow;
         timelineWindow.IsOpen = config.ShowTimelineWindow;
     }
 
     public void Draw()
     {
         SyncPartyMonitorVisibility();
+        SyncStatusObserverVisibility();
         SyncTimelineVisibility();
 
         try
@@ -88,6 +95,12 @@ internal sealed class PluginUI : IDisposable
             timelineWindow.IsOpen = shouldShow;
     }
 
+    private void SyncStatusObserverVisibility()
+    {
+        if (statusObserverWindow.IsOpen != config.StatusObserver.ShowWindow)
+            statusObserverWindow.IsOpen = config.StatusObserver.ShowWindow;
+    }
+
     public void ToggleSettingsWindow()
         => settingsWindow.IsOpen = !settingsWindow.IsOpen;
 
@@ -106,6 +119,13 @@ internal sealed class PluginUI : IDisposable
     {
         config.ShowTimelineWindow = !config.ShowTimelineWindow;
         timelineWindow.IsOpen = config.ShowTimelineWindow && (config.TimelineDebugMode || timelineService.HasTimeline);
+        config.Save();
+    }
+
+    public void ToggleStatusObserverWindow()
+    {
+        config.StatusObserver.ShowWindow = !config.StatusObserver.ShowWindow;
+        statusObserverWindow.IsOpen = config.StatusObserver.ShowWindow;
         config.Save();
     }
 

@@ -84,6 +84,7 @@ internal sealed partial class SettingsWindow : Window
         DrawWindowSection();
         DrawFloatingPanelSection();
         DrawPartyMonitorSection();
+        DrawStatusObserverSection();
         DrawTimelineStyleSection();
         DrawMaintenanceSection();
         DrawCommandHelpSection();

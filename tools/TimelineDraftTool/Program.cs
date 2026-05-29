@@ -611,7 +611,7 @@ internal static class TimelineDraftGenerator
 
     private static void TryAddStartsUsingHint(ParsedZone parsed, string[] parts, DateTimeOffset timestamp)
     {
-        if (parts.Length < 7 || !IsLikelyNpcId(parts[2]) || !parsed.HostileNpcIds.Contains(parts[2]) || !IsUsefulActionId(parts[4]))
+        if (parts.Length < 7 || !IsLikelyNpcId(parts[2]) || !parsed.HostileNpcIds.Contains(parts[2]) || !IsUsefulActionId(parts[4]) || IsIgnoredAction(parts[4], parts[5]))
             return;
 
         parsed.StartsUsingHints.Add(new StartsUsingHint(timestamp, parts[4], parts[5], parts[3]));
@@ -619,7 +619,7 @@ internal static class TimelineDraftGenerator
 
     private static void TryAddAbility(ParsedZone parsed, string[] parts, DateTimeOffset timestamp)
     {
-        if (parts.Length < 7 || !IsLikelyNpcId(parts[2]) || !parsed.HostileNpcIds.Contains(parts[2]) || !IsUsefulActionId(parts[4]))
+        if (parts.Length < 7 || !IsLikelyNpcId(parts[2]) || !parsed.HostileNpcIds.Contains(parts[2]) || !IsUsefulActionId(parts[4]) || IsIgnoredAction(parts[4], parts[5]))
             return;
 
         parsed.Events.Add(new DraftEvent(timestamp, "Ability", parts[4], parts[5], parts[3]));
@@ -784,6 +784,11 @@ internal static class TimelineDraftGenerator
            && actionId != "0"
            && actionId != "0000"
            && !string.Equals(actionId, "07", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsIgnoredAction(string actionId, string actionName)
+        => string.Equals(actionName, "攻击", StringComparison.OrdinalIgnoreCase)
+           || string.Equals(actionName, "Attack", StringComparison.OrdinalIgnoreCase)
+           || string.Equals(actionId, "366", StringComparison.OrdinalIgnoreCase);
 
     private static string Escape(string value)
         => (value ?? string.Empty).Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal);

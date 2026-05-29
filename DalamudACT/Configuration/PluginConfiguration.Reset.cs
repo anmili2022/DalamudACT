@@ -30,7 +30,14 @@ public sealed partial class PluginConfiguration
         EnableTimelineDailyRoutinesTts = false;
         TimelineTtsLeadSeconds = 5;
         TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
+        TimelineTtsCorrections = new List<TtsCorrectionRule>
+        {
+            new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
+            new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
+            new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
+        };
         EnableDebugLog = LogHelper.DefaultEnableDebugLog;
+        StatusObserver = new StatusObserverConfig();
         ShowDpsTab = true;
         ShowHpsTab = true;
         ShowTakenTab = true;

@@ -1,0 +1,40 @@
+# 永远之暗歼灭战
+# ZoneId: 1295
+
+hideall "--Reset--"
+hideall "--sync--"
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+289.2 "黑暗巨腕" Ability { id: "AE3D", source: "永远之暗" }
+295.7 "拖入" Ability { id: ["AE01", "AF11"], source: "暗之巨腕" }
+302.4 "暗之死腕" Ability { id: ["ADEC", "AE43"], source: "永远之暗" }
+305.0 "暗气流" Ability { id: "ADEE", source: "永远之暗" }
+326.6 "青之连魂" Ability { id: "ADF3", source: "永远之暗" }
+332.8 "灵魂轮转" Ability { id: "AE41", source: "永远之暗" }
+345.9 "青之连波潮" Ability { id: "B06E", source: "永远之暗" }
+346.1 "青之波动" Ability { id: ["ADF1", "B07D"], source: "永远之暗" }
+348.9 "青之波动" Ability { id: ["ADF2", "B07E"], source: "永远之暗" }
+351.8 "青之波动" Ability { id: ["ADF1", "B07D"], source: "永远之暗" }
+354.6 "青之波动" Ability { id: ["ADF2", "B07E"], source: "永远之暗" }
+366.5 "群体恐慌" Ability { id: "AE04", source: "永远之暗" } # AOE
+376.7 "死之恐惧" Ability { id: "ADEA", source: "永远之暗" } # AOE
+382.4 "压溃" Ability { id: "ADEB", source: "招死之手" }
+387.8 "暗之死腕" Ability { id: ["ADEC", "AE43"], source: "永远之暗" }
+390.3 "暗气流" Ability { id: "ADEE", source: "永远之暗" }
+401.0 "青魂" Ability { id: "ADEF", source: "永远之暗" }
+409.1 "死亡警告" Ability { id: "ADF4", source: "永远之暗" }
+415.4 "压溃" Ability { id: "ADEB", source: "招死之手" }
+417.3 "黑暗巨腕" Ability { id: "AE3D", source: "永远之暗" }
+423.8 "拖入" Ability { id: ["AE01", "AF11"], source: "暗之巨腕" }
+426.4 "青之冲击" Ability { id: "AE02", source: "永远之暗" } # 死刑
+427.6 "青之冲击" Ability { id: "AE03", source: "暗之巨腕" }
+433.6 "青之波动" Ability { id: ["ADF0", "ADF1"], source: "永远之暗" }
+434.8 "青之波动" Ability { id: "B07D", source: "永远之暗" }
+455.9 "大十字" Ability { id: "ADF8", source: "永远之暗" } # AOE
+458.4 "大十字" Ability { id: "ADF6", source: "青之魂块" }
+465.0 "大十字" Ability { id: ["ADF6", "ADF8"], source: "永远之暗" }
+469.0 "大十字" Ability { id: "ADF6", source: "青之魂块" }
+471.7 "大十字" Ability { id: "ADF6", source: "青之魂块" }
+492.8 "中子环" Ability { id: "ADFA", source: "永远之暗" } # AOE
+521.1 "青之连魂" Ability { id: "ADF3", source: "永远之暗" }
+527.2 "灵魂轮转" Ability { id: "AE41", source: "永远之暗" }

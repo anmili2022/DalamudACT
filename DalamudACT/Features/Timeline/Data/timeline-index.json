@@ -285,6 +285,12 @@
         "file":  "07-dt/trial/necron-ex.cn.txt"
     },
     {
+        "id":  "trial-necron-normal",
+        "name":  "永远之暗歼灭战",
+        "zoneId":  1295,
+        "file":  "07-dt/trial/necron-normal.cn.txt"
+    },
+    {
         "id":  "trial-queen-eternal",
         "name":  "永恒女王歼灭战",
         "zoneId":  1202,

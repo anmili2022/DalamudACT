@@ -25,6 +25,10 @@ hideall "--sync--"
 1105.8 "凶眼注目" Ability { id: "BF00", source: "装甲之眼" }
 1112.1 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
 1123.8 "对人导弹" Ability { id: "BF03", source: "装甲之眼" }
+1141.4 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
+1146.5 "对地导弹" Ability { id: "BF02", source: "装甲之眼" }
+1154.5 "石化光束" Ability { id: "C3FF", source: "装甲之眼" }
+1171.5 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
 
 
 #~~~~~~~~~~#

@@ -1,4 +1,4 @@
-### FUTURES REWRITTEN (ULTIMATE)
+﻿### 绝欧米茄
 # ZoneId: 1238
 
 # -ii 9CB4 9CD8 9CD9 9CC9 9CCA 9CCC 9CCD 9CCF 9CE5 9CE6 9CE9 9CF0 9D0C 9D0E 9D13
@@ -8,56 +8,56 @@ hideall "--Reset--"
 hideall "--sync--"
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-13.9 "暴风破" Ability { id: ["9CD0", "9CD4"], source: "绝命战士" } # Cyclonic Break castbar
-14.6 "暴风破" Ability { id: "9CD1", source: "绝命战士" }
-16.6 "暴风破 2 (后续)" #Ability { id: "9CD2", source: "绝命战士" }
-16.6 "罪炎/罪雷" Ability { id: ["9CD3", "9CD5"], source: "绝命战士" }
-18.6 "暴风破 3 (后续)" #Ability { id: "9CD2", source: "绝命战士" }
-20.6 "暴风破 4 (后续)" #Ability { id: "9CD2", source: "绝命战士" }
-24.4 "连锁爆印铭刻" Ability { id: "9CE8", source: "绝命战士" }
-28.5 "--center--" Ability { id: "9CED", source: "绝命战士" }
-35.2 "乐园绝技" Ability { id: ["9CDA", "9CDB"], source: "绝命战士" }
+13.9 "鏆撮鐮? Ability { id: ["9CD0", "9CD4"], source: "缁濆懡鎴樺＋" } # Cyclonic Break castbar
+14.6 "鏆撮鐮? Ability { id: "9CD1", source: "缁濆懡鎴樺＋" }
+16.6 "鏆撮鐮?2 (鍚庣画)" #Ability { id: "9CD2", source: "缁濆懡鎴樺＋" }
+16.6 "缃値/缃浄" Ability { id: ["9CD3", "9CD5"], source: "缁濆懡鎴樺＋" }
+18.6 "鏆撮鐮?3 (鍚庣画)" #Ability { id: "9CD2", source: "缁濆懡鎴樺＋" }
+20.6 "鏆撮鐮?4 (鍚庣画)" #Ability { id: "9CD2", source: "缁濆懡鎴樺＋" }
+24.4 "杩為攣鐖嗗嵃閾埢" Ability { id: "9CE8", source: "缁濆懡鎴樺＋" }
+28.5 "--center--" Ability { id: "9CED", source: "缁濆懡鎴樺＋" }
+35.2 "涔愬洯缁濇妧" Ability { id: ["9CDA", "9CDB"], source: "缁濆懡鎴樺＋" }
 35.2 "--untargetable--"
 
-40.6 "爆印" Ability { id: "9CE9", source: "绝命战士" }
-49.5 "爆破领域" Ability { id: "9CDD", source: "绝命战士的幻影" } # Blasting Zone castbar
-50.4 "罪爆炎/罪暴雷" Ability { id: ["9CDF", "9CE0"], source: ["Fatebreaker", "Fatebreaker's Image"] }
-50.5 "爆破领域" Ability { id: "9CDE", source: "绝命战士的幻影" }
-55.9 "暴风破" Ability { id: ["9D89", "9D8A"], source: "绝命战士的幻影" } # Cyclonic Break castbar
-56.6 "暴风破" Ability { id: "9CD1", source: "绝命战士的幻影" }
-58.6 "暴风破 2 (后续)" #Ability { id: "9CD2", source: "绝命战士的幻影" }
-58.6 "罪炎/罪雷" Ability { id: ["9CD3", "9CD5"], source: ["Fatebreaker", "Fatebreaker's Image"] }
-60.6 "暴风破 3 (后续)" #Ability { id: "9CD2", source: "绝命战士的幻影" }
-62.6 "暴风破 4 (后续)" #Ability { id: "9CD2", source: "绝命战士的幻影" }
-63.8 "光轮召唤" Ability { id: ["9CD6", "9CD7"], source: "绝命战士的幻影" }
-64.8 "燃烧击" Ability { id: "9CE3", source: "绝命战士的幻影" }
-66.5 "雷燃爆" Ability { id: "9CE4", source: "绝命战士的幻影" }
-70.8 "燃烧击" Ability { id: "9CE1", source: "绝命战士的幻影" }
-72.8 "火燃爆" Ability { id: "9CE2", source: "绝命战士的幻影" }
-75.4 "浮游拘束" Ability { id: "9CEB", source: "绝命战士的幻影" }
-78.6 "罪炎" Ability { id: "9CE7", source: "绝命战士的幻影" }
+40.6 "鐖嗗嵃" Ability { id: "9CE9", source: "缁濆懡鎴樺＋" }
+49.5 "鐖嗙牬棰嗗煙" Ability { id: "9CDD", source: "缁濆懡鎴樺＋鐨勫够褰? } # Blasting Zone castbar
+50.4 "缃垎鐐?缃毚闆? Ability { id: ["9CDF", "9CE0"], source: ["Fatebreaker", "Fatebreaker's Image"] }
+50.5 "鐖嗙牬棰嗗煙" Ability { id: "9CDE", source: "缁濆懡鎴樺＋鐨勫够褰? }
+55.9 "鏆撮鐮? Ability { id: ["9D89", "9D8A"], source: "缁濆懡鎴樺＋鐨勫够褰? } # Cyclonic Break castbar
+56.6 "鏆撮鐮? Ability { id: "9CD1", source: "缁濆懡鎴樺＋鐨勫够褰? }
+58.6 "鏆撮鐮?2 (鍚庣画)" #Ability { id: "9CD2", source: "缁濆懡鎴樺＋鐨勫够褰? }
+58.6 "缃値/缃浄" Ability { id: ["9CD3", "9CD5"], source: ["Fatebreaker", "Fatebreaker's Image"] }
+60.6 "鏆撮鐮?3 (鍚庣画)" #Ability { id: "9CD2", source: "缁濆懡鎴樺＋鐨勫够褰? }
+62.6 "鏆撮鐮?4 (鍚庣画)" #Ability { id: "9CD2", source: "缁濆懡鎴樺＋鐨勫够褰? }
+63.8 "鍏夎疆鍙敜" Ability { id: ["9CD6", "9CD7"], source: "缁濆懡鎴樺＋鐨勫够褰? }
+64.8 "鐕冪儳鍑? Ability { id: "9CE3", source: "缁濆懡鎴樺＋鐨勫够褰? }
+66.5 "闆风噧鐖? Ability { id: "9CE4", source: "缁濆懡鎴樺＋鐨勫够褰? }
+70.8 "鐕冪儳鍑? Ability { id: "9CE1", source: "缁濆懡鎴樺＋鐨勫够褰? }
+72.8 "鐏噧鐖? Ability { id: "9CE2", source: "缁濆懡鎴樺＋鐨勫够褰? }
+75.4 "娴父鎷樻潫" Ability { id: "9CEB", source: "缁濆懡鎴樺＋鐨勫够褰? }
+78.6 "缃値" Ability { id: "9CE7", source: "缁濆懡鎴樺＋鐨勫够褰? }
 
 79.8 "--targetable--"
-86.0 "光焰圆光" Ability { id: "9CEA", source: "绝命战士" }
-101.4 "罪壤断" Ability { id: ["9CC9", "9CCC"], source: "绝命战士" } # This is manually left in since it's a visible castbar.
-102.2 "浮游拘束 1" #Ability { id: "9CEB", source: "绝命战士" }
-105.2 "浮游拘束 2" #Ability { id: "9CEB", source: "绝命战士的幻影" }
-105.5 "罪冰焰/罪雷 1" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士" }
-107.5 "浮游拘束 3" #Ability { id: "9CEB", source: "绝命战士的幻影" }
-108.4 "罪冰焰/罪雷 2" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士的幻影" }
-109.9 "浮游拘束 4" #Ability { id: "9CEB", source: "绝命战士的幻影" }
-110.8 "罪冰焰/罪雷 3" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士" }
-113.3 "罪冰焰/罪雷 4" #Ability { id: ["9CCE", "9CDC"], source: "绝命战士的幻影" }
-121.3 "光焰圆光" Ability { id: "9CEA", source: "绝命战士" }
+86.0 "鍏夌劙鍦嗗厜" Ability { id: "9CEA", source: "缁濆懡鎴樺＋" }
+101.4 "缃￥鏂? Ability { id: ["9CC9", "9CCC"], source: "缁濆懡鎴樺＋" } # This is manually left in since it's a visible castbar.
+102.2 "娴父鎷樻潫 1" #Ability { id: "9CEB", source: "缁濆懡鎴樺＋" }
+105.2 "娴父鎷樻潫 2" #Ability { id: "9CEB", source: "缁濆懡鎴樺＋鐨勫够褰? }
+105.5 "缃啺鐒?缃浄 1" #Ability { id: ["9CCE", "9CDC"], source: "缁濆懡鎴樺＋" }
+107.5 "娴父鎷樻潫 3" #Ability { id: "9CEB", source: "缁濆懡鎴樺＋鐨勫够褰? }
+108.4 "缃啺鐒?缃浄 2" #Ability { id: ["9CCE", "9CDC"], source: "缁濆懡鎴樺＋鐨勫够褰? }
+109.9 "娴父鎷樻潫 4" #Ability { id: "9CEB", source: "缁濆懡鎴樺＋鐨勫够褰? }
+110.8 "缃啺鐒?缃浄 3" #Ability { id: ["9CCE", "9CDC"], source: "缁濆懡鎴樺＋" }
+113.3 "缃啺鐒?缃浄 4" #Ability { id: ["9CCE", "9CDC"], source: "缁濆懡鎴樺＋鐨勫够褰? }
+121.3 "鍏夌劙鍦嗗厜" Ability { id: "9CEA", source: "缁濆懡鎴樺＋" }
 
-129.9 "连锁爆印铭刻" Ability { id: "9CE8", source: "绝命战士" }
-132.3 "--center--" Ability { id: "9CED", source: "绝命战士" }
-141.3 "燃烧击" Ability { id: ["9CC1", "9CC5"], source: "绝命战士" }
-143.1 "火燃爆/雷燃爆" #Ability { id: ["9CC2", "9CC6"], source: "绝命战士" }
+129.9 "杩為攣鐖嗗嵃閾埢" Ability { id: "9CE8", source: "缁濆懡鎴樺＋" }
+132.3 "--center--" Ability { id: "9CED", source: "缁濆懡鎴樺＋" }
+141.3 "鐕冪儳鍑? Ability { id: ["9CC1", "9CC5"], source: "缁濆懡鎴樺＋" }
+143.1 "鐏噧鐖?闆风噧鐖? #Ability { id: ["9CC2", "9CC6"], source: "缁濆懡鎴樺＋" }
 # TODO: Add all tower explosion IDs
-145.1 "爆炸" #Ability { id: "9CBD", source: "绝命战士" }
-150.5 "光焰圆光" StartsUsing { id: "9CC0", source: "绝命战士" } # Burnished Glory
-160.2 "光焰圆光 (狂暴)" Ability { id: "9CC0", source: "绝命战士" }
+145.1 "鐖嗙偢" #Ability { id: "9CBD", source: "缁濆懡鎴樺＋" }
+150.5 "鍏夌劙鍦嗗厜" StartsUsing { id: "9CC0", source: "缁濆懡鎴樺＋" } # Burnished Glory
+160.2 "鍏夌劙鍦嗗厜 (鐙傛毚)" Ability { id: "9CC0", source: "缁濆懡鎴樺＋" }
 
 # Phase Two
 # Source actors are elided on some lines where stale data can make P1 actors fill it in.
@@ -65,200 +65,200 @@ hideall "--sync--"
 # Sync on the map change
 200.0 "--sync--" MapEffect { flags: "00020001", location: "17" } window 200,5
 204.1 "--targetable--"
-210.3 "四剑斩" StartsUsing { id: "9CFF", source: "希瓦·米特隆" }
-215.3 "四剑斩" Ability { id: "9CFF", source: "希瓦·米特隆" }
-219.4 "四剑斩" Ability { id: "9D00", source: "希瓦·米特隆" }
-224.5 "--跳南--" Ability { id: "9CEF", source: "希瓦·米特隆" }
-228.8 "镜中显影" Ability { id: "9CF4", source: "希瓦·米特隆" }
-235.9 "钻石星尘" Ability { id: "9D05", source: "希瓦·米特隆" }
+210.3 "鍥涘墤鏂? StartsUsing { id: "9CFF", source: "甯岀摝路绫崇壒闅? }
+215.3 "鍥涘墤鏂? Ability { id: "9CFF", source: "甯岀摝路绫崇壒闅? }
+219.4 "鍥涘墤鏂? Ability { id: "9D00", source: "甯岀摝路绫崇壒闅? }
+224.5 "--璺冲崡--" Ability { id: "9CEF", source: "甯岀摝路绫崇壒闅? }
+228.8 "闀滀腑鏄惧奖" Ability { id: "9CF4", source: "甯岀摝路绫崇壒闅? }
+235.9 "閽荤煶鏄熷皹" Ability { id: "9D05", source: "甯岀摝路绫崇壒闅? }
 239.0 "--untargetable--"
-244.6 "阔斧回旋踢/镰形回旋踢" Ability { id: ["9D0A", "9D0B"], source: "巫女的镜像" }
-245.5 "光之海啸" Ability { id: "9D0E" }
-247.2 "冰石" Ability { id: "9D07" }
-247.6 "冰柱冲击" Ability { id: "9D06" }
+244.6 "闃旀枾鍥炴棆韪?闀板舰鍥炴棆韪? Ability { id: ["9D0A", "9D0B"], source: "宸コ鐨勯暅鍍? }
+245.5 "鍏変箣娴峰暩" Ability { id: "9D0E" }
+247.2 "鍐扮煶" Ability { id: "9D07" }
+247.6 "鍐版煴鍐插嚮" Ability { id: "9D06" }
 248.4 "--center--" Ability { id: "9CEF" }
-251.5 "天降一击" Ability { id: "9D0F", source: "希瓦·米特隆" }
-251.6 "冰柱冲击" Ability { id: "9D06" }
-254.2 "冰针" Ability { id: "9D08" }
-254.6 "罪神圣 (咏唱)" Ability { id: "9D10", source: "巫女的镜像" }
-255.5 "冰柱冲击" Ability { id: "9D06" }
-255.5 "罪神圣 1 (圈)" #Ability { id: "9D11", source: "希瓦·米特隆" }
-256.9 "罪神圣 2 (圈)" #Ability { id: "9D11", source: "巫女的镜像" }
-258.5 "罪神圣 3 (圈)" #Ability { id: "9D11", source: "巫女的镜像" }
-260.1 "罪神圣 4 (圈)" #Ability { id: "9D11", source: "巫女的镜像" }
-263.9 "冰霜护甲/闪光护甲" Ability { id: ["9CF8", "9CF9"], source: ["Oracle's Reflection", "Usurper Of Frost"] }
-270.5 "静寂的双剑技/闲寂的双剑技" Ability { id: ["9D01", "9D02"], source: "巫女的镜像" }
-272.6 "闲寂的双剑技/静寂的双剑技" Ability { id: ["9D03", "9D04"], source: "巫女的镜像" }
+251.5 "澶╅檷涓€鍑? Ability { id: "9D0F", source: "甯岀摝路绫崇壒闅? }
+251.6 "鍐版煴鍐插嚮" Ability { id: "9D06" }
+254.2 "鍐伴拡" Ability { id: "9D08" }
+254.6 "缃鍦?(鍜忓敱)" Ability { id: "9D10", source: "宸コ鐨勯暅鍍? }
+255.5 "鍐版煴鍐插嚮" Ability { id: "9D06" }
+255.5 "缃鍦?1 (鍦?" #Ability { id: "9D11", source: "甯岀摝路绫崇壒闅? }
+256.9 "缃鍦?2 (鍦?" #Ability { id: "9D11", source: "宸コ鐨勯暅鍍? }
+258.5 "缃鍦?3 (鍦?" #Ability { id: "9D11", source: "宸コ鐨勯暅鍍? }
+260.1 "缃鍦?4 (鍦?" #Ability { id: "9D11", source: "宸コ鐨勯暅鍍? }
+263.9 "鍐伴湝鎶ょ敳/闂厜鎶ょ敳" Ability { id: ["9CF8", "9CF9"], source: ["Oracle's Reflection", "Usurper Of Frost"] }
+270.5 "闈欏瘋鐨勫弻鍓戞妧/闂插瘋鐨勫弻鍓戞妧" Ability { id: ["9D01", "9D02"], source: "宸コ鐨勯暅鍍? }
+272.6 "闂插瘋鐨勫弻鍓戞妧/闈欏瘋鐨勫弻鍓戞妧" Ability { id: ["9D03", "9D04"], source: "宸コ鐨勯暅鍍? }
 276.2 "--targetable--"
-283.3 "神圣射线" Ability { id: "9D12", source: "希瓦·米特隆" }
-293.0 "镜中奇遇" Ability { id: "9CF3", source: "希瓦·米特隆" }
-307.1 "镰形回旋踢" Ability { id: "9D0B", source: "希瓦·米特隆" }
-317.2 "连锁反射：镰形回旋踢" Ability { id: "9D0D", source: "冰面镜" }
-323.3 "强放逐" Ability { id: ["9D1C", "9D1D"], source: "希瓦·米特隆" }
-326.4 "--center--" Ability { id: "9CEF", source: "希瓦·米特隆" }
-332.7 "光之失控" Ability { id: "9D14", source: "希瓦·米特隆" }
+283.3 "绁炲湥灏勭嚎" Ability { id: "9D12", source: "甯岀摝路绫崇壒闅? }
+293.0 "闀滀腑濂囬亣" Ability { id: "9CF3", source: "甯岀摝路绫崇壒闅? }
+307.1 "闀板舰鍥炴棆韪? Ability { id: "9D0B", source: "甯岀摝路绫崇壒闅? }
+317.2 "杩為攣鍙嶅皠锛氶暟褰㈠洖鏃嬭涪" Ability { id: "9D0D", source: "鍐伴潰闀? }
+323.3 "寮烘斁閫? Ability { id: ["9D1C", "9D1D"], source: "甯岀摝路绫崇壒闅? }
+326.4 "--center--" Ability { id: "9CEF", source: "甯岀摝路绫崇壒闅? }
+332.7 "鍏変箣澶辨帶" Ability { id: "9D14", source: "甯岀摝路绫崇壒闅? }
 335.7 "--untargetable--"
-340.7 "光流侵蚀 1" #Ability { id: "9D1A", source: "希瓦·米特隆" }
-342.3 "光流侵蚀 2" #Ability { id: "9D1A", source: "希瓦·米特隆" }
-343.9 "光流侵蚀 3" #Ability { id: "9D1A", source: "希瓦·米特隆" }
-344.0 "侵蚀光" Ability { id: "9D15", source: "希瓦·米特隆" }
-345.4 "光流侵蚀 4" #Ability { id: "9D1A", source: "希瓦·米特隆" }
-347.0 "光流侵蚀 5" #Ability { id: "9D1A", source: "希瓦·米特隆" }
-349.8 "光爆" Ability { id: "9D19", source: "希瓦·米特隆" }
-352.2 "爆炸 1" #Ability { id: "9D1B", source: "圣光" }
-355.2 "爆炸 2" #Ability { id: "9D1B", source: "圣光" }
-358.8 "侵蚀光" Ability { id: "9D15", source: "希瓦·米特隆" }
-361.9 "强放逐" Ability { id: ["9D1C", "9D1D"], source: "希瓦·米特隆" }
+340.7 "鍏夋祦渚佃殌 1" #Ability { id: "9D1A", source: "甯岀摝路绫崇壒闅? }
+342.3 "鍏夋祦渚佃殌 2" #Ability { id: "9D1A", source: "甯岀摝路绫崇壒闅? }
+343.9 "鍏夋祦渚佃殌 3" #Ability { id: "9D1A", source: "甯岀摝路绫崇壒闅? }
+344.0 "渚佃殌鍏? Ability { id: "9D15", source: "甯岀摝路绫崇壒闅? }
+345.4 "鍏夋祦渚佃殌 4" #Ability { id: "9D1A", source: "甯岀摝路绫崇壒闅? }
+347.0 "鍏夋祦渚佃殌 5" #Ability { id: "9D1A", source: "甯岀摝路绫崇壒闅? }
+349.8 "鍏夌垎" Ability { id: "9D19", source: "甯岀摝路绫崇壒闅? }
+352.2 "鐖嗙偢 1" #Ability { id: "9D1B", source: "鍦ｅ厜" }
+355.2 "鐖嗙偢 2" #Ability { id: "9D1B", source: "鍦ｅ厜" }
+358.8 "渚佃殌鍏? Ability { id: "9D15", source: "甯岀摝路绫崇壒闅? }
+361.9 "寮烘斁閫? Ability { id: ["9D1C", "9D1D"], source: "甯岀摝路绫崇壒闅? }
 364.9 "--targetable--"
-370.8 "光之海啸" Ability { id: "9CFC", source: "希瓦·米特隆" }
-376.2 "--center--" Ability { id: "9CEF", source: "希瓦·米特隆" }
-390.1 "绝对零度 (狂暴)" Ability { id: "9D8D", source: "希瓦·米特隆" }
+370.8 "鍏変箣娴峰暩" Ability { id: "9CFC", source: "甯岀摝路绫崇壒闅? }
+376.2 "--center--" Ability { id: "9CEF", source: "甯岀摝路绫崇壒闅? }
+390.1 "缁濆闆跺害 (鐙傛毚)" Ability { id: "9D8D", source: "甯岀摝路绫崇壒闅? }
 
 # Adds Phase
 # The Heimal Storm casts from the Crystals of Light will stop once they all are killed.
-392.4 "寒波" Ability { id: "9D21", source: "希瓦·米特隆" }
+392.4 "瀵掓尝" Ability { id: "9D21", source: "甯岀摝路绫崇壒闅? }
 411.4 "--adds targetable--"
-424.4 "罪冰封" Ability { id: "9D42", source: "暗水晶" } window 424.4,2.5
-425.4 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-428.6 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-429.6 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
-431.8 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-434.7 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
-434.9 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-438.1 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-439.9 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
-441.3 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-444.5 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-445.2 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
-447.7 "严冬风暴" Ability { id: "9D40", source: "光水晶" }
-450.5 "罪冰封" Ability { id: "9D42", source: "暗水晶" }
-455.7 "光之泛滥 (狂暴)" Ability { id: "9D43", source: "永久冰晶" } # interrupted once <50% HP
+424.4 "缃啺灏? Ability { id: "9D42", source: "鏆楁按鏅? } window 424.4,2.5
+425.4 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+428.6 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+429.6 "缃啺灏? Ability { id: "9D42", source: "鏆楁按鏅? }
+431.8 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+434.7 "缃啺灏? Ability { id: "9D42", source: "鏆楁按鏅? }
+434.9 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+438.1 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+439.9 "缃啺灏? Ability { id: "9D42", source: "鏆楁按鏅? }
+441.3 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+444.5 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+445.2 "缃啺灏? Ability { id: "9D42", source: "鏆楁按鏅? }
+447.7 "涓ュ啲椋庢毚" Ability { id: "9D40", source: "鍏夋按鏅? }
+450.5 "缃啺灏? Ability { id: "9D42", source: "鏆楁按鏅? }
+455.7 "鍏変箣娉涙互 (鐙傛毚)" Ability { id: "9D43", source: "姘镐箙鍐版櫠" } # interrupted once <50% HP
 
 # Phase Three
 488.8 "--sync--" WasDefeated { target: 'Ice Veil' } window 488.8,5
-500.0 "融合光波" Ability { id: "9D22", source: "希瓦·米特隆" } window 500,5
+500.0 "铻嶅悎鍏夋尝" Ability { id: "9D22", source: "甯岀摝路绫崇壒闅? } window 500,5
 514.3 "--targetable--"
-518.3 "地狱审判" Ability { id: "9D49", source: "暗之巫女" }
-521.4 "--sync--" Ability { id: "9CB5", source: "暗之巫女" }
-532.4 "时间压缩·绝" Ability { id: "9D4A", source: "暗之巫女" }
-544.2 "黑暗爆炎" Ability { id: "9D54" }
-549.4 "罪熔毁" Ability { id: "9D2B" } duration 10.2
-554.3 "黑暗爆炎" Ability { id: "9D54" }
-559.4 "罪熔毁" Ability { id: "9D2B" } duration 10.2
-564.3 "黑暗爆炎" Ability { id: "9D54" }
-570.4 "罪熔毁" Ability { id: "9D2B" } duration 10.2
-573.2 "(眩晕 + 回返)" GainsEffect { effectId: "1043" }
-576.2 "暗影之眼" Ability { id: "9D56" }
-580.1 "破盾一击" Ability { id: "9D5E", source: "暗之巫女" }
-588.5 "脉冲星震波" Ability { id: "9D5A", source: "暗之巫女" }
-596.8 "黑色光环" Ability { id: "9D62", source: "暗之巫女" }
-605.9 "延迟咏唱·递进" Ability { id: "9D4D", source: "暗之巫女" }
-621.2 "启示" Ability { id: "9D68", source: "暗之巫女" }
-624.8 "黑暗狂水" Ability { id: "9D4F", source: "暗之巫女" }
-626.3 "碎灵一击" Ability { id: "9D60", source: "暗之巫女" }
-629.5 "--sync--" Ability { id: "9CB5", source: "暗之巫女" }
-635.2 "启示 (x6)" duration 10.0
-637.9 "暗炎喷发" Ability { id: "9D52", source: "暗之巫女" }
-643.7 "黑暗狂水" Ability { id: "9D4F", source: "暗之巫女" }
-646.0 "暗夜舞蹈" Ability { id: "9CF6", source: "暗之巫女" }
-648.9 "暗夜舞蹈" Ability { id: "9CF7", source: "暗之巫女" }
-652.8 "黑暗狂水" Ability { id: "9D4F", source: "暗之巫女" }
-658.2 "脉冲星震波" Ability { id: "9D5A", source: "暗之巫女" }
-672.0 "记忆终结 (狂暴)" Ability { id: "9D6C", source: "暗之巫女" }
+518.3 "鍦扮嫳瀹″垽" Ability { id: "9D49", source: "鏆椾箣宸コ" }
+521.4 "--sync--" Ability { id: "9CB5", source: "鏆椾箣宸コ" }
+532.4 "鏃堕棿鍘嬬缉路缁? Ability { id: "9D4A", source: "鏆椾箣宸コ" }
+544.2 "榛戞殫鐖嗙値" Ability { id: "9D54" }
+549.4 "缃啍姣? Ability { id: "9D2B" } duration 10.2
+554.3 "榛戞殫鐖嗙値" Ability { id: "9D54" }
+559.4 "缃啍姣? Ability { id: "9D2B" } duration 10.2
+564.3 "榛戞殫鐖嗙値" Ability { id: "9D54" }
+570.4 "缃啍姣? Ability { id: "9D2B" } duration 10.2
+573.2 "(鐪╂檿 + 鍥炶繑)" GainsEffect { effectId: "1043" }
+576.2 "鏆楀奖涔嬬溂" Ability { id: "9D56" }
+580.1 "鐮寸浘涓€鍑? Ability { id: "9D5E", source: "鏆椾箣宸コ" }
+588.5 "鑴夊啿鏄熼渿娉? Ability { id: "9D5A", source: "鏆椾箣宸コ" }
+596.8 "榛戣壊鍏夌幆" Ability { id: "9D62", source: "鏆椾箣宸コ" }
+605.9 "寤惰繜鍜忓敱路閫掕繘" Ability { id: "9D4D", source: "鏆椾箣宸コ" }
+621.2 "鍚ず" Ability { id: "9D68", source: "鏆椾箣宸コ" }
+624.8 "榛戞殫鐙傛按" Ability { id: "9D4F", source: "鏆椾箣宸コ" }
+626.3 "纰庣伒涓€鍑? Ability { id: "9D60", source: "鏆椾箣宸コ" }
+629.5 "--sync--" Ability { id: "9CB5", source: "鏆椾箣宸コ" }
+635.2 "鍚ず (x6)" duration 10.0
+637.9 "鏆楃値鍠峰彂" Ability { id: "9D52", source: "鏆椾箣宸コ" }
+643.7 "榛戞殫鐙傛按" Ability { id: "9D4F", source: "鏆椾箣宸コ" }
+646.0 "鏆楀鑸炶箞" Ability { id: "9CF6", source: "鏆椾箣宸コ" }
+648.9 "鏆楀鑸炶箞" Ability { id: "9CF7", source: "鏆椾箣宸コ" }
+652.8 "榛戞殫鐙傛按" Ability { id: "9D4F", source: "鏆椾箣宸コ" }
+658.2 "鑴夊啿鏄熼渿娉? Ability { id: "9D5A", source: "鏆椾箣宸コ" }
+672.0 "璁板繂缁堢粨 (鐙傛毚)" Ability { id: "9D6C", source: "鏆椾箣宸コ" }
 675.4 "--untargetable--"
 
 # Phase Four
 680.8 "--targetable--"
-686.3 "赋形" StartsUsing { id: "9D36", source: "希瓦·米特隆" } window 686.3,5
-689.2 "赋形" Ability { id: "9D36", source: "希瓦·米特隆" }
-700.4 "圣龙护甲" Ability { id: "9CFA" }
-702.9 "天光轮回" Ability { id: "9D2D", source: "希瓦·米特隆" } duration 5.1
-705.4 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
-706.2 "--巫女可选中--"
-708.6 "--sync--" Ability { id: "9CEF", source: "希瓦·米特隆" }
-714.9 "光与暗的龙诗" Ability { id: "9D2F", source: "希瓦·米特隆" }
-726.1 "侵蚀光" Ability { id: "9D15", source: "希瓦·米特隆" }
-727.0 "光之波动" Ability { id: "9CFE", source: "希瓦·米特隆" }
-729.1 "碎灵一击" Ability { id: "9D60", source: "暗之巫女" }
-729.5 "碎灵一击 (伤害)" Ability { id: "9D61", source: "暗之巫女" }
-734.1 "黑暗狂水" Ability { id: "9D4F" }
-737.7 "真夜舞蹈" Ability { id: "9D5C", source: "暗之巫女" }
-741.0 "真夜舞蹈" Ability { id: "9D5D", source: "暗之巫女" }
-744.4 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
-745.4 "--巫女中央--" Ability { id: "9CB5", source: "暗之巫女" }
-750.7 "死亡轮回" Ability { id: "9D6E", source: "暗之巫女" } duration 3.9
-760.8 "无尽顿悟" Ability { id: "9D70", source: "暗之巫女" }
-765.1 "--归位--" Ability { id: "9CB5", source: "暗之巫女" }
-776.3 "时间结晶" Ability { id: "9D30", source: "希瓦·米特隆" }
-779.3 "--希瓦·米特隆不可选中--"
-780.3 "--巫女不可选中--"
-782.4 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
-788.3 "巨漩涡" Ability { id: "9D6B" }
-789.3 "黑暗狂水" Ability { id: "9D4F" }
-791.3 "黑暗冰封" Ability { id: "9D57" }
-793.4 "--sync--" Ability { id: "9CEF", source: "希瓦·米特隆" }
-793.9 "巨漩涡" Ability { id: "9D6B" }
-794.3 "黑暗神圣" Ability { id: "9D55" }
-797.7 "光之巨浪" Ability { id: "9D3B" } duration 6
-798.8 "巨漩涡" Ability { id: "9D6B" }
-799.8 "--sync--" Ability { id: "9CEF", source: "希瓦·米特隆" }
-804.0 "光之巨浪" Ability { id: "9D3B" } duration 6
-808.2 "寂灭" Ability { id: "9D59", source: "暗之巫女" }
-810.2 "(放置回返)"
-813.8 "碎灵一击" Ability { id: "9D61", source: "暗之巫女" }
-817.2 "(眩晕 + 回返)"
-819.4 "神圣之翼" Ability { id: "9D8C", source: "希瓦·米特隆" }
-824.0 "神圣之翼" Ability { id: "9D8C", source: "希瓦·米特隆" }
-828.1 "--center--" Ability { id: "9CB5", source: "暗之巫女" }
+686.3 "璧嬪舰" StartsUsing { id: "9D36", source: "甯岀摝路绫崇壒闅? } window 686.3,5
+689.2 "璧嬪舰" Ability { id: "9D36", source: "甯岀摝路绫崇壒闅? }
+700.4 "鍦ｉ緳鎶ょ敳" Ability { id: "9CFA" }
+702.9 "澶╁厜杞洖" Ability { id: "9D2D", source: "甯岀摝路绫崇壒闅? } duration 5.1
+705.4 "蹇樺嵈鐨勬宀? Ability { id: "9CEE", source: "鏈潵鐨勭鐗? }
+706.2 "--宸コ鍙€変腑--"
+708.6 "--sync--" Ability { id: "9CEF", source: "甯岀摝路绫崇壒闅? }
+714.9 "鍏変笌鏆楃殑榫欒瘲" Ability { id: "9D2F", source: "甯岀摝路绫崇壒闅? }
+726.1 "渚佃殌鍏? Ability { id: "9D15", source: "甯岀摝路绫崇壒闅? }
+727.0 "鍏変箣娉㈠姩" Ability { id: "9CFE", source: "甯岀摝路绫崇壒闅? }
+729.1 "纰庣伒涓€鍑? Ability { id: "9D60", source: "鏆椾箣宸コ" }
+729.5 "纰庣伒涓€鍑?(浼ゅ)" Ability { id: "9D61", source: "鏆椾箣宸コ" }
+734.1 "榛戞殫鐙傛按" Ability { id: "9D4F" }
+737.7 "鐪熷鑸炶箞" Ability { id: "9D5C", source: "鏆椾箣宸コ" }
+741.0 "鐪熷鑸炶箞" Ability { id: "9D5D", source: "鏆椾箣宸コ" }
+744.4 "蹇樺嵈鐨勬宀? Ability { id: "9CEE", source: "鏈潵鐨勭鐗? }
+745.4 "--宸コ涓ぎ--" Ability { id: "9CB5", source: "鏆椾箣宸コ" }
+750.7 "姝讳骸杞洖" Ability { id: "9D6E", source: "鏆椾箣宸コ" } duration 3.9
+760.8 "鏃犲敖椤挎偀" Ability { id: "9D70", source: "鏆椾箣宸コ" }
+765.1 "--褰掍綅--" Ability { id: "9CB5", source: "鏆椾箣宸コ" }
+776.3 "鏃堕棿缁撴櫠" Ability { id: "9D30", source: "甯岀摝路绫崇壒闅? }
+779.3 "--甯岀摝路绫崇壒闅嗕笉鍙€変腑--"
+780.3 "--宸コ涓嶅彲閫変腑--"
+782.4 "蹇樺嵈鐨勬宀? Ability { id: "9CEE", source: "鏈潵鐨勭鐗? }
+788.3 "宸ㄦ缉娑? Ability { id: "9D6B" }
+789.3 "榛戞殫鐙傛按" Ability { id: "9D4F" }
+791.3 "榛戞殫鍐板皝" Ability { id: "9D57" }
+793.4 "--sync--" Ability { id: "9CEF", source: "甯岀摝路绫崇壒闅? }
+793.9 "宸ㄦ缉娑? Ability { id: "9D6B" }
+794.3 "榛戞殫绁炲湥" Ability { id: "9D55" }
+797.7 "鍏変箣宸ㄦ氮" Ability { id: "9D3B" } duration 6
+798.8 "宸ㄦ缉娑? Ability { id: "9D6B" }
+799.8 "--sync--" Ability { id: "9CEF", source: "甯岀摝路绫崇壒闅? }
+804.0 "鍏変箣宸ㄦ氮" Ability { id: "9D3B" } duration 6
+808.2 "瀵傜伃" Ability { id: "9D59", source: "鏆椾箣宸コ" }
+810.2 "(鏀剧疆鍥炶繑)"
+813.8 "纰庣伒涓€鍑? Ability { id: "9D61", source: "鏆椾箣宸コ" }
+817.2 "(鐪╂檿 + 鍥炶繑)"
+819.4 "绁炲湥涔嬬考" Ability { id: "9D8C", source: "甯岀摝路绫崇壒闅? }
+824.0 "绁炲湥涔嬬考" Ability { id: "9D8C", source: "甯岀摝路绫崇壒闅? }
+828.1 "--center--" Ability { id: "9CB5", source: "鏆椾箣宸コ" }
 829.4 "--targetable--"
-833.3 "死亡轮回" Ability { id: "9D6E", source: "暗之巫女" } duration 3.9
-841.3 "忘却的此岸" Ability { id: "9CEE", source: "未来的碎片" }
-843.3 "无尽顿悟" Ability { id: "9D70", source: "暗之巫女" }
-846.5 "记忆终结/绝对零度" StartsUsing { id: ["9D71", "9D35"] }
-856.5 "记忆终结/绝对零度 (狂暴)" Ability { id: ["9D71","9D35"] }
+833.3 "姝讳骸杞洖" Ability { id: "9D6E", source: "鏆椾箣宸コ" } duration 3.9
+841.3 "蹇樺嵈鐨勬宀? Ability { id: "9CEE", source: "鏈潵鐨勭鐗? }
+843.3 "鏃犲敖椤挎偀" Ability { id: "9D70", source: "鏆椾箣宸コ" }
+846.5 "璁板繂缁堢粨/缁濆闆跺害" StartsUsing { id: ["9D71", "9D35"] }
+856.5 "璁板繂缁堢粨/缁濆闆跺害 (鐙傛毚)" Ability { id: ["9D71","9D35"] }
 
 # Cutscene
 # TODO: Replace `ActorControlExtra` sync with dialog packet for "You endure? ..." (once available from OP)
 956.0 "--sync--" ActorControlExtra { category: "0197", param1: "1E43" } window 150,5 # limited lookbehind due to re-use
-962.0 "(眩晕 + 动画)" Ability { id: "9D28" } window 962,5
+962.0 "(鐪╂檿 + 鍔ㄧ敾)" Ability { id: "9D28" } window 962,5
 
 # Phase 5
 1029.6 "--targetable--"
-1034.8 "光尘之剑" StartsUsing { id: "9D72", source: "潘多拉·米特隆" } window 1034.8,5
-1040.8 "光尘之剑" Ability { id: "9D72", source: "潘多拉·米特隆" }
+1034.8 "鍏夊皹涔嬪墤" StartsUsing { id: "9D72", source: "娼樺鎷壜风背鐗归殕" } window 1034.8,5
+1040.8 "鍏夊皹涔嬪墤" Ability { id: "9D72", source: "娼樺鎷壜风背鐗归殕" }
 
 # Depending on where the Path of Darkness/Light starts, the duration can range from 18.3s to 22.5s
 # The tail end of this is largely irrelevant since the abilities are used at the far perimeter of the arena.
 # But to simplify, use a duration of 20.4 (the midpoint).
-1052.0 "暗之波动" Ability { id: "9CB6", source: "潘多拉·米特隆" } duration 20.4
-1067.8 "死亡轮回" Ability { id: "9D76", source: "潘多拉·米特隆" }
-1076.0 "复乐园" Ability { id: "9D7F", source: "潘多拉·米特隆" }
-1086.0 "光与暗的孤翼" Ability { id: ["9D29", "9D79"], source: "潘多拉·米特隆" }
-1086.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
-1089.9 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
-1093.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
-1107.4 "星灵之剑" Ability { id: "9D7C", source: "潘多拉·米特隆" } duration 2.7
-1112.0 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
-1116.6 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
-1121.2 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
-1141.7 "潘多拉魔盒" Ability { id: "9D86", source: "潘多拉·米特隆" }
-1153.8 "光尘之剑" Ability { id: "9D72", source: "潘多拉·米特隆" }
-1164.9 "暗之波动" Ability { id: "9CB6", source: "潘多拉·米特隆" } duration 20.4
-1180.7 "死亡轮回" Ability { id: "9D76", source: "潘多拉·米特隆" }
-1193.0 "复乐园" Ability { id: "9D7F", source: "潘多拉·米特隆" }
-1203.0 "光与暗的孤翼" Ability { id: ["9D29", "9D79"], source: "潘多拉·米特隆" }
-1203.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
-1206.9 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
-1210.4 "爆炸" Ability { id: "9D80", source: "潘多拉·米特隆" }
-1219.2 "星灵之剑" Ability { id: "9D7C", source: "潘多拉·米特隆" } duration 2.7
-1223.8 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
-1228.4 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
-1233.0 "星灵之剑" Ability { id: "9D2A", source: "潘多拉·米特隆" } duration 2.7
-1244.3 "光尘之剑" Ability { id: "9D72", source: "潘多拉·米特隆" }
-1255.3 "暗之波动" Ability { id: "9CB6", source: "潘多拉·米特隆" } duration 20.4
-1271.3 "死亡轮回" Ability { id: "9D76", source: "潘多拉·米特隆" }
-1279.8 "失乐园" StartsUsing { id: "9D88", source: "潘多拉·米特隆" }
-1301.3 "失乐园 (狂暴)" Ability { id: "9D88", source: "潘多拉·米特隆" }
+1052.0 "鏆椾箣娉㈠姩" Ability { id: "9CB6", source: "娼樺鎷壜风背鐗归殕" } duration 20.4
+1067.8 "姝讳骸杞洖" Ability { id: "9D76", source: "娼樺鎷壜风背鐗归殕" }
+1076.0 "澶嶄箰鍥? Ability { id: "9D7F", source: "娼樺鎷壜风背鐗归殕" }
+1086.0 "鍏変笌鏆楃殑瀛ょ考" Ability { id: ["9D29", "9D79"], source: "娼樺鎷壜风背鐗归殕" }
+1086.4 "鐖嗙偢" Ability { id: "9D80", source: "娼樺鎷壜风背鐗归殕" }
+1089.9 "鐖嗙偢" Ability { id: "9D80", source: "娼樺鎷壜风背鐗归殕" }
+1093.4 "鐖嗙偢" Ability { id: "9D80", source: "娼樺鎷壜风背鐗归殕" }
+1107.4 "鏄熺伒涔嬪墤" Ability { id: "9D7C", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1112.0 "鏄熺伒涔嬪墤" Ability { id: "9D2A", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1116.6 "鏄熺伒涔嬪墤" Ability { id: "9D2A", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1121.2 "鏄熺伒涔嬪墤" Ability { id: "9D2A", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1141.7 "娼樺鎷夐瓟鐩? Ability { id: "9D86", source: "娼樺鎷壜风背鐗归殕" }
+1153.8 "鍏夊皹涔嬪墤" Ability { id: "9D72", source: "娼樺鎷壜风背鐗归殕" }
+1164.9 "鏆椾箣娉㈠姩" Ability { id: "9CB6", source: "娼樺鎷壜风背鐗归殕" } duration 20.4
+1180.7 "姝讳骸杞洖" Ability { id: "9D76", source: "娼樺鎷壜风背鐗归殕" }
+1193.0 "澶嶄箰鍥? Ability { id: "9D7F", source: "娼樺鎷壜风背鐗归殕" }
+1203.0 "鍏変笌鏆楃殑瀛ょ考" Ability { id: ["9D29", "9D79"], source: "娼樺鎷壜风背鐗归殕" }
+1203.4 "鐖嗙偢" Ability { id: "9D80", source: "娼樺鎷壜风背鐗归殕" }
+1206.9 "鐖嗙偢" Ability { id: "9D80", source: "娼樺鎷壜风背鐗归殕" }
+1210.4 "鐖嗙偢" Ability { id: "9D80", source: "娼樺鎷壜风背鐗归殕" }
+1219.2 "鏄熺伒涔嬪墤" Ability { id: "9D7C", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1223.8 "鏄熺伒涔嬪墤" Ability { id: "9D2A", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1228.4 "鏄熺伒涔嬪墤" Ability { id: "9D2A", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1233.0 "鏄熺伒涔嬪墤" Ability { id: "9D2A", source: "娼樺鎷壜风背鐗归殕" } duration 2.7
+1244.3 "鍏夊皹涔嬪墤" Ability { id: "9D72", source: "娼樺鎷壜风背鐗归殕" }
+1255.3 "鏆椾箣娉㈠姩" Ability { id: "9CB6", source: "娼樺鎷壜风背鐗归殕" } duration 20.4
+1271.3 "姝讳骸杞洖" Ability { id: "9D76", source: "娼樺鎷壜风背鐗归殕" }
+1279.8 "澶变箰鍥? StartsUsing { id: "9D88", source: "娼樺鎷壜风背鐗归殕" }
+1301.3 "澶变箰鍥?(鐙傛毚)" Ability { id: "9D88", source: "娼樺鎷壜风背鐗归殕" }
 
 # IGNORED ABILITIES
 # Fatebreaker
@@ -295,7 +295,7 @@ hideall "--sync--"
 # 9CBD Explosion: Tower damage
 # 9CBE Explosion: Tower damage
 # 9CBF Explosion: Tower damage
-# 9CC0 Burnished Glory: 狂暴
+# 9CC0 Burnished Glory: 鐙傛毚
 # 9CC1 Burnt Strike: Guillotine cleave, fire
 # 9CC2 Blastburn: Fire Burnt Strike knockback
 # 9CC3 Explosion: Tower damage

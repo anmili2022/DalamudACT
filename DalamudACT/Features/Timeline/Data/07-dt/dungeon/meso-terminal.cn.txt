@@ -1,4 +1,4 @@
-﻿### THE MESO TERMINAL
+﻿### 中继基地
 # ZoneId: 1292
 
 hideall "--Reset--"
@@ -8,11 +8,11 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~~~~~~#
-# Chirurgeon General #
+# 某个医师长的记忆 #
 #~~~~~~~~~~~~~~~~~~~~#
 # -ii ACD6
 
-# The Triage Module will be sealed off
+# 分诊模块已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1496" } window 1000,1
 1009.1 "广域撒药" Ability { id: "AB16", source: "某个医师长的记忆" }
 1016.5 "启动装置" Ability { id: "AB1C", source: "某个医师长的记忆" }
@@ -47,7 +47,7 @@ hideall "--sync--"
 # ACD6 --sync--: auto-attack
 
 #~~~~~~~~~~~~~~#
-# Executioners #
+# 某个处刑人的记忆 #
 #~~~~~~~~~~~~~~#
 
 # -ii AA3A AA3C AA3D AA3F AA4A AA4E AA4F AA50
@@ -55,7 +55,7 @@ hideall "--sync--"
 # The Executioner timeline is "best-effort" and will quickly
 # desync depending on player or enemy deaths.
 
-# The Public Forum will be sealed off
+# 公共论坛已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1497" } window 2000,1
 2003.2 "捉拿罪犯" Ability { id: "AA39" }
 2011.8 "处刑人的咆哮" Ability { id: "AA3B", source: "某个处刑人的记忆" }
@@ -126,7 +126,7 @@ hideall "--sync--"
 
 # -ii AB32 AB2E AB24 AB25 AB2B AB30
 
-# Non-Volatile Memory will be sealed off
+# 非易失性存储已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1498" } window 3000,1
 3010.1 "回忆" Ability { id: "AB31", source: "某些人的记忆" }
 3019.9 "记忆重现" Ability { id: "AB21", source: "某些人的记忆" }

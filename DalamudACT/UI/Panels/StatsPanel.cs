@@ -78,6 +78,7 @@ internal static partial class StatsPanel
     private static readonly Vector4 IkegamiMutedTextColor = new(1.00f, 1.00f, 1.00f, 0.88f);
     private static readonly Vector4 IkegamiFooterBackgroundColor = new(0.05f, 0.07f, 0.11f, 0.75f);
     private static readonly Vector4 IkegamiEncounterTimeTextColor = new(0.49f, 0.83f, 0.99f, 1.00f);
+    private static readonly Dictionary<uint, FloatingCombatantKind> CombatantKindCache = new();
     private const float IkegamiCardSpacing = 8f;
     private const float IkegamiNameBottomSpacing = 1f;
     private const float IkegamiEncounterFooterHeight = 24f;

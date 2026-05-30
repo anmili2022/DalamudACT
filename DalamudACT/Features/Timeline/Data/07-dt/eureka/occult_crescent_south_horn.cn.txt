@@ -1,4 +1,4 @@
-﻿### Occult Crescent: South Horn
+﻿### 月雫·南角
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -2003,7 +2003,7 @@ hideall "--sync--"
 # A30B End of History (狂暴 cast)
 # A355 End of History (狂暴 damage)
 # A30C End of History (Post-狂暴 cast)
-# The Palaeography Room will be sealed off
+# 古文书室已被封锁
 20000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1450" } window 100000,0
 20003.0 "--sync--" Ability { id: "A309", source: "恶魔板" }
 20003.8 "--sync--" Ability { id: "A30A", source: "恶魔板" }
@@ -2161,7 +2161,7 @@ hideall "--sync--"
 # A89A Avalaunch
 # A908 Fire Spread
 # A9BD Three-body Problem
-# The Astronomy Room will be sealed off
+# 天文学室已被封锁
 30000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1451" } window 100000,0
 30008.2 "--sync--" Ability { id: "A5B4", source: "福博斯" }
 30010.5 "决战" StartsUsing { id: "A5FC", source: "福博斯" } window 100,50
@@ -2359,7 +2359,7 @@ hideall "--sync--"
 # A628 Punishing Pounce (Tower Progenitrix)
 # A629 Punishing Pounce (Tower Progenitor)
 # A6F4 Arcane Spear
-# The pronged passage will be sealed off
+# 三叉通道已被封锁
 40000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1454" } window 100000,0
 
 # Encounter 1: Two Tower Bogy and 1 Tower Bhoot
@@ -2451,7 +2451,7 @@ hideall "--sync--"
 # 9ECD Lifeless Legacy (狂暴)
 # A715 Ball of Ice
 # A716 Ball of Ice
-# The Glaciology Forum will be sealed off
+# 冰河学论坛已被封锁
 50000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1452" } window 100000,0
 50006.0 "仿效星" StartsUsing { id: "77F1", source: "大理石龙" } window 100,50
 50011.0 "仿效星" Ability { id: "77F1", source: "大理石龙" } duration 1.9
@@ -2725,7 +2725,7 @@ hideall "--sync--"
 # A267 Unsealed Aura (狂暴 cast)
 # A268 Unsealed Aura (Post-狂暴 cast)
 # 9BE8 Unsealed Aura (狂暴 damage)
-# The Haematology Room will be sealed off
+# 血液学室已被封锁
 60000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1453" } window 100000,0
 60010.1 "灵气释放" StartsUsing { id: "A264", source: "魔陶洛斯" } window 100,50
 60014.3 "灵气释放" Ability { id: "A264", source: "魔陶洛斯" } duration 1

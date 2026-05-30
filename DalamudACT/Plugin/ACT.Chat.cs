@@ -156,12 +156,14 @@ public sealed partial class ACT
         try
         {
             var text = ChatReflectionAccessor.ExtractChatMessageText(message);
-            if (string.IsNullOrWhiteSpace(text) || !text.Contains("封锁", StringComparison.Ordinal))
+            if (string.IsNullOrWhiteSpace(text))
                 return;
 
             var logKind = ChatReflectionAccessor.GetLogKind(message);
-            LogHelper.Debug("时间轴", $"收到新版聊天封锁提示：logKind={logKind}, text={text}");
-            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow, IsSystemLikeChatKind(logKind));
+            if (!IsSystemLikeChatKind(logKind))
+                return;
+
+            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
         }
         catch (Exception ex)
         {
@@ -174,12 +176,10 @@ public sealed partial class ACT
         try
         {
             var text = ChatReflectionAccessor.ExtractLogMessageText(message);
-            if (string.IsNullOrWhiteSpace(text) || !text.Contains("封锁", StringComparison.Ordinal))
+            if (string.IsNullOrWhiteSpace(text))
                 return;
 
-            var logKind = ChatReflectionAccessor.GetLogKind(message);
-            LogHelper.Debug("时间轴", $"收到 LogMessage 封锁提示：logKind={logKind}, text={text}");
-            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow, allowFallbackToNextSystemLog: true);
+            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
         }
         catch (Exception ex)
         {
@@ -195,12 +195,10 @@ public sealed partial class ACT
         try
         {
             var text = message.TextValue ?? message.ToString();
-            if (type != XivChatType.SystemMessage && !text.Contains("封锁", StringComparison.Ordinal))
+            if (type != XivChatType.SystemMessage || string.IsNullOrWhiteSpace(text))
                 return;
 
-            if (text.Contains("封锁", StringComparison.Ordinal))
-                LogHelper.Debug("时间轴", $"收到聊天封锁提示：type={type}, text={text}");
-            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow, type == XivChatType.SystemMessage);
+            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
         }
         catch (Exception ex)
         {

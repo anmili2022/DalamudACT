@@ -1,4 +1,4 @@
-﻿### THE UNDERKEEP
+﻿### 地底炼狱
 # ZoneId: 1266
 
 hideall "--Reset--"
@@ -9,10 +9,10 @@ hideall "--sync--"
 
 
 #~~~~~~~~~#
-# Gargant #
+# 高康特 #
 #~~~~~~~~~#
 
-# the access hatch will be sealed off
+# 入口舱门已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1433" } window 1000,1
 1005.1 "恐吓虫鸣" StartsUsing { id: "A633", source: "高康特" }
 1010.1 "恐吓虫鸣" Ability { id: "A633", source: "高康特" }
@@ -67,10 +67,10 @@ hideall "--sync--"
 # A634 Trap Jaws [Gargant] 3
 
 #~~~~~~~~~~~~#
-# Soldier S0 #
+# 士兵S0 #
 #~~~~~~~~~~~~#
 
-# the receiving room will be sealed off
+# 接收室已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1435" } window 2000,1
 2005.2 "厄运冲击" StartsUsing { id: "A653", source: "士兵S0" }
 2010.1 "厄运冲击" Ability { id: "A653", source: "士兵S0" }
@@ -120,10 +120,10 @@ hideall "--sync--"
 # A883 Electric Excess [Soldier S0] 12 --damage
 
 #~~~~~~~~~~~~#
-# Valia Pira #
+# 灵变柱 #
 #~~~~~~~~~~~~#
 
-# the Chamber of Patience will be sealed off
+# 耐心之间已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1436" } window 3000,1
 3006.2 "熵球" StartsUsing { id: "A61D", source: "灵变柱" }
 3011.1 "熵球" Ability { id: "A61D", source: "灵变柱" }

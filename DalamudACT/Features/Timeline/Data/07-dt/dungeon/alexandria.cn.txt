@@ -1,4 +1,4 @@
-﻿### Alexandria
+﻿### 亚历山大
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -9,12 +9,12 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~#
-# Antivirus X #
+# 反病毒程序X #
 #~~~~~~~~~~~~~#
 
 # --ii 8E24
 
-# The Volatile Memory Cache will be sealed off
+# 易失性存储缓存已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1104" } window 1000,1
 1013.1 "免疫反应" Ability { id: "8E1A", source: "反病毒程序X" } # Immune Response cast
 1014.1 "免疫反应" Ability { id: "8E1B", source: "反病毒程序X" }
@@ -49,12 +49,12 @@ hideall "--sync--"
 1134.6 "环状清除/十字清除" Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] } forcejump "antivirusLoop"
 
 #~~~~~~~~~#
-# Amalgam #
+# 软性融合体 #
 #~~~~~~~~~#
 
 # -ii 8DF1 8DEA 8DEB 8DEC 98E2 9955
 
-# The Corrupted Memory Cache will be sealed off
+# 损坏的存储缓存已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "118F" } window 2000,1
 2011.1 "雷转质波动" Ability { id: "8DF2", source: "软性融合体" }
 2019.7 "解体" Ability { id: "8DE3", source: "软性融合体" }
@@ -88,7 +88,7 @@ hideall "--sync--"
 2171.7 "融合威能" Ability { id: "8DF3", source: "软性融合体" } forcejump "amalgamLoop"
 
 #~~~~~~~~~~~~#
-# Eliminator #
+# 清除者 #
 #~~~~~~~~~~~~#
 
 # -ii 8F9C 8FA0 8FAF 8F9E 8F9F 8FAB 8FAF 8FB9 8FBC 994F 9950 9AAF 9AB0
@@ -117,7 +117,7 @@ hideall "--sync--"
 # TODO: Determine the full Eliminator intermission sequence to enrage.
 # (Duty support kills the pylons too fast to see the full sequence.)
 
-# Reascension will be sealed off
+# 再临之间已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1193" } window 3000,1
 3010.1 "崩裂" Ability { id: "8F9D", source: "清除者" }
 3013.2 "--center--" Ability { id: "8F9B", source: "清除者" }

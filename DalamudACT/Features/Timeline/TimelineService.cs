@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -186,15 +187,15 @@ internal sealed class TimelineService
         }
     }
 
-    public void ObserveSystemLogMessage(string message, DateTime nowUtc, bool allowFallbackToNextSystemLog = true)
+    public void ObserveSystemLogMessage(string message, DateTime nowUtc)
     {
         if (definition == null || string.IsNullOrWhiteSpace(message))
             return;
 
-        if (!message.Contains("被封锁", StringComparison.Ordinal) && !message.Contains("封锁", StringComparison.Ordinal))
+        if (startedAtUtc == null && timelineLoadedAtUtc != null && (nowUtc - timelineLoadedAtUtc.Value).TotalSeconds < 3d)
             return;
 
-        var syncEntry = ResolveSystemLogSyncEntry(message, allowFallbackToNextSystemLog);
+        var syncEntry = ResolveSystemLogSyncEntry(message);
         if (syncEntry == null)
             return;
 
@@ -211,69 +212,101 @@ internal sealed class TimelineService
             : $"已同步：{definition.Name} / {syncEntry.SystemLogTextHint}";
     }
 
-    private TimelineEntry? ResolveSystemLogSyncEntry(string message, bool allowFallbackToNextSystemLog)
+    private static readonly ConcurrentDictionary<string, Regex?> LogMessageRegexCache = new();
+    private DateTime? timelineLoadedAtUtc;
+
+    private TimelineEntry? ResolveSystemLogSyncEntry(string message)
     {
         if (definition == null)
             return null;
 
         var candidates = definition.Entries
-            .Where(entry => entry.EventType == "SystemLogMessage" && entry.TimeSeconds > Math.Max(0f, lastSystemLogSyncTimeSeconds) + 1f)
+            .Where(entry => entry.EventType == "SystemLogMessage" && (IsSystemLogResetEntry(entry) || entry.TimeSeconds > Math.Max(0f, lastSystemLogSyncTimeSeconds) + 1f))
             .OrderBy(entry => entry.TimeSeconds)
             .ToList();
+
         if (candidates.Count == 0)
             return null;
 
-        var normalizedMessage = NormalizeSystemLogText(message);
-        var textMatched = candidates.FirstOrDefault(entry => IsSystemLogTextMatch(normalizedMessage, entry.SystemLogTextHint));
-        if (textMatched != null)
-            return textMatched;
+        var matched = candidates.FirstOrDefault(entry => IsLogMessageMatch(entry, message));
+        if (matched != null)
+        {
+            LogHelper.Debug("时间轴", $"SystemLogMessage 匹配：time={matched.TimeSeconds:0.0}, id={matched.SystemLogId}, message={message}");
+            return matched;
+        }
 
-        return allowFallbackToNextSystemLog ? candidates.FirstOrDefault() : null;
+        return null;
     }
 
-    private static bool IsSystemLogTextMatch(string normalizedMessage, string? hint)
+    private static bool IsSystemLogResetEntry(TimelineEntry entry)
+        => entry.JumpTimeSeconds is <= 0.5f;
+
+    private static bool IsLogMessageMatch(TimelineEntry entry, string message)
     {
-        var normalizedHint = NormalizeSystemLogText(hint);
-        if (string.IsNullOrWhiteSpace(normalizedHint))
+        var logId = entry.SystemLogId;
+        if (string.IsNullOrWhiteSpace(logId))
             return false;
 
-        return normalizedMessage.Contains(normalizedHint, StringComparison.Ordinal)
-               || normalizedHint.Contains(normalizedMessage, StringComparison.Ordinal)
-               || GetSystemLogLocationFragment(normalizedHint) is { Length: > 0 } fragment
-               && normalizedMessage.Contains(fragment, StringComparison.Ordinal);
+        var param1 = entry.SystemLogParam1 ?? string.Empty;
+        var cacheKey = $"{logId}:{param1}";
+        var regex = LogMessageRegexCache.GetOrAdd(cacheKey, _ =>
+        {
+            try
+            {
+                var sheet = DalamudApi.GameData.GetExcelSheet<Lumina.Excel.Sheets.LogMessage>();
+                if (sheet == null)
+                    return null;
+
+                var rowId = Convert.ToUInt32(logId, 16);
+                if (!sheet.TryGetRow(rowId, out var row))
+                    return null;
+
+                var pattern = BuildSystemLogPattern(row.Text.ToMacroString(), entry);
+                if (string.IsNullOrWhiteSpace(pattern))
+                    return null;
+
+                return new Regex(pattern, RegexOptions.Compiled);
+            }
+            catch
+            {
+                return null;
+            }
+        });
+
+        return regex?.IsMatch(message) == true;
     }
 
-    private static string NormalizeSystemLogText(string? text)
+    private static string? BuildSystemLogPattern(string macro, TimelineEntry entry)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            return string.Empty;
+        if (string.IsNullOrWhiteSpace(macro))
+            return null;
 
-        return Regex.Replace(text, @"^\[\d{1,2}:\d{2}\]", string.Empty)
-            .Replace(" ", string.Empty, StringComparison.Ordinal)
-            .Replace("。", string.Empty, StringComparison.Ordinal)
-            .Replace(".", string.Empty, StringComparison.Ordinal)
-            .Replace("，", string.Empty, StringComparison.Ordinal)
-            .Replace(",", string.Empty, StringComparison.Ordinal)
-            .Trim();
+        var expanded = macro;
+        var placeName = ResolvePlaceName(entry.SystemLogParam1);
+        if (!string.IsNullOrWhiteSpace(placeName))
+            expanded = Regex.Replace(expanded, @"<sheet\(PlaceName,lnum1,0\)>", placeName);
+
+        var escaped = Regex.Escape(expanded);
+        return "^" + Regex.Replace(escaped, @"<.+?>", "(.+)") + "$";
     }
 
-    private static string GetSystemLogLocationFragment(string text)
+    private static string? ResolvePlaceName(string? placeNameIdHex)
     {
-        var normalized = NormalizeSystemLogText(text);
-        const string prefix = "距";
-        const string sealedSuffix = "被封锁还有15秒";
-        if (normalized.StartsWith(prefix, StringComparison.Ordinal) && normalized.EndsWith(sealedSuffix, StringComparison.Ordinal))
-            return normalized[prefix.Length..^sealedSuffix.Length];
+        if (string.IsNullOrWhiteSpace(placeNameIdHex))
+            return null;
 
-        const string willSealSuffix = "即将封锁";
-        if (normalized.EndsWith(willSealSuffix, StringComparison.Ordinal))
-            return normalized[..^willSealSuffix.Length];
+        try
+        {
+            var placeNameSheet = DalamudApi.GameData.GetExcelSheet<Lumina.Excel.Sheets.PlaceName>();
+            var placeNameId = Convert.ToUInt32(placeNameIdHex, 16);
+            if (placeNameSheet != null && placeNameSheet.TryGetRow(placeNameId, out var placeNameRow))
+                return placeNameRow.Name.ExtractText();
+        }
+        catch
+        {
+        }
 
-        const string sealedOffSuffix = "willbesealedoff";
-        if (normalized.EndsWith(sealedOffSuffix, StringComparison.OrdinalIgnoreCase))
-            return normalized[..^sealedOffSuffix.Length];
-
-        return normalized;
+        return null;
     }
 
     public void ObserveAbility(uint actionId, DateTime nowUtc, uint sourceId = 0)
@@ -583,6 +616,8 @@ internal sealed class TimelineService
 
                 definition = TimelineParser.ParseTimelineTextFile(candidate.Id, candidate.Name, path);
                 sourcePath = path;
+                timelineLoadedAtUtc = DateTime.UtcNow;
+                LogHelper.Debug("时间轴", $"加载时间轴文件：{path}");
                 statusText = $"已加载 {definition.Entries.Count} 条：{candidate.Name}";
                 return;
             }
@@ -605,6 +640,8 @@ internal sealed class TimelineService
         pendingInitialAbilitySyncs.Clear();
         definition = TimelineParser.ParseTimelineTextFile("forced", name, path);
         sourcePath = path;
+        timelineLoadedAtUtc = DateTime.UtcNow;
+        LogHelper.Debug("时间轴", $"加载时间轴文件：{path}");
         statusText = $"已强制加载 {definition.Entries.Count} 条：{name}";
     }
 
@@ -714,6 +751,7 @@ internal sealed class TimelineService
 
                 var loadedEntries = JsonSerializer.Deserialize<List<TimelineIndexEntry>>(File.ReadAllText(path), TimelineJsonOptions)
                                     ?? [];
+                LogHelper.Debug("时间轴", $"加载时间轴索引：{path}，entries={loadedEntries.Count}");
                 foreach (var entry in loadedEntries)
                 {
                     if (string.IsNullOrWhiteSpace(entry.Id) || !seenIds.Add(entry.Id))
@@ -735,10 +773,9 @@ internal sealed class TimelineService
     private static IEnumerable<string> GetTimelineIndexCandidatePaths()
     {
         yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", "timeline-index.json");
+        foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
+            yield return Path.Combine(sourceDirectory, "timeline-index.json");
         yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), "timeline-index.json");
-        yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), "timeline-index.json");
-        yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", "timeline-index.json");
-        yield return Path.Combine(Environment.CurrentDirectory, "DalamudACT", "Features", "Timeline", "Data", "timeline-index.json");
     }
 
     private static IEnumerable<string> GetTimelineTextCandidatePaths(string fileName)
@@ -746,10 +783,9 @@ internal sealed class TimelineService
         foreach (var candidateFileName in GetLocalizedFileNameCandidates(fileName))
         {
             yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", candidateFileName);
+            foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
+                yield return Path.Combine(sourceDirectory, candidateFileName);
             yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), candidateFileName);
-            yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), candidateFileName);
-            yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", candidateFileName);
-            yield return Path.Combine(Environment.CurrentDirectory, "DalamudACT", "Features", "Timeline", "Data", candidateFileName);
         }
     }
 
@@ -765,6 +801,19 @@ internal sealed class TimelineService
             yield return fileName[..^4] + ".cn.txt";
 
         yield return fileName;
+    }
+
+    private static IEnumerable<string> GetSourceTimelineDataDirectories()
+    {
+        var directory = AppContext.BaseDirectory;
+        for (var i = 0; i < 8 && !string.IsNullOrWhiteSpace(directory); i++)
+        {
+            var candidate = Path.Combine(directory, "DalamudACT", "Features", "Timeline", "Data");
+            if (Directory.Exists(candidate))
+                yield return candidate;
+
+            directory = Directory.GetParent(directory)?.FullName;
+        }
     }
 
     private static readonly JsonSerializerOptions TimelineJsonOptions = new()

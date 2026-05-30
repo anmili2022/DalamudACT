@@ -13,21 +13,18 @@ hideall "--sync--"
 #~~~~~~~~~~~~#
 
 # 距花冠广场被封锁还有15秒。
-1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F98" } window 10000,0
-1012.0 "石化光束" Ability { id: ["C400", "C402"], source: "装甲之眼" }
-1022.2 "石化光束" Ability { id: ["C3FF", "C401"], source: "装甲之眼" }
-1038.4 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
-1057.9 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
-1067.5 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
-1072.6 "对地导弹" Ability { id: "BF02", source: "装甲之眼" }
-1080.7 "石化光束" Ability { id: ["C400", "C402"], source: "装甲之眼" }
-1097.7 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
-1109.3 "对人导弹" Ability { id: "BF03", source: "装甲之眼" }
-1126.7 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
-1131.8 "对地导弹" Ability { id: "BF02", source: "装甲之眼" }
-1139.9 "石化光束" Ability { id: ["C3FF", "C401"], source: "装甲之眼" }
-1157.0 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
-1168.7 "对人导弹" Ability { id: "BF03", source: "装甲之眼" }
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1583" } window 10000,0
+1010.5 "凶眼注目" Ability { id: "BF00", source: "装甲之眼" }
+1026.7 "石化光束" Ability { id: ["C400", "C402"], source: "装甲之眼" }
+1037.0 "石化光束" Ability { id: ["C3FF", "C401"], source: "装甲之眼" }
+1046.8 "凶眼注目" Ability { id: "BF00", source: "装甲之眼" }
+1053.2 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
+1072.6 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
+1082.0 "导弹发射" Ability { id: "BF01", source: "装甲之眼" }
+1095.2 "石化光束" Ability { id: ["C400", "C402"], source: "装甲之眼" }
+1105.8 "凶眼注目" Ability { id: "BF00", source: "装甲之眼" }
+1112.1 "动态扫描仪" Ability { id: "BEFD", source: "装甲之眼" }
+1123.8 "对人导弹" Ability { id: "BF03", source: "装甲之眼" }
 
 
 #~~~~~~~~~~#
@@ -35,7 +32,7 @@ hideall "--sync--"
 #~~~~~~~~~~#
 
 # 距材料存放场被封锁还有15秒。
-2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F99" } window 10000,0
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1584" } window 10000,0
 2012.0 "暗黑冲击" Ability { id: "BEF4", source: "乔尔特" }
 2024.7 "肉弹" Ability { id: ["BEE4", "C4E0"], source: "乔尔特" }
 2029.8 "肉压杀" Ability { id: "BEED", source: "乔尔特" }
@@ -67,7 +64,7 @@ hideall "--sync--"
 #~~~~~~~~#
 
 # 距兵器试验场被封锁还有15秒。
-3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F9A" } window 10000,0
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1585" } window 10000,0
 3012.0 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
 3021.7 "废料干涉" Ability { id: "BF19", source: "玛帕斯" }
 3022.5 "飞来" Ability { id: "BF25", source: "玛帕斯" }

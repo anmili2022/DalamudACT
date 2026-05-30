@@ -1,4 +1,4 @@
-﻿### ORIGENICS
+﻿### 创生设施
 # ZoneId: 1208
 
 hideall "--Reset--"
@@ -8,13 +8,13 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~#
-# Herpekaris #
+# 赫尔佩伽里斯 #
 #~~~~~~~~~~~~#
 
 # -ii 8E71 8E72 8E73 8E7A
 # -p 8EA7:1011.1
 
-# The Resource Transport Elevator will be sealed off
+# 资源运输电梯已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "139C" } window 1000,1
 1006.1 "刺耳尖叫" StartsUsing { id: "8EA7", source: "赫尔佩伽里斯" }
 1011.1 "刺耳尖叫" Ability { id: "8EA7", source: "赫尔佩伽里斯" }
@@ -78,13 +78,13 @@ hideall "--sync--"
 # 9677 Pod Burst
 
 #~~~~~~~~~~#
-# Deceiver #
+# 欺骗者 #
 #~~~~~~~~~~#
 
 # -ii 8E10 8E11 8E14 8E0D 8E4A 9797 8E0F
 # -p 8E13:2012.1
 
-# The Surveillance Room will be sealed off
+# 监控室已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A0" } window 2000,1
 2007.1 "雷转质波动" StartsUsing { id: "8E13", source: "欺骗者" }
 2012.1 "雷转质波动" Ability { id: "8E13", source: "欺骗者" }
@@ -144,13 +144,13 @@ hideall "--sync--"
 # 9B38 Surge
 
 #~~~~~~~~~~~~~~~~~~~~~~~~#
-# Ambrose the Undeparted #
+# 实验体安布罗斯 #
 #~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # -ii 8E4B 8E51 8E52 98A0 9829 8E4E
 # -p 8E54:3011.1
 
-# The Enhancement Testing Grounds will be sealed off
+# 强化试验场已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A2" } window 3000,1
 3006.1 "念动波" StartsUsing { id: "8E54", source: "实验体安布罗斯" }
 3011.1 "念动波" Ability { id: "8E54", source: "实验体安布罗斯" }

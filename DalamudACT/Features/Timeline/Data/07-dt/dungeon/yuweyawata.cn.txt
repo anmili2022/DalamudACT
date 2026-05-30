@@ -1,4 +1,4 @@
-﻿### YUWEYAWATA FIELD STATION
+﻿### 尤维瓦塔野外站
 # ZoneId: 1242
 
 hideall "--Reset--"
@@ -8,14 +8,14 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~~~~#
-# Lindblum Zaghnal #
+# 林德布鲁姆扎戈斧龙 #
 #~~~~~~~~~~~~~~~~~~#
 
 # -ii 9EB8 9EBA A0A2
 # -it "Raw Electrope"
 # -p 9EBB:1010.1
 
-# The Crystal Quarry will be sealed off
+# 水晶采石场已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1408" } window 1000,1
 1005.1 "广域放电" StartsUsing { id: "9EBB", source: "林德布鲁姆扎戈斧龙" }
 1010.1 "广域放电" Ability { id: "9EBB", source: "林德布鲁姆扎戈斧龙" }
@@ -92,14 +92,14 @@ hideall "--sync--"
 
 
 #~~~~~~~~~~~~~~~~~~~~#
-# Overseer Kanilokka #
+# 卡尼洛喀站长 #
 #~~~~~~~~~~~~~~~~~~~~#
 
 # -ii 9ED3
 # -it "Overseer Kanilokka"
 # -p 9ED2:2010.1
 
-# The Soul Center will be sealed off
+# 魂魄中心已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1409" } window 2000,1
 2005.1 "黑暗之魂" StartsUsing { id: "9ED2", source: "卡尼洛喀站长" }
 2010.1 "黑暗之魂" Ability { id: "9ED2", source: "卡尼洛喀站长" }
@@ -160,13 +160,13 @@ hideall "--sync--"
 
 
 #~~~~~~~~~~~#
-# Lunipyati #
+# 鲁尼皮亚提 #
 #~~~~~~~~~~~#
 
 # -ii 9EAD
 # -p 9EA4:3011.4
 
-# The Dust Yoke will be sealed off
+# 尘之枷锁已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "140A" } window 3000,1
 3006.4 "暴怒连爪" StartsUsing { id: "9EA4", source: "鲁尼皮亚提" }
 3011.4 "暴怒连爪" Ability { id: "9EA4", source: "鲁尼皮亚提" } duration 2.4

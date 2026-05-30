@@ -1,4 +1,4 @@
-﻿### MISTWAKE
+﻿### 雾纱泽
 # ZoneId: 1314
 
 hideall "--Reset--"
@@ -8,7 +8,7 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~~~~#
-# Treno Catoblepas #
+# 特雷诺卡托布莱帕斯 #
 #~~~~~~~~~~~~~~~~~~#
 
 # -ii A940 A945 A946
@@ -63,7 +63,7 @@ hideall "--sync--"
 
 
 #~~~~~~~~~~#
-# Amdusias #
+# 安度西亚斯 #
 #~~~~~~~~~~#
 
 # -ii B115 B117 B119 B11E B121 B125 B127 B12C B12D B6F7
@@ -138,7 +138,7 @@ hideall "--sync--"
 # B12B Shockbolt - Tankbuster
 
 #~~~~~~~~~~~~~~~~~~~~~#
-# Thundergust Griffin #
+# 雷狮鹫 #
 #~~~~~~~~~~~~~~~~~~~~~#
 
 # -ii B09C B09F B0A1 B0E8 B0ED B0F0 B0F1 B0F2 B0FB B0FC B75F B760 B761

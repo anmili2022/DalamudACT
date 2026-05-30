@@ -36,11 +36,13 @@ internal static class ChatReflectionAccessor
     }
 
     public static string GetLogKind(object message)
-        => ReflectionPropertyCache.GetProperty(message.GetType(), "LogKind")?.GetValue(message)?.ToString() ?? "unknown";
+        => ReflectionPropertyCache.GetProperty(message.GetType(), "LogKind")?.GetValue(message)?.ToString()
+        ?? ReflectionPropertyCache.GetProperty(message.GetType(), "Kind")?.GetValue(message)?.ToString()
+        ?? "unknown";
 
     public static string ExtractLogMessageText(object message)
     {
-        foreach (var propertyName in new[] { "Message", "OriginalMessage" })
+        foreach (var propertyName in new[] { "Message", "OriginalMessage", "Text" })
         {
             try
             {
@@ -53,7 +55,7 @@ internal static class ChatReflectionAccessor
                     if (!string.IsNullOrWhiteSpace(textValue))
                         return textValue;
 
-                    var text = value.ToString();
+                    var text = value as string ?? value.ToString();
                     if (!string.IsNullOrWhiteSpace(text))
                         return text;
                 }
@@ -70,8 +72,13 @@ internal static class ChatReflectionAccessor
     {
         try
         {
-            var value = ReflectionPropertyCache.GetProperty(message.GetType(), "Message")?.GetValue(message);
-            return value == null ? string.Empty : ExtractSeStringText(value);
+            foreach (var propertyName in new[] { "Message", "Text" })
+            {
+                var value = ReflectionPropertyCache.GetProperty(message.GetType(), propertyName)?.GetValue(message);
+                if (value != null)
+                    return ExtractSeStringText(value);
+            }
+            return string.Empty;
         }
         catch
         {
@@ -87,6 +94,9 @@ internal static class ChatReflectionAccessor
             if (!string.IsNullOrWhiteSpace(text))
                 return text;
         }
+
+        if (value is string plainText && !string.IsNullOrWhiteSpace(plainText))
+            return plainText;
 
         var textValue = ReflectionPropertyCache.GetProperty(value.GetType(), "TextValue")?.GetValue(value)?.ToString();
         if (!string.IsNullOrWhiteSpace(textValue))

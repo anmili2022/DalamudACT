@@ -1,4 +1,4 @@
-﻿### VANGUARD
+﻿### 先锋营
 # ZoneId: 1198
 
 hideall "--Reset--"
@@ -8,13 +8,13 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~~~~~~~~~#
-# Vanguard Commander R8 #
+# 先锋营指挥官R8 #
 #~~~~~~~~~~~~~~~~~~~~~~~#
 
 # -ii 8E33 8ED3 8ED4 8ED5 8ED6 8ED7 8EDC 9140 9147
 # -p 8EDB:1011.0
 
-# The Central Garage will be sealed off
+# 中央车库已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1333" } window 1000,1
 1006.0 "雷转质波动" StartsUsing { id: "8EDB", source: "先锋营指挥官R8" }
 1011.0 "雷转质波动" Ability { id: "8EDB", source: "先锋营指挥官R8" }
@@ -74,7 +74,7 @@ hideall "--sync--"
 # 98E7 Rapid Rotary
 
 #~~~~~~~~~~~#
-# Protector #
+# 保护者 #
 #~~~~~~~~~~~#
 
 # -ii 9121 91E0 91E7 91DF 911F 91E4 91E3
@@ -86,7 +86,7 @@ hideall "--sync--"
 # do an unsync'd '(ground AoEs)' for the duration of their spam.
 # Same with Laser Turret's Blast Cannon (911F).
 
-# The Safety Inspection Chamber will be sealed off
+# 安全检查室已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1334" } window 2000,1
 2006.1 "雷转质波动" StartsUsing { id: "9129", source: "保护者" }
 2011.1 "雷转质波动" Ability { id: "9129", source: "保护者" }
@@ -149,7 +149,7 @@ hideall "--sync--"
 # 9868 Bombardment
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Zander the Snakeskinner #
+# 蟒蛇将 詹德 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # -ii 8EE4 8EE5 8EE6 8EE7 8EE9 8EEA 8EEB 8EEC 8EF0 8EF1 9948 9949
@@ -158,7 +158,7 @@ hideall "--sync--"
 # -p 8EE0:3500.0
 
 # ** PHASE 1 **
-# The Vanguard Control Room will be sealed off
+# 先锋营控制室已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1335" } window 3000,1
 3006.1 "雷转质升温" StartsUsing { id: "8EF2", source: "蟒蛇将 詹德" }
 3011.1 "雷转质升温" Ability { id: "8EF2", source: "蟒蛇将 詹德" }

@@ -1,4 +1,4 @@
-### THE FINAL VERSE (QUANTUM)
+﻿### 最终变奏：量子
 # ZoneId: 1311
 # timeline primarily based on Q40 with some adjustments for Q15-39
 
@@ -11,264 +11,264 @@ hideall "--sync--"
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-12.4 "深渊烈焰/深渊爆焰" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "卓异的悲寂" }
-19.2 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-20.4 "深渊烈焰/深渊爆焰" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "卓异的悲寂" }
-27.2 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-33.4 "净罪之环" Ability { id: "AC59", source: "被侵蚀的食罪灵" }
-37.3 "净罪之环 x6" duration 1.4 #Ability { id: "AC5A", source: "被侵蚀的食罪灵" }
-40.1 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" }
-45.3 "深渊黑光/深渊极光" Ability { id: ["AC6A", "AC6B"], source: "卓异的悲寂" }
-53.1 "深渊烈焰/深渊爆焰 地火" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "卓异的悲寂" }
-56.3 "火球" StartsUsing { id: "AC41", source: "卓异的悲寂" } window 10,10 jump "ball-first-1"
-56.3 "烈焰锢" StartsUsing { id: "AC43", source: "卓异的悲寂" } window 10,10 jump "chains-first-1"
-56.3 "火球" StartsUsing { id: "AC49", source: "卓异的悲寂" } window 10,10 jump "ball-second-1"
-56.3 "烈焰锢" StartsUsing { id: "AC4A", source: "卓异的悲寂" } window 10,10 jump "chains-second-1"
-61.1 "光耀之剑/火球/烈焰锢?"
-64.2 "光耀之剑/火球/烈焰锢?"
-79.3 "火焰链/烈焰链"
-92.2 "棘刺尾"
-98.4 "--小怪可选中--" # Vodoriga Minion
+12.4 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "鍗撳紓鐨勬偛瀵? }
+19.2 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+20.4 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "鍗撳紓鐨勬偛瀵? }
+27.2 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+33.4 "鍑€缃箣鐜? Ability { id: "AC59", source: "琚镜铓€鐨勯缃伒" }
+37.3 "鍑€缃箣鐜?x6" duration 1.4 #Ability { id: "AC5A", source: "琚镜铓€鐨勯缃伒" }
+40.1 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" }
+45.3 "娣辨笂榛戝厜/娣辨笂鏋佸厜" Ability { id: ["AC6A", "AC6B"], source: "鍗撳紓鐨勬偛瀵? }
+53.1 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙 鍦扮伀" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "鍗撳紓鐨勬偛瀵? }
+56.3 "鐏悆" StartsUsing { id: "AC41", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-first-1"
+56.3 "鐑堢劙閿? StartsUsing { id: "AC43", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-first-1"
+56.3 "鐏悆" StartsUsing { id: "AC49", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-second-1"
+56.3 "鐑堢劙閿? StartsUsing { id: "AC4A", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-second-1"
+61.1 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+64.2 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+79.3 "鐏劙閾?鐑堢劙閾?
+92.2 "妫樺埡灏?
+98.4 "--灏忔€彲閫変腑--" # Vodoriga Minion
 
 # Ball first then Blade 1
 100.0 label "ball-first-1"
-107.1 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10
-108.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "spinelash-1"
+107.1 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10
+108.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "spinelash-1"
 
 # Chains first then Blade 1
 150.0 label "chains-first-1"
-154.8 "烈焰锢" Ability { id: "AC44", source: "卓异的悲寂" } duration 2 window 10,10
-157.9 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "spinelash-1"
+154.8 "鐑堢劙閿? Ability { id: "AC44", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10
+157.9 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "spinelash-1"
 
 # # Blade first then Ball 1
 200.0 label "ball-second-1"
-204.8 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-210.1 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10 forcejump "spinelash-1-late"
+204.8 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+210.1 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10 forcejump "spinelash-1-late"
 
 # # Blade first then Chains 1
 250.0 label "chains-second-1"
-254.8 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-257.9 "烈焰锢" Ability { id: "AC4B", source: "卓异的悲寂" } duration 2 window 10,10 forcejump "spinelash-1"
+254.8 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+257.9 "鐑堢劙閿? Ability { id: "AC4B", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10 forcejump "spinelash-1"
 
 # Spinelash 1
 300.0 label "spinelash-1"
 302.2 label "spinelash-1-late"
-315.3 "火焰链/烈焰链" #Ability { id: ["AC70", "AC71"], source: "卓异的悲寂" }
-317.1 "棘刺尾" Ability { id: "AC5D", source: "卓异的悲寂" } window 261,10
-328.2 "棘刺尾" Ability { id: "B03F", source: "卓异的悲寂" }
-330.1 "--sync--" Ability { id: "AC5F", source: "卓异的悲寂" }
-334.4 "--小怪可选中--" # Vodoriga Minion
-344.4 "戒律的光链/戒严的光链" Ability { id: ["AC72", "AF01"], source: "被侵蚀的食罪灵" }
-355.4 "烈焰领域" Ability { id: ["AC78", "AC79"], source: "卓异的悲寂" }
-356.2 "--塔可选中--" # Arcane Font
-362.4 "地火喷发 1" #Ability { id: "AC7C", source: "卓异的悲寂" }
-364.4 "地火喷发 2" #Ability { id: "AC7C", source: "卓异的悲寂" }
-364.7 "尾连击" Ability { id: "AC7F", source: "卓异的悲寂" } duration 1.5
-366.4 "地火喷发 3" #Ability { id: "AC7C", source: "卓异的悲寂" }
-369.1 "尾连击" Ability { id: "AC81", source: "卓异的悲寂" }
-381.2 "黑暗神圣" Ability { id: "AC84", source: "被侵蚀的食罪灵" }
-389.9 "尾连击" Ability { id: "AC7F", source: "卓异的悲寂" } duration 1.5
-394.4 "尾连击" Ability { id: "AC81", source: "卓异的悲寂" }
-405.8 "深渊烈焰/深渊爆焰" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "卓异的悲寂" }
-410.8 "地火喷发 1" #Ability { id: "AC7C", source: "卓异的悲寂" }
-412.6 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-412.8 "地火喷发 2" #Ability { id: "AC7C", source: "卓异的悲寂" }
-413.8 "深渊烈焰/深渊爆焰" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "卓异的悲寂" }
-414.8 "地火喷发 3" #Ability { id: "AC7C", source: "卓异的悲寂" }
-420.7 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-429.9 "净罪之环" Ability { id: "AC59", source: "被侵蚀的食罪灵" }
-433.9 "净罪之环 x12" duration 1.8 #Ability { id: "AC5A", source: "被侵蚀的食罪灵" }
-437.6 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" }
-441.8 "深渊烈焰/深渊爆焰 地火" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "卓异的悲寂" }
-468.6 "罪与罚" Ability { id: "AC86", source: "被侵蚀的食罪灵" }
-472.8 "火球" StartsUsing { id: "AC41", source: "卓异的悲寂" } window 10,10 jump "ball-first-2"
-472.8 "烈焰锢" StartsUsing { id: "AC43", source: "卓异的悲寂" } window 10,10 jump "chains-first-2"
-472.8 "火球" StartsUsing { id: "AC49", source: "卓异的悲寂" } window 10,10 jump "ball-second-2"
-472.8 "烈焰锢" StartsUsing { id: "AC4A", source: "卓异的悲寂" } window 10,10 jump "chains-second-2"
-478.0 "光耀之剑/火球/烈焰锢?"
-481.1 "光耀之剑/火球/烈焰锢?"
+315.3 "鐏劙閾?鐑堢劙閾? #Ability { id: ["AC70", "AC71"], source: "鍗撳紓鐨勬偛瀵? }
+317.1 "妫樺埡灏? Ability { id: "AC5D", source: "鍗撳紓鐨勬偛瀵? } window 261,10
+328.2 "妫樺埡灏? Ability { id: "B03F", source: "鍗撳紓鐨勬偛瀵? }
+330.1 "--sync--" Ability { id: "AC5F", source: "鍗撳紓鐨勬偛瀵? }
+334.4 "--灏忔€彲閫変腑--" # Vodoriga Minion
+344.4 "鎴掑緥鐨勫厜閾?鎴掍弗鐨勫厜閾? Ability { id: ["AC72", "AF01"], source: "琚镜铓€鐨勯缃伒" }
+355.4 "鐑堢劙棰嗗煙" Ability { id: ["AC78", "AC79"], source: "鍗撳紓鐨勬偛瀵? }
+356.2 "--濉斿彲閫変腑--" # Arcane Font
+362.4 "鍦扮伀鍠峰彂 1" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+364.4 "鍦扮伀鍠峰彂 2" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+364.7 "灏捐繛鍑? Ability { id: "AC7F", source: "鍗撳紓鐨勬偛瀵? } duration 1.5
+366.4 "鍦扮伀鍠峰彂 3" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+369.1 "灏捐繛鍑? Ability { id: "AC81", source: "鍗撳紓鐨勬偛瀵? }
+381.2 "榛戞殫绁炲湥" Ability { id: "AC84", source: "琚镜铓€鐨勯缃伒" }
+389.9 "灏捐繛鍑? Ability { id: "AC7F", source: "鍗撳紓鐨勬偛瀵? } duration 1.5
+394.4 "灏捐繛鍑? Ability { id: "AC81", source: "鍗撳紓鐨勬偛瀵? }
+405.8 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "鍗撳紓鐨勬偛瀵? }
+410.8 "鍦扮伀鍠峰彂 1" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+412.6 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+412.8 "鍦扮伀鍠峰彂 2" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+413.8 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "鍗撳紓鐨勬偛瀵? }
+414.8 "鍦扮伀鍠峰彂 3" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+420.7 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+429.9 "鍑€缃箣鐜? Ability { id: "AC59", source: "琚镜铓€鐨勯缃伒" }
+433.9 "鍑€缃箣鐜?x12" duration 1.8 #Ability { id: "AC5A", source: "琚镜铓€鐨勯缃伒" }
+437.6 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" }
+441.8 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙 鍦扮伀" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "鍗撳紓鐨勬偛瀵? }
+468.6 "缃笌缃? Ability { id: "AC86", source: "琚镜铓€鐨勯缃伒" }
+472.8 "鐏悆" StartsUsing { id: "AC41", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-first-2"
+472.8 "鐑堢劙閿? StartsUsing { id: "AC43", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-first-2"
+472.8 "鐏悆" StartsUsing { id: "AC49", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-second-2"
+472.8 "鐑堢劙閿? StartsUsing { id: "AC4A", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-second-2"
+478.0 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+481.1 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
 
 # Ball first then Blade 2
 500.0 label "ball-first-2"
-507.2 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10
-508.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "spinelash-2"
+507.2 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10
+508.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "spinelash-2"
 
 # Chains first then Blade 2
 550.0 label "chains-first-2"
-555.0 "烈焰锢" Ability { id: "AC44", source: "卓异的悲寂" } duration 2 window 10,10
-558.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "spinelash-2"
+555.0 "鐑堢劙閿? Ability { id: "AC44", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10
+558.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "spinelash-2"
 
 # # Blade first then Ball 2
 600.0 label "ball-second-2"
-605.0 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-610.3 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10 forcejump "spinelash-2-late"
+605.0 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+610.3 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10 forcejump "spinelash-2-late"
 
 # # Blade first then Chains 2
 650.0 label "chains-second-2"
-655.0 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-658.1 "烈焰锢" Ability { id: "AC4B", source: "卓异的悲寂" } duration 2 window 10,10 forcejump "spinelash-2"
+655.0 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+658.1 "鐑堢劙閿? Ability { id: "AC4B", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10 forcejump "spinelash-2"
 
 # Spinelash 2
 700.0 label "spinelash-2"
 702.1 label "spinelash-2-late"
-713.1 "棘刺尾" Ability { id: "AC5D", source: "卓异的悲寂" } window 241,10
-724.3 "棘刺尾" Ability { id: "B03F", source: "卓异的悲寂" }
-726.0 "--sync--" Ability { id: "AC5F", source: "卓异的悲寂" }
-730.3 "--小怪可选中--" # Vodoriga Minion
-741.3 "净罪之环" Ability { id: "AC59", source: "被侵蚀的食罪灵" }
-745.1 "净罪之环 x6" duration 1.4 #Ability { id: "AC5A", source: "被侵蚀的食罪灵" }
-748.1 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" }
-749.3 "深渊烈焰/深渊爆焰" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "卓异的悲寂" }
-749.4 "火焰链/烈焰链" #Ability { id: ["AC70", "AC71"], source: "卓异的悲寂" }
-756.1 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-757.3 "深渊烈焰/深渊爆焰" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "卓异的悲寂" }
-764.1 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-768.4 "以太吸取" StartsUsing { id: "AC61", source: "卓异的悲寂" } window 10,10 jump "drain-dark-1"
-768.4 "以太吸取" StartsUsing { id: "AC63", source: "被侵蚀的食罪灵" } window 10,10 jump "drain-light-1"
-775.4 "以太吸取 1"
-780.4 "以太吸取 2"
-788.3 "深渊烈焰/深渊爆焰 地火" duration 7.2
-796.1 "黑暗神圣"
+713.1 "妫樺埡灏? Ability { id: "AC5D", source: "鍗撳紓鐨勬偛瀵? } window 241,10
+724.3 "妫樺埡灏? Ability { id: "B03F", source: "鍗撳紓鐨勬偛瀵? }
+726.0 "--sync--" Ability { id: "AC5F", source: "鍗撳紓鐨勬偛瀵? }
+730.3 "--灏忔€彲閫変腑--" # Vodoriga Minion
+741.3 "鍑€缃箣鐜? Ability { id: "AC59", source: "琚镜铓€鐨勯缃伒" }
+745.1 "鍑€缃箣鐜?x6" duration 1.4 #Ability { id: "AC5A", source: "琚镜铓€鐨勯缃伒" }
+748.1 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" }
+749.3 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "鍗撳紓鐨勬偛瀵? }
+749.4 "鐏劙閾?鐑堢劙閾? #Ability { id: ["AC70", "AC71"], source: "鍗撳紓鐨勬偛瀵? }
+756.1 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+757.3 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "鍗撳紓鐨勬偛瀵? }
+764.1 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+768.4 "浠ュお鍚稿彇" StartsUsing { id: "AC61", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "drain-dark-1"
+768.4 "浠ュお鍚稿彇" StartsUsing { id: "AC63", source: "琚镜铓€鐨勯缃伒" } window 10,10 jump "drain-light-1"
+775.4 "浠ュお鍚稿彇 1"
+780.4 "浠ュお鍚稿彇 2"
+788.3 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙 鍦扮伀" duration 7.2
+796.1 "榛戞殫绁炲湥"
 
 # Drain Aether Dark first 1
 800.0 label "drain-dark-1"
-807.0 "以太吸取" Ability { id: "AC61", source: "卓异的悲寂" } window 10,10
-811.1 "以太吸取" Ability { id: "AC65", source: "被侵蚀的食罪灵" } window 10,10 forcejump "after-drain-1"
+807.0 "浠ュお鍚稿彇" Ability { id: "AC61", source: "鍗撳紓鐨勬偛瀵? } window 10,10
+811.1 "浠ュお鍚稿彇" Ability { id: "AC65", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "after-drain-1"
 
 # Drain Aether Light first 1
 850.0 label "drain-light-1"
-856.0 "以太吸取" Ability { id: "AC63", source: "被侵蚀的食罪灵" } window 10,10
-862.1 "以太吸取" Ability { id: "AC62", source: "卓异的悲寂" } window 10,10 forcejump "after-drain-1-late"
+856.0 "浠ュお鍚稿彇" Ability { id: "AC63", source: "琚镜铓€鐨勯缃伒" } window 10,10
+862.1 "浠ュお鍚稿彇" Ability { id: "AC62", source: "鍗撳紓鐨勬偛瀵? } window 10,10 forcejump "after-drain-1-late"
 
 # After Drain Aether 1
 900.0 label "after-drain-1"
 901.1 label "after-drain-1-late"
-909.0 "深渊烈焰/深渊爆焰 地火" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "卓异的悲寂" }
-916.8 "黑暗神圣" Ability { id: "AC84", source: "被侵蚀的食罪灵" } window 150,10
-936.0 "火焰缠身/烈焰缠身" Ability { id: ["AC89", "AC8A"], source: "卓异的悲寂" }
+909.0 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙 鍦扮伀" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "鍗撳紓鐨勬偛瀵? }
+916.8 "榛戞殫绁炲湥" Ability { id: "AC84", source: "琚镜铓€鐨勯缃伒" } window 150,10
+936.0 "鐏劙缂犺韩/鐑堢劙缂犺韩" Ability { id: ["AC89", "AC8A"], source: "鍗撳紓鐨勬偛瀵? }
 939.0 "--adds targetable--" # Flameborn
-948.0 "深渊烈焰/深渊爆焰" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "卓异的悲寂" }
-954.8 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-956.0 "深渊烈焰/深渊爆焰" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "卓异的悲寂" }
-962.8 "--sync--" Ability { id: "AC53", source: "卓异的悲寂" }
-972.0 "火球" StartsUsing { id: "AC41", source: "卓异的悲寂" } window 10,10 jump "ball-first-3"
-972.0 "烈焰锢" StartsUsing { id: "AC43", source: "卓异的悲寂" } window 10,10 jump "chains-first-3"
-972.0 "火球" StartsUsing { id: "AC49", source: "卓异的悲寂" } window 10,10 jump "ball-second-3"
-972.0 "烈焰锢" StartsUsing { id: "AC4A", source: "卓异的悲寂" } window 10,10 jump "chains-second-3"
-979.3 "光耀之剑/火球/烈焰锢?"
-982.3 "光耀之剑/火球/烈焰锢?"
-987.1 "深渊黑光/深渊极光"
-989.1 "净罪之环 吸引"
-993.1 "净罪之环 x12" duration 1.7
-997.0 "净罪之环 钢铁/月环"
-1007.3 "棘刺尾"
-1013.5 "--小怪可选中--" # Vodoriga Minion
-1016.1 "深渊烈焰/深渊爆焰 地火" duration 7.2
+948.0 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC4F", "AC50", "AEFD", "AEFE"], source: "鍗撳紓鐨勬偛瀵? }
+954.8 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+956.0 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙" Ability { id: ["AC51", "AC52", "AEFF", "AF00"], source: "鍗撳紓鐨勬偛瀵? }
+962.8 "--sync--" Ability { id: "AC53", source: "鍗撳紓鐨勬偛瀵? }
+972.0 "鐏悆" StartsUsing { id: "AC41", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-first-3"
+972.0 "鐑堢劙閿? StartsUsing { id: "AC43", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-first-3"
+972.0 "鐏悆" StartsUsing { id: "AC49", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-second-3"
+972.0 "鐑堢劙閿? StartsUsing { id: "AC4A", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-second-3"
+979.3 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+982.3 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+987.1 "娣辨笂榛戝厜/娣辨笂鏋佸厜"
+989.1 "鍑€缃箣鐜?鍚稿紩"
+993.1 "鍑€缃箣鐜?x12" duration 1.7
+997.0 "鍑€缃箣鐜?閽㈤搧/鏈堢幆"
+1007.3 "妫樺埡灏?
+1013.5 "--灏忔€彲閫変腑--" # Vodoriga Minion
+1016.1 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙 鍦扮伀" duration 7.2
 
 # Ball first then Blade 3
 1050.0 label "ball-first-3"
-1057.2 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10
-1058.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "spinelash-3"
+1057.2 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10
+1058.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "spinelash-3"
 
 # Chains first then Blade 3
 1100.0 label "chains-first-3"
-1105.0 "烈焰锢" Ability { id: "AC44", source: "卓异的悲寂" } duration 2 window 10,10
-1108.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "spinelash-3"
+1105.0 "鐑堢劙閿? Ability { id: "AC44", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10
+1108.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "spinelash-3"
 
 # # Blade first then Ball 3
 1150.0 label "ball-second-3"
-1157.2 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-1162.5 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10 forcejump "spinelash-3-late"
+1157.2 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+1162.5 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10 forcejump "spinelash-3-late"
 
 # # Blade first then Chains 3
 1200.0 label "chains-second-3"
-1207.2 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-1210.3 "烈焰锢" Ability { id: "AC4B", source: "卓异的悲寂" } duration 2 window 10,10 forcejump "spinelash-3"
+1207.2 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+1210.3 "鐑堢劙閿? Ability { id: "AC4B", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10 forcejump "spinelash-3"
 
 # Spinelash 3
 1250.0 label "spinelash-3"
 1252.2 label "spinelash-3-late"
-1257.1 "深渊黑光/深渊极光" Ability { id: ["AC6A", "AC6B"], source: "卓异的悲寂" } window 256,10
-1259.1 "净罪之环" Ability { id: "AC59", source: "被侵蚀的食罪灵" }
-1263.1 "净罪之环 x12" duration 1.7 #Ability { id: "AC5A", source: "被侵蚀的食罪灵" }
-1266.2 "棘刺尾" Ability { id: "AC5D", source: "卓异的悲寂" }
-1266.9 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" }
-1277.3 "棘刺尾" Ability { id: "B03F", source: "卓异的悲寂" }
-1278.4 "--sync--" Ability { id: "AC5F", source: "卓异的悲寂" }
-1283.4 "--小怪可选中--" # Vodoriga Minion
-1286.1 "深渊烈焰/深渊爆焰 地火" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "卓异的悲寂" }
-1301.1 "火焰链/烈焰链" #Ability { id: ["AC70", "AC71"], source: "卓异的悲寂" }
-1310.7 "尾连击" Ability { id: "AC7F", source: "卓异的悲寂" } duration 1.5
-1315.2 "尾连击" Ability { id: "AC81", source: "卓异的悲寂" }
-1322.6 "地火喷发 1" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1323.7 "以太吸取" StartsUsing { id: "AC61", source: "卓异的悲寂" } window 10,10 jump "drain-dark-2"
-1323.7 "以太吸取" StartsUsing { id: "AC63", source: "被侵蚀的食罪灵" } window 10,10 jump "drain-light-2"
-1324.6 "地火喷发 2"
-1326.6 "地火喷发 3"
-1330.7 "以太吸取 1"
-1335.7 "以太吸取 2"
-1348.7 "地火喷发 1"
+1257.1 "娣辨笂榛戝厜/娣辨笂鏋佸厜" Ability { id: ["AC6A", "AC6B"], source: "鍗撳紓鐨勬偛瀵? } window 256,10
+1259.1 "鍑€缃箣鐜? Ability { id: "AC59", source: "琚镜铓€鐨勯缃伒" }
+1263.1 "鍑€缃箣鐜?x12" duration 1.7 #Ability { id: "AC5A", source: "琚镜铓€鐨勯缃伒" }
+1266.2 "妫樺埡灏? Ability { id: "AC5D", source: "鍗撳紓鐨勬偛瀵? }
+1266.9 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" }
+1277.3 "妫樺埡灏? Ability { id: "B03F", source: "鍗撳紓鐨勬偛瀵? }
+1278.4 "--sync--" Ability { id: "AC5F", source: "鍗撳紓鐨勬偛瀵? }
+1283.4 "--灏忔€彲閫変腑--" # Vodoriga Minion
+1286.1 "娣辨笂鐑堢劙/娣辨笂鐖嗙劙 鍦扮伀" duration 7.2 #Ability { id: ["AC55", "AC57"], source: "鍗撳紓鐨勬偛瀵? }
+1301.1 "鐏劙閾?鐑堢劙閾? #Ability { id: ["AC70", "AC71"], source: "鍗撳紓鐨勬偛瀵? }
+1310.7 "灏捐繛鍑? Ability { id: "AC7F", source: "鍗撳紓鐨勬偛瀵? } duration 1.5
+1315.2 "灏捐繛鍑? Ability { id: "AC81", source: "鍗撳紓鐨勬偛瀵? }
+1322.6 "鍦扮伀鍠峰彂 1" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1323.7 "浠ュお鍚稿彇" StartsUsing { id: "AC61", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "drain-dark-2"
+1323.7 "浠ュお鍚稿彇" StartsUsing { id: "AC63", source: "琚镜铓€鐨勯缃伒" } window 10,10 jump "drain-light-2"
+1324.6 "鍦扮伀鍠峰彂 2"
+1326.6 "鍦扮伀鍠峰彂 3"
+1330.7 "浠ュお鍚稿彇 1"
+1335.7 "浠ュお鍚稿彇 2"
+1348.7 "鍦扮伀鍠峰彂 1"
 
 # Drain Aether Dark first 2
 1350.0 label "drain-dark-2"
-1350.9 "地火喷发 2" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1352.9 "地火喷发 3" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1357.0 "以太吸取" Ability { id: "AC61", source: "卓异的悲寂" } window 10,10
-1361.1 "以太吸取" Ability { id: "AC65", source: "被侵蚀的食罪灵" } window 10,10 forcejump "after-drain-2"
+1350.9 "鍦扮伀鍠峰彂 2" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1352.9 "鍦扮伀鍠峰彂 3" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1357.0 "浠ュお鍚稿彇" Ability { id: "AC61", source: "鍗撳紓鐨勬偛瀵? } window 10,10
+1361.1 "浠ュお鍚稿彇" Ability { id: "AC65", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "after-drain-2"
 
 #Drain Aether Light first 2
 1400.0 label "drain-light-2"
-1400.9 "地火喷发 2" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1402.9 "地火喷发 3" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1406.0 "以太吸取" Ability { id: "AC63", source: "被侵蚀的食罪灵" } window 10,10
-1412.1 "以太吸取" Ability { id: "AC62", source: "卓异的悲寂" } window 10,10 forcejump "after-drain-2-late"
+1400.9 "鍦扮伀鍠峰彂 2" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1402.9 "鍦扮伀鍠峰彂 3" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1406.0 "浠ュお鍚稿彇" Ability { id: "AC63", source: "琚镜铓€鐨勯缃伒" } window 10,10
+1412.1 "浠ュお鍚稿彇" Ability { id: "AC62", source: "鍗撳紓鐨勬偛瀵? } window 10,10 forcejump "after-drain-2-late"
 
 # After Drain Aether 2
 1450.0 label "after-drain-2"
 1451.1 label "after-drain-2-late"
-1463.1 "地火喷发 1" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1465.1 "地火喷发 2" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1467.1 "地火喷发 3" #Ability { id: "AC7C", source: "卓异的悲寂" }
-1470.2 "净罪之环" Ability { id: "AC59", source: "被侵蚀的食罪灵" } window 150,10
-1474.3 "净罪之环 x12" duration 1.7 #Ability { id: "AC5A", source: "被侵蚀的食罪灵" }
-1477.2 "火球" StartsUsing { id: "AC41", source: "卓异的悲寂" } window 10,10 jump "ball-first-4"
-1477.2 "烈焰锢" StartsUsing { id: "AC43", source: "卓异的悲寂" } window 10,10 jump "chains-first-4"
-1477.2 "火球" StartsUsing { id: "AC49", source: "卓异的悲寂" } window 10,10 jump "ball-second-4"
-1477.2 "烈焰锢" StartsUsing { id: "AC4A", source: "卓异的悲寂" } window 10,10 jump "chains-second-4"
-1478.0 "净罪之环 钢铁/月环"
-1482.2 "光耀之剑/火球/烈焰锢?"
-1485.3 "光耀之剑/火球/烈焰锢?"
-1504.0 "黑暗神圣"
+1463.1 "鍦扮伀鍠峰彂 1" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1465.1 "鍦扮伀鍠峰彂 2" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1467.1 "鍦扮伀鍠峰彂 3" #Ability { id: "AC7C", source: "鍗撳紓鐨勬偛瀵? }
+1470.2 "鍑€缃箣鐜? Ability { id: "AC59", source: "琚镜铓€鐨勯缃伒" } window 150,10
+1474.3 "鍑€缃箣鐜?x12" duration 1.7 #Ability { id: "AC5A", source: "琚镜铓€鐨勯缃伒" }
+1477.2 "鐏悆" StartsUsing { id: "AC41", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-first-4"
+1477.2 "鐑堢劙閿? StartsUsing { id: "AC43", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-first-4"
+1477.2 "鐏悆" StartsUsing { id: "AC49", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "ball-second-4"
+1477.2 "鐑堢劙閿? StartsUsing { id: "AC4A", source: "鍗撳紓鐨勬偛瀵? } window 10,10 jump "chains-second-4"
+1478.0 "鍑€缃箣鐜?閽㈤搧/鏈堢幆"
+1482.2 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+1485.3 "鍏夎€€涔嬪墤/鐏悆/鐑堢劙閿?"
+1504.0 "榛戞殫绁炲湥"
 
 # Ball first then Blade 4
 1550.0 label "ball-first-4"
-1550.8 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" } window 10,10
-1557.2 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10
-1558.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "enrage"
+1550.8 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" } window 10,10
+1557.2 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10
+1558.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "enrage"
 
 # Chains first then Blade 4
 1600.0 label "chains-first-4"
-1600.8 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" } window 10,10
-1605.0 "烈焰锢" Ability { id: "AC44", source: "卓异的悲寂" } duration 2 window 10,10
-1608.1 "光耀之剑" Ability { id: "AC4E", source: "被侵蚀的食罪灵" } window 10,10 forcejump "enrage"
+1600.8 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" } window 10,10
+1605.0 "鐑堢劙閿? Ability { id: "AC44", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10
+1608.1 "鍏夎€€涔嬪墤" Ability { id: "AC4E", source: "琚镜铓€鐨勯缃伒" } window 10,10 forcejump "enrage"
 
 # # Blade first then Ball 4
 1650.0 label "ball-second-4"
-1650.8 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" } window 10,10
-1655.0 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-1660.3 "火球" Ability { id: "AC42", source: "卓异的悲寂" } window 10,10 forcejump "enrage-late"
+1650.8 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" } window 10,10
+1655.0 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+1660.3 "鐏悆" Ability { id: "AC42", source: "鍗撳紓鐨勬偛瀵? } window 10,10 forcejump "enrage-late"
 
 # # Blade first then Chains 4
 1700.0 label "chains-second-4"
-1700.8 "净罪之环" Ability { id: ["AC5B", "AC5C"], source: "被侵蚀的食罪灵" } window 10,10
-1705.0 "光耀之剑" Ability { id: "AC48", source: "被侵蚀的食罪灵" } window 10,10
-1708.1 "烈焰锢" Ability { id: "AC4B", source: "卓异的悲寂" } duration 2 window 10,10 forcejump "enrage"
+1700.8 "鍑€缃箣鐜? Ability { id: ["AC5B", "AC5C"], source: "琚镜铓€鐨勯缃伒" } window 10,10
+1705.0 "鍏夎€€涔嬪墤" Ability { id: "AC48", source: "琚镜铓€鐨勯缃伒" } window 10,10
+1708.1 "鐑堢劙閿? Ability { id: "AC4B", source: "鍗撳紓鐨勬偛瀵? } duration 2 window 10,10 forcejump "enrage"
 
 # enrage sequence
 1750.0 label "enrage"
 1752.2 label "enrage-late"
-1768.7 "黑暗神圣" Ability { id: "AC90", source: "被侵蚀的食罪灵" } window 258,10
-1786.0 "烈焰领域" Ability { id: "AC8E", source: "卓异的悲寂" }
+1768.7 "榛戞殫绁炲湥" Ability { id: "AC90", source: "琚镜铓€鐨勯缃伒" } window 258,10
+1786.0 "鐑堢劙棰嗗煙" Ability { id: "AC8E", source: "鍗撳紓鐨勬偛瀵? }
 
 
 # IGNORED ABILITIES

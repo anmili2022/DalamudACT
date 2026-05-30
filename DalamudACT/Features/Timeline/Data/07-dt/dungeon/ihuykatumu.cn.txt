@@ -1,4 +1,4 @@
-﻿### IHUYKATUMU
+﻿### 雾锁航路
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -7,7 +7,7 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~#
-# Prime Punutiy #
+# 首领海牛 #
 #~~~~~~~~~~~~~~~#
 # TODO: Does Shore Shaker timing vary depending on when adds die?
 
@@ -15,7 +15,7 @@ hideall "--sync--"
 # ic "Petit Punutiy" "Prodigious Punutiy"
 # -p 8E8C:1010.1
 
-# The Punutiy Pool will be sealed off
+# 海牛水池已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "132A" } window 1000,1
 1010.1 "海牛重压" Ability { id: "8E8C", source: "首领海牛" } window 1011,5
 1016.3 "水化波动" Ability { id: "8E8D", source: "首领海牛" }
@@ -57,7 +57,7 @@ hideall "--sync--"
 1260.5 "海牛之声" Ability { id: "8E9A", source: "首领海牛" } forcejump 1181.5
 
 #~~~~~~~~~#
-# Drowsie #
+# 瞌睡怪 #
 #~~~~~~~~~#
 
 # TODO: Does Flagrant Spread + Sneeze timing vary depending on when adds die?
@@ -68,7 +68,7 @@ hideall "--sync--"
 # Note: Flagrant Spread (8EAA/8E85) not included because timing is variable and the
 # casts are often interrupted due to quick add deaths
 
-# Drowsie's Grotto will be sealed off
+# 瞌睡怪洞窟已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "132B" } window 2000,1
 2000.1 "--sync--" Ability { id: "8F9A", source: "瞌睡怪" } window 2001,5
 2014.4 "上击" Ability { id: "98DC", source: "瞌睡怪" } window 2015,5
@@ -97,14 +97,14 @@ hideall "--sync--"
 2217.9 "播种" Ability { id: "8E7C", source: "瞌睡怪" } forcejump 2149
 
 #~~~~~~~~~~#
-# Apollyon #
+# 亚波伦 #
 #~~~~~~~~~~#
 
 # -ii 8DF8 8DF6 8DFA 8DFD 8DFE 8E01 8E05
 # -ic "Ihuykatumu Sandworm"
 # -p 8DF4:3009.3
 
-# Breathcatch will be sealed off
+# 屏息之间已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "132C" } window 3000,1
 3009.3 "空气削割" Ability { id: "8DF4", source: "亚波伦" } window 3010,5
 3019.0 "镰击" Ability { id: "8DFB", source: "亚波伦" }

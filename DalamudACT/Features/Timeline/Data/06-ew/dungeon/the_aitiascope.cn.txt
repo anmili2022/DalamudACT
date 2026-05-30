@@ -9,7 +9,7 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~~~~~~~~#
-# LIVIA THE UNDETERRED #
+# 迷执爱恋的莉维亚 #
 #~~~~~~~~~~~~~~~~~~~~~~#
 
 # -p 6448:1012
@@ -59,13 +59,13 @@ hideall "--sync--"
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# RHITAHTYN THE UNSHAKABLE #
+# 强执忠义的里塔提恩 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # -p 6455:2012
 # -ii 6454
 
-# Saltcrystal Strings will be sealed off
+# 盐晶之间已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F99" } window 10000,0
 2012.0 "冥狱冲击" Ability { id: "6455", source: "强执忠义的里塔提恩" }
 2020.5 "冥狱火花" Ability { id: "6457", source: "强执忠义的里塔提恩" }
@@ -114,7 +114,7 @@ hideall "--sync--"
 # -p 6464:3012
 # -ii 6088
 
-# Midnight Downwell will be sealed off
+# 深夜井户已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "F9A" } window 10000,0
 3012.0 "暗强音" Ability { id: "6464", source: "邪执外道的亚蒙" }
 3022.2 "强音暴雷 (距离衰减)" Ability { id: "645A", source: "邪执外道的亚蒙" }

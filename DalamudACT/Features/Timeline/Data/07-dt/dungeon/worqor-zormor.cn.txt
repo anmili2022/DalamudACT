@@ -1,4 +1,4 @@
-﻿### WORQOR ZORMOR
+﻿### 沃刻佐末
 # ZoneId: 1193
 
 hideall "--Reset--"
@@ -8,13 +8,13 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~#
-# Ryoqor Terteh #
+# 辽刻特特雪精 #
 #~~~~~~~~~~~~~~~#
 
 # -ii 8DB7 8DB0 8DB6 8F69
 # -p 8DB8:1014.1
 
-# The Calmgrounds will be sealed off
+# 静雪地已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1188" } window 1000,1
 1009.1 "雾雪之声" StartsUsing { id: "8DB8", source: "辽刻特特雪精" } window 10,5
 1014.1 "雾雪之声" Ability { id: "8DB8", source: "辽刻特特雪精" }
@@ -68,13 +68,13 @@ hideall "--sync--"
 # 8F69 Sparkling Sprinkling
 
 #~~~~~~~~~~~#
-# Kahderyor #
+# 卡德由夜鸟 #
 #~~~~~~~~~~~#
 
 # -ii 8DBD 8DC8 8DC7 8DC2 8DCA 8DC0 8DC1
 # -p 8DBA:2009.1
 
-# The Council Of Morgar will be sealed off
+# 莫加之议已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "118D" } window 2000,1
 2004.1 "无拘之风" StartsUsing { id: "8DBA", source: "卡德由夜鸟" } window 5,5
 2009.1 "无拘之风" Ability { id: "8DBA", source: "卡德由夜鸟" }
@@ -144,7 +144,7 @@ hideall "--sync--"
 # -ic "Aura Sphere"
 # -p 8DBA:2009.1 -p 8DDB:3500
 
-# Karryor The Resting will be sealed off
+# 卡留特安息之地已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "118E" } window 3000,1
 3005.1 "强力震击" StartsUsing { id: "8DAD", source: "固伏鲁" } window 5,5
 3010.1 "强力震击" Ability { id: "8DAD", source: "固伏鲁" }

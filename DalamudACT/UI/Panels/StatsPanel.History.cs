@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 
@@ -5,6 +6,8 @@ namespace DalamudACT;
 
 internal static partial class StatsPanel
 {
+    private const int MaxVisibleHistoryRows = 300;
+
     private static bool DrawHistoryTab(LocalStatsService statsService, PluginConfiguration config)
     {
         if (ImGui.Button("导出历史记录"))
@@ -59,7 +62,8 @@ internal static partial class StatsPanel
         var rowHeight = ResolveRowHeight(config);
         var selectedIndex = statsService.SelectedHistoricalRecordIndex;
         var historyRecordClicked = false;
-        for (var index = history.Count - 1; index >= 0; index--)
+        var firstRenderedIndex = Math.Max(0, history.Count - MaxVisibleHistoryRows);
+        for (var index = history.Count - 1; index >= firstRenderedIndex; index--)
         {
             var record = history[index];
             TableNextRow(rowHeight);
@@ -77,6 +81,13 @@ internal static partial class StatsPanel
 
             ImGui.TableSetColumnIndex(3);
             historyRecordClicked |= DrawHistoryCell(record.Duration, index, statsService);
+        }
+
+        if (firstRenderedIndex > 0)
+        {
+            TableNextRow(rowHeight);
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextDisabled($"仅显示最近 {MaxVisibleHistoryRows} 条，另有 {firstRenderedIndex} 条较早记录未绘制。");
         }
 
         PersistHistoryColumnWidths(config);

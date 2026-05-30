@@ -1,11 +1,11 @@
-### JEUNO: THE FIRST WALK
+﻿### 朱诺：初旅
 # ZoneId: 1248
 
 hideall "--Reset--"
 hideall "--sync--"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Prishe Of The Distant Chains #
+# 遥远的咒缚 普利修 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # -ii 9FE6 9FF1 9FF3 9FEB 9FEC 9FED A003 9FF5 9FFE 9FFF
@@ -15,132 +15,132 @@ hideall "--sync--"
 # The snapshot locks in when the visual element resolves,
 # so we display the visual and then ignore the damage event.
 
-# The grand dais will be sealed off
+# 大讲台已被封锁
 10000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "141E" } window 10000,1
-10006.7 "强放逐" StartsUsing { id: "9FE7", source: "遥远的咒缚 普利修" } window 10006.7,10
-10011.1 "强放逐" Ability { id: "9FE7", source: "遥远的咒缚 普利修" }
-10018.3 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-10032.5 "迎面重拳" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "遥远的咒缚 普利修" }
-10035.1 "落地" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "遥远的咒缚 普利修" }
+10006.7 "寮烘斁閫? StartsUsing { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 10006.7,10
+10011.1 "寮烘斁閫? Ability { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10018.3 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10032.5 "杩庨潰閲嶆嫵" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10035.1 "钀藉湴" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
 
 # This second Knuckle Sandwich shows up in a few Very Slow logs.
-10052.5 "迎面重拳" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "遥远的咒缚 普利修" }
-10054.9 "落地" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "遥远的咒缚 普利修" }
-10058.5 "昆仑八象脚·改" StartsUsing { id: "9FFD", source: "遥远的咒缚 普利修" } window 55.5,10
-10064.7 "昆仑八象脚·改" Ability { id: "9FFD", source: "遥远的咒缚 普利修" }
-10073.4 "放逐风暴" Ability { id: "9FF2", source: "遥远的咒缚 普利修" }
-10085.3 "放逐 x15" duration 11.2 #Ability { id: "9FF3", source: "遥远的咒缚 普利修" }
-10093.5 "神圣" Ability { id: "A002", source: "遥远的咒缚 普利修" }
+10052.5 "杩庨潰閲嶆嫵" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10054.9 "钀藉湴" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10058.5 "鏄嗕粦鍏薄鑴毬锋敼" StartsUsing { id: "9FFD", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 55.5,10
+10064.7 "鏄嗕粦鍏薄鑴毬锋敼" Ability { id: "9FFD", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10073.4 "鏀鹃€愰鏆? Ability { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10085.3 "鏀鹃€?x15" duration 11.2 #Ability { id: "9FF3", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10093.5 "绁炲湥" Ability { id: "A002", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
 
-10101.2 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-10107.5 "金刚棘" Ability { id: "9FF4", source: "遥远的咒缚 普利修" } window 104.5,10
-10122.9 "罗刹七星拳" Ability { id: ["9FF6", "9FF7", "9FF8"], source: "遥远的咒缚 普利修" }
-10139.5 "强放逐IV" Ability { id: "9FFA", source: "遥远的咒缚 普利修" }
-10147.3 "爆炸 1" #Ability { id: "9FFB", source: "光流残滓" }
-10151.3 "爆炸 2" #Ability { id: "9FFB", source: "光流残滓" }
-10155.3 "爆炸 3" #Ability { id: "9FFB", source: "光流残滓" }
-10159.3 "爆炸 4" #Ability { id: "9FFB", source: "光流残滓" }
-10159.3 "爆炸 5" #Ability { id: "9FFB", source: "光流残滓" }
-10165.6 "金刚棘" Ability { id: "9FF4", source: "遥远的咒缚 普利修" }
-10167.7 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-10181.5 "罗刹七星拳" Ability { id: ["9FF6", "9FF7", "9FF8"], source: "遥远的咒缚 普利修" }
-10198.8 "梦想阿修罗拳" Ability { id: "9FFC", source: "遥远的咒缚 普利修" } duration 9
-10207.2 "梦想阿修罗拳" Ability { id: "A000", source: "遥远的咒缚 普利修" } # Asuran Fists final hit
+10101.2 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10107.5 "閲戝垰妫? Ability { id: "9FF4", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 104.5,10
+10122.9 "缃楀埞涓冩槦鎷? Ability { id: ["9FF6", "9FF7", "9FF8"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10139.5 "寮烘斁閫怚V" Ability { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10147.3 "鐖嗙偢 1" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+10151.3 "鐖嗙偢 2" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+10155.3 "鐖嗙偢 3" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+10159.3 "鐖嗙偢 4" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+10159.3 "鐖嗙偢 5" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+10165.6 "閲戝垰妫? Ability { id: "9FF4", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10167.7 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10181.5 "缃楀埞涓冩槦鎷? Ability { id: ["9FF6", "9FF7", "9FF8"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+10198.8 "姊︽兂闃夸慨缃楁嫵" Ability { id: "9FFC", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } duration 9
+10207.2 "姊︽兂闃夸慨缃楁嫵" Ability { id: "A000", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } # Asuran Fists final hit
 
 # From here, Prishe seems to have three different rotation blocks.
 # She can use Banishga, Banishga 4, or Banish Storm.
 # Each of these blocks closes with Asuran Fists,
 # but she doesn't always seem to use the final A000 hit.
 # More research is needed.
-10217.4 "强放逐IV" StartsUsing { id: "9FFA", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaIVBlock"
-10218.1 "放逐风暴" StartsUsing { id: "9FF2", source: "遥远的咒缚 普利修" } window 20,20 jump "banishStormBlock"
-10226.3 "强放逐" StartsUsing { id: "9FE7", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaBlock"
+10217.4 "寮烘斁閫怚V" StartsUsing { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaIVBlock"
+10218.1 "鏀鹃€愰鏆? StartsUsing { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishStormBlock"
+10226.3 "寮烘斁閫? StartsUsing { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaBlock"
 
 
 # Banishga block
 10995.3 label "banishgaBlock"
-10995.3 "强放逐" StartsUsing { id: "9FE7", source: "遥远的咒缚 普利修" }
+10995.3 "寮烘斁閫? StartsUsing { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
 
-11000.0 "强放逐" Ability { id: "9FE7", source: "遥远的咒缚 普利修" }
-11007.2 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-11021.4 "迎面重拳" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "遥远的咒缚 普利修" }
-11023.8 "落地" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "遥远的咒缚 普利修" }
-11033.6 "昆仑八象脚·改" Ability { id: "9FFD", source: "遥远的咒缚 普利修" }
-11042.3 "放逐风暴" Ability { id: "9FF2", source: "遥远的咒缚 普利修" } window 15,15
-11054.2 "放逐 x15" duration 11.2 #Ability { id: "9FF3", source: "遥远的咒缚 普利修" }
-11062.4 "神圣" Ability { id: "A002", source: "遥远的咒缚 普利修" }
-11070.1 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-11076.3 "金刚棘" Ability { id: "9FF4", source: "遥远的咒缚 普利修" }
-11091.8 "罗刹七星拳" Ability { id: ["9FF6", "9FF7", "9FF8"], source: "遥远的咒缚 普利修" }
-11108.4 "强放逐IV" Ability { id: "9FFA", source: "遥远的咒缚 普利修" } window 15,15
-11116.3 "爆炸 1" #Ability { id: "9FFB", source: "光流残滓" }
-11116.3 "爆炸 2" #Ability { id: "9FFB", source: "光流残滓" }
-11120.3 "爆炸 3" #Ability { id: "9FFB", source: "光流残滓" }
-11124.3 "爆炸 4" #Ability { id: "9FFB", source: "光流残滓" }
-11128.3 "爆炸 5 " #Ability { id: "9FFB", source: "光流残滓" }
-11139.2 "梦想阿修罗拳" Ability { id: "9FFC", source: "遥远的咒缚 普利修" } duration 9
-11147.6 "梦想阿修罗拳" Ability { id: "A000", source: "遥远的咒缚 普利修" } # Asuran Fists final hit
+11000.0 "寮烘斁閫? Ability { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11007.2 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11021.4 "杩庨潰閲嶆嫵" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11023.8 "钀藉湴" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11033.6 "鏄嗕粦鍏薄鑴毬锋敼" Ability { id: "9FFD", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11042.3 "鏀鹃€愰鏆? Ability { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 15,15
+11054.2 "鏀鹃€?x15" duration 11.2 #Ability { id: "9FF3", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11062.4 "绁炲湥" Ability { id: "A002", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11070.1 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11076.3 "閲戝垰妫? Ability { id: "9FF4", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11091.8 "缃楀埞涓冩槦鎷? Ability { id: ["9FF6", "9FF7", "9FF8"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+11108.4 "寮烘斁閫怚V" Ability { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 15,15
+11116.3 "鐖嗙偢 1" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+11116.3 "鐖嗙偢 2" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+11120.3 "鐖嗙偢 3" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+11124.3 "鐖嗙偢 4" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+11128.3 "鐖嗙偢 5 " #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+11139.2 "姊︽兂闃夸慨缃楁嫵" Ability { id: "9FFC", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } duration 9
+11147.6 "姊︽兂闃夸慨缃楁嫵" Ability { id: "A000", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } # Asuran Fists final hit
 
-11157.8 "强放逐IV" StartsUsing { id: "9FFA", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaIVBlock"
-11158.5 "放逐风暴" StartsUsing { id: "9FF2", source: "遥远的咒缚 普利修" } window 20,20 jump "banishStormBlock"
-11166.7 "强放逐" StartsUsing { id: "9FE7", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaBlock"
+11157.8 "寮烘斁閫怚V" StartsUsing { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaIVBlock"
+11158.5 "鏀鹃€愰鏆? StartsUsing { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishStormBlock"
+11166.7 "寮烘斁閫? StartsUsing { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaBlock"
 
 # Banish Storm block
 11997.0 label "banishStormBlock"
-11997.0 "放逐风暴" StartsUsing { id: "9FF2", source: "遥远的咒缚 普利修" }
+11997.0 "鏀鹃€愰鏆? StartsUsing { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
 
-12000.0 "放逐风暴" Ability { id: "9FF2", source: "遥远的咒缚 普利修" }
-12006.1 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-12011.9 "放逐 x15" duration 11.2 #Ability { id: "9FF3", source: "遥远的咒缚 普利修" }
-12020.3 "迎面重拳" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "遥远的咒缚 普利修" }
-12022.7 "落地" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "遥远的咒缚 普利修" }
-12031.4 "昆仑八象脚·改" Ability { id: "9FFD", source: "遥远的咒缚 普利修" }
+12000.0 "鏀鹃€愰鏆? Ability { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12006.1 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12011.9 "鏀鹃€?x15" duration 11.2 #Ability { id: "9FF3", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12020.3 "杩庨潰閲嶆嫵" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12022.7 "钀藉湴" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12031.4 "鏄嗕粦鍏薄鑴毬锋敼" Ability { id: "9FFD", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
 # This Banishga IV cast seems to vary significantly on timing. Sync widely and hope for the best
-12034.4 "强放逐IV" StartsUsing { id: "9FFA", source: "遥远的咒缚 普利修" } window 10,10
-12039.1 "强放逐IV" Ability { id: "9FFA", source: "遥远的咒缚 普利修" }
-12046.2 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-12046.9 "爆炸 1" #Ability { id: "9FFB", source: "光流残滓" }
-12046.9 "爆炸 2" #Ability { id: "9FFB", source: "光流残滓" }
-12050.9 "爆炸 3" #Ability { id: "9FFB", source: "光流残滓" }
-12052.6 "金刚棘" Ability { id: "9FF4", source: "遥远的咒缚 普利修" }
-12054.8 "爆炸 4" #Ability { id: "9FFB", source: "光流残滓" }
-12058.8 "爆炸 5" #Ability { id: "9FFB", source: "光流残滓" }
-12068.1 "罗刹七星拳" Ability { id: ["9FF6", "9FF7", "9FF8"], source: "遥远的咒缚 普利修" }
-12081.8 "神圣" Ability { id: "A002", source: "遥远的咒缚 普利修" }
-12091.5 "梦想阿修罗拳" Ability { id: "9FFC", source: "遥远的咒缚 普利修" } duration 9
-12099.9 "梦想阿修罗拳" Ability { id: "A000", source: "遥远的咒缚 普利修" } # Asuran Fists final hit
+12034.4 "寮烘斁閫怚V" StartsUsing { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 10,10
+12039.1 "寮烘斁閫怚V" Ability { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12046.2 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12046.9 "鐖嗙偢 1" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+12046.9 "鐖嗙偢 2" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+12050.9 "鐖嗙偢 3" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+12052.6 "閲戝垰妫? Ability { id: "9FF4", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12054.8 "鐖嗙偢 4" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+12058.8 "鐖嗙偢 5" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+12068.1 "缃楀埞涓冩槦鎷? Ability { id: ["9FF6", "9FF7", "9FF8"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12081.8 "绁炲湥" Ability { id: "A002", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+12091.5 "姊︽兂闃夸慨缃楁嫵" Ability { id: "9FFC", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } duration 9
+12099.9 "姊︽兂闃夸慨缃楁嫵" Ability { id: "A000", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } # Asuran Fists final hit
 
-12110.2 "强放逐IV" StartsUsing { id: "9FFA", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaIVBlock"
-12110.8 "放逐风暴" StartsUsing { id: "9FF2", source: "遥远的咒缚 普利修" } window 20,20 jump "banishStormBlock"
-12119.0 "强放逐" StartsUsing { id: "9FE7", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaBlock"
+12110.2 "寮烘斁閫怚V" StartsUsing { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaIVBlock"
+12110.8 "鏀鹃€愰鏆? StartsUsing { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishStormBlock"
+12119.0 "寮烘斁閫? StartsUsing { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaBlock"
 
 
 # Banishga 4 block
 12995.3 label "banishgaIVBlock"
-12995.3 "强放逐IV" StartsUsing { id: "9FFA", source: "遥远的咒缚 普利修" }
+12995.3 "寮烘斁閫怚V" StartsUsing { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
 
-13000.0 "强放逐IV" Ability { id: "9FFA", source: "遥远的咒缚 普利修" }
-13002.1 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-13016.2 "迎面重拳" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "遥远的咒缚 普利修" }
-13016.6 "爆炸 1" #Ability { id: "9FFB", source: "光流残滓" }
-13016.6 "爆炸 2" #Ability { id: "9FFB", source: "光流残滓" }
-13018.6 "落地" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "遥远的咒缚 普利修" }
-13020.6 "爆炸 3" #Ability { id: "9FFB", source: "光流残滓" }
-13024.6 "爆炸 4" #Ability { id: "9FFB", source: "光流残滓" }
-13028.6 "爆炸 5" #Ability { id: "9FFB", source: "光流残滓" }
-13030.7 "神圣" Ability { id: "A002", source: "遥远的咒缚 普利修" }
-13040.8 "放逐风暴" Ability { id: "9FF2", source: "遥远的咒缚 普利修" } window 15,15
-13042.9 "--center--" Ability { id: "9FE5", source: "遥远的咒缚 普利修" }
-13049.2 "金刚棘" Ability { id: "9FF4", source: "遥远的咒缚 普利修" }
-13052.7 "放逐 x15" duration 11.2 #Ability { id: "9FF3", source: "遥远的咒缚 普利修" }
-13064.7 "罗刹七星拳" Ability { id: ["9FF6", "9FF7", "9FF8"], source: "遥远的咒缚 普利修" }
-13086.0 "昆仑八象脚·改" Ability { id: "9FFD", source: "遥远的咒缚 普利修" }
-13097.1 "梦想阿修罗拳" Ability { id: "9FFC", source: "遥远的咒缚 普利修" } duration 9
-13105.5 "梦想阿修罗拳" Ability { id: "A000", source: "遥远的咒缚 普利修" } # Asuran Fists final hit
+13000.0 "寮烘斁閫怚V" Ability { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13002.1 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13016.2 "杩庨潰閲嶆嫵" Ability { id: ["9FE8", "9FE9", "9FEA"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13016.6 "鐖嗙偢 1" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+13016.6 "鐖嗙偢 2" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+13018.6 "钀藉湴" Ability { id: ["9FEE", "9FEF", "9FF0"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13020.6 "鐖嗙偢 3" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+13024.6 "鐖嗙偢 4" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+13028.6 "鐖嗙偢 5" #Ability { id: "9FFB", source: "鍏夋祦娈嬫粨" }
+13030.7 "绁炲湥" Ability { id: "A002", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13040.8 "鏀鹃€愰鏆? Ability { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 15,15
+13042.9 "--center--" Ability { id: "9FE5", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13049.2 "閲戝垰妫? Ability { id: "9FF4", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13052.7 "鏀鹃€?x15" duration 11.2 #Ability { id: "9FF3", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13064.7 "缃楀埞涓冩槦鎷? Ability { id: ["9FF6", "9FF7", "9FF8"], source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13086.0 "鏄嗕粦鍏薄鑴毬锋敼" Ability { id: "9FFD", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? }
+13097.1 "姊︽兂闃夸慨缃楁嫵" Ability { id: "9FFC", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } duration 9
+13105.5 "姊︽兂闃夸慨缃楁嫵" Ability { id: "A000", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } # Asuran Fists final hit
 
-13115.7 "强放逐IV" StartsUsing { id: "9FFA", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaIVBlock"
-13116.4 "放逐风暴" StartsUsing { id: "9FF2", source: "遥远的咒缚 普利修" } window 20,20 jump "banishStormBlock"
-13124.6 "强放逐" StartsUsing { id: "9FE7", source: "遥远的咒缚 普利修" } window 20,20 jump "banishgaBlock"
+13115.7 "寮烘斁閫怚V" StartsUsing { id: "9FFA", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaIVBlock"
+13116.4 "鏀鹃€愰鏆? StartsUsing { id: "9FF2", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishStormBlock"
+13124.6 "寮烘斁閫? StartsUsing { id: "9FE7", source: "閬ヨ繙鐨勫拻缂?鏅埄淇? } window 20,20 jump "banishgaBlock"
 
 # IGNORED ABILITIES
 # 9FE6 --sync--: auto-attack
@@ -203,97 +203,97 @@ hideall "--sync--"
 
 # Dragon's Aery will be sealed off
 20000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "141F" } window 20000,1
-20011.1 "暗物质冲击" Ability { id: "9F96", source: "法芙尼尔" } window 20011.1,10
-20024.2 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20025.2 "刃尾横扫" Ability { id: "A09A", source: "法芙尼尔" }
-20038.3 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20039.5 "空降" Ability { id: "A09C", source: "法芙尼尔" }
+20011.1 "鏆楃墿璐ㄥ啿鍑? Ability { id: "9F96", source: "娉曡姍灏煎皵" } window 20011.1,10
+20024.2 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20025.2 "鍒冨熬妯壂" Ability { id: "A09A", source: "娉曡姍灏煎皵" }
+20038.3 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20039.5 "绌洪檷" Ability { id: "A09C", source: "娉曡姍灏煎皵" }
 
-20044.5 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth window 44.5,10
-20056.6 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20057.8 "巨龙吐息" duration 4 #Ability { id: "9F6F", source: "法芙尼尔" }
-20075.1 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20076.3 "空降" Ability { id: "A09C", source: "法芙尼尔" }
-20087.3 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20088.3 "刃尾横扫" Ability { id: "A09A", source: "法芙尼尔" }
-20098.7 "凶恶吐息" Ability { id: "9F94", source: "法芙尼尔" } duration 7
-20105.5 "凶恶吐息" Ability { id: "9B76", source: "法芙尼尔" } # Baleful Breath final hit
-20112.6 "锋刺" Ability { id: "9F97", source: "法芙尼尔" }
-20114.0 "--赤蜻生成--"
-20123.7 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth
-20130.8 "飓风之翼" Ability { id: "9F71", source: "法芙尼尔" } duration 11
-20143.4 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth
-20149.0 "飓风之翼" Ability { id: ["9F78", "9F7D"], source: "法芙尼尔" }
-20151.0 "飓风之翼" Ability { id: ["9F79","9F7E"], source: "法芙尼尔" }
-20152.9 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" }
-20152.9 "飓风之翼" Ability { id: ["9F7A", "9F7F"], source: "法芙尼尔" }
-20154.9 "飓风之翼" Ability { id: ["9F7B", "9F80"], source: "法芙尼尔" }
-20157.9 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20159.9 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" }
-20159.9 "飓风之翼" Ability { id: ["9F82", "9F87"], source: "法芙尼尔" }
-20161.9 "飓风之翼" Ability { id: ["9F83", "9F88"], source: "法芙尼尔" }
-20163.9 "飓风之翼" Ability { id: ["9F84", "9F89"], source: "法芙尼尔" }
-20164.9 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20165.9 "飓风之翼" Ability { id: ["9F85", "9F8A"], source: "法芙尼尔" }
-20167.0 "恐惧咆哮 (分散)" Ability { id: "9F91", source: "法芙尼尔" }
-20171.0 "飓风之翼" Ability { id: ["9F82", "9F87"], source: "法芙尼尔" }
-20173.0 "飓风之翼" Ability { id: ["9F83", "9F88"], source: "法芙尼尔" }
-20173.1 "恐惧咆哮" Ability { id: "9F93", source: "法芙尼尔" }
-20174.1 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" }
-20175.0 "飓风之翼" Ability { id: ["9F84", "9F89"], source: "法芙尼尔" }
-20177.0 "飓风之翼" Ability { id: ["9F85", "9F8A"], source: "法芙尼尔" }
-20179.3 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20181.3 "ベイルフルネイル" Ability { id: "9F6D", source: "法芙尼尔" } window 15,15 # Baleful Nail
-20193.3 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20194.3 "刃尾横扫" Ability { id: "A09A", source: "法芙尼尔" }
-20204.6 "凶恶吐息" Ability { id: "9F94", source: "法芙尼尔" } duration 7
-20211.5 "凶恶吐息" Ability { id: "9B76", source: "法芙尼尔" } # Baleful Breath final hit
-20219.7 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth
-20230.1 "绝对恐惧/恐慌之翼" Ability { id: ["9F8D", "9F8F"], source: "法芙尼尔" }
-20248.3 "恐慌之翼/绝对恐惧" Ability { id: ["9F8F", "9F8D"], source: "法芙尼尔" } # can be skipped with high DPS
-20259.5 "暗物质冲击" Ability { id: "9F96", source: "法芙尼尔" } window 30,30
+20044.5 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth window 44.5,10
+20056.6 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20057.8 "宸ㄩ緳鍚愭伅" duration 4 #Ability { id: "9F6F", source: "娉曡姍灏煎皵" }
+20075.1 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20076.3 "绌洪檷" Ability { id: "A09C", source: "娉曡姍灏煎皵" }
+20087.3 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20088.3 "鍒冨熬妯壂" Ability { id: "A09A", source: "娉曡姍灏煎皵" }
+20098.7 "鍑舵伓鍚愭伅" Ability { id: "9F94", source: "娉曡姍灏煎皵" } duration 7
+20105.5 "鍑舵伓鍚愭伅" Ability { id: "9B76", source: "娉曡姍灏煎皵" } # Baleful Breath final hit
+20112.6 "閿嬪埡" Ability { id: "9F97", source: "娉曡姍灏煎皵" }
+20114.0 "--璧よ溁鐢熸垚--"
+20123.7 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth
+20130.8 "椋撻涔嬬考" Ability { id: "9F71", source: "娉曡姍灏煎皵" } duration 11
+20143.4 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth
+20149.0 "椋撻涔嬬考" Ability { id: ["9F78", "9F7D"], source: "娉曡姍灏煎皵" }
+20151.0 "椋撻涔嬬考" Ability { id: ["9F79","9F7E"], source: "娉曡姍灏煎皵" }
+20152.9 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20152.9 "椋撻涔嬬考" Ability { id: ["9F7A", "9F7F"], source: "娉曡姍灏煎皵" }
+20154.9 "椋撻涔嬬考" Ability { id: ["9F7B", "9F80"], source: "娉曡姍灏煎皵" }
+20157.9 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20159.9 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20159.9 "椋撻涔嬬考" Ability { id: ["9F82", "9F87"], source: "娉曡姍灏煎皵" }
+20161.9 "椋撻涔嬬考" Ability { id: ["9F83", "9F88"], source: "娉曡姍灏煎皵" }
+20163.9 "椋撻涔嬬考" Ability { id: ["9F84", "9F89"], source: "娉曡姍灏煎皵" }
+20164.9 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20165.9 "椋撻涔嬬考" Ability { id: ["9F85", "9F8A"], source: "娉曡姍灏煎皵" }
+20167.0 "鎭愭儳鍜嗗摦 (鍒嗘暎)" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20171.0 "椋撻涔嬬考" Ability { id: ["9F82", "9F87"], source: "娉曡姍灏煎皵" }
+20173.0 "椋撻涔嬬考" Ability { id: ["9F83", "9F88"], source: "娉曡姍灏煎皵" }
+20173.1 "鎭愭儳鍜嗗摦" Ability { id: "9F93", source: "娉曡姍灏煎皵" }
+20174.1 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20175.0 "椋撻涔嬬考" Ability { id: ["9F84", "9F89"], source: "娉曡姍灏煎皵" }
+20177.0 "椋撻涔嬬考" Ability { id: ["9F85", "9F8A"], source: "娉曡姍灏煎皵" }
+20179.3 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20181.3 "銉欍偆銉儠銉儘銈ゃ儷" Ability { id: "9F6D", source: "娉曡姍灏煎皵" } window 15,15 # Baleful Nail
+20193.3 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20194.3 "鍒冨熬妯壂" Ability { id: "A09A", source: "娉曡姍灏煎皵" }
+20204.6 "鍑舵伓鍚愭伅" Ability { id: "9F94", source: "娉曡姍灏煎皵" } duration 7
+20211.5 "鍑舵伓鍚愭伅" Ability { id: "9B76", source: "娉曡姍灏煎皵" } # Baleful Breath final hit
+20219.7 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth
+20230.1 "缁濆鎭愭儳/鎭愭厡涔嬬考" Ability { id: ["9F8D", "9F8F"], source: "娉曡姍灏煎皵" }
+20248.3 "鎭愭厡涔嬬考/缁濆鎭愭儳" Ability { id: ["9F8F", "9F8D"], source: "娉曡姍灏煎皵" } # can be skipped with high DPS
+20259.5 "鏆楃墿璐ㄥ啿鍑? Ability { id: "9F96", source: "娉曡姍灏煎皵" } window 30,30
 
 20268.7 label "fafnirLoop"
-20268.7 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" }
-20271.8 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth
-20273.8 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20281.8 "恐惧咆哮" #Ability { id: "9F92", source: "法芙尼尔" }
-20284.7 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20285.8 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20285.9 "巨龙吐息" duration 4 #Ability { id: "9F6F", source: "法芙尼尔" }
-20301.0 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20302.2 "刃尾横扫/空降" Ability { id: ["A09A", "A09C"], source: "法芙尼尔" }
-20309.2 "锋刺" Ability { id: "9F97", source: "法芙尼尔" }
-20318.3 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth
-20325.4 "飓风之翼" Ability { id: "9F71", source: "法芙尼尔" } duration 11
-20338.1 "シャッターグラウンド" Ability { id: "9F99", source: "法芙尼尔" } # Shuddering Earth
-20343.7 "飓风之翼" Ability { id: ["9F78", "9F7D"], source: "法芙尼尔" }
-20345.6 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" }
-20345.7 "飓风之翼" Ability { id: ["9F79","9F7E"], source: "法芙尼尔" }
-20347.7 "飓风之翼" Ability { id: ["9F7A", "9F7F"], source: "法芙尼尔" }
-20349.7 "飓风之翼" Ability { id: ["9F7B", "9F80"], source: "法芙尼尔" }
-20350.7 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20352.7 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" }
-20354.7 "飓风之翼" Ability { id: ["9F82", "9F87"], source: "法芙尼尔" }
-20356.7 "飓风之翼" Ability { id: ["9F83", "9F88"], source: "法芙尼尔" }
-20357.8 "恐惧咆哮" Ability { id: "9F92", source: "法芙尼尔" }
-20358.7 "飓风之翼" Ability { id: ["9F84", "9F89"], source: "法芙尼尔" }
-20359.8 "恐惧咆哮 (分散)" Ability { id: "9F91", source: "法芙尼尔" }
-20360.7 "飓风之翼" Ability { id: ["9F85", "9F8A"], source: "法芙尼尔" }
-20365.7 "飓风之翼" Ability { id: ["9F82", "9F87"], source: "法芙尼尔" }
-20365.8 "恐惧咆哮" Ability { id: "9F93", source: "法芙尼尔" }
-20367.7 "飓风之翼" Ability { id: ["9F83", "9F88"], source: "法芙尼尔" }
-20369.7 "飓风之翼" Ability { id: ["9F84", "9F89"], source: "法芙尼尔" }
-20371.7 "飓风之翼" Ability { id: ["9F85", "9F8A"], source: "法芙尼尔" }
-20380.8 "绝对恐惧/恐慌之翼" Ability { id: ["9F8D", "9F8F"], source: "法芙尼尔" }
-20382.8 "--赤蜻生成--"
-20385.0 "ベイルフルネイル" Ability { id: "9F6D", source: "法芙尼尔" } # Baleful Nail
-20397.0 "攻击姿态" Ability { id: ["9F6B","9F6E", "9F70"], source: "法芙尼尔" }
-20398.0 "刃尾横扫" Ability { id: "A09A", source: "法芙尼尔" }
-20408.4 "凶恶吐息" Ability { id: "9F94", source: "法芙尼尔" } duration 7
-20416.8 "凶恶吐息" Ability { id: "9B76", source: "法芙尼尔" } # Baleful Breath final hit
-20428.9 "暗物质冲击" Ability { id: "9F96", source: "法芙尼尔" }
-20441.0 "恐惧咆哮 (圈)" Ability { id: "9F91", source: "法芙尼尔" } window 30,30 forcejump "fafnirLoop"
+20268.7 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20271.8 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth
+20273.8 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20281.8 "鎭愭儳鍜嗗摦" #Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20284.7 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20285.8 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20285.9 "宸ㄩ緳鍚愭伅" duration 4 #Ability { id: "9F6F", source: "娉曡姍灏煎皵" }
+20301.0 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20302.2 "鍒冨熬妯壂/绌洪檷" Ability { id: ["A09A", "A09C"], source: "娉曡姍灏煎皵" }
+20309.2 "閿嬪埡" Ability { id: "9F97", source: "娉曡姍灏煎皵" }
+20318.3 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth
+20325.4 "椋撻涔嬬考" Ability { id: "9F71", source: "娉曡姍灏煎皵" } duration 11
+20338.1 "銈枫儯銉冦偪銉笺偘銉┿偊銉炽儔" Ability { id: "9F99", source: "娉曡姍灏煎皵" } # Shuddering Earth
+20343.7 "椋撻涔嬬考" Ability { id: ["9F78", "9F7D"], source: "娉曡姍灏煎皵" }
+20345.6 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20345.7 "椋撻涔嬬考" Ability { id: ["9F79","9F7E"], source: "娉曡姍灏煎皵" }
+20347.7 "椋撻涔嬬考" Ability { id: ["9F7A", "9F7F"], source: "娉曡姍灏煎皵" }
+20349.7 "椋撻涔嬬考" Ability { id: ["9F7B", "9F80"], source: "娉曡姍灏煎皵" }
+20350.7 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20352.7 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20354.7 "椋撻涔嬬考" Ability { id: ["9F82", "9F87"], source: "娉曡姍灏煎皵" }
+20356.7 "椋撻涔嬬考" Ability { id: ["9F83", "9F88"], source: "娉曡姍灏煎皵" }
+20357.8 "鎭愭儳鍜嗗摦" Ability { id: "9F92", source: "娉曡姍灏煎皵" }
+20358.7 "椋撻涔嬬考" Ability { id: ["9F84", "9F89"], source: "娉曡姍灏煎皵" }
+20359.8 "鎭愭儳鍜嗗摦 (鍒嗘暎)" Ability { id: "9F91", source: "娉曡姍灏煎皵" }
+20360.7 "椋撻涔嬬考" Ability { id: ["9F85", "9F8A"], source: "娉曡姍灏煎皵" }
+20365.7 "椋撻涔嬬考" Ability { id: ["9F82", "9F87"], source: "娉曡姍灏煎皵" }
+20365.8 "鎭愭儳鍜嗗摦" Ability { id: "9F93", source: "娉曡姍灏煎皵" }
+20367.7 "椋撻涔嬬考" Ability { id: ["9F83", "9F88"], source: "娉曡姍灏煎皵" }
+20369.7 "椋撻涔嬬考" Ability { id: ["9F84", "9F89"], source: "娉曡姍灏煎皵" }
+20371.7 "椋撻涔嬬考" Ability { id: ["9F85", "9F8A"], source: "娉曡姍灏煎皵" }
+20380.8 "缁濆鎭愭儳/鎭愭厡涔嬬考" Ability { id: ["9F8D", "9F8F"], source: "娉曡姍灏煎皵" }
+20382.8 "--璧よ溁鐢熸垚--"
+20385.0 "銉欍偆銉儠銉儘銈ゃ儷" Ability { id: "9F6D", source: "娉曡姍灏煎皵" } # Baleful Nail
+20397.0 "鏀诲嚮濮挎€? Ability { id: ["9F6B","9F6E", "9F70"], source: "娉曡姍灏煎皵" }
+20398.0 "鍒冨熬妯壂" Ability { id: "A09A", source: "娉曡姍灏煎皵" }
+20408.4 "鍑舵伓鍚愭伅" Ability { id: "9F94", source: "娉曡姍灏煎皵" } duration 7
+20416.8 "鍑舵伓鍚愭伅" Ability { id: "9B76", source: "娉曡姍灏煎皵" } # Baleful Breath final hit
+20428.9 "鏆楃墿璐ㄥ啿鍑? Ability { id: "9F96", source: "娉曡姍灏煎皵" }
+20441.0 "鎭愭儳鍜嗗摦 (鍦?" Ability { id: "9F91", source: "娉曡姍灏煎皵" } window 30,30 forcejump "fafnirLoop"
 
 
 # IGNORED ABILITIES
@@ -383,114 +383,114 @@ hideall "--sync--"
 
 # The La'loff Amphitheater will be sealed off
 30000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1420" } window 30000,1
-30004.1 "决战" Ability { id: ["A062", "A063", "A064"], source: ["Ark Angel TT", "Ark Angel GK", "Ark Angel MR"] } # The Decisive Battle
-30013.2 "劈云斩" Ability { id: "A076", source: "方舟天使MR" }
-30022.2 "明镜止水" Ability { id: "A078", source: "方舟天使GK" }
-30026.2 "七之太刀·雪风" Ability { id: "A079", source: "方舟天使GK" }
-30030.2 "八之太刀·月光" Ability { id: "A07A", source: "方舟天使GK" }
-30030.8 "七之太刀·雪风" Ability { id: "A079", source: "方舟天使GK" }
-30035.1 "九之太刀·花车" Ability { id: "A07B", source: "方舟天使GK" }
-30038.1 "分解连技" Ability { id: "A07C", source: "方舟天使GK" }
-30043.7 "光连技" Ability { id: "A07D", source: "方舟天使GK" }
-30043.8 "--TT 跳--" Ability { id: "A064", source: "方舟天使TT" }
-30046.4 "陨石流星 (咏唱栏)" StartsUsing { id: 'A08A', source: 'Ark Angel TT'} duration 10.7
-30057.1 "陨石流星?" Ability { id: 'A08A', source: 'Ark Angel TT'}
-30058.9 "--MR 中央--" Ability { id: "A06A", source: "方舟天使MR" }
-30065.1 "灾乱螺旋" Ability { id: "A06B", source: "方舟天使MR" } duration 8
-30076.9 "螺旋终结" Ability { id: "A06C", source: "方舟天使MR" }
-30092.3 "亢龙天锤落 (咏唱)" Ability { id: "A07E", source: "方舟天使GK" }
-30092.5 "亢龙天锤落 1 (集合)" #Ability { id: "A07F", source: "方舟天使GK" }
-30094.8 "亢龙天锤落 2 (集合)" #Ability { id: "A07F", source: "方舟天使GK" }
-30097.1 "亢龙天锤落 3 (集合)" #Ability { id: "A07F", source: "方舟天使GK" }
-30097.4 "--TT 跳--" Ability { id: "A064", source: "方舟天使TT" }
-30110.2 "断首" Ability { id: "A067", source: "方舟天使TT" } duration 5
-30114.4 "断首" Ability { id: "A069", source: "方舟天使TT" } # Guillotine final hit
-30124.6 "--全体不可选中--"
-30128.8 "--EV + HM 可选中--"
-30135.0 "空蝉之术" Ability { id: "A080", source: "方舟天使HM" }
-30137.0 "支配斩" Ability { id: "A085", source: "方舟天使EV" }
-30143.1 "强力冲击" Ability { id: "A081", source: "方舟天使HM" }
-30150.1 "暴击威震" Ability { id: "A082", source: "方舟天使HM" }
-30152.5 "绝双十闷刃" Ability { id: "A083", source: "方舟天使HM" } # Cross Reaver indicator
-30155.7 "方舟支配" Ability { id: "A086", source: "方舟天使EV" }
-30155.9 "暴击威震" Ability { id: "A082", source: "方舟天使HM" }
-30159.3 "绝双十闷刃" Ability { id: "A084", source: "方舟天使HM" }
-30168.5 "神圣" Ability { id: "A089", source: "方舟天使EV" }
-30174.8 "--EV + HM 中央--" Ability { id: ["9EA9", "A356"], source: ["Ark Angel EV", "Ark Angel HM"] }
-30176.2 "--EV 不可选中--"
-30176.2 "极致防御" Ability { id: "A448", source: "方舟天使EV" }
-30177.3 "隐于微尘 (咏唱)" StartsUsing { id: "A08C", source: "方舟天使HM" } duration 29.7
-30208.3 "隐于微尘" Ability { id: "A08C", source: "方舟天使HM" }
-30217.6 "--sync--" Ability { id: "A06A", source: "方舟天使MR" } window 50,10 # MR jumps to edge
-30221.8 "暴怒 x4 (直线指示)" duration 3 #Ability { id: "A071", source: "方舟天使MR" }
-30225.8 "暴怒 (圆形指示)" Ability { id: "A072", source: "方舟天使MR" }
-30226.7 "暴怒" Ability { id: "A070", source: "方舟天使MR" } # Rampage castbar
-30226.9 "暴怒 x4 (直线AOE)" duration 3 #Ability { id: "A073", source: "方舟天使MR" }
-30231.3 "暴怒" Ability { id: "A074", source: "方舟天使MR" }
-30235.5 "--MR 可选中--"
-30235.5 "--TT 跳--" Ability { id: "A064", source: "方舟天使TT" }
-30248.3 "断首" Ability { id: "A067", source: "方舟天使TT" } duration 5
-30252.5 "断首" Ability { id: "A069", source: "方舟天使TT" } # Guillotine
-30256.7 "--GK 可选中--"
-30260.8 "明镜止水" Ability { id: "A078", source: "方舟天使GK" }
-30264.8 "七之太刀·雪风" Ability { id: "A079", source: "方舟天使GK" }
-30268.8 "八之太刀·月光" Ability { id: "A07A", source: "方舟天使GK" }
-30269.3 "七之太刀·雪风" Ability { id: "A079", source: "方舟天使GK" }
-30273.6 "九之太刀·花车" Ability { id: "A07B", source: "方舟天使GK" }
-30276.6 "分解连技" Ability { id: "A07C", source: "方舟天使GK" }
-30279.2 "绝双十闷刃" Ability { id: "A083", source: "方舟天使HM" } # Cross Reaver indicator
-30281.2 "--TT 跳--" Ability { id: "A064", source: "方舟天使TT" }
-30282.2 "光连技" Ability { id: "A07D", source: "方舟天使GK" }
-30283.8 "陨石流星 (咏唱栏)" StartsUsing { id: 'A08A', source: 'Ark Angel TT'} duration 10.7
-30286.2 "绝双十闷刃" Ability { id: "A084", source: "方舟天使HM" }
-30294.5 "陨石流星?" Ability { id: 'A08A', source: 'Ark Angel TT'}
-30303.6 "骄慢化身" Ability { id: "A087", source: "方舟天使EV" } duration 5
-30314.4 "劈云斩" Ability { id: "A076", source: "方舟天使MR" }
+30004.1 "鍐虫垬" Ability { id: ["A062", "A063", "A064"], source: ["Ark Angel TT", "Ark Angel GK", "Ark Angel MR"] } # The Decisive Battle
+30013.2 "鍔堜簯鏂? Ability { id: "A076", source: "鏂硅垷澶╀娇MR" }
+30022.2 "鏄庨暅姝㈡按" Ability { id: "A078", source: "鏂硅垷澶╀娇GK" }
+30026.2 "涓冧箣澶垁路闆" Ability { id: "A079", source: "鏂硅垷澶╀娇GK" }
+30030.2 "鍏箣澶垁路鏈堝厜" Ability { id: "A07A", source: "鏂硅垷澶╀娇GK" }
+30030.8 "涓冧箣澶垁路闆" Ability { id: "A079", source: "鏂硅垷澶╀娇GK" }
+30035.1 "涔濅箣澶垁路鑺辫溅" Ability { id: "A07B", source: "鏂硅垷澶╀娇GK" }
+30038.1 "鍒嗚В杩炴妧" Ability { id: "A07C", source: "鏂硅垷澶╀娇GK" }
+30043.7 "鍏夎繛鎶€" Ability { id: "A07D", source: "鏂硅垷澶╀娇GK" }
+30043.8 "--TT 璺?-" Ability { id: "A064", source: "鏂硅垷澶╀娇TT" }
+30046.4 "闄ㄧ煶娴佹槦 (鍜忓敱鏍?" StartsUsing { id: 'A08A', source: 'Ark Angel TT'} duration 10.7
+30057.1 "闄ㄧ煶娴佹槦?" Ability { id: 'A08A', source: 'Ark Angel TT'}
+30058.9 "--MR 涓ぎ--" Ability { id: "A06A", source: "鏂硅垷澶╀娇MR" }
+30065.1 "鐏句贡铻烘棆" Ability { id: "A06B", source: "鏂硅垷澶╀娇MR" } duration 8
+30076.9 "铻烘棆缁堢粨" Ability { id: "A06C", source: "鏂硅垷澶╀娇MR" }
+30092.3 "浜㈤緳澶╅敜钀?(鍜忓敱)" Ability { id: "A07E", source: "鏂硅垷澶╀娇GK" }
+30092.5 "浜㈤緳澶╅敜钀?1 (闆嗗悎)" #Ability { id: "A07F", source: "鏂硅垷澶╀娇GK" }
+30094.8 "浜㈤緳澶╅敜钀?2 (闆嗗悎)" #Ability { id: "A07F", source: "鏂硅垷澶╀娇GK" }
+30097.1 "浜㈤緳澶╅敜钀?3 (闆嗗悎)" #Ability { id: "A07F", source: "鏂硅垷澶╀娇GK" }
+30097.4 "--TT 璺?-" Ability { id: "A064", source: "鏂硅垷澶╀娇TT" }
+30110.2 "鏂" Ability { id: "A067", source: "鏂硅垷澶╀娇TT" } duration 5
+30114.4 "鏂" Ability { id: "A069", source: "鏂硅垷澶╀娇TT" } # Guillotine final hit
+30124.6 "--鍏ㄤ綋涓嶅彲閫変腑--"
+30128.8 "--EV + HM 鍙€変腑--"
+30135.0 "绌鸿潐涔嬫湳" Ability { id: "A080", source: "鏂硅垷澶╀娇HM" }
+30137.0 "鏀厤鏂? Ability { id: "A085", source: "鏂硅垷澶╀娇EV" }
+30143.1 "寮哄姏鍐插嚮" Ability { id: "A081", source: "鏂硅垷澶╀娇HM" }
+30150.1 "鏆村嚮濞侀渿" Ability { id: "A082", source: "鏂硅垷澶╀娇HM" }
+30152.5 "缁濆弻鍗侀椃鍒? Ability { id: "A083", source: "鏂硅垷澶╀娇HM" } # Cross Reaver indicator
+30155.7 "鏂硅垷鏀厤" Ability { id: "A086", source: "鏂硅垷澶╀娇EV" }
+30155.9 "鏆村嚮濞侀渿" Ability { id: "A082", source: "鏂硅垷澶╀娇HM" }
+30159.3 "缁濆弻鍗侀椃鍒? Ability { id: "A084", source: "鏂硅垷澶╀娇HM" }
+30168.5 "绁炲湥" Ability { id: "A089", source: "鏂硅垷澶╀娇EV" }
+30174.8 "--EV + HM 涓ぎ--" Ability { id: ["9EA9", "A356"], source: ["Ark Angel EV", "Ark Angel HM"] }
+30176.2 "--EV 涓嶅彲閫変腑--"
+30176.2 "鏋佽嚧闃插尽" Ability { id: "A448", source: "鏂硅垷澶╀娇EV" }
+30177.3 "闅愪簬寰皹 (鍜忓敱)" StartsUsing { id: "A08C", source: "鏂硅垷澶╀娇HM" } duration 29.7
+30208.3 "闅愪簬寰皹" Ability { id: "A08C", source: "鏂硅垷澶╀娇HM" }
+30217.6 "--sync--" Ability { id: "A06A", source: "鏂硅垷澶╀娇MR" } window 50,10 # MR jumps to edge
+30221.8 "鏆存€?x4 (鐩寸嚎鎸囩ず)" duration 3 #Ability { id: "A071", source: "鏂硅垷澶╀娇MR" }
+30225.8 "鏆存€?(鍦嗗舰鎸囩ず)" Ability { id: "A072", source: "鏂硅垷澶╀娇MR" }
+30226.7 "鏆存€? Ability { id: "A070", source: "鏂硅垷澶╀娇MR" } # Rampage castbar
+30226.9 "鏆存€?x4 (鐩寸嚎AOE)" duration 3 #Ability { id: "A073", source: "鏂硅垷澶╀娇MR" }
+30231.3 "鏆存€? Ability { id: "A074", source: "鏂硅垷澶╀娇MR" }
+30235.5 "--MR 鍙€変腑--"
+30235.5 "--TT 璺?-" Ability { id: "A064", source: "鏂硅垷澶╀娇TT" }
+30248.3 "鏂" Ability { id: "A067", source: "鏂硅垷澶╀娇TT" } duration 5
+30252.5 "鏂" Ability { id: "A069", source: "鏂硅垷澶╀娇TT" } # Guillotine
+30256.7 "--GK 鍙€変腑--"
+30260.8 "鏄庨暅姝㈡按" Ability { id: "A078", source: "鏂硅垷澶╀娇GK" }
+30264.8 "涓冧箣澶垁路闆" Ability { id: "A079", source: "鏂硅垷澶╀娇GK" }
+30268.8 "鍏箣澶垁路鏈堝厜" Ability { id: "A07A", source: "鏂硅垷澶╀娇GK" }
+30269.3 "涓冧箣澶垁路闆" Ability { id: "A079", source: "鏂硅垷澶╀娇GK" }
+30273.6 "涔濅箣澶垁路鑺辫溅" Ability { id: "A07B", source: "鏂硅垷澶╀娇GK" }
+30276.6 "鍒嗚В杩炴妧" Ability { id: "A07C", source: "鏂硅垷澶╀娇GK" }
+30279.2 "缁濆弻鍗侀椃鍒? Ability { id: "A083", source: "鏂硅垷澶╀娇HM" } # Cross Reaver indicator
+30281.2 "--TT 璺?-" Ability { id: "A064", source: "鏂硅垷澶╀娇TT" }
+30282.2 "鍏夎繛鎶€" Ability { id: "A07D", source: "鏂硅垷澶╀娇GK" }
+30283.8 "闄ㄧ煶娴佹槦 (鍜忓敱鏍?" StartsUsing { id: 'A08A', source: 'Ark Angel TT'} duration 10.7
+30286.2 "缁濆弻鍗侀椃鍒? Ability { id: "A084", source: "鏂硅垷澶╀娇HM" }
+30294.5 "闄ㄧ煶娴佹槦?" Ability { id: 'A08A', source: 'Ark Angel TT'}
+30303.6 "楠勬參鍖栬韩" Ability { id: "A087", source: "鏂硅垷澶╀娇EV" } duration 5
+30314.4 "鍔堜簯鏂? Ability { id: "A076", source: "鏂硅垷澶╀娇MR" }
 
 30325.7 label "angelLoop"
-30325.7 "--MR 跳--" Ability { id: "A06A", source: "方舟天使MR" }
-30330.1 "暴怒 x4 (直线指示)" duration 3 #Ability { id: "A071", source: "方舟天使MR" }
-30334.1 "暴怒 (圆形指示)" Ability { id: "A072", source: "方舟天使MR" }
-30335.0 "暴怒" Ability { id: "A070", source: "方舟天使MR" } # Rampage castbar
-30335.2 "暴怒 x4 (直线AOE)" duration 3 #Ability { id: "A073", source: "方舟天使MR" }
-30338.5 "--TT 跳--" Ability { id: "A064", source: "方舟天使TT" }
-30339.6 "暴怒" Ability { id: "A074", source: "方舟天使MR" }
-30351.1 "断首" Ability { id: "A067", source: "方舟天使TT" } duration 5
-30355.3 "断首" Ability { id: "A069", source: "方舟天使TT" } # Guillotine
-30361.0 "--HM 中央--" Ability { id: "9EA9", source: "方舟天使HM" }
-30367.3 "强力冲击" Ability { id: "A194", source: "方舟天使HM" }
-30369.4 "暴击分断 x4 (全域)" duration 4 #Ability { id: "A195", source: "方舟天使HM" }
-30387.2 "暴击分断" Ability { id: "A13B", source: "方舟天使HM" }
-30401.3 "支配斩" Ability { id: "A085", source: "方舟天使EV" }
-30403.3 "--MR 中央--" Ability { id: "A06A", source: "方舟天使MR" } window 30,30
-30409.5 "灾乱螺旋" Ability { id: "A06B", source: "方舟天使MR" } duration 8
-30419.9 "方舟支配" Ability { id: "A086", source: "方舟天使EV" }
-30421.6 "螺旋终结" Ability { id: "A06C", source: "方舟天使MR" }
-30427.2 "--TT 跳--" Ability { id: "A064", source: "方舟天使TT" }
-30429.6 "陨石流星 (咏唱栏)" StartsUsing { id: 'A08A', source: 'Ark Angel TT'} duration 10.7
-30440.3 "陨石流星" Ability { id: "A08A", source: "方舟天使TT" }
-30450.6 "明镜止水" Ability { id: "A078", source: "方舟天使GK" }
-30454.6 "七之太刀·雪风" Ability { id: "A079", source: "方舟天使GK" }
-30458.6 "八之太刀·月光" Ability { id: "A07A", source: "方舟天使GK" }
-30459.2 "七之太刀·雪风" Ability { id: "A079", source: "方舟天使GK" }
-30463.5 "九之太刀·花车" Ability { id: "A07B", source: "方舟天使GK" }
-30466.5 "分解连技" Ability { id: "A07C", source: "方舟天使GK" }
-30467.4 "绝双十闷刃" Ability { id: "A083", source: "方舟天使HM" } # Cross Reaver indicator
-30472.1 "光连技" Ability { id: "A07D", source: "方舟天使GK" }
-30474.4 "绝双十闷刃" Ability { id: "A084", source: "方舟天使HM" }
-30482.2 "劈云斩" Ability { id: "A076", source: "方舟天使MR" }
-30495.9 "雷遁之术" Ability { id: "A095", source: "方舟天使HM" }
-30504.2 "支配斩" Ability { id: "A085", source: "方舟天使EV" }
-30516.2 "绝双十闷刃" Ability { id: "A083", source: "方舟天使HM" } # Cross Reaver indicator
-30523.0 "方舟支配" Ability { id: "A086", source: "方舟天使EV" }
-30523.2 "绝双十闷刃" Ability { id: "A084", source: "方舟天使HM" }
-30533.4 "亢龙天锤落 (咏唱)" Ability { id: "A07E", source: "方舟天使GK" }
-30533.7 "亢龙天锤落 1 (集合)" #Ability { id: "A07F", source: "方舟天使GK" }
-30536.1 "亢龙天锤落 2 (集合)" #Ability { id: "A07F", source: "方舟天使GK" }
-30538.4 "亢龙天锤落 3 (集合)" #Ability { id: "A07F", source: "方舟天使GK" }
-30558.8 "骄慢化身" Ability { id: "A087", source: "方舟天使EV" }
+30325.7 "--MR 璺?-" Ability { id: "A06A", source: "鏂硅垷澶╀娇MR" }
+30330.1 "鏆存€?x4 (鐩寸嚎鎸囩ず)" duration 3 #Ability { id: "A071", source: "鏂硅垷澶╀娇MR" }
+30334.1 "鏆存€?(鍦嗗舰鎸囩ず)" Ability { id: "A072", source: "鏂硅垷澶╀娇MR" }
+30335.0 "鏆存€? Ability { id: "A070", source: "鏂硅垷澶╀娇MR" } # Rampage castbar
+30335.2 "鏆存€?x4 (鐩寸嚎AOE)" duration 3 #Ability { id: "A073", source: "鏂硅垷澶╀娇MR" }
+30338.5 "--TT 璺?-" Ability { id: "A064", source: "鏂硅垷澶╀娇TT" }
+30339.6 "鏆存€? Ability { id: "A074", source: "鏂硅垷澶╀娇MR" }
+30351.1 "鏂" Ability { id: "A067", source: "鏂硅垷澶╀娇TT" } duration 5
+30355.3 "鏂" Ability { id: "A069", source: "鏂硅垷澶╀娇TT" } # Guillotine
+30361.0 "--HM 涓ぎ--" Ability { id: "9EA9", source: "鏂硅垷澶╀娇HM" }
+30367.3 "寮哄姏鍐插嚮" Ability { id: "A194", source: "鏂硅垷澶╀娇HM" }
+30369.4 "鏆村嚮鍒嗘柇 x4 (鍏ㄥ煙)" duration 4 #Ability { id: "A195", source: "鏂硅垷澶╀娇HM" }
+30387.2 "鏆村嚮鍒嗘柇" Ability { id: "A13B", source: "鏂硅垷澶╀娇HM" }
+30401.3 "鏀厤鏂? Ability { id: "A085", source: "鏂硅垷澶╀娇EV" }
+30403.3 "--MR 涓ぎ--" Ability { id: "A06A", source: "鏂硅垷澶╀娇MR" } window 30,30
+30409.5 "鐏句贡铻烘棆" Ability { id: "A06B", source: "鏂硅垷澶╀娇MR" } duration 8
+30419.9 "鏂硅垷鏀厤" Ability { id: "A086", source: "鏂硅垷澶╀娇EV" }
+30421.6 "铻烘棆缁堢粨" Ability { id: "A06C", source: "鏂硅垷澶╀娇MR" }
+30427.2 "--TT 璺?-" Ability { id: "A064", source: "鏂硅垷澶╀娇TT" }
+30429.6 "闄ㄧ煶娴佹槦 (鍜忓敱鏍?" StartsUsing { id: 'A08A', source: 'Ark Angel TT'} duration 10.7
+30440.3 "闄ㄧ煶娴佹槦" Ability { id: "A08A", source: "鏂硅垷澶╀娇TT" }
+30450.6 "鏄庨暅姝㈡按" Ability { id: "A078", source: "鏂硅垷澶╀娇GK" }
+30454.6 "涓冧箣澶垁路闆" Ability { id: "A079", source: "鏂硅垷澶╀娇GK" }
+30458.6 "鍏箣澶垁路鏈堝厜" Ability { id: "A07A", source: "鏂硅垷澶╀娇GK" }
+30459.2 "涓冧箣澶垁路闆" Ability { id: "A079", source: "鏂硅垷澶╀娇GK" }
+30463.5 "涔濅箣澶垁路鑺辫溅" Ability { id: "A07B", source: "鏂硅垷澶╀娇GK" }
+30466.5 "鍒嗚В杩炴妧" Ability { id: "A07C", source: "鏂硅垷澶╀娇GK" }
+30467.4 "缁濆弻鍗侀椃鍒? Ability { id: "A083", source: "鏂硅垷澶╀娇HM" } # Cross Reaver indicator
+30472.1 "鍏夎繛鎶€" Ability { id: "A07D", source: "鏂硅垷澶╀娇GK" }
+30474.4 "缁濆弻鍗侀椃鍒? Ability { id: "A084", source: "鏂硅垷澶╀娇HM" }
+30482.2 "鍔堜簯鏂? Ability { id: "A076", source: "鏂硅垷澶╀娇MR" }
+30495.9 "闆烽亖涔嬫湳" Ability { id: "A095", source: "鏂硅垷澶╀娇HM" }
+30504.2 "鏀厤鏂? Ability { id: "A085", source: "鏂硅垷澶╀娇EV" }
+30516.2 "缁濆弻鍗侀椃鍒? Ability { id: "A083", source: "鏂硅垷澶╀娇HM" } # Cross Reaver indicator
+30523.0 "鏂硅垷鏀厤" Ability { id: "A086", source: "鏂硅垷澶╀娇EV" }
+30523.2 "缁濆弻鍗侀椃鍒? Ability { id: "A084", source: "鏂硅垷澶╀娇HM" }
+30533.4 "浜㈤緳澶╅敜钀?(鍜忓敱)" Ability { id: "A07E", source: "鏂硅垷澶╀娇GK" }
+30533.7 "浜㈤緳澶╅敜钀?1 (闆嗗悎)" #Ability { id: "A07F", source: "鏂硅垷澶╀娇GK" }
+30536.1 "浜㈤緳澶╅敜钀?2 (闆嗗悎)" #Ability { id: "A07F", source: "鏂硅垷澶╀娇GK" }
+30538.4 "浜㈤緳澶╅敜钀?3 (闆嗗悎)" #Ability { id: "A07F", source: "鏂硅垷澶╀娇GK" }
+30558.8 "楠勬參鍖栬韩" Ability { id: "A087", source: "鏂硅垷澶╀娇EV" }
 
-30577.6 "--MR 跳--" Ability { id: "A06A", source: "方舟天使MR" } forcejump "angelLoop"
+30577.6 "--MR 璺?-" Ability { id: "A06A", source: "鏂硅垷澶╀娇MR" } forcejump "angelLoop"
 
 
 # IGNORED ABILITIES
@@ -572,90 +572,90 @@ hideall "--sync--"
 
 # The Throne Room will be sealed off
 40000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1418" } window 40000,1
-40022.1 "十亿斩击/将死" Ability { id: ["9F40", "94F2"], source: "暗之王" }
-40024.1 "十亿斩击/毒菌冲击" Ability { id: ["9F41", "94F3"], source: "暗之王" }
-40028.1 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40034.4 "本影爆碎" Ability { id: "9F5B", source: "暗之王" } duration 12
-40055.8 "十亿斩击/将死" Ability { id: ["9F40", "94F2"], source: "暗之王" }
-40057.8 "十亿斩击/毒菌冲击" Ability { id: ["9F41", "94F3"], source: "暗之王" }
-40066.8 "憎恶之火" Ability { id: "9F69", source: "暗之王" }
-40077.9 "向心聚爆" Ability { id: ["9F44", "9F45"], source: "暗之王" }
-40081.0 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40089.3 "冥界之怒" Ability { id: "9F4A", source: "暗之王" } window 89,10
-40104.4 "暗火燎壕" Ability { id: "9F4D", source: "暗之王" }
-40114.4 "暗火燎庭" Ability { id: "9F4C", source: "暗之王" }
-40123.4 "新星爆发 (咏唱)" Ability { id: "9F50", source: "暗之王" }
-40129.5 "新星爆发" Ability { id: "A23C", source: "暗之王" }
-40141.5 "向心聚爆" Ability { id: ["9F44", "9F45"], source: "暗之王" }
-40151.6 "暗火燎庭/暗火燎壕" Ability { id: ["9F4C", "9F4D"], source: "暗之王" }
-40151.6 "暗火燎城/暗火燎堞" Ability { id: ["9F4E", "9F4F"], source: "暗之王" }
-40163.6 "惨痛的回响" Ability { id: "A3AB", source: "暗之王" } duration 5
-40177.7 "冥界之怒" Ability { id: "9F4B", source: "暗之王" }
-40180.8 "--north--" Ability { id: "9F6A", source: "暗之王" }
-40187.5 "入夜" Ability { id: "A0B8", source: "暗之王" }
-40221.6 "万亿斩击" Ability { id: "A0B9", source: "暗之王" } window 221,10
-40227.7 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40248.7 "十亿斩击·入夜" Ability { id: ["A42B", "A42D"], source: "暗之王" }
-40250.7 "十亿斩击·入夜" Ability { id: ["A42C", "A42E"], source: "暗之王" }
-40252.7 "十亿斩击·入夜" Ability { id: ["A428", "A429"], source: "暗之王" }
+40022.1 "鍗佷嚎鏂╁嚮/灏嗘" Ability { id: ["9F40", "94F2"], source: "鏆椾箣鐜? }
+40024.1 "鍗佷嚎鏂╁嚮/姣掕弻鍐插嚮" Ability { id: ["9F41", "94F3"], source: "鏆椾箣鐜? }
+40028.1 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40034.4 "鏈奖鐖嗙" Ability { id: "9F5B", source: "鏆椾箣鐜? } duration 12
+40055.8 "鍗佷嚎鏂╁嚮/灏嗘" Ability { id: ["9F40", "94F2"], source: "鏆椾箣鐜? }
+40057.8 "鍗佷嚎鏂╁嚮/姣掕弻鍐插嚮" Ability { id: ["9F41", "94F3"], source: "鏆椾箣鐜? }
+40066.8 "鎲庢伓涔嬬伀" Ability { id: "9F69", source: "鏆椾箣鐜? }
+40077.9 "鍚戝績鑱氱垎" Ability { id: ["9F44", "9F45"], source: "鏆椾箣鐜? }
+40081.0 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40089.3 "鍐ョ晫涔嬫€? Ability { id: "9F4A", source: "鏆椾箣鐜? } window 89,10
+40104.4 "鏆楃伀鐕庡" Ability { id: "9F4D", source: "鏆椾箣鐜? }
+40114.4 "鏆楃伀鐕庡涵" Ability { id: "9F4C", source: "鏆椾箣鐜? }
+40123.4 "鏂版槦鐖嗗彂 (鍜忓敱)" Ability { id: "9F50", source: "鏆椾箣鐜? }
+40129.5 "鏂版槦鐖嗗彂" Ability { id: "A23C", source: "鏆椾箣鐜? }
+40141.5 "鍚戝績鑱氱垎" Ability { id: ["9F44", "9F45"], source: "鏆椾箣鐜? }
+40151.6 "鏆楃伀鐕庡涵/鏆楃伀鐕庡" Ability { id: ["9F4C", "9F4D"], source: "鏆椾箣鐜? }
+40151.6 "鏆楃伀鐕庡煄/鏆楃伀鐕庡牉" Ability { id: ["9F4E", "9F4F"], source: "鏆椾箣鐜? }
+40163.6 "鎯ㄧ棝鐨勫洖鍝? Ability { id: "A3AB", source: "鏆椾箣鐜? } duration 5
+40177.7 "鍐ョ晫涔嬫€? Ability { id: "9F4B", source: "鏆椾箣鐜? }
+40180.8 "--north--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40187.5 "鍏ュ" Ability { id: "A0B8", source: "鏆椾箣鐜? }
+40221.6 "涓囦嚎鏂╁嚮" Ability { id: "A0B9", source: "鏆椾箣鐜? } window 221,10
+40227.7 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40248.7 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42B", "A42D"], source: "鏆椾箣鐜? }
+40250.7 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42C", "A42E"], source: "鏆椾箣鐜? }
+40252.7 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A428", "A429"], source: "鏆椾箣鐜? }
 
 # ~307s loop.
 40256.7 label "lordLoop"
-40256.7 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40261.0 "影之增殖" Ability { id: "9F52", source: "暗之王" }
-40279.1 "十亿斩击·入夜" Ability { id: ["A42B", "A42D"], source: "暗之王" }
-40281.1 "十亿斩击·入夜" Ability { id: ["A42C", "A42E"], source: "暗之王" }
-40283.1 "十亿斩击·入夜" Ability { id: ["A428", "A429"], source: "暗之王" }
-40289.1 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40292.1 "十亿斩击/将死" Ability { id: ["9F40", "94F2"], source: ["Shadow Lord"] }
-40294.1 "十亿斩击/毒菌冲击" Ability { id: ["9F41", "94F3"], source: "暗之王" }
-40298.4 "向心聚爆" Ability { id: ["9F44", "9F45"], source: "暗之王" }
-40303.1 "向心聚爆" Ability { id: ["9F44", "9F45"], source: "王之暗影" }
-40311.5 "无拘暴怒" Ability { id: "9F67", source: "暗之王" }
-40318.5 "黑暗新星" Ability { id: "A177", source: "暗之王" } window 318,10
-40327.6 "惨痛的回响" Ability { id: "A3AB", source: "暗之王" } duration 7
-40341.7 "--绑定指示 1--" #Ability { id: "A229", source: "暗之王" }
-40344.1 "--绑定指示 2--" #Ability { id: "A229", source: "暗之王" }
-40346.5 "--绑定指示 3--" #Ability { id: "A229", source: "暗之王" }
-40349.6 "束缚咒" Ability { id: "9F55", source: "暗之王" }
-40351.7 "灵魂束缚 1" #Ability { id: "A22A", source: "暗之王" }
-40354.1 "灵魂束缚 2" #Ability { id: "A22A", source: "暗之王" }
-40356.7 "灵魂束缚 3" #Ability { id: "A22A", source: "暗之王" }
-40357.7 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40361.1 "爆炸" Ability { id: "A23B", source: "暗之王" }
-40368.1 "诅咒强袭" Ability { id: "9F57", source: "暗之王" }
-40370.6 "冲击" Ability { id: "9F58", source: "暗之王" }
-40373.1 "冲击" Ability { id: "A096", source: "暗之王" }
-40375.8 "冲击" Ability { id: "A097", source: "暗之王" }
-40383.5 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40391.8 "冥界之怒" Ability { id: "9F4A", source: "暗之王" } window 30,30
-40397.9 "新星爆发" Ability { id: "9F50", source: "暗之王" }
-40412.0 "新星爆发" Ability { id: "9F51", source: "暗之王" }
-40414.0 "--corner--" Ability { id: "9F6A", source: "暗之王" }
-40415.0 "新星爆发" Ability { id: "9F51", source: "暗之王" }
-40418.0 "新星爆发" Ability { id: "9F51", source: "暗之王" }
-40421.0 "新星爆发" Ability { id: "9F51", source: "暗之王" }
-40431.4 "十亿斩击·入夜" Ability { id: ["A42B", "A42D"], source: "暗之王" }
-40433.4 "十亿斩击·入夜" Ability { id: ["A42C", "A42E"], source: "暗之王" }
-40435.4 "十亿斩击·入夜" Ability { id: ["A428", "A429"], source: "暗之王" }
-40438.4 "--center--" Ability { id: "9F6A", source: "暗之王" }
-40445.4 "暗火燎庭/暗火燎壕" Ability { id: ["9F4C", "9F4D"], source: "暗之王" }
-40445.4 "暗火燎城/暗火燎堞" Ability { id: ["9F4E", "9F4F"], source: "暗之王" }
-40456.8 "黑暗新星" Ability { id: "A177", source: "暗之王" }
-40465.8 "冥界之怒" Ability { id: "9F4B", source: "暗之王" }
-40469.0 "--sync--" Ability { id: "9F6A", source: "暗之王" }
-40473.3 "影之增殖" Ability { id: "9F52", source: "暗之王" }
-40481.4 "本影爆碎" Ability { id: "9F5B", source: "暗之王" } duration 12
-40494.9 "本影爆碎" Ability { id: "9F53", source: "王之暗影" } duration 7
-40508.9 "十亿斩击·入夜" Ability { id: ["A42B", "A42D"], source: "暗之王" }
-40510.9 "十亿斩击·入夜" Ability { id: ["A42C", "A42E"], source: "暗之王" }
-40512.9 "十亿斩击·入夜" Ability { id: ["A428", "A429"], source: "暗之王" }
-40530.9 "毁灭之弧" Ability { id: "9F66", source: "暗之王" }
-40556.1 "十亿斩击·入夜" Ability { id: ["A42B", "A42D"], source: "暗之王" }
-40558.1 "十亿斩击·入夜" Ability { id: ["A42C", "A42E"], source: "暗之王" }
-40560.1 "十亿斩击·入夜" Ability { id: ["A428", "A429"], source: "暗之王" }
+40256.7 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40261.0 "褰变箣澧炴畺" Ability { id: "9F52", source: "鏆椾箣鐜? }
+40279.1 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42B", "A42D"], source: "鏆椾箣鐜? }
+40281.1 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42C", "A42E"], source: "鏆椾箣鐜? }
+40283.1 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A428", "A429"], source: "鏆椾箣鐜? }
+40289.1 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40292.1 "鍗佷嚎鏂╁嚮/灏嗘" Ability { id: ["9F40", "94F2"], source: ["Shadow Lord"] }
+40294.1 "鍗佷嚎鏂╁嚮/姣掕弻鍐插嚮" Ability { id: ["9F41", "94F3"], source: "鏆椾箣鐜? }
+40298.4 "鍚戝績鑱氱垎" Ability { id: ["9F44", "9F45"], source: "鏆椾箣鐜? }
+40303.1 "鍚戝績鑱氱垎" Ability { id: ["9F44", "9F45"], source: "鐜嬩箣鏆楀奖" }
+40311.5 "鏃犳嫎鏆存€? Ability { id: "9F67", source: "鏆椾箣鐜? }
+40318.5 "榛戞殫鏂版槦" Ability { id: "A177", source: "鏆椾箣鐜? } window 318,10
+40327.6 "鎯ㄧ棝鐨勫洖鍝? Ability { id: "A3AB", source: "鏆椾箣鐜? } duration 7
+40341.7 "--缁戝畾鎸囩ず 1--" #Ability { id: "A229", source: "鏆椾箣鐜? }
+40344.1 "--缁戝畾鎸囩ず 2--" #Ability { id: "A229", source: "鏆椾箣鐜? }
+40346.5 "--缁戝畾鎸囩ず 3--" #Ability { id: "A229", source: "鏆椾箣鐜? }
+40349.6 "鏉熺細鍜? Ability { id: "9F55", source: "鏆椾箣鐜? }
+40351.7 "鐏甸瓊鏉熺細 1" #Ability { id: "A22A", source: "鏆椾箣鐜? }
+40354.1 "鐏甸瓊鏉熺細 2" #Ability { id: "A22A", source: "鏆椾箣鐜? }
+40356.7 "鐏甸瓊鏉熺細 3" #Ability { id: "A22A", source: "鏆椾箣鐜? }
+40357.7 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40361.1 "鐖嗙偢" Ability { id: "A23B", source: "鏆椾箣鐜? }
+40368.1 "璇呭拻寮鸿" Ability { id: "9F57", source: "鏆椾箣鐜? }
+40370.6 "鍐插嚮" Ability { id: "9F58", source: "鏆椾箣鐜? }
+40373.1 "鍐插嚮" Ability { id: "A096", source: "鏆椾箣鐜? }
+40375.8 "鍐插嚮" Ability { id: "A097", source: "鏆椾箣鐜? }
+40383.5 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40391.8 "鍐ョ晫涔嬫€? Ability { id: "9F4A", source: "鏆椾箣鐜? } window 30,30
+40397.9 "鏂版槦鐖嗗彂" Ability { id: "9F50", source: "鏆椾箣鐜? }
+40412.0 "鏂版槦鐖嗗彂" Ability { id: "9F51", source: "鏆椾箣鐜? }
+40414.0 "--corner--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40415.0 "鏂版槦鐖嗗彂" Ability { id: "9F51", source: "鏆椾箣鐜? }
+40418.0 "鏂版槦鐖嗗彂" Ability { id: "9F51", source: "鏆椾箣鐜? }
+40421.0 "鏂版槦鐖嗗彂" Ability { id: "9F51", source: "鏆椾箣鐜? }
+40431.4 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42B", "A42D"], source: "鏆椾箣鐜? }
+40433.4 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42C", "A42E"], source: "鏆椾箣鐜? }
+40435.4 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A428", "A429"], source: "鏆椾箣鐜? }
+40438.4 "--center--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40445.4 "鏆楃伀鐕庡涵/鏆楃伀鐕庡" Ability { id: ["9F4C", "9F4D"], source: "鏆椾箣鐜? }
+40445.4 "鏆楃伀鐕庡煄/鏆楃伀鐕庡牉" Ability { id: ["9F4E", "9F4F"], source: "鏆椾箣鐜? }
+40456.8 "榛戞殫鏂版槦" Ability { id: "A177", source: "鏆椾箣鐜? }
+40465.8 "鍐ョ晫涔嬫€? Ability { id: "9F4B", source: "鏆椾箣鐜? }
+40469.0 "--sync--" Ability { id: "9F6A", source: "鏆椾箣鐜? }
+40473.3 "褰变箣澧炴畺" Ability { id: "9F52", source: "鏆椾箣鐜? }
+40481.4 "鏈奖鐖嗙" Ability { id: "9F5B", source: "鏆椾箣鐜? } duration 12
+40494.9 "鏈奖鐖嗙" Ability { id: "9F53", source: "鐜嬩箣鏆楀奖" } duration 7
+40508.9 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42B", "A42D"], source: "鏆椾箣鐜? }
+40510.9 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42C", "A42E"], source: "鏆椾箣鐜? }
+40512.9 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A428", "A429"], source: "鏆椾箣鐜? }
+40530.9 "姣佺伃涔嬪姬" Ability { id: "9F66", source: "鏆椾箣鐜? }
+40556.1 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42B", "A42D"], source: "鏆椾箣鐜? }
+40558.1 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A42C", "A42E"], source: "鏆椾箣鐜? }
+40560.1 "鍗佷嚎鏂╁嚮路鍏ュ" Ability { id: ["A428", "A429"], source: "鏆椾箣鐜? }
 
-40564.1 "--sync--" Ability { id: "9F6A", source: "暗之王" } forcejump "lordLoop"
+40564.1 "--sync--" Ability { id: "9F6A", source: "鏆椾箣鐜? } forcejump "lordLoop"
 
 # IGNORED ABILITIES
 # 9F3E Giga Slash: Giga Slash castbar, left safe first

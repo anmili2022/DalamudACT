@@ -1,4 +1,4 @@
-### Arcadion (R7N): AAC Cruiserweight M3
+﻿### 阿卡狄亚R7N：轻量级M3
 
 hideall "--Reset--"
 hideall "--sync--"

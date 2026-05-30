@@ -1,4 +1,4 @@
-﻿### THE SKYDEEP CENOTE
+﻿### 苍天高空
 # ZoneId: 1194
 
 hideall "--Reset--"
@@ -8,14 +8,14 @@ hideall "--sync--"
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~#
-# Feather Ray #
+# 羽环鳐 #
 #~~~~~~~~~~~~~#
 
 # -ii 9529
 # -ic
 # -p 8F83:1011.1
 
-# Unsung Elegy will be sealed off
+# 未颂挽歌已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A7" } window 1000,1
 1006.1 "沉浸" StartsUsing { id: "8F83", source: "羽环鳐" } window 5,5
 1011.1 "沉浸" Ability { id: "8F83", source: "羽环鳐" }
@@ -55,14 +55,14 @@ hideall "--sync--"
 # 9783 Trouble Bubbles
 
 #~~~~~~~~~~#
-# Firearms #
+# 重装大岩兵 #
 #~~~~~~~~~~#
 
 # -ii 8E5B 96B5 96B6 96B7 96B8 9705 9706 9707
 # -ic
 # -p 8E60:2013.1
 
-# Vurgar Mettlegrounds will be sealed off
+# 瓦尔加斗技场已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A8" } window 2000,1
 2008.1 "震荡压制" StartsUsing { id: "8E60", source: "重装大岩兵" } window 8,5
 2013.1 "震荡压制" Ability { id: "8E60", source: "重装大岩兵" }
@@ -118,13 +118,13 @@ hideall "--sync--"
 # 98E3 Mirror Maneuver
 
 #~~~~~~~~~~~#
-# Maulskull #
+# 锤颅巨兵 #
 #~~~~~~~~~~~#
 
 # -ii 8F46 8F40 8F43 8F44 8F64 8F42 8F50 8F4E 8F53 8F54 8F3A 98D1 8F60 8F61 8F67 8F51 8F56 8F57
 # -p 8F3D:3013.1
 
-# Gatekeep's Anvil will be sealed off
+# 守门铁砧已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13A9" } window 3000,1
 3005.2 "削岩拳" StartsUsing { id: "8F3D", source: "锤颅巨兵" }
 3013.1 "削岩拳" Ability { id: "8F3D", source: "锤颅巨兵" }

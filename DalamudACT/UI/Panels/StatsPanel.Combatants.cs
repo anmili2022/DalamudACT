@@ -155,6 +155,9 @@ internal static partial class StatsPanel
         if (actorId is 0 or InvalidActorId)
             return FloatingCombatantKind.Unknown;
 
+        if (CombatantKindCache.TryGetValue(actorId, out var cachedKind))
+            return cachedKind;
+
         var localPlayerActorIds = new[]
         {
             NormalizeActorId(DalamudApi.GetLocalPlayerActorId()),
@@ -162,19 +165,19 @@ internal static partial class StatsPanel
             NormalizeActorId(DalamudApi.GetLocalPlayerEntityId()),
         };
         if (localPlayerActorIds.Any(id => id != 0 && id == actorId))
-            return FloatingCombatantKind.Player;
+            return CombatantKindCache[actorId] = FloatingCombatantKind.Player;
 
         var gameObject = FindObjectByActorId(actorId);
         if (gameObject == null)
             return FloatingCombatantKind.Unknown;
 
         if (gameObject is IPlayerCharacter)
-            return FloatingCombatantKind.Player;
+            return CombatantKindCache[actorId] = FloatingCombatantKind.Player;
 
         if (gameObject is not IBattleNpc battleNpc)
             return FloatingCombatantKind.Unknown;
 
-        return (battleNpc.StatusFlags & StatusFlags.Hostile) != 0
+        return CombatantKindCache[actorId] = (battleNpc.StatusFlags & StatusFlags.Hostile) != 0
             ? FloatingCombatantKind.HostileNpc
             : FloatingCombatantKind.FriendlyNpc;
     }

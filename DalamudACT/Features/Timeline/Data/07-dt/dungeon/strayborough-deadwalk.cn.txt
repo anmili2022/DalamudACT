@@ -1,4 +1,4 @@
-### THE STRAYBOROUGH DEADWALK
+﻿### 千迷街
 # ZoneId: 4
 
 hideall "--Reset--"
@@ -11,44 +11,44 @@ hideall "--sync--"
 
 # -ii 8EB6 9B04 8EB7 8EB5 8EB8 8EBD
 
-# Friendship Round will be sealed off
+# 友谊轮盘已被封锁
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13F2" } window 1000,1
-1011.1 "邪雾" Ability { id: "8EB1", source: "好脑袋大王" }
-1018.2 "噩梦降临 (咏唱)" Ability { id: "8EAE", source: "好脑袋大王" }
-1023.2 "噩梦降临 (砸下)" #Ability { id: "8EB4", source: "好脑袋" }
-1025.2 "痴迷" Ability { id: "8EB0", source: "好脑袋大王" } # Morbid Fascination
-1035.6 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" }
-1041.7 "突击命令" Ability { id: "8EF6", source: "好脑袋大王" }
-1053.9 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
-1061.7 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
-1070.4 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" }
-1075.5 "突击命令" Ability { id: "8EF6", source: "好脑袋大王" }
-1082.7 "噩梦逼近" Ability { id: "9B05", source: "好脑袋大王" } # Looming Nightmare
-1084.7 "噩梦逼近" Ability { id: "9B06", source: "好脑袋大王" }
-1086.4 "噩梦逼近 2" #Ability { id: "9B07", source: "好脑袋大王" }
-1088.0 "噩梦逼近 3" #Ability { id: "9B07", source: "好脑袋大王" }
-1089.6 "噩梦逼近 4" #Ability { id: "9B07", source: "好脑袋大王" }
-1091.2 "噩梦逼近 5" #Ability { id: "9B07", source: "好脑袋大王" }
+1011.1 "閭浘" Ability { id: "8EB1", source: "濂借剳琚嬪ぇ鐜? }
+1018.2 "鍣╂ⅵ闄嶄复 (鍜忓敱)" Ability { id: "8EAE", source: "濂借剳琚嬪ぇ鐜? }
+1023.2 "鍣╂ⅵ闄嶄复 (鐮镐笅)" #Ability { id: "8EB4", source: "濂借剳琚? }
+1025.2 "鐥磋糠" Ability { id: "8EB0", source: "濂借剳琚嬪ぇ鐜? } # Morbid Fascination
+1035.6 "鍚堜綔绁炵簿" Ability { id: "8EAF", source: "濂借剳琚嬪ぇ鐜? }
+1041.7 "绐佸嚮鍛戒护" Ability { id: "8EF6", source: "濂借剳琚嬪ぇ鐜? }
+1053.9 "閭伓璇¤" Ability { id: "9B03", source: "濂借剳琚嬪ぇ鐜? }
+1061.7 "閭伓璇¤" Ability { id: "9B03", source: "濂借剳琚嬪ぇ鐜? }
+1070.4 "鍚堜綔绁炵簿" Ability { id: "8EAF", source: "濂借剳琚嬪ぇ鐜? }
+1075.5 "绐佸嚮鍛戒护" Ability { id: "8EF6", source: "濂借剳琚嬪ぇ鐜? }
+1082.7 "鍣╂ⅵ閫艰繎" Ability { id: "9B05", source: "濂借剳琚嬪ぇ鐜? } # Looming Nightmare
+1084.7 "鍣╂ⅵ閫艰繎" Ability { id: "9B06", source: "濂借剳琚嬪ぇ鐜? }
+1086.4 "鍣╂ⅵ閫艰繎 2" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
+1088.0 "鍣╂ⅵ閫艰繎 3" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
+1089.6 "鍣╂ⅵ閫艰繎 4" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
+1091.2 "鍣╂ⅵ閫艰繎 5" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
 
 1103.4 label "leonoggLoop"
-1103.4 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" }
-1108.5 "突击命令" Ability { id: "8EF6", source: "好脑袋大王" }
-1115.7 "尖啸" Ability { id: "8EB2", source: "好脑袋大王" }
-1117.5 "尖啸 2" #Ability { id: "8EB3", source: "好脑袋大王" }
-1119.2 "尖啸 3" #Ability { id: "8EB3", source: "好脑袋大王" }
-1126.2 "噩梦逼近" Ability { id: "9B05", source: "好脑袋大王" }
-1128.2 "噩梦逼近" Ability { id: "9B06", source: "好脑袋大王" }
-1129.9 "噩梦逼近 2" #Ability { id: "9B07", source: "好脑袋大王" }
-1131.5 "噩梦逼近 3" #Ability { id: "9B07", source: "好脑袋大王" }
-1133.1 "噩梦逼近 4" #Ability { id: "9B07", source: "好脑袋大王" }
-1139.5 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
-1147.3 "邪恶诡计" Ability { id: "9B03", source: "好脑袋大王" }
-1151.3 "邪雾" Ability { id: "8EB1", source: "好脑袋大王" }
-1160.0 "噩梦降临 (咏唱)" Ability { id: "8EAE", source: "好脑袋大王" }
-1165.0 "噩梦降临 (砸下)" #Ability { id: "8EB4", source: "好脑袋" }
-1172.1 "邪雾" Ability { id: "8EB1", source: "好脑袋大王" }
+1103.4 "鍚堜綔绁炵簿" Ability { id: "8EAF", source: "濂借剳琚嬪ぇ鐜? }
+1108.5 "绐佸嚮鍛戒护" Ability { id: "8EF6", source: "濂借剳琚嬪ぇ鐜? }
+1115.7 "灏栧暩" Ability { id: "8EB2", source: "濂借剳琚嬪ぇ鐜? }
+1117.5 "灏栧暩 2" #Ability { id: "8EB3", source: "濂借剳琚嬪ぇ鐜? }
+1119.2 "灏栧暩 3" #Ability { id: "8EB3", source: "濂借剳琚嬪ぇ鐜? }
+1126.2 "鍣╂ⅵ閫艰繎" Ability { id: "9B05", source: "濂借剳琚嬪ぇ鐜? }
+1128.2 "鍣╂ⅵ閫艰繎" Ability { id: "9B06", source: "濂借剳琚嬪ぇ鐜? }
+1129.9 "鍣╂ⅵ閫艰繎 2" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
+1131.5 "鍣╂ⅵ閫艰繎 3" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
+1133.1 "鍣╂ⅵ閫艰繎 4" #Ability { id: "9B07", source: "濂借剳琚嬪ぇ鐜? }
+1139.5 "閭伓璇¤" Ability { id: "9B03", source: "濂借剳琚嬪ぇ鐜? }
+1147.3 "閭伓璇¤" Ability { id: "9B03", source: "濂借剳琚嬪ぇ鐜? }
+1151.3 "閭浘" Ability { id: "8EB1", source: "濂借剳琚嬪ぇ鐜? }
+1160.0 "鍣╂ⅵ闄嶄复 (鍜忓敱)" Ability { id: "8EAE", source: "濂借剳琚嬪ぇ鐜? }
+1165.0 "鍣╂ⅵ闄嶄复 (鐮镐笅)" #Ability { id: "8EB4", source: "濂借剳琚? }
+1172.1 "閭浘" Ability { id: "8EB1", source: "濂借剳琚嬪ぇ鐜? }
 
-1182.7 "合作神精" Ability { id: "8EAF", source: "好脑袋大王" } window 30,30 forcejump "leonoggLoop"
+1182.7 "鍚堜綔绁炵簿" Ability { id: "8EAF", source: "濂借剳琚嬪ぇ鐜? } window 30,30 forcejump "leonoggLoop"
 
 # IGNORED ABILITIES
 # 8EB5 --sync-- Unknown
@@ -83,35 +83,35 @@ hideall "--sync--"
 
 
 #~~~~~~~~~~~~~~~~~#
-# Jack-in-the-pot #
+# 茶壶里的小丑 #
 #~~~~~~~~~~~~~~~~~#
 
 # -ii 8F74 9131
 
-# The Party Plaza will be sealed off
+# 派对广场已被封锁
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13F3" } window 2000,1
-2011.0 "茶杯" Ability { id: "8F6C", source: "茶壶里的小丑" }
-2020.1 "附身" Ability { id: "8F71", source: "迷途的幽灵之母" } # Puppet
-2022.1 "旋转茶杯" Ability { id: "8F6D", source: "茶壶里的小丑" }
-2034.2 "捣蛋式款待" Ability { id: "8F70", source: "迷途的幽灵之母" }
-2043.0 "茶杯" Ability { id: "8F6C", source: "茶壶里的小丑" }
-2051.1 "附身" Ability { id: "8F71", source: "迷途的幽灵之母" } # Puppet
-2053.1 "旋转茶杯" Ability { id: "8F6D", source: "茶壶里的小丑" }
-2068.2 "捣蛋式款待" Ability { id: "8F70", source: "迷途的幽灵之母" }
+2011.0 "鑼舵澂" Ability { id: "8F6C", source: "鑼跺６閲岀殑灏忎笐" }
+2020.1 "闄勮韩" Ability { id: "8F71", source: "杩烽€旂殑骞界伒涔嬫瘝" } # Puppet
+2022.1 "鏃嬭浆鑼舵澂" Ability { id: "8F6D", source: "鑼跺６閲岀殑灏忎笐" }
+2034.2 "鎹ｈ泲寮忔寰? Ability { id: "8F70", source: "杩烽€旂殑骞界伒涔嬫瘝" }
+2043.0 "鑼舵澂" Ability { id: "8F6C", source: "鑼跺６閲岀殑灏忎笐" }
+2051.1 "闄勮韩" Ability { id: "8F71", source: "杩烽€旂殑骞界伒涔嬫瘝" } # Puppet
+2053.1 "鏃嬭浆鑼舵澂" Ability { id: "8F6D", source: "鑼跺６閲岀殑灏忎笐" }
+2068.2 "鎹ｈ泲寮忔寰? Ability { id: "8F70", source: "杩烽€旂殑骞界伒涔嬫瘝" }
 
 2074.8 label "jackLoop"
-2074.8 "茶壶" Ability { id: "8F72", source: "茶壶里的小丑" }
-2079.5 "倒茶" Ability { id: "8F73", source: "幻光茶壶" }
-2084.5 "倒茶" Ability { id: "8F73", source: "幻光茶壶" }
-2089.5 "倒茶" Ability { id: "8F73", source: "幻光茶壶" }
-2096.9 "最后一滴" Ability { id: "8F76", source: "茶壶里的小丑" }
-2106.3 "茶杯" Ability { id: "8F6C", source: "茶壶里的小丑" }
-2114.4 "附身" Ability { id: "8F71", source: "迷途的幽灵之母" } # Puppet
-2116.4 "旋转茶杯" Ability { id: "8F6D", source: "茶壶里的小丑" }
-2131.5 "捣蛋式款待" Ability { id: "8F70", source: "迷途的幽灵之母" }
-2140.5 "邪恶蒸汽" Ability { id: "8F75", source: "茶壶里的小丑" }
+2074.8 "鑼跺６" Ability { id: "8F72", source: "鑼跺６閲岀殑灏忎笐" }
+2079.5 "鍊掕尪" Ability { id: "8F73", source: "骞诲厜鑼跺６" }
+2084.5 "鍊掕尪" Ability { id: "8F73", source: "骞诲厜鑼跺６" }
+2089.5 "鍊掕尪" Ability { id: "8F73", source: "骞诲厜鑼跺６" }
+2096.9 "鏈€鍚庝竴婊? Ability { id: "8F76", source: "鑼跺６閲岀殑灏忎笐" }
+2106.3 "鑼舵澂" Ability { id: "8F6C", source: "鑼跺６閲岀殑灏忎笐" }
+2114.4 "闄勮韩" Ability { id: "8F71", source: "杩烽€旂殑骞界伒涔嬫瘝" } # Puppet
+2116.4 "鏃嬭浆鑼舵澂" Ability { id: "8F6D", source: "鑼跺６閲岀殑灏忎笐" }
+2131.5 "鎹ｈ泲寮忔寰? Ability { id: "8F70", source: "杩烽€旂殑骞界伒涔嬫瘝" }
+2140.5 "閭伓钂告苯" Ability { id: "8F75", source: "鑼跺６閲岀殑灏忎笐" }
 
-2150.5 "茶壶" Ability { id: "8F72", source: "茶壶里的小丑" } window 30,30 forcejump "jackLoop"
+2150.5 "鑼跺６" Ability { id: "8F72", source: "鑼跺６閲岀殑灏忎笐" } window 30,30 forcejump "jackLoop"
 
 
 # IGNORED ABILITIES
@@ -133,50 +133,50 @@ hideall "--sync--"
 
 
 #~~~~~~~~~~~#
-# Träumerei #
+# Tr盲umerei #
 #~~~~~~~~~~~#
 
 # -ii 417C 9117 911A 911B
 
-# The Restive Hall will be sealed off
+# 躁动大厅已被封锁
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "13F4" } window 3000,1
-3012.0 "痛苦回忆" Ability { id: "9113", source: "梦像" }
-3022.1 "痛苦回忆" Ability { id: "9114", source: "梦像" }
-3027.3 "骚灵" Ability { id: "910C", source: "梦像" }
-3033.4 "悼念游行" Ability { id: "9110", source: "梦像" }
-3034.7 "冲击" #Ability { id: "910D", source: "梦像" }
-3047.4 "邪念" #Ability { id: "9AB7", source: "迷途的幽灵" }
+3012.0 "鐥涜嫤鍥炲繂" Ability { id: "9113", source: "姊﹀儚" }
+3022.1 "鐥涜嫤鍥炲繂" Ability { id: "9114", source: "姊﹀儚" }
+3027.3 "楠氱伒" Ability { id: "910C", source: "姊﹀儚" }
+3033.4 "鎮煎康娓歌" Ability { id: "9110", source: "姊﹀儚" }
+3034.7 "鍐插嚮" #Ability { id: "910D", source: "姊﹀儚" }
+3047.4 "閭康" #Ability { id: "9AB7", source: "杩烽€旂殑骞界伒" }
 
-3062.4 label "träumereiLoop"
-3062.4 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" }
-3070.4 "邪恶迷雾" Ability { id: "9130", source: "梦像" }
-3079.5 "悼念游行" Ability { id: "90C9", source: "梦像" }
-3085.6 "消极回忆 (lines 1)" #Ability { id: "91DC", source: "迷途的幽灵之母" }
-3088.2 "消极回忆 (lines 2)" #Ability { id: "91DC", source: "迷途的幽灵之母" }
-3090.6 "痛苦回忆" Ability { id: ["9113", "9114"], source: "梦像" }
-3102.8 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" }
-3111.9 "骚灵" Ability { id: "910C", source: "梦像" }
-3118.9 "冲击" #Ability { id: "910D", source: "梦像" }
-3120.0 "悼念游行" Ability { id: "9110", source: "梦像" }
-3133.9 "邪恶迷雾" #Ability { id: "9112", source: "迷途的幽灵" }
-3133.9 "消极回忆" Ability { id: "91DC", source: "迷途的幽灵之母" }
-3142.9 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" }
-3145.9 "--sync--" Ability { id: "9118", source: "梦像" } # Ghostcrush head marker
-3150.9 "沉重回忆" Ability { id: "9117", source: "梦像" }
-3158.1 "悼念游行" Ability { id: "9110", source: "梦像" }
-3172.1 "邪恶迷雾" #Ability { id: "9112", source: "迷途的幽灵" }
-3174.1 "痛苦回忆" Ability { id: ["9113", "9114"], source: "梦像" }
+3062.4 label "tr盲umereiLoop"
+3062.4 "闄ょ伒/鎴倝" Ability { id: ["9119", "911C"], source: "姊﹀儚" }
+3070.4 "閭伓杩烽浘" Ability { id: "9130", source: "姊﹀儚" }
+3079.5 "鎮煎康娓歌" Ability { id: "90C9", source: "姊﹀儚" }
+3085.6 "娑堟瀬鍥炲繂 (lines 1)" #Ability { id: "91DC", source: "杩烽€旂殑骞界伒涔嬫瘝" }
+3088.2 "娑堟瀬鍥炲繂 (lines 2)" #Ability { id: "91DC", source: "杩烽€旂殑骞界伒涔嬫瘝" }
+3090.6 "鐥涜嫤鍥炲繂" Ability { id: ["9113", "9114"], source: "姊﹀儚" }
+3102.8 "闄ょ伒/鎴倝" Ability { id: ["9119", "911C"], source: "姊﹀儚" }
+3111.9 "楠氱伒" Ability { id: "910C", source: "姊﹀儚" }
+3118.9 "鍐插嚮" #Ability { id: "910D", source: "姊﹀儚" }
+3120.0 "鎮煎康娓歌" Ability { id: "9110", source: "姊﹀儚" }
+3133.9 "閭伓杩烽浘" #Ability { id: "9112", source: "杩烽€旂殑骞界伒" }
+3133.9 "娑堟瀬鍥炲繂" Ability { id: "91DC", source: "杩烽€旂殑骞界伒涔嬫瘝" }
+3142.9 "闄ょ伒/鎴倝" Ability { id: ["9119", "911C"], source: "姊﹀儚" }
+3145.9 "--sync--" Ability { id: "9118", source: "姊﹀儚" } # Ghostcrush head marker
+3150.9 "娌夐噸鍥炲繂" Ability { id: "9117", source: "姊﹀儚" }
+3158.1 "鎮煎康娓歌" Ability { id: "9110", source: "姊﹀儚" }
+3172.1 "閭伓杩烽浘" #Ability { id: "9112", source: "杩烽€旂殑骞界伒" }
+3174.1 "鐥涜嫤鍥炲繂" Ability { id: ["9113", "9114"], source: "姊﹀儚" }
 
-3185.2 "除灵/戮肉" Ability { id: ["9119", "911C"], source: "梦像" } window 30,30 forcejump "träumereiLoop"
+3185.2 "闄ょ伒/鎴倝" Ability { id: ["9119", "911C"], source: "姊﹀儚" } window 30,30 forcejump "tr盲umereiLoop"
 
 # IGNORED ABILITIES
-# 417C 攻撃 -- auto-attack
+# 417C 鏀绘拑 -- auto-attack
 # 9116 Ghostcrusher -- Self-cast for stack laser
 # 911A Ghostduster -- Fake spread circles. Kills any players with a ghost debuff
 # 911B Bitter Regret -- Side line attack (middle safe)
 
 # ALL ENCOUNTER ABILITIES
-# 417C 攻撃 -- auto-attack
+# 417C 鏀绘拑 -- auto-attack
 # 90C9 Memorial March -- Ghost summoning (lines)
 # 910C Poltergeist -- Wall summoning
 # 910D Impact -- Falling walls

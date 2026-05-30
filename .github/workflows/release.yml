@@ -95,8 +95,10 @@ jobs:
       - name: Archive release asset
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force -Path ./output/Timeline | Out-Null
+          Copy-Item -Path ./DalamudACT/Features/Timeline/Data -Destination ./output/Timeline/Data -Recurse -Force
           Compress-Archive `
-            -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json `
+            -Path ./output/DalamudACT.dll,./output/DalamudACT.json,./output/DalamudACT.deps.json,./output/Timeline `
             -DestinationPath ./DalamudACT.zip `
             -Force
 

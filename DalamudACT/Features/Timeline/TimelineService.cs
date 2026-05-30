@@ -775,6 +775,7 @@ internal sealed class TimelineService
         yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", "timeline-index.json");
         foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
             yield return Path.Combine(sourceDirectory, "timeline-index.json");
+        yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", "timeline-index.json");
         yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), "timeline-index.json");
     }
 
@@ -785,6 +786,7 @@ internal sealed class TimelineService
             yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", candidateFileName);
             foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
                 yield return Path.Combine(sourceDirectory, candidateFileName);
+            yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", candidateFileName);
             yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), candidateFileName);
         }
     }

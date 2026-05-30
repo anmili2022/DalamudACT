@@ -56,6 +56,25 @@ internal sealed partial class LocalStatsService
             combatTimelineStatusRecorderPrimed = true;
     }
 
+    public void RecordCombatTimelineMapEffect(uint flags, uint location, DateTime nowUtc)
+    {
+        lock (gate)
+        {
+            if (!config.CombatTimelineRecordingEnabled || !currentEncounter.Started)
+                return;
+
+            AppendCombatTimelineEntryLocked(
+                nowUtc,
+                CombatTimelineEntryKind.MapEffect,
+                $"场地特效：flags={flags:X8}, location={location:X2}。",
+                "场地",
+                null,
+                false,
+                false,
+                $"MapEffect {flags:X8}/{location:X2}");
+        }
+    }
+
     public void PollCombatTimelineHostileCasts(DateTime nowUtc, bool inCombat)
     {
         lock (gate)

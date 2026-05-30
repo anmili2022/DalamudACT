@@ -27,6 +27,7 @@ internal sealed partial class LocalStatsService
         Death,
         Status,
         CombatEnd,
+        MapEffect,
     }
 
     private readonly record struct CombatTimelineStatusKey(

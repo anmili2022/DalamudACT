@@ -12,6 +12,8 @@ namespace DalamudACT;
 internal sealed class TimelineService
 {
     private const float AbilitySyncMaxDriftSeconds = 12f;
+    private const double InitialAbilitySyncConfirmWindowSeconds = 20d;
+    private const double InitialAbilitySyncPairToleranceSeconds = 3d;
     private readonly PluginConfiguration config;
     private readonly TimelineMechanicHintProvider mechanicHints = new();
     private readonly AeAssistResourceDownloader aeAssistResources = new();
@@ -25,8 +27,11 @@ internal sealed class TimelineService
     private uint loadedZoneId;
     private string loadedZoneName = string.Empty;
     private float lastSystemLogSyncTimeSeconds;
+    private float lastMapEffectSyncTimeSeconds;
     private readonly HashSet<string> spokenTtsKeys = new(StringComparer.Ordinal);
+    private readonly HashSet<string> spokenActionResponseKeys = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DateTime> lastInstantTtsByActionKey = new(StringComparer.Ordinal);
+    private readonly List<ObservedTimelineAbility> pendingInitialAbilitySyncs = [];
     private string? forcedTimelinePath;
 
     public TimelineService(PluginConfiguration config)
@@ -119,7 +124,66 @@ internal sealed class TimelineService
         startedAtUtc = null;
         displayOffsetSeconds = 0f;
         spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
         lastInstantTtsByActionKey.Clear();
+        pendingInitialAbilitySyncs.Clear();
+    }
+
+    public void ObserveMapEffect(uint entityId, uint flags, uint location, DateTime nowUtc)
+    {
+        if (definition == null)
+            return;
+
+        var syncEntry = ResolveMapEffectSyncEntry(flags, location);
+        if (syncEntry == null)
+            return;
+
+        var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
+        startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
+        displayOffsetSeconds = 0f;
+        lastMapEffectSyncTimeSeconds = Math.Max(syncEntry.TimeSeconds, targetTime);
+        spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        pendingInitialAbilitySyncs.Clear();
+        LogHelper.Debug("时间轴", $"MapEffect 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, flags={flags:X}, location={location:X}, entityId={entityId:X}");
+        statusText = $"已同步：{definition.Name} / 地图特效";
+    }
+
+    private TimelineEntry? ResolveMapEffectSyncEntry(uint flags, uint location)
+    {
+        if (definition == null)
+            return null;
+
+        var flagsHex = flags.ToString("X");
+        var locationHex = location.ToString("X");
+
+        return definition.Entries
+            .Where(entry => entry.EventType == "MapEffect"
+                            && entry.TimeSeconds > Math.Max(0f, lastMapEffectSyncTimeSeconds) + 1f
+                            && entry.MapEffectFlags != null
+                            && entry.MapEffectLocation != null)
+            .OrderBy(entry => entry.TimeSeconds)
+            .FirstOrDefault(entry =>
+            {
+                var flagMatch = string.Equals(entry.MapEffectFlags, flagsHex, StringComparison.OrdinalIgnoreCase);
+                var locationMatch = IsMapEffectLocationMatch(locationHex, entry.MapEffectLocation);
+                return flagMatch && locationMatch;
+            });
+    }
+
+    private static bool IsMapEffectLocationMatch(string locationHex, string? pattern)
+    {
+        if (string.IsNullOrWhiteSpace(pattern))
+            return true;
+
+        try
+        {
+            return Regex.IsMatch(locationHex, pattern, RegexOptions.IgnoreCase);
+        }
+        catch
+        {
+            return string.Equals(locationHex, pattern, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     public void ObserveSystemLogMessage(string message, DateTime nowUtc, bool allowFallbackToNextSystemLog = true)
@@ -139,6 +203,8 @@ internal sealed class TimelineService
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = Math.Max(syncEntry.TimeSeconds, targetTime);
         spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        pendingInitialAbilitySyncs.Clear();
         LogHelper.Debug("时间轴", $"SystemLogMessage 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, id={syncEntry.SystemLogId ?? "-"}, param1={syncEntry.SystemLogParam1 ?? "-"}, hint={syncEntry.SystemLogTextHint ?? "-"}, message={message}");
         statusText = string.IsNullOrWhiteSpace(syncEntry.SystemLogTextHint)
             ? $"已同步：{definition.Name} / 区域封锁提示"
@@ -223,12 +289,24 @@ internal sealed class TimelineService
 
         var wasRunning = startedAtUtc.HasValue;
         var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
-        var syncEntry = definition.Entries
+        var candidates = definition.Entries
             .Where(entry => entry.ActionIds.Contains(actionId))
-            .OrderBy(entry => Math.Abs(entry.TimeSeconds - current))
-            .FirstOrDefault();
-        if (syncEntry == null)
+            .ToList();
+        if (candidates.Count == 0)
             return;
+
+        ProcessActionResponseTts(actionId, candidates, nowUtc, current, wasRunning);
+
+        if (TryConfirmInitialAbilitySync(actionId, nowUtc, out var confirmedEntry))
+        {
+            ApplyAbilitySync(confirmedEntry, nowUtc, $"已确认同步：{definition.Name} / {confirmedEntry.DisplayText}");
+            pendingInitialAbilitySyncs.Clear();
+            return;
+        }
+
+        var syncEntry = candidates
+            .OrderBy(entry => Math.Abs(entry.TimeSeconds - current))
+            .First();
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         if (wasRunning && Math.Abs(targetTime - current) > AbilitySyncMaxDriftSeconds)
@@ -239,16 +317,106 @@ internal sealed class TimelineService
             return;
         }
 
+        ApplyAbilitySync(syncEntry, nowUtc, wasRunning
+            ? $"已同步：{definition.Name} / {syncEntry.DisplayText}"
+            : $"已临时同步：{definition.Name} / {syncEntry.DisplayText}，等待下一个技能确认分段。 ");
+
+        if (!wasRunning)
+            AddPendingInitialAbilitySync(actionId, nowUtc);
+    }
+
+    private bool TryConfirmInitialAbilitySync(uint actionId, DateTime nowUtc, out TimelineEntry confirmedEntry)
+    {
+        confirmedEntry = null!;
+        if (definition == null || pendingInitialAbilitySyncs.Count == 0)
+            return false;
+
+        pendingInitialAbilitySyncs.RemoveAll(item => (nowUtc - item.ObservedAtUtc).TotalSeconds > InitialAbilitySyncConfirmWindowSeconds);
+        if (pendingInitialAbilitySyncs.Count == 0)
+            return false;
+
+        var bestError = double.MaxValue;
+        TimelineEntry? bestEntry = null;
+        foreach (var observed in pendingInitialAbilitySyncs)
+        {
+            var observedDelta = (nowUtc - observed.ObservedAtUtc).TotalSeconds;
+            if (observedDelta <= 0.25d || observed.ActionId == actionId)
+                continue;
+
+            var firstEntries = definition.Entries.Where(entry => entry.ActionIds.Contains(observed.ActionId));
+            var secondEntries = definition.Entries.Where(entry => entry.ActionIds.Contains(actionId));
+            foreach (var first in firstEntries)
+            foreach (var second in secondEntries)
+            {
+                var timelineDelta = second.TimeSeconds - first.TimeSeconds;
+                if (timelineDelta <= 0f)
+                    continue;
+
+                var error = Math.Abs(timelineDelta - observedDelta);
+                if (error > InitialAbilitySyncPairToleranceSeconds || error >= bestError)
+                    continue;
+
+                bestError = error;
+                bestEntry = second;
+            }
+        }
+
+        if (bestEntry == null)
+            return false;
+
+        confirmedEntry = bestEntry;
+        LogHelper.Debug("时间轴", $"两技能确认初始同步：actionId={actionId:X}, entry={bestEntry.DisplayText}, error={bestError:0.0}s");
+        return true;
+    }
+
+    private void AddPendingInitialAbilitySync(uint actionId, DateTime nowUtc)
+    {
+        pendingInitialAbilitySyncs.RemoveAll(item => (nowUtc - item.ObservedAtUtc).TotalSeconds > InitialAbilitySyncConfirmWindowSeconds);
+        if (pendingInitialAbilitySyncs.Any(item => item.ActionId == actionId && (nowUtc - item.ObservedAtUtc).TotalSeconds < 1d))
+            return;
+
+        pendingInitialAbilitySyncs.Add(new ObservedTimelineAbility(actionId, nowUtc));
+    }
+
+    private void ApplyAbilitySync(TimelineEntry syncEntry, DateTime nowUtc, string message)
+    {
+        var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = Math.Max(lastSystemLogSyncTimeSeconds, targetTime);
         spokenTtsKeys.Clear();
-        statusText = $"已同步：{definition.Name} / {syncEntry.DisplayText}";
+        statusText = message;
+    }
+
+    private void ProcessActionResponseTts(uint actionId, IReadOnlyList<TimelineEntry> candidates, DateTime nowUtc, float current, bool wasRunning)
+    {
+        if (!config.EnableTimelineDailyRoutinesTts)
+            return;
+
+        var entry = wasRunning
+            ? candidates.OrderBy(entry => Math.Abs(entry.TimeSeconds - current)).FirstOrDefault(entry => entry.ActionResponses.ContainsKey(actionId))
+            : candidates.OrderBy(static entry => entry.TimeSeconds).FirstOrDefault(entry => entry.ActionResponses.ContainsKey(actionId));
+        if (entry == null || !entry.ActionResponses.TryGetValue(actionId, out var response) || string.IsNullOrWhiteSpace(response))
+            return;
+
+        var key = $"{entry.TimeSeconds:0.0}|{actionId:X}|{response}";
+        if (!spokenActionResponseKeys.Add(key))
+            return;
+
+        var text = SanitizeTtsText(ApplyTtsCorrections($"{entry.DisplayText}，{response}"));
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        if (!DalamudApi.TrySendChatCommand($"/pdr tts {text}"))
+            LogHelper.Debug("时间轴", $"发送技能应对方案 TTS 命令失败：actionId={actionId:X}, text={text}");
     }
 
     private void ProcessInstantTtsWithoutTimeline(uint actionId, uint sourceId, DateTime nowUtc)
     {
         if (!config.EnableTimelineDailyRoutinesTts)
+            return;
+
+        if (!config.EnableTimelineEnhancedTts)
             return;
 
         var hint = aeAssistResources.GetHint(actionId);
@@ -361,6 +529,8 @@ internal sealed class TimelineService
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        pendingInitialAbilitySyncs.Clear();
         timelineIndex = null;
         loadedZoneId = 0;
         loadedZoneName = string.Empty;
@@ -389,6 +559,8 @@ internal sealed class TimelineService
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        pendingInitialAbilitySyncs.Clear();
 
         var candidate = ResolveCandidate(zoneId, zoneName);
         if (candidate == null)
@@ -426,6 +598,8 @@ internal sealed class TimelineService
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        pendingInitialAbilitySyncs.Clear();
         definition = TimelineParser.ParseTimelineTextFile("forced", name, path);
         sourcePath = path;
         statusText = $"已强制加载 {definition.Entries.Count} 条：{name}";
@@ -462,7 +636,7 @@ internal sealed class TimelineService
                 continue;
 
             var hint = GetMechanicHint(entry);
-            var text = SanitizeTtsText(ApplyTtsCorrections(BuildTtsText(hint, entry.DisplayText)));
+            var text = SanitizeTtsText(ApplyTtsCorrections(BuildTtsText(entry, hint)));
             if (string.IsNullOrWhiteSpace(text))
                 continue;
 
@@ -472,18 +646,22 @@ internal sealed class TimelineService
     }
 
     private static string SanitizeTtsText(string text)
-        => text
+        => Regex.Replace(text, @"\sx\s?\d+", "", RegexOptions.IgnoreCase)
             .Replace("\r", " ", StringComparison.Ordinal)
             .Replace("\n", " ", StringComparison.Ordinal)
             .Trim();
 
-    private string BuildTtsText(string? hint, string skillName)
-        => config.TimelineTtsContentMode switch
+    private string BuildTtsText(TimelineEntry entry, string? hint)
+    {
+        var baseText = config.TimelineTtsContentMode switch
         {
             TimelineTtsContentMode.MechanicOnly => string.IsNullOrWhiteSpace(hint) ? string.Empty : hint,
-            TimelineTtsContentMode.SkillOnly => skillName,
-            _ => string.IsNullOrWhiteSpace(hint) ? skillName : $"{hint}，{skillName}",
+            TimelineTtsContentMode.SkillOnly => entry.DisplayText,
+            _ => string.IsNullOrWhiteSpace(hint) ? entry.DisplayText : $"{hint}，{entry.DisplayText}",
         };
+
+        return baseText;
+    }
 
     private string ApplyTtsCorrections(string text)
     {
@@ -610,5 +788,7 @@ internal sealed class TimelineService
             return ZoneNameContains.Any(fragment => zoneName.Contains(fragment, StringComparison.OrdinalIgnoreCase));
         }
     }
+
+    private sealed record ObservedTimelineAbility(uint ActionId, DateTime ObservedAtUtc);
 
 }

@@ -62,6 +62,13 @@ internal sealed partial class SettingsWindow
                     config.Save();
                 }
 
+                var enableEnhanced = config.EnableTimelineEnhancedTts;
+                if (ImGui.Checkbox("增强播报（AOE/死刑分类）", ref enableEnhanced))
+                {
+                    config.EnableTimelineEnhancedTts = enableEnhanced;
+                    config.Save();
+                }
+
                 var ttsLeadSeconds = config.TimelineTtsLeadSeconds;
                 if (ImGui.SliderInt("TTS提前秒数", ref ttsLeadSeconds, 1, 30))
                 {
@@ -196,7 +203,9 @@ internal sealed partial class SettingsWindow
         config.EnsureTimelineTtsCorrections();
 
         ImGui.Separator();
-        ImGui.TextUnformatted("TTS纠偏");
+        if (!ImGui.CollapsingHeader($"TTS纠偏规则（{config.TimelineTtsCorrections.Count}）###timeline_tts_corrections"))
+            return;
+
         DrawCompactHelp("TTS纠偏说明", "发送 TTS 前会按列表把原词替换成纠偏词。纠偏会作用在完整文本中，例如“地动山摇”命中“地动 -> 帝动”后会播报为“帝动山摇”。");
 
         var removeIndex = -1;

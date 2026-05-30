@@ -62,7 +62,7 @@ internal sealed partial class CombatTimelineWindow
     }
 
     private static bool IsCombatBoundaryEntry(LocalStatsService.CombatTimelineEntry entry)
-        => entry.Kind is LocalStatsService.CombatTimelineEntryKind.CombatStart or LocalStatsService.CombatTimelineEntryKind.CombatEnd;
+        => entry.Kind is LocalStatsService.CombatTimelineEntryKind.CombatStart or LocalStatsService.CombatTimelineEntryKind.CombatEnd or LocalStatsService.CombatTimelineEntryKind.MapEffect;
 
     private static IReadOnlyList<string> BuildDistinctNameOptions(
         IReadOnlyList<LocalStatsService.CombatTimelineEntry> entries,

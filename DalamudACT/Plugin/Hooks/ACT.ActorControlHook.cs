@@ -10,6 +10,34 @@ public sealed partial class ACT
 {
     private const string ActorControlCallSignature = "E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64";
 
+    private static string? TryGetActorControlMemberFunctionSignature()
+    {
+        try
+        {
+            var methodInfo = typeof(PacketDispatcher).GetMethod("HandleActorControlPacket",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            if (methodInfo == null)
+                return null;
+
+            foreach (var attr in methodInfo.GetCustomAttributes(false))
+            {
+                var attrType = attr.GetType();
+                if (attrType.Name == "MemberFunctionAttribute" || attrType.Name == "SignatureAttribute")
+                {
+                    var sigProp = attrType.GetProperty("Signature") ?? attrType.GetProperty("Value");
+                    if (sigProp?.GetValue(attr) is string sig && !string.IsNullOrWhiteSpace(sig))
+                        return sig;
+                }
+            }
+        }
+        catch
+        {
+            // Reflection failed
+        }
+
+        return null;
+    }
+
     private static string? TryGetFfxivClientStructsAddressSignature(Type structType, string fieldName)
     {
         try

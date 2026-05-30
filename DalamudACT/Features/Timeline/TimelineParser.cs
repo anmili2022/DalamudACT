@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace DalamudACT;
@@ -11,12 +12,14 @@ internal static partial class TimelineParser
     private static readonly Regex TimelineBlockRegex = new(@"timeline\s*:\s*`(?<body>[\s\S]*?)`", RegexOptions.Compiled);
     private static readonly Regex TimelineLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+\""(?<text>[^\""\\]*(?:\\.[^\""\\]*)*)\""(?<rest>.*)$", RegexOptions.Compiled);
     private static readonly Regex LabelLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+label\s+\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
-    private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant)\b", RegexOptions.Compiled);
+    private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect)\b", RegexOptions.Compiled);
     private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
     private static readonly Regex IdRegex = new(@"id\s*:\s*\""(?<id>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex Param1Regex = new(@"param1\s*:\s*\""(?<param1>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex DurationRegex = new(@"duration\s+(?<duration>\d+(?:\.\d+)?)", RegexOptions.Compiled);
     private static readonly Regex SourceRegex = new(@"source\s*:\s*\""(?<source>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
+    private static readonly Regex MapEffectFlagsRegex = new(@"flags\s*:\s*\""(?<flags>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
+    private static readonly Regex MapEffectLocationRegex = new(@"location\s*:\s*\""(?<location>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex JumpRegex = new(@"jump\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|(?<label>\S+))", RegexOptions.Compiled);
     private static readonly Regex MechanicHintRegex = new(@"#\s*(?<hint>AOE|范围|死刑|分散|分摊|远离|靠近|背对|击退|踩塔|停止|移动)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex ReplaceTextBlockRegex = new(@"'locale'\s*:\s*'cn'[\s\S]*?'replaceText'\s*:\s*\{(?<body>[\s\S]*?)\}\s*,", RegexOptions.Compiled);
@@ -99,9 +102,12 @@ internal static partial class TimelineParser
         var source = sourceMatch.Success ? Unescape(sourceMatch.Groups["source"].Value) : null;
         var displayText = ApplyChineseReplacements(text, replacements);
         var mechanicHint = ParseMechanicHint(rest);
+        var actionResponses = ParseActionResponses(rest, actionIds);
         var systemLogId = ParseSystemLogId(rest);
         var systemLogParam1 = ParseSystemLogParam1(rest);
         var systemLogTextHint = eventType == "SystemLogMessage" ? pendingComment : null;
+        var mapEffectFlags = eventType == "MapEffect" ? ParseMapEffectFlags(rest) : null;
+        var mapEffectLocation = eventType == "MapEffect" ? ParseMapEffectLocation(rest) : null;
         var isInternal = text.StartsWith("--", StringComparison.Ordinal);
         var isSync = text.Contains("sync", StringComparison.OrdinalIgnoreCase);
         var hidden = isInternal || isSync || rest.TrimStart().StartsWith('#');
@@ -110,7 +116,7 @@ internal static partial class TimelineParser
         var jumpTimeSeconds = TryParseJumpTime(jumpRaw);
         var jumpLabel = jumpTimeSeconds.HasValue ? null : jumpRaw;
 
-        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, hidden, isSync, jumpLabel, jumpTimeSeconds);
+        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses);
     }
 
     private static float? TryParseJumpTime(string? rawJump)
@@ -175,6 +181,18 @@ internal static partial class TimelineParser
         return match.Success ? match.Groups["param1"].Value.ToUpperInvariant() : null;
     }
 
+    private static string? ParseMapEffectFlags(string rest)
+    {
+        var match = MapEffectFlagsRegex.Match(rest);
+        return match.Success ? match.Groups["flags"].Value.ToUpperInvariant() : null;
+    }
+
+    private static string? ParseMapEffectLocation(string rest)
+    {
+        var match = MapEffectLocationRegex.Match(rest);
+        return match.Success ? match.Groups["location"].Value : null;
+    }
+
     private static void AddActionId(List<uint> ids, string rawId)
     {
         if (uint.TryParse(rawId, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var id))
@@ -200,6 +218,51 @@ internal static partial class TimelineParser
         var hint = match.Groups["hint"].Value.Trim();
         return hint.Equals("范围", StringComparison.OrdinalIgnoreCase) ? "AOE" : hint;
     }
+
+    private static IReadOnlyDictionary<uint, string> ParseActionResponses(string rest, IReadOnlyList<uint> actionIds)
+    {
+        if (actionIds.Count == 0)
+            return new Dictionary<uint, string>();
+
+        var commentIndex = rest.IndexOf('#');
+        if (commentIndex < 0 || commentIndex >= rest.Length - 1)
+            return new Dictionary<uint, string>();
+
+        var comment = RemoveMetadataCommentSegments(rest[(commentIndex + 1)..]);
+        var idMatches = new List<(uint Id, int Index, int Length)>();
+        foreach (var actionId in actionIds)
+        {
+            var hex = actionId.ToString("X");
+            var match = Regex.Match(comment, $@"(?<![0-9A-Fa-f]){Regex.Escape(hex)}(?![0-9A-Fa-f])", RegexOptions.IgnoreCase);
+            if (match.Success)
+                idMatches.Add((actionId, match.Index, match.Length));
+        }
+
+        if (idMatches.Count == 0)
+            return new Dictionary<uint, string>();
+
+        idMatches.Sort(static (left, right) => left.Index.CompareTo(right.Index));
+        var responses = new Dictionary<uint, string>();
+        for (var i = 0; i < idMatches.Count; i++)
+        {
+            var current = idMatches[i];
+            var responseStart = current.Index + current.Length;
+            var responseEnd = i + 1 < idMatches.Count ? idMatches[i + 1].Index : comment.Length;
+            var response = comment[responseStart..responseEnd].Trim(' ', '，', ',', ';', '；', '。');
+            if (!string.IsNullOrWhiteSpace(response))
+                responses[current.Id] = response;
+        }
+
+        return responses;
+    }
+
+    private static string RemoveMetadataCommentSegments(string comment)
+        => string.Join(
+            " # ",
+            comment.Split('#')
+                .Select(static part => part.Trim())
+                .Where(static part => !part.Contains("读条ID", StringComparison.Ordinal)
+                                      && !part.Contains("结算ID", StringComparison.Ordinal)));
 
     private static Dictionary<string, string> ParseChineseReplacements(string script)
     {

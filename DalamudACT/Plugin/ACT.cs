@@ -8,6 +8,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
+using FFXIVClientStructs.FFXIV.Client.Network;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using Action = Lumina.Excel.Sheets.Action;
@@ -41,6 +42,7 @@ public sealed partial class ACT : IDalamudPlugin
     private int suppressedUntrackedCombatDebugCount;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
+    private Hook<ActorControlDelegate>? mapEffectHook;
     private Hook<ActorControlDelegate>? actorControlHook;
 
     // 2026-05-23：ActorControl Hook 在部分 Dalamud / 客户端组合下会在 HookFromAddress 的

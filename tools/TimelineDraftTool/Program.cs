@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace TimelineDraftTool;
@@ -33,6 +34,7 @@ internal sealed class MainForm : Form
     private readonly Button browseTimelineDataButton = new() { Text = "选择目录" };
     private readonly Button refreshEncountersButton = new() { Text = "刷新战斗列表" };
     private readonly Button generateButton = new() { Text = "生成时间轴草稿" };
+    private readonly Button editResponsesButton = new() { Text = "编辑应对方案" };
     private readonly DataGridView encounterGrid = new()
     {
         Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
@@ -158,6 +160,7 @@ internal sealed class MainForm : Form
     {
         var panel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight };
         panel.Controls.Add(generateButton);
+        panel.Controls.Add(editResponsesButton);
         return panel;
     }
 
@@ -185,6 +188,7 @@ internal sealed class MainForm : Form
         });
         refreshEncountersButton.Click += (_, _) => RefreshEncounters();
         generateButton.Click += (_, _) => GenerateDraft();
+        editResponsesButton.Click += (_, _) => OpenResponseEditor();
     }
 
     private void BrowseLog()
@@ -290,7 +294,28 @@ internal sealed class MainForm : Form
             var resources = new AeAssistResources(resourceDirectoryTextBox.Text.Trim());
             resources.LoadLocal();
             var outputPath = TimelineDraftGenerator.GenerateDraft(logPath, encounters[selectedIndex], outputDirectory, resources);
+            promoteDraftTextBox.Text = outputPath;
             SetStatus($"已生成时间轴草稿：{outputPath}");
+        });
+    }
+
+    private void OpenResponseEditor()
+    {
+        RunSafely(() =>
+        {
+            var draftPath = promoteDraftTextBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(draftPath))
+                draftPath = FindLatestDraft(outputDirectoryTextBox.Text.Trim()) ?? string.Empty;
+
+            if (!File.Exists(draftPath))
+            {
+                SetStatus("请选择或生成一个时间轴草稿后再编辑应对方案。");
+                return;
+            }
+
+            using var editor = new ResponseEditorForm(draftPath);
+            editor.ShowDialog(this);
+            SetStatus($"已关闭应对方案编辑器：{draftPath}");
         });
     }
 
@@ -384,6 +409,306 @@ internal sealed record EncounterRow(string StartTime, string Duration, string Zo
         => duration.TotalHours >= 1
             ? $"{(int)duration.TotalHours:00}:{duration.Minutes:00}:{duration.Seconds:00}"
             : $"{duration.Minutes:00}:{duration.Seconds:00}";
+}
+
+internal sealed class ResponseEditorForm : Form
+{
+    private readonly string draftPath;
+    private readonly ListBox timelineLineList = new() { Dock = DockStyle.Fill };
+    private readonly Panel responsePanel = new() { Dock = DockStyle.Fill, AutoScroll = true };
+    private readonly Button saveButton = new() { Text = "写回应对方案" };
+    private readonly TextBox statusTextBox = new() { Dock = DockStyle.Fill, ReadOnly = true };
+    private readonly CheckBox timeToggle = new() { Text = "mm:ss", AutoSize = true, Checked = false };
+    private List<string> lines = [];
+    private List<TimelineDraftLine> timelineLines = [];
+    private readonly Dictionary<uint, TextBox> responseInputs = [];
+
+    public ResponseEditorForm(string draftPath)
+    {
+        this.draftPath = draftPath;
+        Text = $"应对方案编辑器 - {Path.GetFileName(draftPath)}";
+        StartPosition = FormStartPosition.CenterParent;
+        MinimumSize = new Size(900, 560);
+        Size = new Size(1040, 680);
+        LayoutControls();
+        WireEvents();
+        LoadDraft();
+    }
+
+    private void LayoutControls()
+    {
+        var main = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 3, Padding = new Padding(10) };
+        main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 52));
+        main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 48));
+        main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        main.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
+        main.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
+
+        main.Controls.Add(timelineLineList, 0, 0);
+        main.Controls.Add(responsePanel, 1, 0);
+        main.Controls.Add(saveButton, 1, 1);
+
+        var bottomPanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1 };
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        bottomPanel.Controls.Add(timeToggle, 0, 0);
+        bottomPanel.Controls.Add(new Label { Text = "  ", AutoSize = true }, 1, 0);
+        bottomPanel.Controls.Add(statusTextBox, 2, 0);
+        main.Controls.Add(bottomPanel, 0, 2);
+        main.SetColumnSpan(bottomPanel, 2);
+        Controls.Add(main);
+    }
+
+    private void WireEvents()
+    {
+        timelineLineList.SelectedIndexChanged += (_, _) => DrawSelectedLineResponses();
+        saveButton.Click += (_, _) => SaveSelectedLineResponses();
+        timeToggle.CheckedChanged += (_, _) =>
+        {
+            TimelineDraftLine.ShowTimeAsMinutesSeconds = timeToggle.Checked;
+            RefreshList();
+        };
+    }
+
+    private void RefreshList()
+    {
+        timelineLineList.DataSource = null;
+        timelineLineList.DataSource = timelineLines;
+        timelineLineList.DisplayMember = nameof(TimelineDraftLine.DisplayText);
+    }
+
+    private void LoadDraft()
+    {
+        lines = File.ReadAllLines(draftPath, Encoding.UTF8).ToList();
+        timelineLines = TimelineDraftLine.Parse(lines);
+        RefreshList();
+        if (timelineLines.Count > 0)
+            timelineLineList.SelectedIndex = 0;
+        SetStatus($"已加载 {timelineLines.Count} 条可编辑时间轴行。");
+    }
+
+    private void DrawSelectedLineResponses()
+    {
+        responsePanel.Controls.Clear();
+        responseInputs.Clear();
+
+        if (timelineLineList.SelectedItem is not TimelineDraftLine selected)
+            return;
+
+        var y = 0;
+        responsePanel.Controls.Add(new Label
+        {
+            Text = selected.SkillName,
+            AutoSize = false,
+            Font = new Font(Font, FontStyle.Bold),
+            Left = 0,
+            Top = y,
+            Width = Math.Max(320, responsePanel.ClientSize.Width - 24),
+            Height = 28,
+        });
+        y += 34;
+
+        if (!string.IsNullOrWhiteSpace(selected.Metadata))
+        {
+            responsePanel.Controls.Add(new Label
+            {
+                Text = selected.Metadata,
+                AutoSize = false,
+                ForeColor = SystemColors.GrayText,
+                Left = 0,
+                Top = y,
+                Width = Math.Max(320, responsePanel.ClientSize.Width - 24),
+                Height = 28,
+            });
+            y += 32;
+        }
+
+        for (var i = 0; i < selected.ActionIds.Count; i++)
+        {
+            var actionId = selected.ActionIds[i];
+            var label = new Label
+            {
+                Text = actionId.ToString("X"),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Left = 0,
+                Top = y,
+                Width = 72,
+                Height = 26,
+            };
+            responsePanel.Controls.Add(label);
+
+            var input = new TextBox
+            {
+                Left = 78,
+                Top = y,
+                Width = Math.Max(180, responsePanel.ClientSize.Width - 110),
+                Height = 26,
+                Text = selected.Responses.TryGetValue(actionId, out var response) ? response : string.Empty,
+            };
+            responseInputs[actionId] = input;
+            responsePanel.Controls.Add(input);
+            y += 32;
+        }
+    }
+
+    private void SaveSelectedLineResponses()
+    {
+        if (timelineLineList.SelectedItem is not TimelineDraftLine selected)
+            return;
+
+        var responses = responseInputs
+            .Select(pair => (pair.Key, Text: pair.Value.Text.Trim()))
+            .Where(pair => !string.IsNullOrWhiteSpace(pair.Text))
+            .ToList();
+        lines[selected.LineIndex] = TimelineDraftLine.WithResponses(lines[selected.LineIndex], responses);
+        File.WriteAllLines(draftPath, lines, new UTF8Encoding(false));
+        LoadDraft();
+        var newIndex = timelineLines.FindIndex(line => line.LineIndex == selected.LineIndex);
+        if (newIndex >= 0)
+            timelineLineList.SelectedIndex = newIndex;
+        SetStatus($"已写回应对方案：第 {selected.LineIndex + 1} 行。");
+    }
+
+    private void SetStatus(string message)
+        => statusTextBox.Text = $"{DateTime.Now:HH:mm:ss}  {message}";
+}
+
+internal sealed record TimelineDraftLine(int LineIndex, double TimeSeconds, string SkillName, List<uint> ActionIds, Dictionary<uint, string> Responses, string Metadata)
+{
+    public static bool ShowTimeAsMinutesSeconds { get; set; }
+
+    private static readonly Regex TimelineLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+\""(?<text>[^\""\\]*(?:\\.[^\""\\]*)*)\""(?<rest>.*)$", RegexOptions.Compiled);
+    private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
+    private static readonly Regex IdRegex = new(@"id\s*:\s*\""(?<id>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
+
+    private string TimeDisplay
+    {
+        get
+        {
+            var totalSec = (int)TimeSeconds;
+            return ShowTimeAsMinutesSeconds ? $"{totalSec / 60}:{totalSec % 60:D2}" : $"{TimeSeconds:0.0}";
+        }
+    }
+
+    public string DisplayText => $"{LineIndex + 1:0000} {TimeDisplay,7} {SkillName} [{string.Join(", ", ActionIds.Select(id => id.ToString("X")))}]";
+
+    public static List<TimelineDraftLine> Parse(IReadOnlyList<string> lines)
+    {
+        List<TimelineDraftLine> result = [];
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var match = TimelineLineRegex.Match(lines[i]);
+            if (!match.Success)
+                continue;
+
+            var timeSeconds = double.Parse(match.Groups["time"].Value, CultureInfo.InvariantCulture);
+            var actionIds = ParseActionIds(match.Groups["rest"].Value);
+            if (actionIds.Count == 0)
+                continue;
+
+            result.Add(new TimelineDraftLine(i, timeSeconds, Unescape(match.Groups["text"].Value), actionIds, ParseResponses(lines[i], actionIds), ParseMetadata(lines[i])));
+        }
+
+        return result;
+    }
+
+    public static string WithResponses(string line, IReadOnlyList<(uint Id, string Text)> responses)
+    {
+        var commentIndex = line.IndexOf('#');
+        var prefix = commentIndex >= 0 ? line[..commentIndex].TrimEnd() : line.TrimEnd();
+        var existingComment = commentIndex >= 0 ? line[(commentIndex + 1)..].Trim() : string.Empty;
+        var mechanicHint = ExtractMechanicHint(existingComment);
+        var responseComment = string.Join(" ", responses.Select(pair => $"{pair.Id:X} {pair.Text}"));
+        if (string.IsNullOrWhiteSpace(responseComment))
+            return string.IsNullOrWhiteSpace(mechanicHint) ? prefix : $"{prefix} # {mechanicHint}";
+
+        return string.IsNullOrWhiteSpace(mechanicHint)
+            ? $"{prefix} # {responseComment}"
+            : $"{prefix} # {mechanicHint} # {responseComment}";
+    }
+
+    private static List<uint> ParseActionIds(string rest)
+    {
+        List<uint> ids = [];
+        var listMatch = IdListRegex.Match(rest);
+        if (listMatch.Success)
+        {
+            foreach (Match quotedId in Regex.Matches(listMatch.Groups["ids"].Value, @"\""(?<id>[0-9A-Fa-f]+)\"""))
+                AddActionId(ids, quotedId.Groups["id"].Value);
+            return ids;
+        }
+
+        var idMatch = IdRegex.Match(rest);
+        if (idMatch.Success)
+            AddActionId(ids, idMatch.Groups["id"].Value);
+
+        return ids;
+    }
+
+    private static Dictionary<uint, string> ParseResponses(string line, IReadOnlyList<uint> actionIds)
+    {
+        var commentIndex = line.IndexOf('#');
+        if (commentIndex < 0)
+            return [];
+
+        var comment = line[(commentIndex + 1)..];
+        var idMatches = new List<(uint Id, int Index, int Length)>();
+        foreach (var actionId in actionIds)
+        {
+            var hex = actionId.ToString("X");
+            var match = Regex.Match(comment, $@"(?<![0-9A-Fa-f]){Regex.Escape(hex)}(?![0-9A-Fa-f])", RegexOptions.IgnoreCase);
+            if (match.Success)
+                idMatches.Add((actionId, match.Index, match.Length));
+        }
+
+        idMatches.Sort(static (left, right) => left.Index.CompareTo(right.Index));
+        var responses = new Dictionary<uint, string>();
+        for (var i = 0; i < idMatches.Count; i++)
+        {
+            var current = idMatches[i];
+            var responseStart = current.Index + current.Length;
+            var responseEnd = i + 1 < idMatches.Count ? idMatches[i + 1].Index : comment.Length;
+            var response = comment[responseStart..responseEnd].Trim(' ', '，', ',', ';', '；', '。');
+            if (!string.IsNullOrWhiteSpace(response))
+                responses[current.Id] = response;
+        }
+
+        return responses;
+    }
+
+    private static string ExtractMechanicHint(string comment)
+    {
+        if (string.IsNullOrWhiteSpace(comment))
+            return string.Empty;
+
+        var firstPart = comment.Split('#')[0].Trim();
+        return firstPart is "AOE" or "范围" or "死刑" or "分散" or "分摊" or "远离" or "靠近" or "背对" or "击退" or "踩塔" or "停止" or "移动"
+            ? firstPart
+            : string.Empty;
+    }
+
+    private static string ParseMetadata(string line)
+    {
+        var commentIndex = line.IndexOf('#');
+        if (commentIndex < 0)
+            return string.Empty;
+
+        var metadata = line[(commentIndex + 1)..]
+            .Split('#')
+            .Select(static part => part.Trim())
+            .Where(static part => part.Contains("读条ID", StringComparison.Ordinal) || part.Contains("结算ID", StringComparison.Ordinal));
+        return string.Join("；", metadata);
+    }
+
+    private static void AddActionId(List<uint> ids, string rawId)
+    {
+        if (uint.TryParse(rawId, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var id))
+            ids.Add(id);
+    }
+
+    private static string Unescape(string text)
+        => text.Replace("\\\"", "\"", StringComparison.Ordinal);
 }
 
 internal static class TimelineDraftPromoter
@@ -505,6 +830,8 @@ internal sealed record DraftMetadata(uint ZoneId, string ZoneName)
 
 internal static class TimelineDraftGenerator
 {
+    private const double EncounterSplitGapSeconds = 180;
+
     public static List<ParsedEncounter> GetEncounters(string logPath)
     {
         var zones = ParseLog(logPath);
@@ -580,7 +907,7 @@ internal static class TimelineDraftGenerator
 
         foreach (var ev in zone.Events.OrderBy(item => item.Timestamp))
         {
-            if (lastTimestamp.HasValue && (ev.Timestamp - lastTimestamp.Value).TotalSeconds > 45 && currentEvents.Count > 0)
+            if (lastTimestamp.HasValue && (ev.Timestamp - lastTimestamp.Value).TotalSeconds > EncounterSplitGapSeconds && currentEvents.Count > 0)
             {
                 encounters.Add(new ParsedEncounter(zone.ZoneId, zone.ZoneName, currentEvents, ResolveCombatStartTime(zone, currentEvents), zone.StartsUsingHints));
                 currentEvents = [];
@@ -614,7 +941,10 @@ internal static class TimelineDraftGenerator
         if (parts.Length < 7 || !IsLikelyNpcId(parts[2]) || !parsed.HostileNpcIds.Contains(parts[2]) || !IsUsefulActionId(parts[4]) || IsIgnoredAction(parts[4], parts[5]))
             return;
 
-        parsed.StartsUsingHints.Add(new StartsUsingHint(timestamp, parts[4], parts[5], parts[3]));
+        var castSeconds = parts.Length >= 8 && double.TryParse(parts[7], NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedCastSeconds)
+            ? parsedCastSeconds
+            : 0d;
+        parsed.StartsUsingHints.Add(new StartsUsingHint(timestamp, parts[2], parts[4], parts[5], parts[3], castSeconds));
     }
 
     private static void TryAddAbility(ParsedZone parsed, string[] parts, DateTimeOffset timestamp)
@@ -622,7 +952,7 @@ internal static class TimelineDraftGenerator
         if (parts.Length < 7 || !IsLikelyNpcId(parts[2]) || !parsed.HostileNpcIds.Contains(parts[2]) || !IsUsefulActionId(parts[4]) || IsIgnoredAction(parts[4], parts[5]))
             return;
 
-        parsed.Events.Add(new DraftEvent(timestamp, "Ability", parts[4], parts[5], parts[3]));
+        parsed.Events.Add(new DraftEvent(timestamp, "Ability", parts[2], parts.Length > 6 ? parts[6] : string.Empty, parts[4], parts[5], parts[3]));
     }
 
     private static void TryAddHostileNpc(ParsedZone parsed, string[] parts)
@@ -681,8 +1011,10 @@ internal static class TimelineDraftGenerator
         foreach (var group in MergeDuplicateEvents(encounter.Events, resources, startsUsingHints, encounter.PrimarySourceName))
         {
             var seconds = Math.Max(0, (group.Timestamp - firstTimestamp).TotalSeconds);
-            var hintSuffix = string.IsNullOrWhiteSpace(group.Hint) ? string.Empty : $" # {group.Hint}";
-            builder.AppendLine(FormattableString.Invariant($"{seconds:0.0} \"{Escape(group.ActionName)}\" {group.Kind} {{ id: {FormatActionIds(group.ActionIds)}, source: \"{Escape(group.SourceName)}\" }}{hintSuffix}"));
+            var comment = BuildTimelineComment(group, startsUsingHints);
+            var hintSuffix = string.IsNullOrWhiteSpace(comment) ? string.Empty : $" # {comment}";
+            var line = FormattableString.Invariant($"{seconds:0.0} \"{Escape(group.ActionName)}\" {group.Kind} {{ id: {FormatActionIds(group.ActionIds)}, source: \"{Escape(group.SourceName)}\" }}{hintSuffix}");
+            builder.AppendLine(group.IsAuxiliaryCandidate ? $"# {line}" : line);
         }
 
         return builder.ToString();
@@ -698,7 +1030,7 @@ internal static class TimelineDraftGenerator
             if (IsUnknownActionName(ev.ActionName) && string.IsNullOrWhiteSpace(hint))
                 continue;
 
-            var existingIndex = result.FindIndex(item => IsMergeCandidate(item, ev));
+            var existingIndex = result.FindIndex(item => IsMergeCandidate(item, ev, startsUsingHints));
             if (existingIndex >= 0)
             {
                 var existing = result[existingIndex];
@@ -707,24 +1039,119 @@ internal static class TimelineDraftGenerator
 
                 var sourceName = ChooseMergedSource(existing.SourceName, ev.SourceName, primarySourceName);
                 var mergedHint = string.IsNullOrWhiteSpace(existing.Hint) ? hint : existing.Hint;
+                var sourceIds = existing.SourceIds;
+                if (!sourceIds.Contains(ev.SourceId, StringComparer.OrdinalIgnoreCase))
+                    sourceIds.Add(ev.SourceId);
+
+                var targetIds = existing.TargetIds;
+                if (!targetIds.Contains(ev.TargetId, StringComparer.OrdinalIgnoreCase))
+                    targetIds.Add(ev.TargetId);
+
                 if (!string.Equals(sourceName, existing.SourceName, StringComparison.Ordinal) || !string.Equals(mergedHint, existing.Hint, StringComparison.Ordinal))
-                    result[existingIndex] = existing with { SourceName = sourceName, Hint = mergedHint };
+                    result[existingIndex] = existing with { SourceName = sourceName, Hint = mergedHint, SourceIds = sourceIds, TargetIds = targetIds };
                 continue;
             }
 
-            result.Add(new MergedDraftEvent(ev.Timestamp, ev.Kind, ev.ActionName, ev.SourceName, [ev.ActionId], hint));
+            result.Add(new MergedDraftEvent(ev.Timestamp, ev.Kind, ev.ActionName, ev.SourceName, [ev.SourceId], [ev.TargetId], [ev.ActionId], hint));
         }
+
+        MarkAuxiliaryCandidates(result, startsUsingHints);
 
         return result;
     }
 
-    private static bool IsMergeCandidate(MergedDraftEvent existing, DraftEvent candidate)
+    private static void MarkAuxiliaryCandidates(List<MergedDraftEvent> events, List<ResolvedStartsUsingHint> startsUsingHints)
+    {
+        for (var i = 0; i < events.Count; i++)
+        {
+            var current = events[i];
+            if (current.Kind != "Ability" || current.ActionIds.Count != 1)
+                continue;
+
+            var hasEarlierPrimary = events.Any(other =>
+            {
+                if (other.ActionIds.Count == 0 || string.Equals(other.ActionIds[0], current.ActionIds[0], StringComparison.OrdinalIgnoreCase))
+                    return false;
+                if (!string.Equals(other.ActionName, current.ActionName, StringComparison.Ordinal))
+                    return false;
+                if (!string.Equals(other.SourceName, current.SourceName, StringComparison.Ordinal))
+                    return false;
+                var diff = (current.Timestamp - other.Timestamp).TotalSeconds;
+                if (diff <= 0 || diff > 1.5d)
+                    return false;
+                return other.ActionIds.Any(otherId => FindRecentStartsUsingHint(other.Timestamp, otherId, other.ActionName, other.SourceName, startsUsingHints) != null);
+            });
+
+            if (hasEarlierPrimary)
+                events[i] = current with { IsAuxiliaryCandidate = true, Hint = AppendComment(current.Hint, "附属判定候选") };
+        }
+    }
+
+    private static string AppendComment(string? existing, string addition)
+        => string.IsNullOrWhiteSpace(existing) ? addition : $"{existing} # {addition}";
+
+    private static string BuildTimelineComment(MergedDraftEvent group, List<ResolvedStartsUsingHint> startsUsingHints)
+    {
+        List<string> parts = [];
+        if (!string.IsNullOrWhiteSpace(group.Hint))
+            parts.Add(group.Hint);
+
+        var castIds = group.ActionIds
+            .Where(actionId => FindRecentStartsUsingHint(group.Timestamp, actionId, group.ActionName, group.SourceName, startsUsingHints) != null)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        if (castIds.Count > 0 && castIds.Count < group.ActionIds.Count)
+        {
+            var resolveIds = group.ActionIds
+                .Where(actionId => !castIds.Contains(actionId, StringComparer.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            parts.Add($"读条ID {string.Join("/", castIds.Select(static id => id.ToUpperInvariant()))}；结算ID {string.Join("/", resolveIds.Select(static id => id.ToUpperInvariant()))}");
+        }
+
+        return string.Join(" # ", parts);
+    }
+
+    private static bool IsMergeCandidate(MergedDraftEvent existing, DraftEvent candidate, List<ResolvedStartsUsingHint> startsUsingHints)
         => existing.Kind == candidate.Kind
            && string.Equals(existing.ActionName, candidate.ActionName, StringComparison.Ordinal)
-           && Math.Abs((existing.Timestamp - candidate.Timestamp).TotalSeconds) <= GetMergeWindowSeconds(candidate.Kind);
+           && Math.Abs((existing.Timestamp - candidate.Timestamp).TotalSeconds) <= GetMergeWindowSeconds(candidate.Kind)
+           && !HasIndependentCastConflict(existing, candidate, startsUsingHints);
+
+    private static bool HasIndependentCastConflict(MergedDraftEvent existing, DraftEvent candidate, List<ResolvedStartsUsingHint> startsUsingHints)
+    {
+        if (existing.Kind != "Ability" || string.IsNullOrWhiteSpace(candidate.ActionId))
+            return false;
+
+        var candidateHint = FindRecentStartsUsingHint(candidate.Timestamp, candidate.ActionId, candidate.ActionName, candidate.SourceName, startsUsingHints);
+        if (candidateHint == null)
+            return false;
+
+        foreach (var actionId in existing.ActionIds)
+        {
+            if (string.Equals(actionId, candidate.ActionId, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var existingHint = FindRecentStartsUsingHint(existing.Timestamp, actionId, existing.ActionName, existing.SourceName, startsUsingHints);
+            if (existingHint == null)
+                continue;
+
+            if (!string.Equals(existingHint.SourceId, candidateHint.SourceId, StringComparison.OrdinalIgnoreCase)
+                || Math.Abs(existingHint.CastSeconds - candidateHint.CastSeconds) > 0.25d)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static ResolvedStartsUsingHint? FindRecentStartsUsingHint(DateTimeOffset abilityTimestamp, string actionId, string actionName, string sourceName, List<ResolvedStartsUsingHint> startsUsingHints)
+        => startsUsingHints.LastOrDefault(hint => string.Equals(hint.ActionId, actionId, StringComparison.OrdinalIgnoreCase)
+                                                 && string.Equals(hint.ActionName, actionName, StringComparison.Ordinal)
+                                                 && string.Equals(hint.SourceName, sourceName, StringComparison.Ordinal)
+                                                 && (abilityTimestamp - hint.Timestamp).TotalSeconds is >= 0 and <= 10);
 
     private static double GetMergeWindowSeconds(string kind)
-        => kind == "Ability" ? 1.0 : 0.25;
+        => kind == "Ability" ? 1.5 : 0.25;
 
     private static string ChooseMergedSource(string existingSource, string candidateSource, string primarySourceName)
     {
@@ -763,8 +1190,7 @@ internal static class TimelineDraftGenerator
         foreach (var hint in startsUsingHints.OrderBy(static item => item.Timestamp))
         {
             var mechanicHint = GetAeAssistHint(hint.ActionId, resources);
-            if (!string.IsNullOrWhiteSpace(mechanicHint))
-                result.Add(new ResolvedStartsUsingHint(hint.Timestamp, hint.ActionName, hint.SourceName, mechanicHint));
+                result.Add(new ResolvedStartsUsingHint(hint.Timestamp, hint.SourceId, hint.ActionId, hint.ActionName, hint.SourceName, hint.CastSeconds, mechanicHint ?? string.Empty));
         }
 
         return result;
@@ -772,8 +1198,8 @@ internal static class TimelineDraftGenerator
 
     private static string? GetRecentStartsUsingHint(DraftEvent ability, List<ResolvedStartsUsingHint> startsUsingHints)
         => startsUsingHints.LastOrDefault(hint => string.Equals(hint.ActionName, ability.ActionName, StringComparison.Ordinal)
-                                                 && string.Equals(hint.SourceName, ability.SourceName, StringComparison.Ordinal)
-                                                 && (ability.Timestamp - hint.Timestamp).TotalSeconds is >= 0 and <= 20)?.Hint;
+                                                  && string.Equals(hint.SourceName, ability.SourceName, StringComparison.Ordinal)
+                                                  && (ability.Timestamp - hint.Timestamp).TotalSeconds is >= 0 and <= 20)?.Hint;
 
     private static bool IsLikelyNpcId(string id)
         => id.StartsWith("4", StringComparison.OrdinalIgnoreCase)
@@ -888,10 +1314,10 @@ internal sealed record ParsedEncounter(uint ZoneId, string ZoneName, List<DraftE
         .FirstOrDefault()?.Key ?? "Unknown";
 }
 
-internal sealed record DraftEvent(DateTimeOffset Timestamp, string Kind, string ActionId, string ActionName, string SourceName);
+internal sealed record DraftEvent(DateTimeOffset Timestamp, string Kind, string SourceId, string TargetId, string ActionId, string ActionName, string SourceName);
 
-internal sealed record StartsUsingHint(DateTimeOffset Timestamp, string ActionId, string ActionName, string SourceName);
+internal sealed record StartsUsingHint(DateTimeOffset Timestamp, string SourceId, string ActionId, string ActionName, string SourceName, double CastSeconds);
 
-internal sealed record ResolvedStartsUsingHint(DateTimeOffset Timestamp, string ActionName, string SourceName, string Hint);
+internal sealed record ResolvedStartsUsingHint(DateTimeOffset Timestamp, string SourceId, string ActionId, string ActionName, string SourceName, double CastSeconds, string Hint);
 
-internal sealed record MergedDraftEvent(DateTimeOffset Timestamp, string Kind, string ActionName, string SourceName, List<string> ActionIds, string? Hint);
+internal sealed record MergedDraftEvent(DateTimeOffset Timestamp, string Kind, string ActionName, string SourceName, List<string> SourceIds, List<string> TargetIds, List<string> ActionIds, string? Hint, bool IsAuxiliaryCandidate = false);

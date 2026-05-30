@@ -28,6 +28,7 @@ public sealed partial class PluginConfiguration
         TimelineMaxVisibleEntries = 8;
         TimelineRowGap = 1f;
         EnableTimelineDailyRoutinesTts = false;
+        EnableTimelineEnhancedTts = true;
         TimelineTtsLeadSeconds = 5;
         TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
         TimelineTtsCorrections = new List<TtsCorrectionRule>
@@ -35,6 +36,14 @@ public sealed partial class PluginConfiguration
             new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
             new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
             new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
+            new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
+            new TtsCorrectionRule { From = "--north--", To = "去北侧", Enabled = true },
+            new TtsCorrectionRule { From = "--south--", To = "去南侧", Enabled = true },
+            new TtsCorrectionRule { From = "--east--", To = "去东侧", Enabled = true },
+            new TtsCorrectionRule { From = "--west--", To = "去西侧", Enabled = true },
+            new TtsCorrectionRule { From = "--untargetable--", To = "无法选中", Enabled = true },
+            new TtsCorrectionRule { From = "--targetable--", To = "可选中", Enabled = true },
+            new TtsCorrectionRule { From = "--adds targetable--", To = "小怪可选中", Enabled = true },
         };
         EnableDebugLog = LogHelper.DefaultEnableDebugLog;
         EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;

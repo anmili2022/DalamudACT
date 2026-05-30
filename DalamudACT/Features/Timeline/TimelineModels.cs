@@ -14,10 +14,13 @@ internal sealed record TimelineEntry(
     string? SystemLogId,
     string? SystemLogParam1,
     string? SystemLogTextHint,
+    string? MapEffectFlags,
+    string? MapEffectLocation,
     bool Hidden,
     bool IsSync,
     string? JumpLabel,
-    float? JumpTimeSeconds);
+    float? JumpTimeSeconds,
+    IReadOnlyDictionary<uint, string> ActionResponses);
 
 internal sealed record TimelineDefinition(
     string Id,

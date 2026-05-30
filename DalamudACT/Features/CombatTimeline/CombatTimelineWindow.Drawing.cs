@@ -200,6 +200,7 @@ internal sealed partial class CombatTimelineWindow
             LocalStatsService.CombatTimelineEntryKind.Status => new Vector4(0.68f, 0.82f, 1f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Failure => new Vector4(1f, 0.84f, 0.42f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Death => new Vector4(1f, 0.52f, 0.52f, 1f),
+            LocalStatsService.CombatTimelineEntryKind.MapEffect => new Vector4(0.96f, 0.56f, 0.96f, 1f),
             LocalStatsService.CombatTimelineEntryKind.CombatEnd => new Vector4(0.98f, 0.76f, 0.45f, 1f),
             _ => new Vector4(0.88f, 0.92f, 1f, 1f),
         };

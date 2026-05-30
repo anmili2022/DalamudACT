@@ -67,6 +67,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int TimelineMaxVisibleEntries = 8;
     public float TimelineRowGap = 1f;
     public bool EnableTimelineDailyRoutinesTts = false;
+    public bool EnableTimelineEnhancedTts = true;
     public int TimelineTtsLeadSeconds = 5;
     public TimelineTtsContentMode TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
     public List<TtsCorrectionRule> TimelineTtsCorrections = new()
@@ -74,6 +75,14 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
         new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
         new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
+        new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
+        new TtsCorrectionRule { From = "--north--", To = "去北侧", Enabled = true },
+        new TtsCorrectionRule { From = "--south--", To = "去南侧", Enabled = true },
+        new TtsCorrectionRule { From = "--east--", To = "去东侧", Enabled = true },
+        new TtsCorrectionRule { From = "--west--", To = "去西侧", Enabled = true },
+        new TtsCorrectionRule { From = "--untargetable--", To = "无法选中", Enabled = true },
+        new TtsCorrectionRule { From = "--targetable--", To = "可选中", Enabled = true },
+        new TtsCorrectionRule { From = "--adds targetable--", To = "小怪可选中", Enabled = true },
     };
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
     public DebugLogModule EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;
@@ -626,6 +635,14 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         AddDefaultTtsCorrection("AOE", "范围攻击");
         AddDefaultTtsCorrection("地火", "帝火");
         AddDefaultTtsCorrection("地动", "帝动");
+        AddDefaultTtsCorrection("--middle--", "回到中间");
+        AddDefaultTtsCorrection("--north--", "去北侧");
+        AddDefaultTtsCorrection("--south--", "去南侧");
+        AddDefaultTtsCorrection("--east--", "去东侧");
+        AddDefaultTtsCorrection("--west--", "去西侧");
+        AddDefaultTtsCorrection("--untargetable--", "无法选中");
+        AddDefaultTtsCorrection("--targetable--", "可选中");
+        AddDefaultTtsCorrection("--adds targetable--", "小怪可选中");
     }
 
     public string ApplyTimelineTtsCorrections(string text)

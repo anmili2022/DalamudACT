@@ -414,7 +414,19 @@ internal sealed record EncounterRow(string StartTime, string Duration, string Zo
 internal sealed class ResponseEditorForm : Form
 {
     private readonly string draftPath;
-    private readonly ListBox timelineLineList = new() { Dock = DockStyle.Fill };
+    private readonly DataGridView timelineGrid = new()
+    {
+        Dock = DockStyle.Fill,
+        AllowUserToAddRows = false,
+        AllowUserToDeleteRows = false,
+        AllowUserToResizeRows = false,
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells,
+        MultiSelect = false,
+        ReadOnly = true,
+        RowHeadersVisible = false,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+    };
+    private readonly ContextMenuStrip timelineGridMenu = new();
     private readonly Panel responsePanel = new() { Dock = DockStyle.Fill, AutoScroll = true };
     private readonly Button saveButton = new() { Text = "写回应对方案" };
     private readonly TextBox statusTextBox = new() { Dock = DockStyle.Fill, ReadOnly = true };
@@ -422,6 +434,8 @@ internal sealed class ResponseEditorForm : Form
     private List<string> lines = [];
     private List<TimelineDraftLine> timelineLines = [];
     private readonly Dictionary<uint, TextBox> responseInputs = [];
+    private TextBox? timerTimeInput;
+    private TextBox? timerContentInput;
 
     public ResponseEditorForm(string draftPath)
     {
@@ -444,7 +458,7 @@ internal sealed class ResponseEditorForm : Form
         main.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         main.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
 
-        main.Controls.Add(timelineLineList, 0, 0);
+        main.Controls.Add(timelineGrid, 0, 0);
         main.Controls.Add(responsePanel, 1, 0);
         main.Controls.Add(saveButton, 1, 1);
 
@@ -462,20 +476,184 @@ internal sealed class ResponseEditorForm : Form
 
     private void WireEvents()
     {
-        timelineLineList.SelectedIndexChanged += (_, _) => DrawSelectedLineResponses();
+        timelineGrid.SelectionChanged += (_, _) => DrawSelectedLineResponses();
         saveButton.Click += (_, _) => SaveSelectedLineResponses();
         timeToggle.CheckedChanged += (_, _) =>
         {
             TimelineDraftLine.ShowTimeAsMinutesSeconds = timeToggle.Checked;
             RefreshList();
         };
+
+        timelineGrid.MouseDown += (sender, e) =>
+        {
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            var hit = timelineGrid.HitTest(e.X, e.Y);
+            if (hit.RowIndex >= 0)
+            {
+                timelineGrid.ClearSelection();
+                timelineGrid.Rows[hit.RowIndex].Selected = true;
+                timelineGridMenu.Items.Clear();
+                var insertItem = new ToolStripMenuItem("插入 Timer");
+                var deleteItem = new ToolStripMenuItem("删除行");
+                var editItem = new ToolStripMenuItem("编辑行");
+                if (timelineGrid.Rows[hit.RowIndex].DataBoundItem is TimelineDraftLine clickedLine)
+                {
+                    var lineIndex = clickedLine.LineIndex;
+                    insertItem.Click += (_, _) => InsertTimerLine(lineIndex);
+                    deleteItem.Click += (_, _) => DeleteLine(lineIndex);
+                    editItem.Click += (_, _) => EditRawLine(lineIndex);
+                }
+                timelineGridMenu.Items.Add(insertItem);
+                timelineGridMenu.Items.Add(deleteItem);
+                timelineGridMenu.Items.Add(editItem);
+                timelineGridMenu.Show(timelineGrid, e.Location);
+            }
+        };
+    }
+
+    private void InsertTimerLine(int rowIndex)
+    {
+        var timeInput = new TextBox { Width = 120 };
+        var contentInput = new TextBox { Width = 280 };
+        var form = new Form
+        {
+            Text = "插入 Timer 条目",
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            MinimizeBox = false,
+            MaximizeBox = false,
+            ShowInTaskbar = false,
+            ClientSize = new Size(440, 160),
+        };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(12), ColumnCount = 2, RowCount = 3 };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 60));
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+        layout.Controls.Add(new Label { Text = "时间", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 0);
+        layout.Controls.Add(timeInput, 1, 0);
+        layout.Controls.Add(new Label { Text = "内容", TextAlign = ContentAlignment.MiddleLeft, Dock = DockStyle.Fill }, 0, 1);
+        layout.Controls.Add(contentInput, 1, 1);
+
+        var okButton = new Button { Text = "确定", Width = 80, Height = 30, DialogResult = DialogResult.OK };
+        var cancelButton = new Button { Text = "取消", Width = 80, Height = 30, DialogResult = DialogResult.Cancel };
+        var buttonPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft };
+        buttonPanel.Controls.Add(cancelButton);
+        buttonPanel.Controls.Add(okButton);
+        layout.Controls.Add(buttonPanel, 0, 2);
+        layout.SetColumnSpan(buttonPanel, 2);
+        form.Controls.Add(layout);
+        form.AcceptButton = okButton;
+        form.CancelButton = cancelButton;
+
+        if (form.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        var timeText = timeInput.Text.Trim();
+        var content = contentInput.Text.Trim();
+        if (string.IsNullOrWhiteSpace(timeText) || string.IsNullOrWhiteSpace(content))
+        {
+            SetStatus("时间和内容不能为空。");
+            return;
+        }
+
+        if (!double.TryParse(timeText, NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds))
+        {
+            SetStatus("时间格式无效，请输入数字（如 115 或 115.5）。");
+            return;
+        }
+
+        var timerLine = FormattableString.Invariant($"{seconds:0.0} \"{TimelineDraftLine.Escape(content)}\" Timer {{ }}");
+        lines.Insert(rowIndex, timerLine);
+        File.WriteAllLines(draftPath, lines, new UTF8Encoding(false));
+        LoadDraft();
+        var newIndex = timelineLines.FindIndex(line => line.LineIndex == rowIndex);
+        if (newIndex >= 0 && newIndex < timelineGrid.Rows.Count)
+            timelineGrid.Rows[newIndex].Selected = true;
+        SetStatus($"已插入 Timer：第 {rowIndex + 1} 行。");
+    }
+
+    private void DeleteLine(int lineIndex)
+    {
+        if (lineIndex < 0 || lineIndex >= lines.Count)
+            return;
+
+        lines.RemoveAt(lineIndex);
+        File.WriteAllLines(draftPath, lines, new UTF8Encoding(false));
+        LoadDraft();
+        SetStatus($"已删除第 {lineIndex + 1} 行。");
+    }
+
+    private void EditRawLine(int lineIndex)
+    {
+        if (lineIndex < 0 || lineIndex >= lines.Count)
+            return;
+
+        var editBox = new TextBox { Multiline = true, Width = 480, Height = 100, Text = lines[lineIndex], ScrollBars = ScrollBars.Both, AcceptsReturn = true };
+        var form = new Form
+        {
+            Text = "编辑行内容",
+            StartPosition = FormStartPosition.CenterParent,
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            MinimizeBox = false,
+            MaximizeBox = false,
+            ShowInTaskbar = false,
+            ClientSize = new Size(520, 180),
+        };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(12), ColumnCount = 1, RowCount = 2 };
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+        layout.Controls.Add(editBox, 0, 0);
+
+        var okButton = new Button { Text = "保存", Width = 80, Height = 30, DialogResult = DialogResult.OK };
+        var cancelButton = new Button { Text = "取消", Width = 80, Height = 30, DialogResult = DialogResult.Cancel };
+        var buttonPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft };
+        buttonPanel.Controls.Add(cancelButton);
+        buttonPanel.Controls.Add(okButton);
+        layout.Controls.Add(buttonPanel, 0, 1);
+        form.Controls.Add(layout);
+        form.AcceptButton = okButton;
+        form.CancelButton = cancelButton;
+
+        if (form.ShowDialog(this) != DialogResult.OK)
+            return;
+
+        var newText = editBox.Text.TrimEnd();
+        if (string.IsNullOrWhiteSpace(newText))
+        {
+            SetStatus("行内容不能为空。");
+            return;
+        }
+
+        lines[lineIndex] = newText;
+        File.WriteAllLines(draftPath, lines, new UTF8Encoding(false));
+        LoadDraft();
+        var newIndex = timelineLines.FindIndex(line => line.LineIndex == lineIndex);
+        if (newIndex >= 0 && newIndex < timelineGrid.Rows.Count)
+            timelineGrid.Rows[newIndex].Selected = true;
+        SetStatus($"已编辑第 {lineIndex + 1} 行。");
+    }
+
+    private void ConfigureTimelineGrid()
+    {
+        timelineGrid.Columns.Clear();
+        timelineGrid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "行数", DataPropertyName = nameof(TimelineDraftLine.LineIndexDisplay), FillWeight = 5, MinimumWidth = 40 });
+        timelineGrid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "时间", DataPropertyName = nameof(TimelineDraftLine.TimeDisplay), FillWeight = 8, MinimumWidth = 50 });
+        timelineGrid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "标记", DataPropertyName = nameof(TimelineDraftLine.EventKindDisplay), FillWeight = 5, MinimumWidth = 40 });
+        timelineGrid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "技能名", DataPropertyName = nameof(TimelineDraftLine.SkillName), FillWeight = 35, MinimumWidth = 100 });
+        timelineGrid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "ID", DataPropertyName = nameof(TimelineDraftLine.ActionIdsDisplay), FillWeight = 12, MinimumWidth = 60 });
+        timelineGrid.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "应对方案", DataPropertyName = nameof(TimelineDraftLine.ResponsesDisplay), FillWeight = 35, MinimumWidth = 80 });
+        timelineGrid.AutoGenerateColumns = false;
     }
 
     private void RefreshList()
     {
-        timelineLineList.DataSource = null;
-        timelineLineList.DataSource = timelineLines;
-        timelineLineList.DisplayMember = nameof(TimelineDraftLine.DisplayText);
+        ConfigureTimelineGrid();
+        timelineGrid.DataSource = null;
+        timelineGrid.DataSource = timelineLines;
     }
 
     private void LoadDraft()
@@ -483,8 +661,8 @@ internal sealed class ResponseEditorForm : Form
         lines = File.ReadAllLines(draftPath, Encoding.UTF8).ToList();
         timelineLines = TimelineDraftLine.Parse(lines);
         RefreshList();
-        if (timelineLines.Count > 0)
-            timelineLineList.SelectedIndex = 0;
+        if (timelineLines.Count > 0 && timelineGrid.Rows.Count > 0)
+            timelineGrid.Rows[0].Selected = true;
         SetStatus($"已加载 {timelineLines.Count} 条可编辑时间轴行。");
     }
 
@@ -492,8 +670,10 @@ internal sealed class ResponseEditorForm : Form
     {
         responsePanel.Controls.Clear();
         responseInputs.Clear();
+        timerTimeInput = null;
+        timerContentInput = null;
 
-        if (timelineLineList.SelectedItem is not TimelineDraftLine selected)
+        if (timelineGrid.SelectedRows.Count == 0 || timelineGrid.SelectedRows[0].DataBoundItem is not TimelineDraftLine selected)
             return;
 
         var y = 0;
@@ -550,23 +730,62 @@ internal sealed class ResponseEditorForm : Form
             responsePanel.Controls.Add(input);
             y += 32;
         }
+
+        if (selected.EventKind == "Timer")
+        {
+            responsePanel.Controls.Add(new Label { Text = "时间", Left = 0, Top = y, Width = 50, Height = 26 });
+            timerTimeInput = new TextBox { Left = 55, Top = y, Width = 100, Height = 26, Text = selected.TimeSeconds.ToString(CultureInfo.InvariantCulture) };
+            responsePanel.Controls.Add(timerTimeInput);
+            y += 32;
+
+            responsePanel.Controls.Add(new Label { Text = "内容", Left = 0, Top = y, Width = 50, Height = 26 });
+            timerContentInput = new TextBox { Left = 55, Top = y, Width = Math.Max(200, responsePanel.ClientSize.Width - 80), Height = 26, Text = selected.SkillName };
+            responsePanel.Controls.Add(timerContentInput);
+        }
     }
 
     private void SaveSelectedLineResponses()
     {
-        if (timelineLineList.SelectedItem is not TimelineDraftLine selected)
+        if (timelineGrid.SelectedRows.Count == 0 || timelineGrid.SelectedRows[0].DataBoundItem is not TimelineDraftLine selected)
             return;
 
-        var responses = responseInputs
-            .Select(pair => (pair.Key, Text: pair.Value.Text.Trim()))
-            .Where(pair => !string.IsNullOrWhiteSpace(pair.Text))
-            .ToList();
-        lines[selected.LineIndex] = TimelineDraftLine.WithResponses(lines[selected.LineIndex], responses);
+        if (selected.EventKind == "Timer")
+        {
+            var timeText = timerTimeInput?.Text.Trim();
+            var content = timerContentInput?.Text.Trim();
+            if (!double.TryParse(timeText, NumberStyles.Float, CultureInfo.InvariantCulture, out var seconds))
+            {
+                SetStatus("时间格式无效。");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                SetStatus("内容不能为空。");
+                return;
+            }
+
+            lines[selected.LineIndex] = FormattableString.Invariant($"{seconds:0.0} \"{TimelineDraftLine.Escape(content)}\" Timer {{ }}");
+        }
+        else
+        {
+            var responses = responseInputs
+                .Select(pair => (pair.Key, Text: pair.Value.Text.Trim()))
+                .Where(pair => !string.IsNullOrWhiteSpace(pair.Text))
+                .ToList();
+            lines[selected.LineIndex] = TimelineDraftLine.WithResponses(lines[selected.LineIndex], responses);
+        }
+
         File.WriteAllLines(draftPath, lines, new UTF8Encoding(false));
         LoadDraft();
         var newIndex = timelineLines.FindIndex(line => line.LineIndex == selected.LineIndex);
-        if (newIndex >= 0)
-            timelineLineList.SelectedIndex = newIndex;
+        if (newIndex >= 0 && newIndex < timelineGrid.Rows.Count)
+        {
+            timelineGrid.Rows[newIndex].Selected = true;
+            if (newIndex >= timelineGrid.FirstDisplayedScrollingRowIndex + timelineGrid.DisplayedRowCount(false)
+                || newIndex < timelineGrid.FirstDisplayedScrollingRowIndex)
+                timelineGrid.FirstDisplayedScrollingRowIndex = newIndex;
+        }
         SetStatus($"已写回应对方案：第 {selected.LineIndex + 1} 行。");
     }
 
@@ -574,15 +793,18 @@ internal sealed class ResponseEditorForm : Form
         => statusTextBox.Text = $"{DateTime.Now:HH:mm:ss}  {message}";
 }
 
-internal sealed record TimelineDraftLine(int LineIndex, double TimeSeconds, string SkillName, List<uint> ActionIds, Dictionary<uint, string> Responses, string Metadata)
+internal sealed record TimelineDraftLine(int LineIndex, double TimeSeconds, string SkillName, List<uint> ActionIds, Dictionary<uint, string> Responses, string Metadata, string EventKind)
 {
     public static bool ShowTimeAsMinutesSeconds { get; set; }
 
     private static readonly Regex TimelineLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+\""(?<text>[^\""\\]*(?:\\.[^\""\\]*)*)\""(?<rest>.*)$", RegexOptions.Compiled);
+    private static readonly Regex EventKindRegex = new(@"\b(?<kind>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect|Timer)\b", RegexOptions.Compiled);
     private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
     private static readonly Regex IdRegex = new(@"id\s*:\s*\""(?<id>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
 
-    private string TimeDisplay
+    public string LineIndexDisplay => $"{LineIndex + 1}";
+
+    public string TimeDisplay
     {
         get
         {
@@ -591,7 +813,23 @@ internal sealed record TimelineDraftLine(int LineIndex, double TimeSeconds, stri
         }
     }
 
-    public string DisplayText => $"{LineIndex + 1:0000} {TimeDisplay,7} {SkillName} [{string.Join(", ", ActionIds.Select(id => id.ToString("X")))}]";
+    public string EventKindDisplay => EventKind switch
+    {
+        "StartsUsing" => "读条",
+        "Ability" => "伤害",
+        _ => EventKind,
+    };
+
+    public string ActionIdsDisplay => string.Join(" ", ActionIds.Select(id => id.ToString("X")));
+
+    public string ResponsesDisplay
+    {
+        get
+        {
+            var text = string.Join(" ", Responses.Values.Where(v => !string.IsNullOrWhiteSpace(v)));
+            return string.IsNullOrWhiteSpace(text) ? "" : text;
+        }
+    }
 
     public static List<TimelineDraftLine> Parse(IReadOnlyList<string> lines)
     {
@@ -603,11 +841,13 @@ internal sealed record TimelineDraftLine(int LineIndex, double TimeSeconds, stri
                 continue;
 
             var timeSeconds = double.Parse(match.Groups["time"].Value, CultureInfo.InvariantCulture);
-            var actionIds = ParseActionIds(match.Groups["rest"].Value);
-            if (actionIds.Count == 0)
+            var rest = match.Groups["rest"].Value;
+            var kindMatch = EventKindRegex.Match(rest);
+            var eventKind = kindMatch.Success ? kindMatch.Groups["kind"].Value : string.Empty;
+            var actionIds = ParseActionIds(rest);
+            if (actionIds.Count == 0 && eventKind != "Timer")
                 continue;
-
-            result.Add(new TimelineDraftLine(i, timeSeconds, Unescape(match.Groups["text"].Value), actionIds, ParseResponses(lines[i], actionIds), ParseMetadata(lines[i])));
+            result.Add(new TimelineDraftLine(i, timeSeconds, Unescape(match.Groups["text"].Value), actionIds, ParseResponses(lines[i], actionIds), ParseMetadata(lines[i]), eventKind));
         }
 
         return result;
@@ -709,6 +949,9 @@ internal sealed record TimelineDraftLine(int LineIndex, double TimeSeconds, stri
 
     private static string Unescape(string text)
         => text.Replace("\\\"", "\"", StringComparison.Ordinal);
+
+    internal static string Escape(string value)
+        => (value ?? string.Empty).Replace("\\", "\\\\", StringComparison.Ordinal).Replace("\"", "\\\"", StringComparison.Ordinal);
 }
 
 internal static class TimelineDraftPromoter

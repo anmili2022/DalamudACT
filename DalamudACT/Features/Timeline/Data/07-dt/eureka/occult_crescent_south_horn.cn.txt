@@ -1,4 +1,4 @@
-### Occult Crescent: South Horn
+﻿### Occult Crescent: South Horn
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -7,7 +7,7 @@ hideall "--sync--"
 # Trigger set contains 'resetWhenOutOfCombat: false'
 
 0.0 "--Reset--" ActorControl { command: "80000014", data0: "00" } window 0,100000 jump 0
-# .*is no longer sealed
+# 封锁解除了
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 # Unlike with Bozja, you do not teleport into critical encounters from afar.

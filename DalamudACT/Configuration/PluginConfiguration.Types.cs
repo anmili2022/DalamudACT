@@ -45,13 +45,6 @@ public enum IkegamiBoxAlignment
     Right = 2,
 }
 
-public enum TimelineTtsContentMode
-{
-    MechanicAndSkill = 0,
-    MechanicOnly = 1,
-    SkillOnly = 2,
-}
-
 [Serializable]
 public sealed class ThemeBarColorSetting
 {

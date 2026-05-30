@@ -67,9 +67,10 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int TimelineMaxVisibleEntries = 8;
     public float TimelineRowGap = 1f;
     public bool EnableTimelineDailyRoutinesTts = false;
-    public bool EnableTimelineEnhancedTts = true;
+    public bool TimelineTtsMechanic = true;
+    public bool TimelineTtsSkillName = true;
+    public bool TimelineTtsResponse = true;
     public int TimelineTtsLeadSeconds = 5;
-    public TimelineTtsContentMode TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
     public List<TtsCorrectionRule> TimelineTtsCorrections = new()
     {
         new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
@@ -283,8 +284,6 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         TimelineMaxVisibleEntries = Math.Clamp(TimelineMaxVisibleEntries <= 0 ? 8 : TimelineMaxVisibleEntries, 1, 30);
         TimelineRowGap = Math.Clamp(TimelineRowGap, 0f, 8f);
         TimelineTtsLeadSeconds = Math.Clamp(TimelineTtsLeadSeconds <= 0 ? 5 : TimelineTtsLeadSeconds, 1, 30);
-        if (!Enum.IsDefined(typeof(TimelineTtsContentMode), TimelineTtsContentMode))
-            TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
         EnsureTimelineTtsCorrections();
         StatusObserver ??= new StatusObserverConfig();
         StatusObserver.WindowOpacity = Math.Clamp(StatusObserver.WindowOpacity <= 0f ? 0.9f : StatusObserver.WindowOpacity, 0f, 1f);
@@ -602,9 +601,6 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
             EnableTimelineDailyRoutinesTts = false;
             TimelineTtsLeadSeconds = 5;
         }
-
-        if (Version < 62)
-            TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
 
         if (!Enum.IsDefined(typeof(PluginLogChannel), LogChannel))
             LogChannel = PluginLogChannel.Info;

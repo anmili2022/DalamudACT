@@ -12,7 +12,7 @@ internal static partial class TimelineParser
     private static readonly Regex TimelineBlockRegex = new(@"timeline\s*:\s*`(?<body>[\s\S]*?)`", RegexOptions.Compiled);
     private static readonly Regex TimelineLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+\""(?<text>[^\""\\]*(?:\\.[^\""\\]*)*)\""(?<rest>.*)$", RegexOptions.Compiled);
     private static readonly Regex LabelLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+label\s+\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
-    private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect)\b", RegexOptions.Compiled);
+    private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect|Timer)\b", RegexOptions.Compiled);
     private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
     private static readonly Regex IdRegex = new(@"id\s*:\s*\""(?<id>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex Param1Regex = new(@"param1\s*:\s*\""(?<param1>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);

@@ -62,10 +62,24 @@ internal sealed partial class SettingsWindow
                     config.Save();
                 }
 
-                var enableEnhanced = config.EnableTimelineEnhancedTts;
-                if (ImGui.Checkbox("增强播报（AOE/死刑分类）", ref enableEnhanced))
+                var mech = config.TimelineTtsMechanic;
+                if (ImGui.Checkbox("播报机制（AOE/死刑分类）", ref mech))
                 {
-                    config.EnableTimelineEnhancedTts = enableEnhanced;
+                    config.TimelineTtsMechanic = mech;
+                    config.Save();
+                }
+
+                var skill = config.TimelineTtsSkillName;
+                if (ImGui.Checkbox("播报技能名", ref skill))
+                {
+                    config.TimelineTtsSkillName = skill;
+                    config.Save();
+                }
+
+                var resp = config.TimelineTtsResponse;
+                if (ImGui.Checkbox("播报应对方案", ref resp))
+                {
+                    config.TimelineTtsResponse = resp;
                     config.Save();
                 }
 
@@ -76,18 +90,17 @@ internal sealed partial class SettingsWindow
                     config.Save();
                 }
 
-                var ttsContentMode = (int)config.TimelineTtsContentMode;
-                const string ttsContentLabels = "机制类型+技能名\0仅机制类型\0仅技能名\0";
-                if (ImGui.Combo("TTS播报内容", ref ttsContentMode, ttsContentLabels))
-                {
-                    config.TimelineTtsContentMode = (TimelineTtsContentMode)ttsContentMode;
-                    config.Save();
-                }
-
                 if (ImGui.Button("测试TTS"))
                     DalamudApi.TrySendChatCommand($"/pdr tts {config.ApplyTimelineTtsCorrections("欢迎使用DPS统计")}");
 
                 DrawTimelineTtsCorrectionsEditor();
+
+                ImGui.Spacing();
+                ImGui.Separator();
+                ImGui.TextUnformatted("Timer 时间标记");
+                ImGui.TextDisabled("不依赖任何游戏事件，纯按战斗时间显示的条目，播报归\u201c播报应对方案\u201d控制。");
+                if (ImGui.Selectable("115 \"准备集合放黄圈\" Timer { }"))
+                    ImGui.SetClipboardText("115 \"准备集合放黄圈\" Timer { }");
 
                 DrawCompactHelp("样式说明", "时间条间隔只控制每条机制之间的距离；时间轴窗口透明度仍在“窗口设置”里控制，并且只影响黑色窗体背景。DailyRoutines TTS 需要已安装并启用 Daily Routines，实际发送命令格式为 /pdr tts 文本。 ");
 

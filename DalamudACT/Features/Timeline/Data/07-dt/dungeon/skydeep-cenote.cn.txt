@@ -1,10 +1,10 @@
-### THE SKYDEEP CENOTE
+﻿### THE SKYDEEP CENOTE
 # ZoneId: 1194
 
 hideall "--Reset--"
 hideall "--sync--"
 
-# .*is no longer sealed
+# 封锁解除了
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~#

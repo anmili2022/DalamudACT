@@ -393,6 +393,9 @@ internal sealed class TimelineService
         if (!config.EnableTimelineDailyRoutinesTts)
             return;
 
+        if (!config.TimelineTtsResponse)
+            return;
+
         var entry = wasRunning
             ? candidates.OrderBy(entry => Math.Abs(entry.TimeSeconds - current)).FirstOrDefault(entry => entry.ActionResponses.ContainsKey(actionId))
             : candidates.OrderBy(static entry => entry.TimeSeconds).FirstOrDefault(entry => entry.ActionResponses.ContainsKey(actionId));
@@ -416,7 +419,7 @@ internal sealed class TimelineService
         if (!config.EnableTimelineDailyRoutinesTts)
             return;
 
-        if (!config.EnableTimelineEnhancedTts)
+        if (!config.TimelineTtsMechanic)
             return;
 
         var hint = aeAssistResources.GetHint(actionId);
@@ -653,14 +656,15 @@ internal sealed class TimelineService
 
     private string BuildTtsText(TimelineEntry entry, string? hint)
     {
-        var baseText = config.TimelineTtsContentMode switch
-        {
-            TimelineTtsContentMode.MechanicOnly => string.IsNullOrWhiteSpace(hint) ? string.Empty : hint,
-            TimelineTtsContentMode.SkillOnly => entry.DisplayText,
-            _ => string.IsNullOrWhiteSpace(hint) ? entry.DisplayText : $"{hint}，{entry.DisplayText}",
-        };
+        if (entry.EventType == "Timer")
+            return config.TimelineTtsResponse ? entry.DisplayText : string.Empty;
 
-        return baseText;
+        var parts = new List<string>();
+        if (config.TimelineTtsMechanic && !string.IsNullOrWhiteSpace(hint))
+            parts.Add(hint);
+        if (config.TimelineTtsSkillName)
+            parts.Add(entry.DisplayText);
+        return string.Join("，", parts);
     }
 
     private string ApplyTtsCorrections(string text)

@@ -28,9 +28,10 @@ public sealed partial class PluginConfiguration
         TimelineMaxVisibleEntries = 8;
         TimelineRowGap = 1f;
         EnableTimelineDailyRoutinesTts = false;
-        EnableTimelineEnhancedTts = true;
+        TimelineTtsMechanic = true;
+        TimelineTtsSkillName = true;
+        TimelineTtsResponse = true;
         TimelineTtsLeadSeconds = 5;
-        TimelineTtsContentMode = TimelineTtsContentMode.MechanicAndSkill;
         TimelineTtsCorrections = new List<TtsCorrectionRule>
         {
             new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },

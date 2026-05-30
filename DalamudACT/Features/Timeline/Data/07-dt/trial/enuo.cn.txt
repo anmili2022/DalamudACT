@@ -6,223 +6,136 @@
 # -it "Enuo" "Uncast Shadow" "Beacon in the Dark"
 # -p C327:500
 
-# "Shrouded Holy" entry corresponds to the actual damage casts, which can be cancelled if the target dies
-# As such, the enemy castbar is included before as a sync
-
-# "Naught Hunts" and "Naught Hunts Another" can be cancelled early if both targets die, so
-# after every instance of the mechanic, the next timeline entry has an early sync with a window covering
-# the "Naught Hunts" mechanic
-
 hideall "--Reset--"
 hideall "--sync--"
 
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-9.4 "流星雨" StartsUsing { id: "C333", source: "恩欧" } window 9.4,5
-14.4 "流星雨" Ability { id: "C333", source: "恩欧" }
+9.4 "--sync--" StartsUsing { id: "C333", source: "恩欧" } window 9.4,5
+14.1 "流星雨" Ability { id: "C333", source: "恩欧" }
 
 16.5 "--middle--" Ability { id: "C307", source: "恩欧" }
-24.8 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-25.8 "无之膨胀 (AoE)" #Ability { id: "C30D", source: "无之巨漩涡" }
+19.9 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
+24.9 "无之膨胀 (AoE)" #Ability { id: "C30D", source: "无之巨漩涡" }
 31.8 "无之活性" Ability { id: "C309", source: "恩欧" }
 
 36.9 "--middle--" Ability { id: "C307", source: "恩欧" }
-45.2 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-46.2 "无之膨胀 (AoE)" #Ability { id: "C30D", source: "无之巨漩涡" }
-60.3 "混沌激流 x10" duration 3.6 #Ability { id: "C321", source: "恩欧" }
-74.5 "深度冻结" Ability { id: "C32E", source: "恩欧" }
+40.5 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
+48.4 "无之膨胀 (AoE)" #Ability { id: "C30D", source: "恩欧" }
+55.3 "混沌激流" Ability { id: "C321", source: "恩欧" }
+64.2 "混沌激流" Ability { id: "C321", source: "恩欧" }
+
+68.7 "深度冻结" StartsUsing { id: "C32D", source: "恩欧" } window 68.7,5
+74.7 "深度冻结" Ability { id: "C32E", source: "恩欧" }
 
 78.6 "--middle--" Ability { id: "C307", source: "恩欧" }
 86.9 "无之追踪" Ability { id: "C313", source: "恩欧" }
-88.0 "追尾波动 (激活)" duration 7.8 #Ability { id: "BD5A", source: "无之漩涡" }
 96.2 "无之再追踪" Ability { id: "C315", source: "恩欧" }
-96.3 "追尾波动 (激活)" duration 8.4
 
-# This "Shrouded Holy" cast has a large window to cover the Naught Hunts potential skip
-106.2 "暗影神圣" StartsUsing { id: "C32F", source: "恩欧" } window 20,2.5
-111.2 "暗影神圣" Ability { id: "C330", source: "恩欧" }
+107.0 "--sync--" StartsUsing { id: "C32F", source: "恩欧" } window 10,2.5
+111.9 "暗影神圣" Ability { id: "C330", source: "恩欧" }
 120.3 "核心熔毁" Ability { id: "C32A", source: "恩欧" }
 126.3 "核心熔毁 (圈)" Ability { id: "C32B", source: "恩欧" }
-127.3 "核心熔毁 (分散)" #Ability { id: "C32C", source: "恩欧" }
-132.3 "无之漩涡" Ability { id: "C316", source: "恩欧" }
-138.0 "奔流 (直线)" Ability { id: "C318", source: "无之漩涡" }
-138.6 "奔流 (圈)" Ability { id: "C31B", source: "恩欧" }
-140.6 "无之漩涡" Ability { id: "C31D", source: "无之漩涡" }
+133.3 "无之漩涡" Ability { id: "C316", source: "恩欧" }
+
 148.6 "流星雨" Ability { id: "C333", source: "恩欧" }
 150.7 "--north--" Ability { id: "C307", source: "恩欧" }
 158.1 "无之领域" Ability { id: "C322", source: "恩欧" }
 158.2 "--untargetable--"
 
 # Add Phase
-179.2 "虚无冲击" #Ability { id: "C324", source: "虚无之影" }
-179.2 "虚无大冲击" Ability { id: "C33D", source: "虚无巨影" }
-180.2 "--adds targetable--"
-185.2 label "adds-loop"
-185.2 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-188.2 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-191.2 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-194.2 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-197.2 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-200.2 "无之波动" Ability { id: "C326", source: "虚无之影" } window 1,1 forcejump "adds-loop"
-
-# Add line attacks pause momentarily for the beacon to spawn
-
-# MapEffect for the white ring pulse animation
+183.0 "--adds targetable--"
 299.6 "--光之征兆可选中--" MapEffect { flags: "00020001", location: "0[^09]" } window 200,0
 306.0 label "beacon-loop"
-306.0 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-309.1 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-312.0 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-315.0 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-318.0 "无之波动" #Ability { id: "C326", source: "虚无之影" }
-321.0 "无之波动" Ability { id: "C326", source: "虚无之影" } window 1,1 forcejump "beacon-loop"
 
-# Phase 2
-# Sync based on MapEffect for the cracking animation of the portal breaking
-441.2 "--sync--" MapEffect { flags: "02000100", location: "0[^09]" } window 400,0
-# Backup sync to match phase change for FFLogs report testing
-494.6 "无光的世界" StartsUsing { id: "C327", source: "恩欧" } window 400,0
-499.6 "无光的世界" Ability { id: "C327", source: "恩欧" }
-500.6 "无光的世界 x5" duration 1.8 #Ability { id: "C328", source: "恩欧" }
-503.0 "无光的世界" Ability { id: "C329", source: "恩欧" }
-505.4 "--targetable--"
+# Phase 3
+290.0 "--sync--" MapEffect { flags: "00000003", location: "5D84" } window 100,0
+290.8 "--sync--" StartsUsing { id: "C327", source: "恩欧" } window 100,0
+297.6 "无光的世界 x5" Ability { id: "C328", source: "恩欧" }
+298.1 "无光的世界" Ability { id: "C329", source: "恩欧" }
+305.4 "--targetable--"
 
-509.5 "--middle--" Ability { id: "C307", source: "恩欧" }
-517.9 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-518.9 "无之膨胀 (AoE)" #Ability { id: "C30E", source: "恩欧" }
-526.0 "至高无上" Ability { id: "C308", source: "恩欧" }
+311.3 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
+322.3 "至高无上" Ability { id: "C308", source: "恩欧" }
+336.7 "无之膨胀" Ability { id: "C30D", source: "恩欧" }
+339.0 "无之活性" StartsUsing { id: "C309", source: "恩欧" }
 
-532.1 "--middle--" Ability { id: "C307", source: "恩欧" }
-540.3 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-541.3 "无之膨胀 x2 (AoE)" #Ability { id: "C30E", source: "恩欧" }
-545.3 "无之活性" Ability { id: "C309", source: "恩欧" }
-553.7 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-554.7 "无之膨胀 x2 (AoE)" #Ability { id: "C30D", source: "无之巨漩涡" }
-561.7 "零次元" Ability { id: "C331", source: "恩欧" }
-562.0 "零次元 x3" duration 2.6 #Ability { id: "C332", source: "恩欧" }
-575.3 "至高无上" Ability { id: "C308", source: "恩欧" }
+353.5 "零次元" StartsUsing { id: "C331", source: "恩欧" }
+358.0 "零次元 x3" Ability { id: "C332", source: "恩欧" }
+372.1 "至高无上" Ability { id: "C308", source: "恩欧" }
 
-575.3 label "p2-loop"
+380.0 "无之追踪" Ability { id: "C313", source: "恩欧" }
+390.0 "无之再追踪" Ability { id: "C315", source: "恩欧" }
 
-578.7 "--middle--" Ability { id: "C307", source: "恩欧" }
-586.7 "无之追踪" Ability { id: "C313", source: "恩欧" }
-587.8 "追尾波动 (激活)" duration 7.8 #Ability { id: "BD5A", source: "无之漩涡" }
-596.0 "无之再追踪" Ability { id: "C315", source: "恩欧" }
-596.1 "追尾波动 (激活)" duration 8.4 #Ability { id: "C314", source: "无之漩涡" }
-# Big window to cover Naught Hunts potential timeline skip
-603.5 "无之膨胀" StartsUsing { id: ["C30B", "C30C"], source: "恩欧" } window 20,2.5
-609.5 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-610.5 "无之膨胀 x2 (AoE)" #Ability { id: "C30E", source: "恩欧" }
-617.5 "无之活性" Ability { id: "C309", source: "恩欧" }
+401.0 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
+412.0 "无之活性" Ability { id: "C309", source: "恩欧" }
 
-621.5 "无之漩涡" Ability { id: "C316", source: "恩欧" }
-623.6 "--middle--" Ability { id: "C307", source: "恩欧" }
-627.0 "奔流 (直线)" Ability { id: "C318", source: "无之漩涡" }
-627.6 "奔流 (圈)" Ability { id: "C31B", source: "恩欧" }
-629.6 "无之漩涡" Ability { id: "C31D", source: "无之漩涡" }
-633.6 "混沌激流 x10" duration 3.6 #Ability { id: "C321", source: "恩欧" }
+416.0 "无之漩涡" Ability { id: "C316", source: "恩欧" }
 
-641.7 "--middle--" Ability { id: "C307", source: "恩欧" }
-647.7 "核心熔毁" Ability { id: "C32A", source: "恩欧" }
-653.7 "核心熔毁 (圈)" Ability { id: "C32B", source: "恩欧" }
-654.7 "核心熔毁 (分散)" Ability { id: "C32C", source: "恩欧" }
-658.1 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-659.1 "无之膨胀 x2 (AoE)" #Ability { id: "C30D", source: "无之巨漩涡" }
-666.1 "流星雨" Ability { id: "C333", source: "恩欧" }
+431.2 "混沌激流 x3" Ability { id: "C321", source: "恩欧" }
 
-674.2 "无之漩涡" Ability { id: "C316", source: "恩欧" }
-679.9 "奔流 (直线)" Ability { id: "C319", source: "无之漩涡" }
-680.3 "核心熔毁" Ability { id: "C32A", source: "恩欧" }
-680.3 "奔流 (圈)" Ability { id: "C31B", source: "恩欧" }
-682.3 "无之漩涡" Ability { id: "C31D", source: "无之漩涡" }
-686.3 "核心熔毁 (圈)" Ability { id: "C32B", source: "恩欧" }
-687.3 "核心熔毁 (分散)" Ability { id: "C32C", source: "恩欧" }
-
-691.4 "混沌激流 x10" duration 3.6 #Ability { id: "C321", source: "恩欧" }
-702.6 "深度冻结" Ability { id: "C32E", source: "恩欧" }
-708.7 "零次元" Ability { id: "C331", source: "恩欧" }
-709.1 "零次元 x3" duration 2.6 #Ability { id: "C332", source: "恩欧" }
-723.3 "至高无上" Ability { id: "C308", source: "恩欧" }
-
-731.4 "无之漩涡" Ability { id: "C316", source: "恩欧" }
-734.5 "--middle--" Ability { id: "C307", source: "恩欧" }
-736.9 "奔流 (直线)" Ability { id: "C319", source: "无之漩涡" }
-737.3 "奔流 (圈)" Ability { id: "C31C", source: "恩欧" }
-739.3 "无之漩涡" #Ability { id: "C31D", source: "无之漩涡" }
-742.4 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-743.4 "无之膨胀 x2 (AoE)" #Ability { id: "C30E", source: "恩欧" }
-750.4 "无之活性" Ability { id: "C309", source: "恩欧" }
-
-754.4 "无之漩涡" Ability { id: "C316", source: "恩欧" }
-757.5 "--middle--" Ability { id: "C307", source: "恩欧" }
-759.9 "奔流 (直线)" Ability { id: "C318", source: "无之漩涡" }
-760.3 "奔流 (圈)" Ability { id: "C31B", source: "恩欧" }
-762.3 "无之漩涡" Ability { id: "C31D", source: "无之漩涡" }
-765.4 "无之膨胀" Ability { id: ["C30B", "C30C"], source: "恩欧" }
-766.4 "无之膨胀 x2 (AoE)" #Ability { id: "C30E", source: "恩欧" }
-773.4 "流星雨" Ability { id: "C333", source: "恩欧" }
-784.5 "至高无上" Ability { id: "C308", source: "恩欧" } forcejump "p2-loop"
-
+449.0 "核心熔毁" Ability { id: "C32B", source: "恩欧" }
+457.0 "流星雨" Ability { id: "C333", source: "恩欧" }
 
 # IGNORED ABILITIES
-# C30A --sync--: Void teleports/jumps
-# C310 --sync--: Enuo Autoattack
-# C312 --sync--: Add teleport on death
-# C31E Gaze of the Void: Cast bar
-# C31F Gaze of the Void: CW rotation
-# C320 Gaze of the Void: CCW rotation
-# C323 Looming Emptiness: VFX
-# C32D Deep Freeze: Tank Flare castbar
-# C5EB Empty Shadow: VFX?
+# C30A --sync--: 虚空传送/跳跃
+# C310 --sync--: 恩欧平A
+# C312 --sync--: 小怪死亡传送
+# C31E 混沌激流: 读条
+# C31F 混沌激流: 顺时针旋转
+# C320 混沌激流: 逆时针旋转
+# C323 虚无大冲击: VFX特效
+# C32D 深度冻结: 坦克死刑读条
+# C5EB 虚无冲击: VFX特效?
 
 # ALL ENCOUNTER ABILITIES
-# BD5A Endless Chase: Initial cast/telegraphed puddle?
-# C307 --sync--: Enuo teleport/jump
-# C308 Almagest: Raidwide
-# C309 Naught Wakes: Enuo castbar to indicate void teleport/jump
-# C30A --sync--: Void teleports/jumps
-# C30B Naught Grows: Tether animation to indicate what's exploding
-# C30C Naught Grows: Tether animation to indicate what's exploding
-# C30D Naught Grows: point blank aoe
-# C30E Naught Grows: point blank aoe
-# C310 --sync--: Enuo Autoattack
-# C312 --sync--: Add teleport on death
-# C313 Naught Hunts: Cast bar for chasing puddle, initial aoe marker
-# C314 Endless Chase: Chasing puddle
-# C315 Naught Hunts Another: Cast bar to change chasing puddle target
-# C316 Vacuum: VFX for silent torrent lines prep
-# C317 Silent Torrent: Short line?
-# C318 Silent Torrent: Medium line?
-# C319 Silent Torrent: Long line?
-# C31A Silent Torrent: Small/close puddle?
-# C31B Silent Torrent: Medium puddle?
-# C31C Silent Torrent: Big/far puddle?
-# C31D Vacuum: VFX for silent torrent lines end
-# C31E Gaze of the Void: Cast bar
-# C31F Gaze of the Void: CW rotation
-# C320 Gaze of the Void: CCW rotation
-# C321 Gaze of the Void: Cone
-# C322 All for Naught: Transition cast
-# C323 Looming Emptiness: Proximity marker VFX
-# C324 Empty Shadow: Damage?
+# BD5A 追尾波动: 初判/预警圈?
+# C307 --sync--: 恩欧传送/跳跃
+# C308 至高无上: 全屏AOE
+# C309 无之活性: 恩欧读条标记虚空传送/跳跃
+# C30A --sync--: 虚空传送/跳跃
+# C30B 无之膨胀: 连线动画指示爆炸目标
+# C30C 无之膨胀: 连线动画指示爆炸目标
+# C30D 无之膨胀: 脚下AOE
+# C30E 无之膨胀: 脚下AOE
+# C310 --sync--: 恩欧平A
+# C312 --sync--: 小怪死亡传送
+# C313 无之追踪: 追尾圈读条+初始AOE标记
+# C314 追尾波动: 追尾圈
+# C315 无之再追踪: 切换追尾目标读条
+# C316 无之漩涡: 奔流直线准备VFX
+# C317 奔流: 短直线?
+# C318 奔流: 中直线?
+# C319 奔流: 长直线?
+# C31A 奔流: 小/近圈?
+# C31B 奔流: 中圈?
+# C31C 奔流: 大/远圈?
+# C31D 无之漩涡: 奔流直线结束VFX
+# C31E 混沌激流: 读条
+# C31F 混沌激流: 顺时针旋转
+# C320 混沌激流: 逆时针旋转
+# C321 混沌激流: 扇形
+# C322 无之领域: 转阶段读条
+# C323 虚无大冲击: 距离衰减标记VFX
+# C324 虚无冲击: 伤害?
 # C325 --sync--
-# C326 Nothingness: Add line attack
-# C327 Lightless World: castbar
-# C328 Lightless World: small hits
-# C329 Lightless World: big hit
-# C32A Meltdown: Castbar/puddle bait
-# C32B Meltdown: Puddle explosions
-# C32C Meltdown: Spreads
-# C32D Deep Freeze: Tank flare castbar
-# C32E Deep Freeze: Tank flare actual damage snapshot
-# C32F Shrouded Holy: Party stack castbar
-# C330 Shrouded Holy: Party stack actual damage snapshot
-# C331 Dimension Zero: cast bar
-# C332 Dimension Zero: line stack, 3 hits
-# C333 Meteorain: Raidwide
-# C33D Looming Emptiness: Proximity marker snapshot/damage
-# C5EB Empty Shadow: VFX?
-# C657 --sync--: Golbez Autoattack?
-# C658 Warlock's Tide: NPC attack
-# C66C Spell Flame: NPC attack
+# C326 无之波动: 小怪直线攻击
+# C327 无光的世界: 读条
+# C328 无光的世界: 小伤害
+# C329 无光的世界: 大伤害
+# C32A 核心熔毁: 读条/圈诱饵
+# C32B 核心熔毁: 圈爆炸
+# C32C 核心熔毁: 分散
+# C32D 深度冻结: 坦克死刑读条
+# C32E 深度冻结: 坦克死刑实际伤害判定
+# C32F 暗影神圣: 集合分摊读条
+# C330 暗影神圣: 集合分摊实际伤害判定
+# C331 零次元: 读条
+# C332 零次元: 直线分摊x3
+# C333 流星雨: 全屏AOE
+# C33D 虚无大冲击: 距离衰减判定/伤害
+# C5EB 虚无冲击: VFX特效?
+# C657 --sync--: 高贝兹平A?
+# C658 魔导潮汐: NPC攻击
+# C66C 咒炎: NPC攻击

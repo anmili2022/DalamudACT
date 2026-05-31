@@ -147,6 +147,31 @@ internal sealed partial class SettingsWindow
 
                 if (!string.IsNullOrWhiteSpace(timelineRemoteStatusText))
                     ImGui.TextWrapped(timelineRemoteStatusText);
+
+                ImGui.Separator();
+                ImGui.TextUnformatted("网络包增强模式");
+                var rawPacketDebug = config.TimelineRawPacketDebug;
+                if (ImGui.Checkbox("启用网络包增强模式", ref rawPacketDebug))
+                {
+                    config.TimelineRawPacketDebug = rawPacketDebug;
+                    config.Save();
+                }
+
+                DrawCompactHelp("网络包增强模式", "默认关闭。开启后会安装底层收包 Hook，用于排查时间轴同步和原始游戏网络消息；按下方 opcode 过滤输出十六进制包头。留空表示不过滤。示例：0095,0251,0x025F");
+
+                var opcodeFilter = config.TimelineRawPacketOpcodeFilter ?? string.Empty;
+                if (ImGui.InputText("默认收包 opcode 过滤", ref opcodeFilter, 256))
+                {
+                    config.TimelineRawPacketOpcodeFilter = opcodeFilter;
+                    config.Save();
+                }
+
+                var previewBytes = Math.Clamp(config.TimelineRawPacketPreviewBytes, 16, 512);
+                if (ImGui.SliderInt("默认收包预览字节", ref previewBytes, 16, 512))
+                {
+                    config.TimelineRawPacketPreviewBytes = previewBytes;
+                    config.Save();
+                }
             });
     }
 

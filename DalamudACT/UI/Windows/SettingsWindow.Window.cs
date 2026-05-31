@@ -145,6 +145,7 @@ internal sealed partial class SettingsWindow
                     if (config.TimelineDebugMode)
                         ImGui.TextDisabled(timelineService.DebugText);
                 }
+
             });
     }
 }

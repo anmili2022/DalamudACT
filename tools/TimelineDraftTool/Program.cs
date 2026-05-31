@@ -1128,6 +1128,9 @@ internal static class TimelineDraftGenerator
                 case "21":
                     TryAddAbility(current, parts, timestamp);
                     break;
+                case "22":
+                    TryAddAbility(current, parts, timestamp);
+                    break;
             }
         }
 

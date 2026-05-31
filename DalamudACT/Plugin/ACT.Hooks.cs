@@ -99,6 +99,9 @@ public sealed partial class ACT
             if (mapEffectHook != null)
                 LogHelper.Debug("插件", "已关闭 MapEffect Hook。");
 
+            rawGamePacketHook?.Dispose();
+            rawGamePacketHook = null;
+
             actorControlHook?.Disable();
             if (actorControlHook != null)
                 LogHelper.Debug("插件", "已关闭 ActorControl Hook。");

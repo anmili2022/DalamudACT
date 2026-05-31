@@ -40,10 +40,14 @@ public sealed partial class ACT : IDalamudPlugin
     private bool abilityEffectFaulted;
     private DateTime lastUntrackedCombatDebugAtUtc;
     private int suppressedUntrackedCombatDebugCount;
+    private string lastRawPacketCorrelationText = string.Empty;
+    private DateTime lastRawPacketCorrelationAtUtc = DateTime.MinValue;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
     private Hook<ActorControlDelegate>? mapEffectHook;
     private Hook<ActorControlDelegate>? actorControlHook;
+    private RawGamePacketHook? rawGamePacketHook;
+    private bool rawGamePacketHookInstallFailed;
 
     // 2026-05-23：ActorControl Hook 在部分 Dalamud / 客户端组合下会在 HookFromAddress 的
     // FollowJmp 阶段触发原生 AccessViolation，并直接导致游戏进程崩溃。
@@ -107,6 +111,7 @@ public sealed partial class ACT : IDalamudPlugin
             statsService.PollCombatTimelineHostileCasts(DateTime.UtcNow, inCombat);
             monitorService.Update();
             timelineService.Update(inCombat, DalamudApi.GetTerritoryTypeId(), zoneName);
+            UpdateRawGamePacketHookState();
             frameworkUpdateFaulted = false;
         }
         catch (Exception ex)

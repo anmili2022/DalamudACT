@@ -62,6 +62,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public bool ShowTimelineWindow = false;
     public bool LockTimelineWindow = false;
     public bool TimelineDebugMode = false;
+    public bool TimelineRawPacketDebug = false;
+    public string TimelineRawPacketOpcodeFilter = "0095,025F,0251,015A";
+    public int TimelineRawPacketPreviewBytes = 256;
     public float TimelineWindowOpacity = 0.9f;
     public int TimelineVisibleSeconds = 90;
     public int TimelineMaxVisibleEntries = 8;
@@ -73,7 +76,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int TimelineTtsLeadSeconds = 5;
     public List<TtsCorrectionRule> TimelineTtsCorrections = new()
     {
-        new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
+        new TtsCorrectionRule { From = "AOE", To = "诶欧意", Enabled = true },
         new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
         new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
         new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
@@ -628,7 +631,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public void EnsureTimelineTtsCorrections()
     {
         TimelineTtsCorrections ??= new List<TtsCorrectionRule>();
-        AddDefaultTtsCorrection("AOE", "范围攻击");
+        AddDefaultTtsCorrection("AOE", "诶欧意");
         AddDefaultTtsCorrection("地火", "帝火");
         AddDefaultTtsCorrection("地动", "帝动");
         AddDefaultTtsCorrection("--middle--", "回到中间");

@@ -23,6 +23,9 @@ public sealed partial class PluginConfiguration
         ShowTimelineWindow = false;
         LockTimelineWindow = false;
         TimelineDebugMode = false;
+        TimelineRawPacketDebug = false;
+        TimelineRawPacketOpcodeFilter = "0095,025F,0251,015A";
+        TimelineRawPacketPreviewBytes = 256;
         TimelineWindowOpacity = 0.9f;
         TimelineVisibleSeconds = 90;
         TimelineMaxVisibleEntries = 8;
@@ -34,7 +37,7 @@ public sealed partial class PluginConfiguration
         TimelineTtsLeadSeconds = 5;
         TimelineTtsCorrections = new List<TtsCorrectionRule>
         {
-            new TtsCorrectionRule { From = "AOE", To = "范围攻击", Enabled = true },
+            new TtsCorrectionRule { From = "AOE", To = "诶欧意", Enabled = true },
             new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
             new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
             new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },

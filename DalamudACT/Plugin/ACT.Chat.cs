@@ -163,6 +163,7 @@ public sealed partial class ACT
             if (!IsSystemLikeChatKind(logKind))
                 return;
 
+            LogRawPacketsNearSystemMessage("handleable-chat", text);
             timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
         }
         catch (Exception ex)
@@ -179,6 +180,7 @@ public sealed partial class ACT
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
+            LogRawPacketsNearSystemMessage("log-message", text);
             timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
         }
         catch (Exception ex)
@@ -198,6 +200,7 @@ public sealed partial class ACT
             if (type != XivChatType.SystemMessage || string.IsNullOrWhiteSpace(text))
                 return;
 
+            LogRawPacketsNearSystemMessage("system-chat", text);
             timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
         }
         catch (Exception ex)

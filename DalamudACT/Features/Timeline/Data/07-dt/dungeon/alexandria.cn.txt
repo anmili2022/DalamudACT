@@ -1,11 +1,12 @@
-﻿### 亚历山大
+### Alexandria
+# ZoneId: 1199
 
 hideall "--Reset--"
 hideall "--sync--"
 
 
 
-# 封锁解除了
+# .*is no longer sealed
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~#
@@ -14,39 +15,39 @@ hideall "--sync--"
 
 # --ii 8E24
 
-# 易失性存储缓存已被封锁
+# The Volatile Memory Cache will be sealed off
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1104" } window 1000,1
-1013.1 "免疫反应" Ability { id: "8E1A", source: "反病毒程序X" } # Immune Response cast
-1014.1 "免疫反应" Ability { id: "8E1B", source: "反病毒程序X" }
-1023.2 "免疫反应" Ability { id: "8E1C", source: "反病毒程序X" } # Immune Response cast
-1024.2 "免疫反应" Ability { id: "8E1D", source: "反病毒程序X" }
-1041.4 "环状清除/十字清除" Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1044.0 "环状清除/十字清除 2" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1046.4 "环状清除/十字清除 3" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1048.8 "环状清除/十字清除 4" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1051.2 "环状清除/十字清除 5" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1054.2 "免疫反应" Ability { id: ["8E1A", "8E1C"], source: "反病毒程序X" }
+1013.1 "--sync--" Ability { id: "8E1A", source: "反病毒程序X" } # 免疫反应 cast
+1014.1 "免疫反应 (前方)" Ability { id: "8E1B", source: "反病毒程序X" }
+1023.2 "--sync--" Ability { id: "8E1C", source: "反病毒程序X" } # 免疫反应 cast
+1024.2 "免疫反应 (两侧)" Ability { id: "8E1D", source: "反病毒程序X" }
+1041.4 "环状清除/十字清除 1" Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1044.0 "环状清除/十字清除 2" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1046.4 "环状清除/十字清除 3" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1048.8 "环状清除/十字清除 4" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1051.2 "环状清除/十字清除 5" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1054.2 "--sync--" Ability { id: ["8E1A", "8E1C"], source: "反病毒程序X" } # 读条ID 8E1C 去正面
 1055.2 "免疫反应" Ability { id: ["8E1B", "8E1D"], source: "反病毒程序X" }
-1063.3 "检疫" Ability { id: "8E20", source: "反病毒程序X" } # Quarantine cast
+1063.3 "--sync--" Ability { id: "8E20", source: "反病毒程序X" } # 检疫 cast
 1065.3 "检疫" Ability { id: "8E22", source: "反病毒程序X" }
 1065.3 "消毒" Ability { id: "8E21", source: "反病毒程序X" }
 
 1081.4 label "antivirusLoop"
-1081.4 "环状清除/十字清除" Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1083.4 "免疫反应" Ability { id: ["8E1A", "8E1C"], source: "反病毒程序X" } # Immune Response cast
-1084.0 "环状清除/十字清除 2" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
+1081.4 "环状清除/十字清除 1" Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1083.4 "--sync--" Ability { id: ["8E1A", "8E1C"], source: "反病毒程序X" } # 免疫反应 cast
+1084.0 "环状清除/十字清除 2" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
 1084.4 "免疫反应" Ability { id: ["8E1B", "8E1D"], source: "反病毒程序X" }
-1086.4 "环状清除/十字清除 3" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1088.8 "环状清除/十字清除 4" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1091.2 "环状清除/十字清除 5" #Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] }
-1093.3 "免疫反应" Ability { id: ["8E1A", "8E1C"], source: "反病毒程序X" } # Immune Response cast
+1086.4 "环状清除/十字清除 3" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1088.8 "环状清除/十字清除 4" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1091.2 "环状清除/十字清除 5" #Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] }
+1093.3 "--sync--" Ability { id: ["8E1A", "8E1C"], source: "反病毒程序X" } # 免疫反应 cast
 1094.3 "免疫反应" Ability { id: ["8E1B", "8E1D"], source: "反病毒程序X" }
-1101.4 "检疫" Ability { id: "8E20", source: "反病毒程序X" } # Quarantine cast
+1101.4 "--sync--" Ability { id: "8E20", source: "反病毒程序X" } # 检疫 cast
 1103.4 "检疫" Ability { id: "8E22", source: "反病毒程序X" }
 1103.4 "消毒" Ability { id: "8E21", source: "反病毒程序X" }
-1111.5 "细胞溶解" Ability { id: "8E23", source: "反病毒程序X" }
+1111.5 "细胞溶解" Ability { id: "8E23", source: "反病毒程序X" } # 读条ID 8E23 AOE
 
-1134.6 "环状清除/十字清除" Ability { id: ["8E1E", "8E1F"], source: ["Interferon R", "Interferon C"] } forcejump "antivirusLoop"
+1134.6 "环状清除/十字清除" Ability { id: ["8E1E", "8E1F"], source: ["反病毒程序R", "反病毒程序C"] } forcejump "antivirusLoop"
 
 #~~~~~~~~~#
 # 软性融合体 #
@@ -54,34 +55,34 @@ hideall "--sync--"
 
 # -ii 8DF1 8DEA 8DEB 8DEC 98E2 9955
 
-# 损坏的存储缓存已被封锁
+# The Corrupted Memory Cache will be sealed off
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "118F" } window 2000,1
 2011.1 "雷转质波动" Ability { id: "8DF2", source: "软性融合体" }
-2019.7 "解体" Ability { id: "8DE3", source: "软性融合体" }
-2034.8 "电流矩阵" Ability { id: "98E0", source: "软性融合体" }
+2019.7 "解体" Ability { id: "8DE3", source: "软性融合体" } # 读条ID 8DE3 AOE
+2034.8 "电流矩阵" Ability { id: "98E0", source: "软性融合体" } # 读条ID 98E0 远离闪电三角
 2036.5 "--sync--" Ability { id: "8DE5", source: "软性融合体" }
 2045.5 "集中放电" Ability { id: "8DE7", source: "软性融合体" }
 2052.7 "分裂放电" Ability { id: "8DE9", source: "软性融合体" }
-2063.7 "解体" Ability { id: "8DE3", source: "软性融合体" }
-2078.8 "电流矩阵" Ability { id: "98E0", source: "软性融合体" }
-2078.9 "电流矩阵" Ability { id: "98E2", source: "软性融合体" }
+2063.7 "解体" Ability { id: "8DE3", source: "软性融合体" } # 读条ID 8DE3 AOE
+2078.8 "电流矩阵 (三角)" Ability { id: "98E0", source: "软性融合体" } # 读条ID 98E0 远离闪电三角
+2078.9 "电流矩阵 (激光)" Ability { id: "98E2", source: "软性融合体" } # 读条ID 98E2 躲避墙壁激光
 2080.5 "--sync--" Ability { id: "8DE5", source: "软性融合体" }
 2081.6 "静电火花" Ability { id: "8DEE", source: "软性融合体" }
 2089.3 "集中放电/分裂放电" Ability { id: ["8DE7","8DE9"], source: "软性融合体" }
 
 2098.4 label "amalgamLoop"
 2098.4 "融合威能" Ability { id: "8DF3", source: "软性融合体" }
-2109.4 "解体" Ability { id: "8DE3", source: "软性融合体" }
+2109.4 "解体" Ability { id: "8DE3", source: "软性融合体" } # 读条ID 8DE3 AOE
 2114.0 "电击爆发 1" #Ability { id: "8DF0", source: "软性融合体" }
 2116.0 "电击爆发 2" #Ability { id: "8DF0", source: "软性融合体" }
 2118.0 "电击爆发 3 " #Ability { id: "8DF0", source: "软性融合体" }
-2124.7 "电流矩阵" Ability { id: "98E0", source: "软性融合体" }
+2124.7 "电流矩阵" Ability { id: "98E0", source: "软性融合体" } # 读条ID 98E0 远离闪电三角
 2126.4 "--sync--" Ability { id: "8DE5", source: "软性融合体" }
 2127.5 "静电火花" Ability { id: "8DEE", source: "软性融合体" }
 2137.9 "超电击" Ability { id: "8DED", source: "软性融合体" }
-2149.2 "三重放电" Ability { id: "9956", source: "软性融合体" }
-2151.2 "三重放电" Ability { id: "9957", source: "软性融合体" }
-2153.2 "三重放电" Ability { id: "9958", source: "软性融合体" }
+2149.2 "三重放电 (inner)" Ability { id: "9956", source: "软性融合体" }
+2151.2 "三重放电 (outer)" Ability { id: "9957", source: "软性融合体" }
+2153.2 "三重放电 (四角)" Ability { id: "9958", source: "软性融合体" }
 2156.5 "集中放电/分裂放电" Ability { id: ["8DE7","8DE9"], source: "软性融合体" }
 2164.6 "雷转质波动" Ability { id: "8DF2", source: "软性融合体" }
 
@@ -92,44 +93,44 @@ hideall "--sync--"
 #~~~~~~~~~~~~#
 
 # -ii 8F9C 8FA0 8FAF 8F9E 8F9F 8FAB 8FAF 8FB9 8FBC 994F 9950 9AAF 9AB0
-# -ic "Elimination Claw" "Elimbit" "Lightning Generator"
+# -ic "清除 Claw" "Elimbit" "光ning Generator"
 
-# It's not entirely clear why there are so many Partition abilities.
-# The general pattern is one self-cast on Eliminator per usage,
-# either a base Partition or a Reconfigured Partition,
+# It's not entirely clear why there are so many 断斩 abilities.
+# The general pattern is one self-cast on 清除者 per usage,
+# either a base 断斩 or a Reconfigured 断斩,
 # with the animations and damage being separate abilities.
 # Animations appear to resolve as self-casts as well,
 # while damaging instances start as self-casts but then
 # target either any players in the damage zone or the E0000000 environmental actor.
 
-# 8FA0 and 985F are both used exactly once, on the first Partition.
+# 8FA0 and 985F are both used exactly once, on the first 断斩.
 # Thereafter, 8F9F + 9951 are used for left-cleave animations + damage,
 # while 8F9E and 9946 are used for right cleaves.
 
-# Reconfigured Partition does not in itself do damage.
-# It's a very short-duration cast with a Partition cast alongside.
+# Reconfigured 断斩 does not in itself do damage.
+# It's a very short-duration cast with a 断斩 cast alongside.
 # (That is, even though the visible castbar shows Reconfigured,
-# the actual underlying cast and resolution are all "standard" Partitions.)
+# the actual underlying cast and resolution are all "standard" 断斩s.)
 
 # In general, we will try to use the actual damage snapshots
 # for the displayed timeline entries.
 
-# TODO: Determine the full Eliminator intermission sequence to enrage.
+# TODO: Determine the full 清除者 intermission sequence to enrage.
 # (Duty support kills the pylons too fast to see the full sequence.)
 
-# 再临之间已被封锁
+# Reascension will be sealed off
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1193" } window 3000,1
-3010.1 "崩裂" Ability { id: "8F9D", source: "清除者" }
+3010.1 "崩裂" Ability { id: "8F9D", source: "清除者" } # 读条ID 8F9D AOE
 3013.2 "--center--" Ability { id: "8F9B", source: "清除者" }
 3020.5 "断斩" Ability { id: "985F", source: "清除者" }
 3030.0 "断斩" Ability { id: "9951", source: "清除者" }
 3037.6 "--center--" Ability { id: "8F9B", source: "清除者" }
 3042.8 "子程序" Ability { id: "8FA4", source: "清除者" }
-3052.0 "终结" Ability { id: "9ABF", source: "清除者" }
+3052.0 "终结" Ability { id: "9ABF", source: "清除者" } # 读条ID 9ABF 躲避手激光
 3052.0 "断斩" Ability { id: "9946", source: "清除者" }
 3055.3 "--sync--" Ability { id: "8FA6", source: "清除者" }
 3060.4 "子程序" Ability { id: "8FA7", source: "清除者" }
-3069.6 "毁灭光环" Ability { id: "9AC0", source: "清除者" }
+3069.6 "毁灭光环" Ability { id: "9AC0", source: "清除者" } # 读条ID 9AC0 站在浮游炮下
 3069.6 "断斩" Ability { id: ["9946", "9951"], source: "清除者" }
 3073.3 "--sync--" Ability { id: "8FA9", source: "清除者" }
 3073.4 "雷转质射线" Ability { id: "994B", source: "清除者" }
@@ -140,8 +141,8 @@ hideall "--sync--"
 3091.9 "--untargetable--"
 
 # Intermission
-3103.8 "毁灭光环" Ability { id: "9AC0", source: "清除者" }
-3107.7 "终结" Ability { id: "9ABF", source: "清除者" }
+3103.8 "毁灭光环" Ability { id: "9AC0", source: "清除者" } # 读条ID 9AC0 站在浮游炮下
+3107.7 "终结" Ability { id: "9ABF", source: "清除者" } # 读条ID 9ABF 躲避手激光
 3124.1 "救赎之光" Ability { id: "8FB0", source: "清除者" }
 3126.1 "--sync--" Ability { id: "8FB2", source: "清除者" }
 3131.7 "献身之光" Ability { id: "8FB3", source: "清除者" }
@@ -150,105 +151,105 @@ hideall "--sync--"
 3143.4 "--sync--" Ability { id: "8FB4", source: "清除者" } window 45,10
 3145.4 "--center--" Ability { id: "8F9B", source: "清除者" }
 3147.4 "--targetable--"
-3147.4 "末世方舟" Ability { id: "8FB5", source: "清除者" } # Holo Ark; no damage, visual only
+3147.4 "--sync--" Ability { id: "8FB5", source: "清除者" } # 末世方舟; no damage, visual only
 3157.3 "末世方舟" Ability { id: "8FB6", source: "清除者" }
 
 3168.6 label "eliminatorLoop"
 3168.6 "--center--" Ability { id: "8F9B", source: "清除者" }
 3173.9 "子程序" Ability { id: "8FAD", source: "清除者" }
-3182.0 "冲击" Ability { id: "8FBA", source: "清除者" }
+3182.0 "冲击" Ability { id: "8FBA", source: "清除者" } # 读条ID 8FBA 击退
 3187.1 "救赎之光" Ability { id: "8FB0", source: "清除者" }
 3191.9 "断斩" Ability { id: ["9946", "9951"], source: "清除者" }
 3194.5 "--sync--" Ability { id: "8FB4", source: "清除者" }
-3202.6 "清除" Ability { id: "8FBB", source: "清除者" }
+3202.6 "清除" Ability { id: "8FBB", source: "清除者" } # 读条ID 8FBB 躲避多重激光
 3211.9 "爆炸 1" #Ability { id: "9947", source: "清除者" }
 3213.2 "爆炸 2" #Ability { id: "9947", source: "清除者" }
 3214.5 "爆炸 3" #Ability { id: "9947", source: "清除者" }
 3215.5 "--center--" Ability { id: "8F9B", source: "清除者" }
 3215.8 "爆炸 4" #Ability { id: "9947", source: "清除者" }
 3220.8 "子程序" Ability { id: "8FAD", source: "清除者" }
-3230.0 "毁灭光环" Ability { id: "9AC0", source: "清除者" }
+3230.0 "毁灭光环" Ability { id: "9AC0", source: "清除者" } # 读条ID 9AC0 站在浮游炮下
 3230.0 "断斩" Ability { id: ["9946", "9951"], source: "清除者" }
-3232.0 "终结" Ability { id: "9ABF", source: "清除者" }
+3232.0 "终结" Ability { id: "9ABF", source: "清除者" } # 读条ID 9ABF 躲避手激光
 3235.6 "--sync--" Ability { id: "8FB4", source: "清除者" }
-3242.6 "崩裂" Ability { id: "8F9D", source: "清除者" }
+3242.6 "崩裂" Ability { id: "8F9D", source: "清除者" } # 读条ID 8F9D AOE
 
 3248.7 "--center--" Ability { id: "8F9B", source: "清除者" } forcejump "eliminatorLoop"
 
 ### ALL ENCOUNTER ABILITIES
 
-### Antivirus X
-# 8E1A Immune Response
-# 8E1B Immune Response
-# 8E1C Immune Response
-# 8E1D Immune Response
-# 8E1E Pathocircuit Purge
-# 8E1F Pathocross Purge
-# 8E20 Quarantine
-# 8E21 Disinfection
-# 8E22 Quarantine
-# 8E23 Cytolysis
+### 反病毒程序X
+# 8E1A 免疫反应
+# 8E1B 免疫反应
+# 8E1C 免疫反应
+# 8E1D 免疫反应
+# 8E1E 环状清除
+# 8E1F 十字清除
+# 8E20 检疫
+# 8E21 消毒
+# 8E22 检疫
+# 8E23 细胞溶解
 # 8E24 [auto-attack]
 
 ### AMALGAM
 # 368 attack
-# 8DE3 Disassembly
+# 8DE3 解体
 # 8DE5 --sync-- (recombine)
-# 8DE7 Centralized Current
-# 8DE9 Split Current
-# 8DEA Split Current
-# 8DEB Split Current
-# 8DEC Superbolt
-# 8DED Superbolt
-# 8DEE Static Spark
-# 8DF0 Voltburst
-# 8DF1 Electrowave
-# 8DF2 Electrowave
-# 8DF3 Amalgamight
-# 98E0 Supercell Matrix
-# 98E2 Supercell Matrix
-# 9955 Ternary Charge
-# 9956 Ternary Charge
-# 9957 Ternary Charge
-# 9958 Ternary Charge
+# 8DE7 集中放电
+# 8DE9 分裂放电
+# 8DEA 分裂放电
+# 8DEB 分裂放电
+# 8DEC 超电击
+# 8DED 超电击
+# 8DEE 静电火花
+# 8DF0 电击爆发
+# 8DF1 雷转质波动
+# 8DF2 雷转质波动
+# 8DF3 融合威能
+# 98E0 电流矩阵
+# 98E2 电流矩阵
+# 9955 三重放电
+# 9956 三重放电
+# 9957 三重放电
+# 9958 三重放电
 
 # ALL ENCOUNTER ABILITIES
 # 8F9B --center--
 # 8F9C --sync--
-# 8F9D Disruption
-# 8F9E Partition
-# 8F9F Partition
-# 8FA0 Partition
-# 8FA4 Subroutine
-# 8FA5 Terminate
+# 8F9D 崩裂
+# 8F9E 断斩
+# 8F9F 断斩
+# 8FA0 断斩
+# 8FA4 子程序
+# 8FA5 终结
 # 8FA6 --sync--
-# 8FA7 Subroutine
-# 8FA8 Halo of Destruction
+# 8FA7 子程序
+# 8FA8 毁灭光环
 # 8FA9 --sync--
 # 8FAA --sync--
-# 8FAB Overexposure
-# 8FAC Overexposure
-# 8FAD Subroutine
-# 8FAE Light of Salvation
+# 8FAB 多重曝光
+# 8FAC 多重曝光
+# 8FAD 子程序
+# 8FAE 救赎之光
 # 8FAF --sync--
-# 8FB0 Light of Salvation
+# 8FB0 救赎之光
 # 8FB2 --sync--
 # 8FB4 --sync--
-# 8FB5 Holo Ark
-# 8FB6 Holo Ark
+# 8FB5 末世方舟
+# 8FB6 末世方舟
 # 8FB7 [auto-attack]
 # 8FB8 Compression
 # 8FB9 Compression
-# 8FBA Impact
-# 8FBB Elimination
-# 8FBC Elimination
-# 985F Partition
-# 9946 Partition
-# 9947 Explosion
-# 994B Electray
-# 994F Reconfigured Partition
-# 9950 Reconfigured Partition
-# 9951 Partition
-# 9AAF Partition
-# 9ABF Terminate
-# 9AC0 Halo of Destruction
+# 8FBA 冲击
+# 8FBB 清除
+# 8FBC 清除
+# 985F 断斩
+# 9946 断斩
+# 9947 爆炸
+# 994B 雷转质射线
+# 994F Reconfigured 断斩
+# 9950 Reconfigured 断斩
+# 9951 断斩
+# 9AAF 断斩
+# 9ABF 终结
+# 9AC0 毁灭光环

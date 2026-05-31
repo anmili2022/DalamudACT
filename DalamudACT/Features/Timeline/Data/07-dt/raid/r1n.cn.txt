@@ -1,15 +1,16 @@
 ### Arcadion (R1N): AAC Light-heavyweight M1
+# ZoneId: 1225
 
 # -ii 98EF 933E 6854
-# -it "Black Cat"
+# -it "黑猫"
 
 hideall "--Reset--"
 hideall "--sync--"
 
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-8.9 "血腥抓挠" StartsUsing { id: "9340", source: "黑猫" }
-13.6 "血腥抓挠" Ability { id: "9340", source: "黑猫" }
+8.9 "--sync--" StartsUsing { id: "9340", source: "黑猫" } # 读条ID 9340 AOE
+13.6 "血腥抓挠" Ability { id: "9340", source: "黑猫" } # 读条ID 9340 AOE
 18.7 "--middle--" Ability { id: "9308", source: "黑猫" }
 26.9 "二连尖甲 (咏唱)" Ability { id: ["9309", "930C"], source: "黑猫" }
 27.8 "二连尖甲 (伤害)" Ability { id: ["930A", "930B", "930D", "930E"], source: "黑猫" }
@@ -22,35 +23,35 @@ hideall "--sync--"
 58.1 "交叉尖甲 (伤害)" Ability { id: ["9311", "9312"], source: "黑猫" }
 60.1 "交叉尖甲 (咏唱)" Ability { id: ["930F", "9310"], source: "黑猫" }
 61.2 "交叉尖甲 (伤害)" Ability { id: ["9311", "9312"], source: "黑猫" }
-68.2 "踩奶" Ability { id: "934A", source: "黑猫" }
-74.2 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" }
+68.2 "踩奶" Ability { id: "934A", source: "黑猫" } # 读条ID 934A 死刑
+74.2 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" } # 读条ID 933C 分摊
 75.2 "重爪爆发 (伤害)" Ability { id: "933D", source: "黑猫" }
 85.3 "--middle--" Ability { id: "9308", source: "黑猫" }
 # The boss telegraphs hits with IDs:
 # 9315 (first hit on tile)
 # 996B (second hit on tile)
-# We don't sync for Mouser because the IDs are repeated
+# We don't sync for 捕鼠 because the IDs are repeated
 88.6 "捕鼠 (预兆)" duration 8.7
 # Hits are two IDs:
 # 9316 (animation)
-# 945A (damage)
+# 945A (伤害)
 98.2 "捕鼠 (命中)" duration 8.6
 # There's an additional ability 9314 which is an animation played at the end of the hits section
-# Impact doesn't always hit, because sometimes players miss platforms.
+# 冲击 doesn't always hit, because sometimes players miss platforms.
 # There's probably also `Ability` lines triggered for someone breaking a platform?
 107.2 "--sync--" Ability { id: "9314", source: "黑猫" }
-127.2 "腾身开膛" Ability { id: "9317", source: "黑猫" }
+127.2 "腾身开膛" Ability { id: "9317", source: "黑猫" } # 读条ID 9317 瞄准完好的平台
 130.9 "冲击" Ability { id: "9952", source: "黑猫" }
-137.5 "腾身开膛" Ability { id: "9317", source: "黑猫" }
+137.5 "腾身开膛" Ability { id: "9317", source: "黑猫" } # 读条ID 9317 瞄准完好的平台
 141.2 "冲击" Ability { id: "9952", source: "黑猫" }
-147.8 "腾身开膛" Ability { id: "9317", source: "黑猫" }
+147.8 "腾身开膛" Ability { id: "9317", source: "黑猫" } # 读条ID 9317 瞄准完好的平台
 151.5 "冲击" Ability { id: "9952", source: "黑猫" }
-158.1 "腾身开膛" Ability { id: "9317", source: "黑猫" }
+158.1 "腾身开膛" Ability { id: "9317", source: "黑猫" } # 读条ID 9317 瞄准完好的平台
 161.8 "冲击" Ability { id: "9952", source: "黑猫" }
 164.2 "--middle--" Ability { id: "9308", source: "黑猫" }
-172.4 "冲击波 (咏唱)" Ability { id: "931D", source: "黑猫" }
+172.4 "冲击波 (咏唱)" Ability { id: "931D", source: "黑猫" } # 读条ID 931D 击退
 173.4 "冲击波 (伤害)" Ability { id: "931E", source: "黑猫" }
-180.4 "血腥抓挠" Ability { id: "9340", source: "黑猫" }
+180.4 "血腥抓挠" Ability { id: "9340", source: "黑猫" } # 读条ID 9340 AOE
 188.5 "--middle--" Ability { id: "9308", source: "黑猫" }
 # The boss telegraphs pounce paths with, in order:
 # 9332/9334/9336/9338/933A - paw print paths, rectangle AoEs
@@ -64,9 +65,9 @@ hideall "--sync--"
 # Animations are tied to 9B16, 9B17, 9930
 # No sync on this because of repeated IDs
 205.0 "迅猫急袭 (命中)" duration 5.3
-# For Grimalkin Gale, 933E puts spread markers on, but actual damage is 933F
+# For 猫怪突风, 933E puts spread markers on, but actual damage is 933F
 218.1 "猫怪突风" Ability { id: "933F", source: "黑猫" }
-225.2 "踩奶" Ability { id: "934A", source: "黑猫" }
+225.2 "踩奶" Ability { id: "934A", source: "黑猫" } # 读条ID 934A 死刑
 231.3 "--middle--" Ability { id: "9308", source: "黑猫" }
 # from video:
 # 9321 = jumping east, west safe then east
@@ -75,7 +76,7 @@ hideall "--sync--"
 # 9320 = jumping west, ???east safe then west???
 # speculation:
 # 9322 = jumping east, ???west safe then east???
-240.6 "猫跳二连尖甲 (咏唱)" Ability { id: ["931F", "9320", "9321", "9322"], source: "黑猫" }
+240.6 "猫跳二连尖甲 (咏唱)" Ability { id: ["931F", "9320", "9321", "9322"], source: "黑猫" } # 读条ID 931F 标记左侧再标记右侧 # 读条ID 9320 标记右侧再标记左侧 # 读条ID 9321 标记左侧再标记右侧 # 读条ID 9322 标记右侧再标记左侧
 241.6 "猫跳二连尖甲 (跳)" #Ability { id: ["9323", "9326"], source: "黑猫" }
 242.4 "猫跳二连尖甲 (伤害)" #Ability { id: ["9324", "9328"], source: "黑猫" }
 244.4 "猫跳二连尖甲 (伤害)" #Ability { id: ["9325", "9327"], source: "黑猫" }
@@ -87,39 +88,39 @@ hideall "--sync--"
 254.8 "猫跳交叉尖甲 (咏唱)" Ability { id: ["9329", "9810"], source: "黑猫" }
 256.8 "猫跳交叉尖甲 (伤害)" Ability { id: "932C", source: "黑猫" }
 258.8 "猫跳交叉尖甲 (伤害)" Ability { id: "932D", source: "黑猫" }
-264.8 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" }
+264.8 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" } # 读条ID 933C 分摊
 265.8 "重爪爆发 (伤害)" Ability { id: "933D", source: "黑猫" }
 272.8 label "loop"
-272.8 "血腥抓挠" Ability { id: "9340", source: "黑猫" }
+272.8 "血腥抓挠" Ability { id: "9340", source: "黑猫" } # 读条ID 9340 AOE
 282.9 "--middle--" Ability { id: "9308", source: "黑猫" }
 286.3 "捕鼠 (预兆)" duration 8.7
 295.0 "捕鼠 (命中)" duration 8.6
 305.0 "--sync--" Ability { id: "9314", source: "黑猫" }
-# Copy Cat clone does the E&E, boss does line stack
+# 模仿猫 clone does the E&E, boss does line stack
 317.0 "模仿之猫" Ability { id: "9318", source: "黑猫" }
 # 6854 is something to do with the line stack marker, but we can ignore it unless we really need the callout 0.4s earlier than the actual cast
-329.1 "腾身开膛" Ability { id: "9317", source: "模仿猫" }
-329.3 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" }
+329.1 "腾身开膛" Ability { id: "9317", source: "模仿猫" } # 读条ID 9317 瞄准完好的平台
+329.3 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" } # 读条ID 9319 分摊
 329.5 "超暗影 (伤害)" Ability { id: "931A", source: "黑猫" }
 332.8 "冲击" Ability { id: "9952", source: "模仿猫" }
-340.7 "腾身开膛" Ability { id: "9317", source: "模仿猫" }
-340.8 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" }
+340.7 "腾身开膛" Ability { id: "9317", source: "模仿猫" } # 读条ID 9317 瞄准完好的平台
+340.8 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" } # 读条ID 9319 分摊
 341.0 "超暗影 (伤害)" Ability { id: "931A", source: "黑猫" }
 344.3 "冲击" Ability { id: "9952", source: "模仿猫" }
-352.3 "腾身开膛" Ability { id: "9317", source: "模仿猫" }
-352.5 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" }
+352.3 "腾身开膛" Ability { id: "9317", source: "模仿猫" } # 读条ID 9317 瞄准完好的平台
+352.5 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" } # 读条ID 9319 分摊
 352.7 "超暗影 (伤害)" Ability { id: "931A", source: "黑猫" }
 355.8 "冲击" Ability { id: "9952", source: "模仿猫" }
-363.7 "腾身开膛" Ability { id: "9317", source: "模仿猫" }
-363.9 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" }
+363.7 "腾身开膛" Ability { id: "9317", source: "模仿猫" } # 读条ID 9317 瞄准完好的平台
+363.9 "超暗影 (咏唱)" Ability { id: "9319", source: "黑猫" } # 读条ID 9319 分摊
 364.1 "超暗影 (伤害)" Ability { id: "931A", source: "黑猫" }
 367.3 "冲击" Ability { id: "9952", source: "模仿猫" }
 370.1 "--middle--" Ability { id: "9308", source: "黑猫" }
-378.3 "冲击波 (咏唱)" Ability { id: "931D", source: "黑猫" }
+378.3 "冲击波 (咏唱)" Ability { id: "931D", source: "黑猫" } # 读条ID 931D 击退
 379.3 "冲击波 (伤害)" Ability { id: "931E", source: "黑猫" }
-386.3 "踩奶" Ability { id: "934A", source: "黑猫" }
+386.3 "踩奶" Ability { id: "934A", source: "黑猫" } # 读条ID 934A 死刑
 
-# Copy Cat clone does the Predaceous Pounce, boss does ~~nothing~~ auto attacks
+# 模仿猫 clone does the 迅猫急袭, boss does ~~nothing~~ auto attacks
 397.3 "模仿之猫" Ability { id: "9318", source: "黑猫" }
 402.1 "迅猫急袭 (预兆)" StartsUsing { id: "9332", source: "黑猫" } duration 10.7
 415.6 "迅猫急袭 (命中)" duration 5.3
@@ -127,10 +128,10 @@ hideall "--sync--"
 425.9 "二连尖甲 (咏唱)" Ability { id: ["9309", "930C"], source: "黑猫" }
 426.8 "二连尖甲 (伤害)" Ability { id: ["930A", "930B", "930D", "930E"], source: "黑猫" }
 429.8 "二连尖甲 (伤害)" Ability { id: ["930A", "930B", "930D", "930E"], source: "黑猫" }
-435.0 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" }
+435.0 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" } # 读条ID 933C 分摊
 436.0 "重爪爆发 (伤害)" Ability { id: "933D", source: "黑猫" }
 444.0 "--sync--" Ability { id: "9308", source: "黑猫" }
-455.0 "猫跳二连尖甲 (咏唱)" Ability { id: ["931F", "9320", "9321", "9322"], source: "黑猫" }
+455.0 "猫跳二连尖甲 (咏唱)" Ability { id: ["931F", "9320", "9321", "9322"], source: "黑猫" } # 读条ID 931F 标记左侧再标记右侧 # 读条ID 9320 标记右侧再标记左侧 # 读条ID 9321 标记左侧再标记右侧 # 读条ID 9322 标记右侧再标记左侧
 456.0 "猫跳二连尖甲 (跳)" #Ability { id: ["9323", "9326"], source: "黑猫" }
 456.8 "猫跳二连尖甲 (伤害)" #Ability { id: ["9324", "9328"], source: "黑猫" }
 458.8 "猫跳二连尖甲 (伤害)" #Ability { id: ["9325", "9327"], source: "黑猫" }
@@ -139,6 +140,6 @@ hideall "--sync--"
 473.2 "猫跳交叉尖甲 (伤害)" Ability { id: "932C", source: "黑猫" }
 475.2 "猫跳交叉尖甲 (伤害)" Ability { id: "932D", source: "黑猫" }
 478.0 "猫怪突风" Ability { id: "933F", source: "黑猫" }
-484.2 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" }
+484.2 "重爪爆发 (咏唱)" Ability { id: "933C", source: "黑猫" } # 读条ID 933C 分摊
 485.2 "重爪爆发 (伤害)" Ability { id: "933D", source: "黑猫" }
-492.2 "血腥抓挠" Ability { id: "9340", source: "黑猫" } forcejump "loop"
+492.2 "血腥抓挠" Ability { id: "9340", source: "黑猫" } forcejump "loop" # 读条ID 9340 AOE

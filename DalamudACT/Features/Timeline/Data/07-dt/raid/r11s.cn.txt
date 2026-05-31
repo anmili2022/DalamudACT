@@ -1,8 +1,7 @@
 ### AAC HEAVYWEIGHT M3 (SAVAGE)
 # ZoneId: 1325
-
 # -ii B405 B40E B40D B40A B41E B42D B429 B426 B437 B43B B445 B455 B439 B458 B461 B446 B431
-# -it "The Tyrant"
+# -it "霸王"
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -10,27 +9,27 @@ hideall "--sync--"
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
 # NOTE: A rough description of the layout for this timeline is as follows:
-# Timeline reaches Raw Steel Branch point
-#   "r11s-raw-steel-axe-1": Raw Steel Axe First
-#     "r11s-axe-1-comet-1": Raw Steel Axe First + Comet First
-#     "r11s-axe-1-crush-1": Raw Steel Axe First + Crushing Comet First
-#   "r11s-axe-1-post-cometcrush": Label for Dance of Domination section within Raw Steel Axe First
-# "r11s-charybdistopia": Jump to end of Raw Steel branch
+# Timeline reaches 铸兵轰击 Branch point
+#   "r11s-raw-steel-axe-1": 铸兵轰击 Axe First
+#     "r11s-axe-1-comet-1": 铸兵轰击 Axe First + 彗星 First
+#     "r11s-axe-1-crush-1": 铸兵轰击 Axe First + 重彗星 First
+#   "r11s-axe-1-post-cometcrush": Label for 统治的战舞 section within 铸兵轰击 Axe First
+# "r11s-charybdistopia": Jump to end of 铸兵轰击 branch
 #
-# "r11s-raw-steel-scythe-1": Raw Steel Scythe
-#     "r11s-scythe-1-comet-1": Raw Steel Scythe First + Comet First
-#     "r11s-scythe-1-crush-1": Raw Steel Scythe First + Crushing Comet First
-#   "r11s-scythe-1-post-cometcrush": Label for Dance of Domination section within Raw Steel Scythe First
-# "r11s-charybdistopia": Label for the end of Raw Steel branch
+# "r11s-raw-steel-scythe-1": 铸兵轰击 Scythe
+#     "r11s-scythe-1-comet-1": 铸兵轰击 Scythe First + 彗星 First
+#     "r11s-scythe-1-crush-1": 铸兵轰击 Scythe First + 重彗星 First
+#   "r11s-scythe-1-post-cometcrush": Label for 统治的战舞 section within 铸兵轰击 Scythe First
+# "r11s-charybdistopia": Label for the end of 铸兵轰击 branch
 # Timeline continues
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-5.6 "天顶的主宰" StartsUsing { id: "B406", source: "霸王" } window 10,10
+5.6 "--sync--" StartsUsing { id: "B406", source: "霸王" } window 10,10
 10.6 "天顶的主宰" Ability { id: "B406", source: "霸王" }
 
-# Branch for Raw Steel Axe or Raw Steel Scythe First
-15.7 "铸兵之令：轰击" StartsUsing { id: "B422", source: "霸王" } window 15.7,5 jump "r11s-raw-steel-axe-1"
-15.7 "铸兵之令：轰击" StartsUsing { id: "B423", source: "霸王" } window 15.7,5 jump "r11s-raw-steel-scythe-1"
+# Branch for 铸兵轰击 Axe or 铸兵轰击 Scythe First
+15.7 "--sync--" StartsUsing { id: "B422", source: "霸王" } window 15.7,5 jump "r11s-raw-steel-axe-1"
+15.7 "--sync--" StartsUsing { id: "B423", source: "霸王" } window 15.7,5 jump "r11s-raw-steel-scythe-1"
 17.7 "铸兵之令：轰击 (镰刀/斧头)" #Ability { id: ["B423", "B422"], source: "霸王" }
 24.0 "铸兵轰击 (斧头)?" #Ability { id: "B40B", source: "霸王" } # Only tanks
 25.1 "重斩击 (镰刀)/冲击 x6 (斧头)" #Ability { id: ["B410", "B40C"], source: "霸王" } # Only non-tanks
@@ -38,75 +37,75 @@ hideall "--sync--"
 33.1 "--middle--" #Ability { id: "B404", source: "霸王" }
 38.4 "历战之兵武" #Ability { id: "B416", source: "霸王" }
 
-# Raw Steel Axe First
+# 铸兵轰击 Axe First
 115.7 label "r11s-raw-steel-axe-1"
-117.7 "铸兵之令：轰击" Ability { id: "B422", source: "霸王" }
-124.0 "铸兵轰击" Ability { id: "B40B", source: "霸王" } # Only tanks
-125.1 "冲击" Ability { id: "B40C", source: "霸王" } # Only non-tanks
+117.7 "铸兵之令：轰击 斧" Ability { id: "B422", source: "霸王" }
+124.0 "铸兵轰击 (斧头)" Ability { id: "B40B", source: "霸王" } # Only tanks
+125.1 "冲击 x6 (斧头)" Ability { id: "B40C", source: "霸王" } # Only non-tanks
 133.1 "--middle--" Ability { id: "B404", source: "霸王" }
 138.4 "历战之兵武" Ability { id: "B416", source: "霸王" }
 148.2 "铸兵突袭" Ability { id: "B417", source: "霸王" }
-148.4 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-150.3 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-150.4 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-153.5 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-155.4 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-155.5 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-158.6 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-160.5 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-160.6 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+148.4 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+150.3 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+150.4 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+153.5 "--跳2--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+155.4 "武器 2" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+155.5 "铸兵突袭 2" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+158.6 "--跳3--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+160.5 "武器 3" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+160.6 "铸兵突袭 3" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 
-# Trophy Weapons 2 (Axe)
+# Trophy Weapons 2 (斧头)
 167.7 "--middle--" Ability { id: "B404", source: "霸王" }
 172.7 "历战之兵武" Ability { id: "B416", source: "霸王" }
-179.8 "彗星雨" Ability { id: "B412", source: "霸王" }
+179.8 "彗星雨" Ability { id: "B412", source: "霸王" } # 读条ID B412 诱导3次圈圈
 183.9 "彗星风暴 1" #Ability { id: "B413", source: "霸王" }
 
-# Branch for Raw Steel Axe + Comet or Crushing Comet First
-184.9 "彗星" StartsUsing { id: "B414", source: "霸王" } jump "r11s-axe-1-comet-1"
-184.9 "重彗星" StartsUsing { id: "B415", source: "霸王" } jump "r11s-axe-1-crush-1"
+# Branch for 铸兵轰击 Axe + 彗星 or 重彗星 First
+184.9 "--sync--" StartsUsing { id: "B414", source: "霸王" } jump "r11s-axe-1-comet-1"
+184.9 "--sync--" StartsUsing { id: "B415", source: "霸王" } jump "r11s-axe-1-crush-1" # 读条ID B415 分摊
 185.9 "彗星风暴 2" #Ability { id: "B413", source: "霸王" }
 187.9 "彗星风暴 3" #Ability { id: "B413", source: "霸王" }
-189.9 "彗星/重彗星?" #Ability { id: ["B414", "B415"], source: "霸王" }
+189.9 "彗星/重彗星?" #Ability { id: ["B414", "B415"], source: "霸王" } # 读条ID B415 分摊
 192.7 "铸兵突袭" #Ability { id: "B417", source: "霸王" }
 192.9 "--跳1--" #Ability { id: ["B544", "B545", "B543"], source: "霸王" }
 194.8 "武器 1" #Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
 194.9 "铸兵突袭 1" #Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
 
-# Raw Steel Axe First + Comet First
+# 铸兵轰击 Axe First + 彗星 First
 284.9 label "r11s-axe-1-comet-1"
 289.9 "彗星" Ability { id: "B414", source: "霸王" }
 292.7 "铸兵突袭" Ability { id: "B417", source: "霸王" }
-292.9 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-294.8 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-294.9 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-298.0 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-299.9 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-300.0 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-303.1 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-305.0 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-305.1 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+292.9 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+294.8 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+294.9 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+298.0 "--跳2--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+299.9 "武器 2" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+300.0 "铸兵突袭 2" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+303.1 "--跳镰刀--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+305.0 "武器 3" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+305.1 "铸兵突袭 3" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 310.2 "彗星风暴 1" #Ability { id: "B413", source: "霸王" }
 312.2 "彗星风暴 2" #Ability { id: "B413", source: "霸王" }
 314.2 "彗星风暴 3" #Ability { id: "B413", source: "霸王" }
-316.2 "重彗星" Ability { id: "B415", source: "霸王" }
+316.2 "重彗星" Ability { id: "B415", source: "霸王" } # 读条ID B415 分摊
 
-317.2 "天顶的主宰" StartsUsing { id: "B406", source: "霸王" } forcejump "r11s-axe-1-post-cometcrush"
+317.2 "--sync--" StartsUsing { id: "B406", source: "霸王" } forcejump "r11s-axe-1-post-cometcrush"
 
 
-# Raw Steel Axe First + Crushing Comet First
+# 铸兵轰击 Axe First + 重彗星 First
 484.9 label "r11s-axe-1-crush-1"
-489.9 "重彗星" Ability { id: "B415", source: "霸王" }
+489.9 "重彗星" Ability { id: "B415", source: "霸王" } # 读条ID B415 分摊
 492.7 "铸兵突袭" Ability { id: "B417", source: "霸王" }
-492.9 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-494.8 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-494.9 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-498.0 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-499.9 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-500.0 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-503.1 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-505.0 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-505.1 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+492.9 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+494.8 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+494.9 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+498.0 "--跳2--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+499.9 "武器 2" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+500.0 "铸兵突袭 2" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+503.1 "--跳镰刀--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+505.0 "武器 3" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+505.1 "铸兵突袭 3" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 510.2 "彗星风暴 1" #Ability { id: "B413", source: "霸王" }
 512.2 "彗星风暴 2" #Ability { id: "B413", source: "霸王" }
 514.2 "彗星风暴 3" #Ability { id: "B413", source: "霸王" }
@@ -115,98 +114,98 @@ hideall "--sync--"
 517.2 label "r11s-axe-1-post-cometcrush"
 522.2 "天顶的主宰" Ability { id: "B406", source: "霸王" }
 
-# Dance of Domination (Axe)
+# 统治的战舞 (斧头)
 530.4 "--middle--" Ability { id: "B404", source: "霸王" }
-534.6 "铸兵之令：统治" Ability { id: "B7BB", source: "霸王" }
-541.3 "统治的战舞" Ability { id: "B41F", source: "霸王" }
+534.6 "铸兵之令：统治" Ability { id: "B7BB", source: "霸王" } # 读条ID B7BB 分摊
+541.3 "统治的战舞 1" Ability { id: "B41F", source: "霸王" }
 542.0 "统治的战舞 2" #Ability { id: "B421", source: "霸王" }
 542.6 "统治的战舞 3" #Ability { id: "B421", source: "霸王" }
 543.2 "统治的战舞 4" #Ability { id: "B421", source: "霸王" }
 543.8 "统治的战舞 5" #Ability { id: "B421", source: "霸王" }
 544.4 "统治的战舞 6" #Ability { id: "B421", source: "霸王" }
-545.5 "统治的战舞" Ability { id: "B7EA", source: "霸王" }
+545.5 "统治的战舞 7" Ability { id: "B7EA", source: "霸王" }
 550.5 "霸王飓风" Ability { id: "B424", source: "霸王" }
 550.7 "爆炸" Ability { id: "B420", source: "霸王" }
 551.1 "爆炸" Ability { id: "B7BC", source: "霸王" }
-556.4 "铸兵之令：轰击" Ability { id: "B423", source: "霸王" }
-563.8 "重斩击" Ability { id: "B410", source: "霸王" } # Only non-tanks
+556.4 "铸兵之令：轰击 镰" Ability { id: "B423", source: "霸王" }
+563.8 "重斩击 (镰刀)" Ability { id: "B410", source: "霸王" } # Only non-tanks
 563.8 "铸兵轰击 x2 (镰刀)" #Ability { id: "B40F", source: "霸王" } # Only tanks
 571.8 "--middle--" Ability { id: "B404", source: "霸王" }
 
-# Ultimate Trophy Weapons (Axe)
-573.9 "霸王大漩涡" StartsUsing { id: "B425", source: "霸王" } forcejump "r11s-charybdistopia"
+# 历战之极武 (斧头)
+573.9 "--sync--" StartsUsing { id: "B425", source: "霸王" } forcejump "r11s-charybdistopia"
 
 
-# Raw Steel Scythe First
+# 铸兵轰击 Scythe First
 715.7 label "r11s-raw-steel-scythe-1"
-717.7 "铸兵之令：轰击" Ability { id: "B423", source: "霸王" }
-725.1 "重斩击" Ability { id: "B410", source: "霸王" } # Only non-tanks
+717.7 "铸兵之令：轰击 镰" Ability { id: "B423", source: "霸王" }
+725.1 "重斩击 (镰刀)" Ability { id: "B410", source: "霸王" } # Only non-tanks
 725.1 "铸兵轰击 x2 (镰刀)" #Ability { id: "B40F", source: "霸王" } # Only tanks
 733.1 "--middle--" Ability { id: "B404", source: "霸王" }
 
-# Trophy Weapons 1 (Scythe)
+# Trophy Weapons 1 (镰刀)
 738.4 "历战之兵武" Ability { id: "B416", source: "霸王" }
 748.2 "铸兵突袭" Ability { id: "B417", source: "霸王" }
-748.4 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-750.3 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-750.4 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-753.5 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-755.4 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-755.5 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-758.6 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-760.5 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-760.6 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+748.4 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+750.3 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+750.4 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+753.5 "--跳2--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+755.4 "武器 2" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+755.5 "铸兵突袭 2" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+758.6 "--跳3--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+760.5 "武器 3" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+760.6 "铸兵突袭 3" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 
-# Trophy Weapons 2 (Scythe)
+# Trophy Weapons 2 (镰刀)
 767.7 "--middle--" Ability { id: "B404", source: "霸王" }
 772.7 "历战之兵武" Ability { id: "B416", source: "霸王" }
-779.8 "彗星雨" Ability { id: "B412", source: "霸王" }
+779.8 "彗星雨" Ability { id: "B412", source: "霸王" } # 读条ID B412 诱导3次圈圈
 783.9 "彗星风暴 1" #Ability { id: "B413", source: "霸王" }
 
-# Branch for Raw Steel Scythe + Comet or Crushing Comet First
-784.9 "彗星" StartsUsing { id: "B414", source: "霸王" } jump "r11s-scythe-1-comet-1"
-784.9 "重彗星" StartsUsing { id: "B415", source: "霸王" } jump "r11s-scythe-1-crush-1"
+# Branch for 铸兵轰击 Scythe + 彗星 or 重彗星 First
+784.9 "--sync--" StartsUsing { id: "B414", source: "霸王" } jump "r11s-scythe-1-comet-1"
+784.9 "--sync--" StartsUsing { id: "B415", source: "霸王" } jump "r11s-scythe-1-crush-1" # 读条ID B415 分摊
 785.9 "彗星风暴 2" #Ability { id: "B413", source: "霸王" }
 787.9 "彗星风暴 3" #Ability { id: "B413", source: "霸王" }
-789.9 "彗星/重彗星?" #Ability { id: ["B414", "B415"], source: "霸王" }
+789.9 "彗星/重彗星?" #Ability { id: ["B414", "B415"], source: "霸王" } # 读条ID B415 分摊
 792.7 "铸兵突袭" #Ability { id: "B417", source: "霸王" }
 792.9 "--跳1--" #Ability { id: ["B544", "B545", "B543"], source: "霸王" }
 794.8 "武器 1" #Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
 794.9 "铸兵突袭 1" #Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
 
-# Raw Steel Scythe First + Comet First
+# 铸兵轰击 Scythe First + 彗星 First
 884.9 label "r11s-scythe-1-comet-1"
 889.9 "彗星" Ability { id: "B414", source: "霸王" }
 892.7 "铸兵突袭" Ability { id: "B417", source: "霸王" }
-892.9 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-894.8 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-894.9 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-898.0 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-899.9 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-900.0 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-903.1 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-905.0 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-905.1 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+892.9 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+894.8 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+894.9 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+898.0 "--跳2--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+899.9 "武器 2" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+900.0 "铸兵突袭 2" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+903.1 "--跳镰刀--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+905.0 "武器 3" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+905.1 "铸兵突袭 3" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 910.2 "彗星风暴 1" #Ability { id: "B413", source: "霸王" }
 912.2 "彗星风暴 2" #Ability { id: "B413", source: "霸王" }
 914.2 "彗星风暴 3" #Ability { id: "B413", source: "霸王" }
-916.2 "重彗星" Ability { id: "B415", source: "霸王" }
+916.2 "重彗星" Ability { id: "B415", source: "霸王" } # 读条ID B415 分摊
 
-917.2 "天顶的主宰" StartsUsing { id: "B406", source: "霸王" } forcejump "r11s-scythe-1-post-cometcrush"
+917.2 "--sync--" StartsUsing { id: "B406", source: "霸王" } forcejump "r11s-scythe-1-post-cometcrush"
 
-# Raw Steel Scythe First + Crushing Comet First
+# 铸兵轰击 Scythe First + 重彗星 First
 1084.9 label "r11s-scythe-1-crush-1"
-1089.9 "重彗星" Ability { id: "B415", source: "霸王" }
+1089.9 "重彗星" Ability { id: "B415", source: "霸王" } # 读条ID B415 分摊
 1092.7 "铸兵突袭" Ability { id: "B417", source: "霸王" }
-1092.9 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-1094.8 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-1094.9 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-1098.0 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-1099.9 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-1100.0 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-1103.1 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-1105.0 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-1105.1 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+1092.9 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+1094.8 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+1094.9 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+1098.0 "--跳2--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+1099.9 "武器 2" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+1100.0 "铸兵突袭 2" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+1103.1 "--跳镰刀--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+1105.0 "武器 3" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+1105.1 "铸兵突袭 3" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 1110.2 "彗星风暴 1" #Ability { id: "B413", source: "霸王" }
 1112.2 "彗星风暴 2" #Ability { id: "B413", source: "霸王" }
 1114.2 "彗星风暴 3" #Ability { id: "B413", source: "霸王" }
@@ -215,60 +214,60 @@ hideall "--sync--"
 1117.2 label "r11s-scythe-1-post-cometcrush"
 1122.2 "天顶的主宰" Ability { id: "B406", source: "霸王" }
 
-# Dance of Domination (Scythe)
+# 统治的战舞 (镰刀)
 1130.4 "--middle--" Ability { id: "B404", source: "霸王" }
-1134.6 "铸兵之令：统治" Ability { id: "B7BB", source: "霸王" }
-1141.3 "统治的战舞" Ability { id: "B41F", source: "霸王" }
+1134.6 "铸兵之令：统治" Ability { id: "B7BB", source: "霸王" } # 读条ID B7BB 分摊
+1141.3 "统治的战舞 1" Ability { id: "B41F", source: "霸王" }
 1142.0 "统治的战舞 2" #Ability { id: "B421", source: "霸王" }
 1142.6 "统治的战舞 3" #Ability { id: "B421", source: "霸王" }
 1143.2 "统治的战舞 4" #Ability { id: "B421", source: "霸王" }
 1143.8 "统治的战舞 5" #Ability { id: "B421", source: "霸王" }
 1144.4 "统治的战舞 6" #Ability { id: "B421", source: "霸王" }
-1145.5 "统治的战舞" Ability { id: "B7EA", source: "霸王" }
+1145.5 "统治的战舞 7" Ability { id: "B7EA", source: "霸王" }
 1150.5 "霸王飓风" Ability { id: "B424", source: "霸王" }
 1150.7 "爆炸" Ability { id: "B420", source: "霸王" }
 1151.1 "爆炸" Ability { id: "B7BC", source: "霸王" }
-1156.4 "铸兵之令：轰击" Ability { id: "B422", source: "霸王" }
-1162.7 "铸兵轰击" Ability { id: "B40B", source: "霸王" } # Only tanks
-1163.8 "冲击" Ability { id: "B40C", source: "霸王" } # Only non-tanks
+1156.4 "铸兵之令：轰击 斧" Ability { id: "B422", source: "霸王" }
+1162.7 "铸兵轰击 (斧头)" Ability { id: "B40B", source: "霸王" } # Only tanks
+1163.8 "冲击 x6 (斧头)" Ability { id: "B40C", source: "霸王" } # Only non-tanks
 1171.8 "--middle--" Ability { id: "B404", source: "霸王" }
 
-# Ultimate Trophy Weapons
+# 历战之极武
 1173.9 label "r11s-charybdistopia"
 1178.9 "霸王大漩涡" Ability { id: "B425", source: "霸王" }
 1184.6 "历战之极武" Ability { id: "B7ED", source: "霸王" }
 1192.4 "铸兵崩落" Ability { id: "B7EE", source: "霸王" }
-1192.6 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-1194.5 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-1194.6 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-1197.7 "铸兵突袭" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
-1199.6 "斩波/重斩波/重打击" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
-1199.7 "铸兵突袭" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
-1202.8 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-1204.7 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-1204.8 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-1207.9 "铸兵突袭" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
-1209.8 "重斩波/重打击/斩波" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
-1209.9 "铸兵突袭" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
-1213.0 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-1214.9 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-1215.0 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
-1218.1 "铸兵突袭" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
-1220.0 "重打击/斩波/重斩波" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
-1220.1 "铸兵突袭" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+1192.6 "--跳1--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+1194.5 "武器 1" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+1194.6 "铸兵突袭 1" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+1197.7 "--跳2--" Ability { id: ["B544", "B545", "B543"], source: "霸王" }
+1199.6 "武器 2" Ability { id: ["B41C", "B41D", "B41B"], source: "霸王" }
+1199.7 "铸兵突袭 2" Ability { id: ["B419", "B41A", "B418"], source: "霸王" }
+1202.8 "--跳3--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+1204.7 "武器 3" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+1204.8 "铸兵突袭 3" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+1207.9 "--跳4--" Ability { id: ["B545", "B543", "B544"], source: "霸王" }
+1209.8 "武器 4" Ability { id: ["B41D", "B41B", "B41C"], source: "霸王" }
+1209.9 "铸兵突袭 4" Ability { id: ["B41A", "B418", "B419"], source: "霸王" }
+1213.0 "--跳5--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+1214.9 "武器 5" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+1215.0 "铸兵突袭 5" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
+1218.1 "--跳6--" Ability { id: ["B543", "B544", "B545"], source: "霸王" }
+1220.0 "武器 6" Ability { id: ["B41B", "B41C", "B41D"], source: "霸王" }
+1220.1 "铸兵突袭 6" Ability { id: ["B418", "B419", "B41A"], source: "霸王" }
 1221.2 "--middle--" Ability { id: "B404", source: "霸王" }
 1226.3 "强风" Ability { id: "B427", source: "霸王" }
 1227.3 "万劫不朽的统治" Ability { id: "B428", source: "霸王" }
 
 # Orbitel Omen 1
 1240.4 "举世无双的霸王" Ability { id: "B42A", source: "霸王" }
-1252.6 "火焰流" Ability { id: "B42B", source: "霸王" }
+1252.6 "火焰流 (咏唱栏)" Ability { id: "B42B", source: "霸王" }
 1252.8 "火焰流 1" #Ability { id: "B42C", source: "霸王" }
 1256.0 "火焰流 2" #Ability { id: "B42C", source: "霸王" }
-1256.6 "爆炸" Ability { id: "B42E", source: "霸王" }
-1259.8 "爆炸" Ability { id: "B42E", source: "霸王" }
-1266.1 "星轨链" Ability { id: "B432", source: "霸王" }
-1274.8 "兽焰连尾击" Ability { id: "B42F", source: "霸王" }
+1256.6 "爆炸 1" Ability { id: "B42E", source: "霸王" }
+1259.8 "爆炸 2" Ability { id: "B42E", source: "霸王" }
+1266.1 "星轨链 (咏唱栏)" Ability { id: "B432", source: "霸王" }
+1274.8 "兽焰连尾击 (咏唱栏)" Ability { id: "B42F", source: "霸王" }
 1275.2 "星轨链 1" #Ability { id: "B433", source: "霸王" }
 1275.8 "兽焰连尾击" #Ability { id: "B430", source: "霸王" }
 1276.8 "星轨链 2" #Ability { id: "B433", source: "霸王" }
@@ -295,9 +294,9 @@ hideall "--sync--"
 1324.0 "爆炸" Ability { id: "B438", source: "彗星" }
 1329.3 "夺命链" Ability { id: "B436", source: "霸王" }
 1330.2 "大火" Ability { id: "B43A", source: "霸王" }
-1334.0 "三重霸王坠击" Ability { id: "B43B", source: "霸王" }
+1334.0 "--sync--" Ability { id: "B43B", source: "霸王" }
 1334.0 "爆炸" #Ability { id: "B438", source: "彗星" }
-1342.9 "三重霸王坠击" Ability { id: "B43C", source: "霸王" }
+1342.9 "三重霸王坠击" Ability { id: "B43C", source: "霸王" } # 读条ID B43C 躲在三连陨石后
 1344.0 "冲击波" #Ability { id: "B43D", source: "霸王" }
 1344.4 "--sync--" #Ability { id: "B43E", source: "彗星" }
 1345.4 "冲击波" #Ability { id: "B43D", source: "霸王" }
@@ -308,46 +307,46 @@ hideall "--sync--"
 
 # Arena Split
 # NOTE: Need to move to safe spot at meteor 3
-1359.8 "绝命分断击" Ability { id: "B43F", source: "霸王" } window 360,10
-1361.8 "绝命分断击" Ability { id: "BA90", source: "霸王" }
+1359.8 "--sync--" Ability { id: "B43F", source: "霸王" } window 360,10 # 读条ID B43F 向两侧短距离击飞
+1361.8 "绝命分断击 (分散)" Ability { id: "BA90", source: "霸王" }
 1375.9 "王者陨石" Ability { id: "B440", source: "霸王" }
 1377.0 "--连线--"
-1389.0 "爆炸" Ability { id: "B444", source: "霸王" }
+1389.0 "爆炸" Ability { id: "B444", source: "霸王" } # 读条ID B444 踩击飞塔
 1394.9 "--火焰吐息点名--" HeadMarker { id: '00F4' }
 1397.0 "--陨石 1--" #StartsUsing { id: "B441", source: "霸王" }
 1399.0 "--陨石 2--" #StartsUsing { id: "B441", source: "霸王" }
 1400.0 "王者陨石 1" #Ability { id: "B441", source: "霸王" }
 1401.1 "--陨石 3--" #StartsUsing { id: "B441", source: "霸王" }
 1402.0 "王者陨石 2" #Ability { id: "B441", source: "霸王" }
-1403.9 "王者陨石雨/王者陨石震/火焰吐息" Ability { id: ["B442", "B443", "B447"], source: "霸王" }
+1403.9 "王者陨石震/王者陨石雨/火焰吐息" Ability { id: ["B442", "B443", "B447"], source: "霸王" }
 1404.1 "王者陨石 3" #Ability { id: "B441", source: "霸王" }
 
 1409.0 "--连线--"
-1421.1 "爆炸" Ability { id: "B444", source: "霸王" }
+1421.1 "爆炸" Ability { id: "B444", source: "霸王" } # 读条ID B444 踩击飞塔
 1427.0 "--火焰吐息点名--" HeadMarker { id: '00F4' }
 1429.1 "--陨石 1--" #StartsUsing { id: "B441", source: "霸王" }
 1431.1 "--陨石 2--" #StartsUsing { id: "B441", source: "霸王" }
 1432.1 "王者陨石 1" #Ability { id: "B441", source: "霸王" }
 1433.1 "--陨石 3--" #StartsUsing { id: "B441", source: "霸王" }
 1434.1 "王者陨石 2" #Ability { id: "B441", source: "霸王" }
-1436.0 "王者陨石雨/王者陨石震/火焰吐息" Ability { id: ["B442", "B443", "B447"], source: "霸王" }
+1436.0 "王者陨石震/王者陨石雨/火焰吐息" Ability { id: ["B442", "B443", "B447"], source: "霸王" }
 1436.1 "王者陨石 3" #Ability { id: "B441", source: "霸王" }
-1445.3 "重陨石" Ability { id: "B448", source: "霸王" }
+1445.3 "重陨石 (咏唱栏)" Ability { id: "B448", source: "霸王" }
 1446.4 "重陨石 x5" #Ability { id: "B449", source: "霸王" } duration 5.6
-1458.8 "爆炸" Ability { id: "B444", source: "霸王" }
-1459.1 "登天碎地" Ability { id: ["B44A", "B44C", "B44E", "B450"], source: "霸王" }
+1458.8 "爆炸" Ability { id: "B444", source: "霸王" } # 读条ID B444 踩击飞塔
+1459.1 "登天碎地 (咏唱栏)" Ability { id: ["B44A", "B44C", "B44E", "B450"], source: "霸王" }
 1468.7 "登天碎地" Ability { id: ["B44B", "B44D", "B44F", "B451"], source: "霸王" }
 1479.4 "天顶的主宰" Ability { id: "B406", source: "霸王" }
 
-# Orbital Omen 2
+# 星轨链 2
 # Normal arena
-1490.5 "火焰流" Ability { id: "B42B", source: "霸王" }
+1490.5 "火焰流 (咏唱栏)" Ability { id: "B42B", source: "霸王" }
 1490.7 "火焰流 1" #Ability { id: "B42C", source: "霸王" }
 1493.9 "火焰流 2" #Ability { id: "B42C", source: "霸王" }
-1494.5 "爆炸" Ability { id: "B42E", source: "霸王" }
-1497.7 "爆炸" Ability { id: "B42E", source: "霸王" }
-1504.0 "星轨链" Ability { id: "B432", source: "霸王" }
-1512.7 "兽焰连尾击" Ability { id: "B42F", source: "霸王" }
+1494.5 "爆炸 1" Ability { id: "B42E", source: "霸王" }
+1497.7 "爆炸 2" Ability { id: "B42E", source: "霸王" }
+1504.0 "星轨链 (咏唱栏)" Ability { id: "B432", source: "霸王" }
+1512.7 "兽焰连尾击 (咏唱栏)" Ability { id: "B42F", source: "霸王" }
 1513.1 "星轨链 1" #Ability { id: "B433", source: "霸王" }
 1513.7 "兽焰连尾击" Ability { id: "B430", source: "霸王" }
 1514.7 "星轨链 2" #Ability { id: "B433", source: "霸王" }
@@ -356,34 +355,34 @@ hideall "--sync--"
 1521.8 "天顶的主宰" Ability { id: "B406", source: "霸王" }
 1527.0 "--middle--" Ability { id: "B404", source: "霸王" }
 
-# Ecliptic Stampede
+# 陨石狂奔
 1534.1 "陨石狂奔" Ability { id: "B452", source: "霸王" }
 1541.2 "遮天陨石 x2" #Ability { id: "B453", source: "霸王" }
-1541.2 "融解轰击" Ability { id: "B454", source: "霸王" }
-1544.2 "融解轰击" Ability { id: "B454", source: "霸王" }
-1547.2 "融解轰击" Ability { id: "B454", source: "霸王" }
-1550.2 "融解轰击" Ability { id: "B454", source: "霸王" }
-1553.2 "融解轰击" Ability { id: "B454", source: "霸王" }
-1556.2 "融解轰击" Ability { id: "B454", source: "霸王" }
+1541.2 "融解轰击 1" Ability { id: "B454", source: "霸王" }
+1544.2 "融解轰击 2" Ability { id: "B454", source: "霸王" }
+1547.2 "融解轰击 3" Ability { id: "B454", source: "霸王" }
+1550.2 "融解轰击 4" Ability { id: "B454", source: "霸王" }
+1553.2 "融解轰击 5" Ability { id: "B454", source: "霸王" }
+1556.2 "融解轰击 6" Ability { id: "B454", source: "霸王" }
 1557.2 "轰击" Ability { id: "B456", source: "霸王" }
 1557.2 "重轰击" #Ability { id: "B457", source: "霸王" }
 1559.7 "--连线--"
-1566.8 "王者陨石震" Ability { id: "B459", source: "霸王" }
-1570.2 "双向回旋火/四向回旋火" Ability { id: ["B7BD", "B45A"], source: "霸王" }
-1571.1 "双向回旋火/四向回旋火" Ability { id: ["B7BE", "B45B"], source: "霸王" }
+1566.8 "王者陨石震 x4" Ability { id: "B459", source: "霸王" }
+1570.2 "双向回旋火 / 四向回旋火 (咏唱栏)" Ability { id: ["B7BD", "B45A"], source: "霸王" } # 读条ID B7BD 分摊 # 读条ID B45A 四角分摊, 站前方
+1571.1 "双向回旋火 / 四向回旋火" Ability { id: ["B7BE", "B45B"], source: "霸王" }
 1579.4 "天顶的主宰" Ability { id: "B406", source: "霸王" }
 
-# Heartbreak (狂暴 Sequence)
+# Heartbreak (Enrage Sequence)
 1584.6 "--middle--" Ability { id: "B404", source: "霸王" }
 1586.7 "--sync--" Ability { id: "B45C", source: "霸王" }
-1593.3 "碎心踢" Ability { id: "B45D", source: "霸王" }
+1593.3 "碎心踢" Ability { id: "B45D", source: "霸王" } # 读条ID B45D 看安全格
 1594.4 "碎心踢 1" #Ability { id: "B45E", source: "霸王" }
 1596.4 "碎心踢 2" #Ability { id: "B45E", source: "霸王" }
 1598.4 "碎心踢 3" #Ability { id: "B45E", source: "霸王" }
 1600.4 "碎心踢 4" #Ability { id: "B45E", source: "霸王" }
 1602.4 "碎心踢 5" #Ability { id: "B45E", source: "霸王" }
 1604.4 "--sync--" Ability { id: "B45F", source: "霸王" }
-1612.4 "碎心踢" Ability { id: "B45D", source: "霸王" }
+1612.4 "碎心踢" Ability { id: "B45D", source: "霸王" } # 读条ID B45D 看安全格
 1613.5 "碎心踢 1" #Ability { id: "B45E", source: "霸王" }
 1615.5 "碎心踢 2" #Ability { id: "B45E", source: "霸王" }
 1617.5 "碎心踢 3" #Ability { id: "B45E", source: "霸王" }
@@ -391,7 +390,7 @@ hideall "--sync--"
 1621.5 "碎心踢 5" #Ability { id: "B45E", source: "霸王" }
 1623.5 "碎心踢 6" #Ability { id: "B45E", source: "霸王" }
 1625.5 "--sync--" Ability { id: "B45F", source: "霸王" }
-1633.5 "碎心踢" Ability { id: "B45D", source: "霸王" }
+1633.5 "碎心踢" Ability { id: "B45D", source: "霸王" } # 读条ID B45D 看安全格
 1634.6 "碎心踢 1" #Ability { id: "B45E", source: "霸王" }
 1636.6 "碎心踢 2" #Ability { id: "B45E", source: "霸王" }
 1638.6 "碎心踢 3" #Ability { id: "B45E", source: "霸王" }
@@ -400,130 +399,130 @@ hideall "--sync--"
 1644.6 "碎心踢 6" #Ability { id: "B45E", source: "霸王" }
 1646.6 "碎心踢 7" #Ability { id: "B45E", source: "霸王" }
 1648.6 "--sync--" Ability { id: "B45F", source: "霸王" }
-1651.6 "碎心一击" StartsUsing { id: "B462", source: "霸王" }
-1659.6 "碎心一击 (狂暴)" Ability { id: "B462", source: "霸王" }
+1651.6 "--sync--" StartsUsing { id: "B462", source: "霸王" }
+1659.6 "碎心击 (狂暴)" Ability { id: "B462", source: "霸王" }
 1659.6 "--untargetable--"
 1659.8 "碎心击 (狂暴)" #Ability { id: "B463", source: "霸王" }
 
 # IGNORED ABILITIES
-# B40A Raw Steel: VFX for Axe
-# B40D Raw Steel: VFX for Scythe
-# B40E Raw Steel: VFX for Scythe, comes after B40D
-# B41E Dance of Domination: VFX
-# B42D Great Wall of Fire: VFX
+# B40A 铸兵轰击: VFX for Axe
+# B40D 铸兵轰击: VFX for Scythe
+# B40E 铸兵轰击: VFX for Scythe, comes after B40D
+# B41E 统治的战舞: VFX
+# B42D 火焰流: VFX
 # B426 Charybdis: Knocbkack Damage from standing in tornado
-# B429 One and Only: VFX
-# B42B Great Wall of Fire: VFX
-# B431 Fire and Fury: VFX
-# B439 Fearsome Fireball: VFX
-# B446 Fire Breath: VFX
-# B437 Unmitigated Explosion: Meteors dropped too close to each other
-# B445 Unmitigated Explosion: Missed tower during arena split
-# B458 Unmitigated Explosion: Missed tower during Ecliptic Stampede
+# B429 举世无双的霸王: VFX
+# B42B 火焰流: VFX
+# B431 兽焰连尾击: VFX
+# B439 大火: VFX
+# B446 火焰吐息: VFX
+# B437 Unmitigated 爆炸: Meteors dropped too close to each other
+# B445 Unmitigated 爆炸: Missed tower during arena split
+# B458 Unmitigated 爆炸: Missed tower during 陨石狂奔
 # B461 Tough Break: Missed Heartbreak soaks
 # B405 --sync--: Auto-attack
 
 # ALL ENCOUNTER ABILITIES
 # B404 --sync--
 # B405 --sync--
-# B406 Crown of Arcadia
-# B40A Raw Steel
-# B40B Raw Steel: Shared tankbuster
+# B406 天顶的主宰
+# B40A 铸兵轰击
+# B40B 铸兵轰击: Shared tankbuster
 # B40C Impact
-# B40D Raw Steel
-# B40E Raw Steel
-# B40F Raw Steel
-# B410 Heavy Hitter
-# B412 Void Stardust
-# B413 Cometite
-# B414 Comet
-# B415 Crushing Comet
+# B40D 铸兵轰击
+# B40E 铸兵轰击
+# B40F 铸兵轰击
+# B410 重斩击
+# B412 彗星雨
+# B413 彗星风暴
+# B414 彗星
+# B415 重彗星
 # B416 Trophy Weapons
-# B417 Assault Evolved: Castbar
-# B418 Assault Evolved: Damage from inside Trophy Axe chariot
-# B419 Assault Evolved: Damage from outside of Trophy Scythe donut
-# B41A Assault Evolved: Damage from Trophy Sword cross aoe
+# B417 铸兵突袭: Castbar
+# B418 铸兵突袭: Damage from inside Trophy Axe chariot
+# B419 铸兵突袭: Damage from outside of Trophy Scythe donut
+# B41A 铸兵突袭: Damage from Trophy Sword cross aoe
 # B41B Heavy Weight: Damage from Trophy Axe group share
 # B41C Sweeping Victory: Damage from Trophy Scythe protean
 # B41D Sharp Taste: Damage from Trophy Sword healer group line aoe
-# B41E Dance of Domination
-# B41F Dance of Domination
-# B420 Explosion
-# B421 Dance of Domination
-# B422 Raw Steel Trophy
-# B423 Raw Steel Trophy
-# B424 Eye of the Hurricane
-# B425 Charybdistopia
+# B41E 统治的战舞
+# B41F 统治的战舞
+# B420 爆炸
+# B421 统治的战舞
+# B422 铸兵之令：轰击
+# B423 铸兵之令：轰击
+# B424 霸王飓风
+# B425 霸王大漩涡
 # B426 Charybdis
-# B427 Powerful Gust
-# B428 Immortal Reign
-# B429 One and Only
-# B42A One and Only
-# B42B Great Wall of Fire
-# B42C Great Wall of Fire
-# B42D Great Wall of Fire
-# B42E Explosion
-# B42F Fire and Fury
-# B430 Fire and Fury
-# B431 Fire and Fury
-# B432 Orbital Omen
-# B433 Orbital Omen
+# B427 强风
+# B428 万劫不朽的统治
+# B429 举世无双的霸王
+# B42A 举世无双的霸王
+# B42B 火焰流
+# B42C 火焰流
+# B42D 火焰流
+# B42E 爆炸
+# B42F 兽焰连尾击
+# B430 兽焰连尾击
+# B431 兽焰连尾击
+# B432 星轨链
+# B433 星轨链
 # B434 Meteorain
-# B435 Cosmic Kiss
-# B436 Foregone Fatality
-# B437 Unmitigated Explosion
-# B438 Explosion
-# B439 Fearsome Fireball
-# B43A Fearsome Fireball
-# B43B Triple Tyrannhilation
-# B43C Triple Tyrannhilation
-# B43D Shockwave
+# B435 轰击
+# B436 夺命链
+# B437 Unmitigated 爆炸
+# B438 爆炸
+# B439 大火
+# B43A 大火
+# B43B 三重霸王坠击
+# B43C 三重霸王坠击
+# B43D 冲击波
 # B43E --sync--
-# B43F Flatliner
-# B440 Majestic Meteor
-# B441 Majestic Meteor
-# B442 Majestic Meteorain
-# B443 Majestic Meteowrath
-# B444 Explosion
-# B445 Unmitigated Explosion
-# B446 Fire Breath
-# B447 Fire Breath
-# B448 Massive Meteor
-# B449 Massive Meteor
-# B44A Arcadion Avalanche: VFX for NE Safe
-# B44B Arcadion Avalanche: Damage for NE Safe
-# B44C Arcadion Avalanche: VFX for SE Safe
-# B44D Arcadion Avalanche: Damage for SE Safe
-# B44E Arcadion Avalanche: VFX for SW Safe
-# B44F Arcadion Avalanche: Damage for SW Safe
-# B450 Arcadion Avalanche: VFX for NW Safe
-# B451 Arcadion Avalanche: Damage for NW Safe
-# B452 Ecliptic Stampede
-# B453 Mammoth Meteor
-# B454 Atomic Impact
-# B455 Majestic Meteor
-# B456 Cosmic Kiss
-# B457 Weighty Impact
-# B458 Unmitigated Explosion
-# B459 Majestic Meteowrath
-# B45A Four-way Fireball
-# B45B Four-way Fireball
+# B43F 绝命分断击
+# B440 王者陨石
+# B441 王者陨石
+# B442 王者陨石雨
+# B443 王者陨石震
+# B444 爆炸
+# B445 Unmitigated 爆炸
+# B446 火焰吐息
+# B447 火焰吐息
+# B448 重陨石
+# B449 重陨石
+# B44A 登天碎地: VFX for NE Safe
+# B44B 登天碎地: Damage for NE Safe
+# B44C 登天碎地: VFX for SE Safe
+# B44D 登天碎地: Damage for SE Safe
+# B44E 登天碎地: VFX for SW Safe
+# B44F 登天碎地: Damage for SW Safe
+# B450 登天碎地: VFX for NW Safe
+# B451 登天碎地: Damage for NW Safe
+# B452 陨石狂奔
+# B453 遮天陨石
+# B454 融解轰击
+# B455 王者陨石
+# B456 轰击
+# B457 重轰击
+# B458 Unmitigated 爆炸
+# B459 王者陨石震
+# B45A 四向回旋火
+# B45B 四向回旋火
 # B45C --sync--
-# B45D Heartbreak Kick
-# B45E Heartbreak Kick
+# B45D 碎心踢
+# B45E 碎心踢
 # B45F --sync--
 # B460 --sync--
 # B461 Tough Break
-# B462 Heartbreaker
-# B463 Heartbreaker
-# B543 Assault Evolved: VFX Jumping to Trophy Axe
-# B544 Assault Evolved: VFX Jumping to Trophy Scythe
-# B545 Assault Evolved: VFX Jumping to Trophy Sword
-# B7BD Two-way Fireball: VFX
-# B7BE Two-way Fireball
-# B7BB Dance of Domination Trophy
-# B7BC Explosion
-# B7EA Dance of Domination
-# B7ED Ultimate Trophy Weapons
-# B7EE Assault Apex
-# BA90 Flatliner
+# B462 碎心击
+# B463 碎心击
+# B543 铸兵突袭: VFX Jumping to Trophy Axe
+# B544 铸兵突袭: VFX Jumping to Trophy Scythe
+# B545 铸兵突袭: VFX Jumping to Trophy Sword
+# B7BD 双向回旋火: VFX
+# B7BE 双向回旋火
+# B7BB 铸兵之令：统治
+# B7BC 爆炸
+# B7EA 统治的战舞
+# B7ED 历战之极武
+# B7EE 铸兵崩落
+# BA90 绝命分断击

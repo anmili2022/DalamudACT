@@ -1,6 +1,5 @@
 ### Everkeep (Extreme)
 # ZoneId: 1201
-
 # -ii 93A7 9355 93A4 937B 937D 993B 9399 9368 9369 9360 939C 9383 9384 9386 9387 937C 937E 938D
 #     993D 993F 938E 9394 9393 9391 8AEF 9375 999B 999D 936B 936C 93A0 93A1 9365
 
@@ -9,37 +8,37 @@ hideall "--sync--"
 
 # Initial Phase
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-3.4 "攻撃" Ability { id: "93A7", source: "佐拉加" } window 3.4,1
-11.2 "自我实现" StartsUsing { id: "9398", source: "佐拉加" } window 11.2,4
-16.0 "自我实现" Ability { id: "9398", source: "佐拉加" }
-26.3 "多向斩" Ability { id: "93A2", source: "佐拉加" }
+3.4 "--sync--" Ability { id: "93A7", source: "佐拉加" } window 3.4,1
+11.2 "--sync--" StartsUsing { id: "9398", source: "佐拉加" } window 11.2,4 # 读条ID 9398 AOE
+16.0 "自我实现" Ability { id: "9398", source: "佐拉加" } # 读条ID 9398 AOE
+26.3 "多向斩 (放置直线)" Ability { id: "93A2", source: "佐拉加" }
 37.3 "多向斩 (伤害)" Ability { id: "93A3", source: "佐拉加" }
 38.4 "半身残" Ability { id: "9380|939E", source: "佐拉加" }
 38.4 "前向斩/后向斩" #Ability { id: "9972|937F", source: "佐拉加" }
-47.7 "多向斩" Ability { id: "93A2", source: "佐拉加" }
+47.7 "多向斩 (放置直线)" Ability { id: "93A2", source: "佐拉加" }
 58.7 "多向斩 (伤害)" Ability { id: "93A3", source: "佐拉加" }
 58.9 "弑君之怒行" Ability { id: "993C", source: "佐拉加" }
 
 # Swords & Tiles Phase 1
-74.2 "新曦世纪" Ability { id: "9397", source: "佐拉加" }
+74.2 "新曦世纪" Ability { id: "9397", source: "佐拉加" } # 读条ID 9397 AOE
 88.3 "无敌刃" Ability { id: "9357", source: "佐拉加" }
 98.6 "同步" Ability { id: "9359", source: "佐拉加" }
 107.6 "无敌裂斩" Ability { id: "939A", source: "佐拉加" }
 108.2 "半身残" Ability { id: "9380|939E", source: "佐拉加" }
 117.1 "附魔通路" Ability { id: "9381", source: "佐拉加" }
 125.2 "利刃召唤" Ability { id: "935E", source: "佐拉加" }
-133.3 "利刃冲 (咏唱)" Ability { id: "935F", source: "佐拉加" }
+133.3 "利刃冲 (咏唱)" Ability { id: "935F", source: "佐拉加" } # 读条ID 935F 看安全格
 141.6 "烈火刃/暴风刃" Ability { id: "9382|9385", source: "双牙剑" }
 141.6 "利刃冲 (伤害)" #Ability { id: "939D", source: "双牙剑" }
 146.4 "无敌裂斩" Ability { id: "9389", source: "佐拉加" }
-151.4 "自我实现" Ability { id: "9398", source: "佐拉加" } window 5,5
+151.4 "自我实现" Ability { id: "9398", source: "佐拉加" } window 5,5 # 读条ID 9398 AOE
 
 # Lines, Lines, Lines Phase 1
 163.7 "情感投射：利刃" Ability { id: "938A", source: "佐拉加" }
-# Don't sync 'Siege/Walls Of Vollok' due to spamminess
+# Don't sync 'Siege/无敌之圆' due to spamminess
 173.8 "无敌之环/无敌之圆" #Ability { id: "938B|938C", source: "双牙剑" }
 # Second cast, with identical ID, but happens with the first Siege/Walls so don't display
-#173.8 "Projection Of Triumph" Ability { id: "938A", source: "佐拉加" }
+#173.8 "情感投射：利刃" Ability { id: "938A", source: "佐拉加" }
 178.8 "无敌之环/无敌之圆" #Ability { id: "938B|938C", source: "双牙剑" }
 183.8 "无敌之环/无敌之圆" #Ability { id: "938B|938C", source: "双牙剑" }
 188.9 "无敌之环/无敌之圆" #Ability { id: "938B|938C", source: "双牙剑" }
@@ -47,40 +46,40 @@ hideall "--sync--"
 192.4 "前向斩/后向斩" #Ability { id: "9972|937F", source: "佐拉加" }
 193.9 "无敌之环/无敌之圆" #Ability { id: "938B", source: "双牙剑" }
 198.9 "无敌之环/无敌之圆" #Ability { id: "938B", source: "双牙剑" }
-202.4 "自我实现" Ability { id: "9398", source: "佐拉加" }
+202.4 "自我实现" Ability { id: "9398", source: "佐拉加" } # 读条ID 9398 AOE
 214.5 "情感投射：爆发" Ability { id: "9A88", source: "佐拉加" }
-# Might Of Vollok (938D) occurs when a player crosses the line
+# 无敌之力 (938D) occurs when a player crosses the line
 # Instead of syncing (which will be random based on player resolution),
 # display a long duration while the line is moving
 221.0 "无敌之力" duration 40
-264.8 "愤恨之风" Ability { id: "993E", source: "佐拉加" }
-268.0 "愤恨之风" Ability { id: "9940", source: "佐拉加" }
-271.0 "愤恨之风" Ability { id: "9940", source: "佐拉加" }
+264.8 "愤恨之风 (1)" Ability { id: "993E", source: "佐拉加" }
+268.0 "愤恨之风 (2)" Ability { id: "9940", source: "佐拉加" }
+271.0 "愤恨之风 (3)" Ability { id: "9940", source: "佐拉加" }
 
 # Body-Chucking Phase
-286.3 "新曦世纪" Ability { id: "9397", source: "佐拉加" } window 5,5
-304.4 "无敌之击" Ability { id: "938F", source: "佐拉加" }
+286.3 "新曦世纪" Ability { id: "9397", source: "佐拉加" } window 5,5 # 读条ID 9397 AOE
+304.4 "无敌之击" Ability { id: "938F", source: "佐拉加" } # 读条ID 938F 与同伴分摊 (被击飞)
 315.5 "无敌刃" Ability { id: "9392", source: "佐拉加" }
 324.6 "同步" Ability { id: "9359", source: "佐拉加" }
 333.6 "无敌裂斩" Ability { id: "9389", source: "佐拉加" }
 333.7 "暴风" Ability { id: "9390", source: "佐拉加" }
 350.1 "半身残" Ability { id: "9380|939E", source: "佐拉加" } window 5,5
 350.1 "前向斩/后向斩" #Ability { id: "9972|937F", source: "佐拉加" }
-357.0 "责任之刃 (咏唱)" Ability { id: "9374", source: "佐拉加" }
+357.0 "责任之刃 (咏唱)" Ability { id: "9374", source: "佐拉加" } # 读条ID 9374 分摊
 357.2 "责任之刃 (damage 1)" #Ability { id: "94A7", source: "佐拉加" }
 359.2 "责任之刃 (damage 2)" #Ability { id: "94A7", source: "佐拉加" }
 361.2 "责任之刃 (damage 3)" #Ability { id: "94A7", source: "佐拉加" }
 363.2 "责任之刃 (damage 4)" #Ability { id: "94A7", source: "佐拉加" }
 370.5 "火焰链 (咏唱)" Ability { id: "9395", source: "佐拉加" }
 378.3 "火焰链 (damage 1)" #Ability { id: "9396", source: "佐拉加" }
-390.5 "自我实现" Ability { id: "9398", source: "佐拉加" } window 5,5
+390.5 "自我实现" Ability { id: "9398", source: "佐拉加" } window 5,5 # 读条ID 9398 AOE
 
 # Lines, Lines, Lines Phase 2
 403.7 "情感投射：利刃" Ability { id: "938A", source: "佐拉加" }
-# Don't sync 'Siege/Walls Of Vollok' due to spamminess
+# Don't sync 'Siege/无敌之圆' due to spamminess
 413.7 "无敌之环/无敌之圆" #Ability { id: "938B", source: "双牙剑" }
 # Second cast, with identical ID, but happens with the first Siege/Walls so don't display
-#413.7 "Projection Of Triumph" Ability { id: "938A", source: "佐拉加" }
+#413.7 "情感投射：利刃" Ability { id: "938A", source: "佐拉加" }
 418.6 "无敌之环/无敌之圆" #Ability { id: "938B", source: "双牙剑" }
 423.6 "无敌之环/无敌之圆" #Ability { id: "938B", source: "双牙剑" }
 425.9 "回旋半身残" Ability { id: "939F", source: "佐拉加" }
@@ -93,31 +92,31 @@ hideall "--sync--"
 476.9 "半身残" Ability { id: "9380|939E", source: "佐拉加" }
 486.0 "半身残" Ability { id: "9380|939E", source: "佐拉加" }
 496.3 "半身残" Ability { id: "9380|939E", source: "佐拉加" }
-505.3 "愤恨之风" Ability { id: "993E", source: "佐拉加" }
-508.5 "愤恨之风" Ability { id: "9940", source: "佐拉加" }
-511.5 "愤恨之风" Ability { id: "9940", source: "佐拉加" }
+505.3 "愤恨之风 (1)" Ability { id: "993E", source: "佐拉加" }
+508.5 "愤恨之风 (2)" Ability { id: "9940", source: "佐拉加" }
+511.5 "愤恨之风 (3)" Ability { id: "9940", source: "佐拉加" }
 
 # Swords & Tiles Phase 2
-526.8 "新曦世纪" Ability { id: "9397", source: "佐拉加" } window 5,5
+526.8 "新曦世纪" Ability { id: "9397", source: "佐拉加" } window 5,5 # 读条ID 9397 AOE
 540.9 "无敌刃" Ability { id: "9357", source: "佐拉加" }
 550.0 "同步" Ability { id: "9359", source: "佐拉加" }
 559.0 "无敌裂斩 (咏唱)" Ability { id: "939A", source: "佐拉加" }
 562.2 "无敌裂斩 (伤害)" Ability { id: "9389", source: "佐拉加" }
-567.1 "责任之刃 (咏唱)" Ability { id: "9374", source: "佐拉加" }
+567.1 "责任之刃 (咏唱)" Ability { id: "9374", source: "佐拉加" } # 读条ID 9374 分摊
 567.5 "责任之刃 (damage 1)" #Ability { id: "94A7", source: "佐拉加" }
 569.5 "责任之刃 (damage 2)" #Ability { id: "94A7", source: "佐拉加" }
 571.5 "责任之刃 (damage 3)" #Ability { id: "94A7", source: "佐拉加" }
 573.5 "责任之刃 (damage 4)" #Ability { id: "94A7", source: "佐拉加" }
 582.8 "附魔通路" Ability { id: "9381", source: "佐拉加" }
 590.8 "利刃召唤" Ability { id: "935E", source: "佐拉加" }
-598.8 "利刃冲 (咏唱)" Ability { id: "935F", source: "佐拉加" }
+598.8 "利刃冲 (咏唱)" Ability { id: "935F", source: "佐拉加" } # 读条ID 935F 看安全格
 607.0 "烈火刃/暴风刃" Ability { id: "9382|9385", source: "双牙剑" }
 607.0 "利刃冲 (伤害)" #Ability { id: "939D", source: "双牙剑" }
 611.9 "无敌裂斩" Ability { id: "9389", source: "佐拉加" }
-616.9 "自我实现" Ability { id: "9398", source: "佐拉加" } window 5,5
+616.9 "自我实现" Ability { id: "9398", source: "佐拉加" } window 5,5 # 读条ID 9398 AOE
 
-# Final Phase/狂暴
-630.3 "多向斩" Ability { id: "93A2", source: "佐拉加" }
+# Final Phase/Enrage
+630.3 "多向斩 (放置直线)" Ability { id: "93A2", source: "佐拉加" }
 641.3 "多向斩 (伤害)" Ability { id: "93A3", source: "佐拉加" }
 642.5 "半身残" Ability { id: "9380|939E", source: "佐拉加" }
 642.5 "前向斩/后向斩" Ability { id: "9972|937F", source: "佐拉加" }
@@ -127,34 +126,34 @@ hideall "--sync--"
 #
 # 93A7 (unicode) (tank auto)
 # 9355 --sync-- (possibly re-center?)
-# 93A4 Multidirectional Divide (used duplicatively with 93A3)
-# 937B Forward Half (effect/damage is 937F Forward Edge)
-# 937D Backward Half (effect/damage is 9972 Backward Edge)
-# 993B Regicidal Rage (used duplicatively with 993C)
-# 9399 Chasm Of Vollok (used duplicatively with 939A)
-# 9368 Half Full (used duplicatively with 939E)
-# 9369 Half Full (used duplicatively with 939E)
-# 9360 --sync-- (damage related to Forged Track or Fiery/Stormy Edge?)
-# 939C Forged Track (animation)
-# 9383 Fiery Edge (used duplicatively with 9382 Fiery Edge)
-# 9384 Fiery Edge (used duplicatively with 9382 Fiery Edge)
-# 9386 Stormy Edge (used duplicatively with 9385 Stormy Edge)
-# 9387 Stormy Edge (used duplicatively with 9385 Stormy Edge)
-# 937C Forward Half (effect/damage is 937F Forward Edge)
-# 937E Backward Half (effect/damage is 9972 Backward Edge)
-# 938D Might Of Vollok (player-caused damage from crossing the line)
-# 993D Bitter Whirlwind (uused duplicatively with 993E)
-# 993F Bitter Whirlwind (used duplicatively with 9940)
-# 938E Drum Of Vollok (used duplicatively with 938F)
-# 9394 Chasm Of Vollok (used duplicatively with 9389)
+# 93A4 多向斩 (used duplicatively with 93A3)
+# 937B Forward Half (effect/damage is 937F 前向斩)
+# 937D Backward Half (effect/damage is 9972 后向斩)
+# 993B 弑君之怒行 (used duplicatively with 993C)
+# 9399 无敌裂斩 (used duplicatively with 939A)
+# 9368 半身残 (used duplicatively with 939E)
+# 9369 半身残 (used duplicatively with 939E)
+# 9360 --sync-- (damage related to 利刃冲 or Fiery/暴风刃?)
+# 939C 利刃冲 (animation)
+# 9383 烈火刃 (used duplicatively with 9382 烈火刃)
+# 9384 烈火刃 (used duplicatively with 9382 烈火刃)
+# 9386 暴风刃 (used duplicatively with 9385 暴风刃)
+# 9387 暴风刃 (used duplicatively with 9385 暴风刃)
+# 937C Forward Half (effect/damage is 937F 前向斩)
+# 937E Backward Half (effect/damage is 9972 后向斩)
+# 938D 无敌之力 (player-caused damage from crossing the line)
+# 993D 愤恨之风 (uused duplicatively with 993E)
+# 993F 愤恨之风 (used duplicatively with 9940)
+# 938E 无敌之击 (used duplicatively with 938F)
+# 9394 无敌裂斩 (used duplicatively with 9389)
 # 9393 Vollok (used duplicatively with 9389)
-# 9391 Aero III (used duplicatively with 9390)
+# 9391 暴风 (used duplicatively with 9390)
 # 8AEF --sync-- (line stack animation?)
-# 9375 Duty's Edge (used duplicatively with 94A7)
-# 999B Forward Half (used duplicatively with 937F Forward Edge)
-# 999D Backward Half (effect/damage is 9972 Backward Edge)
-# 936B Half Circuit (used duplicatively with 939F - variation)
-# 936C Half Circuit (used duplicatively with 939F - variation)
-# 93A0 Half Circuit (used duplicatively with 939F - variation)
-# 93A1 Half Circuit (used duplicatively with 939F - variation)
+# 9375 责任之刃 (used duplicatively with 94A7)
+# 999B Forward Half (used duplicatively with 937F 前向斩)
+# 999D Backward Half (effect/damage is 9972 后向斩)
+# 936B 回旋半身残 (used duplicatively with 939F - variation)
+# 936C 回旋半身残 (used duplicatively with 939F - variation)
+# 93A0 回旋半身残 (used duplicatively with 939F - variation)
+# 93A1 回旋半身残 (used duplicatively with 939F - variation)
 # 9365 Smiting Circuit (used duplicatively with 939F)

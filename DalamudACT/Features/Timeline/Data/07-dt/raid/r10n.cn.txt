@@ -1,30 +1,29 @@
 ### AAC HEAVYWEIGHT (M2)
 # ZoneId: 1322
-
 # -ii B57B B57C B57D B57F B583 B586 B588 B58A B58B B58E B59E B5A2 B5A7 B5A8 B5AA B894 B896 BDFD BDFE
-# -it "Red Hot" "Deep Blue"
+# -it "炽红" "深蓝"
 
 hideall "--Reset--"
 hideall "--sync--"
 
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
-# Red Hot
+# 炽红
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-9.9 "炽焰冲击" StartsUsing { id: "B580", source: "炽红" } window 9.9,5
+9.9 "--sync--" StartsUsing { id: "B580", source: "炽红" } window 9.9,5
 14.6 "炽焰冲击" Ability { id: "B580", source: "炽红" }
 25.8 "空中旋火" Ability { id: "B587", source: "炽红" }
 31.2 "--middle--" Ability { id: "B578", source: "炽红" }
 38.8 "火浪回切" Ability { id: "B58F", source: "炽红" }
-47.0 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+47.0 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 50.1 "--middle--" Ability { id: "B578", source: "炽红" }
 57.7 "火浪回切" Ability { id: "B58F", source: "炽红" }
 64.1 "空中旋火" Ability { id: "B587", source: "炽红" }
-73.5 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+73.5 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 77.6 "--middle--" Ability { id: "B578", source: "炽红" }
 79.8 "--untargetable--"
 
-# Deep Blue
+# 深蓝
 81.7 "--targetable--"
 87.9 "惊涛骇浪" Ability { id: "B590", source: "深蓝" }
 96.0 "破势乘浪" Ability { id: "B592", source: "深蓝" }
@@ -33,17 +32,17 @@ hideall "--sync--"
 105.0 "惊涛骇浪" Ability { id: "B591", source: "深蓝" }
 107.0 "--targetable--"
 109.0 "--middle--" Ability { id: "B579", source: "深蓝" }
-116.4 "浪尖转体" Ability { id: "B88F", source: "深蓝" }
-118.0 "浪尖转体" Ability { id: "B598", source: "深蓝" }
+116.4 "浪尖转体 (跳)" Ability { id: "B88F", source: "深蓝" }
+118.0 "浪尖转体 (扇形)" Ability { id: "B598", source: "深蓝" }
 121.7 "--middle--" Ability { id: "B579", source: "深蓝" }
-129.1 "浪尖转体" Ability { id: "B88F", source: "深蓝" }
-130.7 "浪尖转体" Ability { id: "B598", source: "深蓝" }
+129.1 "浪尖转体 (跳)" Ability { id: "B88F", source: "深蓝" }
+130.7 "浪尖转体 (扇形)" Ability { id: "B598", source: "深蓝" }
 139.4 "深海冲击" Ability { id: "B581", source: "深蓝" }
 145.5 "--middle--" Ability { id: "B579", source: "深蓝" }
 
-# Red Hot joins in
+# 炽红 joins in
 147.5 "--targetable--"
-156.8 "极限炫技" Ability { id: "B5A1", source: "炽红" }
+156.8 "极限炫技" Ability { id: "B5A1", source: "炽红" } # 读条ID B5A1 去上/下 + 高伤害 AOE
 
 # Phase transition
 157.6 "--untargetable--"
@@ -75,29 +74,29 @@ hideall "--sync--"
 231.8 "混合爆炸" Ability { id: "B5AB", source: "极限以太" }
 
 # Fire cleared from arena
-# During this mini-phase, Steam Burst can be cast randomly depending on if fire/water overlap
+# During this mini-phase, 混合爆炸 can be cast randomly depending on if fire/water overlap
 # Manually edited those events out.
-238.4 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+238.4 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 246.5 "--middle--" Ability { id: "B578", source: "炽红" }
 248.7 "兄弟同心" Ability { id: "B57A", source: "炽红" }
-255.8 "火蛇夺浪" Ability { id: "B57E", source: "炽红" }
+255.8 "火蛇夺浪/水蛇夺浪" Ability { id: "B57E", source: "炽红" } # 读条ID B57E AOE
 258.0 "--middle--" Ability { id: "B578", source: "炽红" }
 266.7 "狂浪腾空" Ability { id: ["B893", "B895"], source: "炽红" }
-269.7 "火浪急转" Ability { id: "B5A9" }
+269.7 "火浪急转/水浪急转" Ability { id: "B5A9" }
 274.0 "狂浪腾空" Ability { id: ["B893", "B895"], source: "炽红" }
-277.0 "火浪急转" Ability { id: "B5A9" }
+277.0 "火浪急转/水浪急转" Ability { id: "B5A9" }
 281.3 "狂浪腾空" Ability { id: ["B893", "B895"], source: "炽红" }
-284.3 "火浪急转" Ability { id: "B5A9" }
+284.3 "火浪急转/水浪急转" Ability { id: "B5A9" }
 288.6 "狂浪腾空" Ability { id: ["B893", "B895"], source: "炽红" }
-291.6 "火浪急转" Ability { id: "B5A9" }
+291.6 "火浪急转/水浪急转" Ability { id: "B5A9" }
 292.0 "--sync--" Ability { id: "B57D", source: "深蓝" }
 
 # Fire cleared from arena
-300.1 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+300.1 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 308.3 "兄弟同心" Ability { id: "B57A", source: "炽红" }
 310.4 "--深蓝场中--" Ability { id: "B579", source: "深蓝" }
-318.0 "浪尖转体" Ability { id: "B88F", source: "深蓝" }
-319.4 "浪尖转体" Ability { id: "B598", source: "深蓝" }
+318.0 "浪尖转体 (跳)" Ability { id: "B88F", source: "深蓝" }
+319.4 "浪尖转体 (扇形)" Ability { id: "B598", source: "深蓝" }
 323.4 "--炽红场中--" Ability { id: "B578", source: "炽红" }
 330.9 "火浪回切" Ability { id: "B58F", source: "炽红" }
 334.1 "--深蓝场中--" Ability { id: "B579", source: "深蓝" }
@@ -110,7 +109,7 @@ hideall "--sync--"
 357.9 "空中旋火" Ability { id: "B587", source: "炽红" }
 
 # Fire cleared from arena
-366.3 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+366.3 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 374.5 "兄弟同心" Ability { id: "B57A", source: "炽红" }
 382.6 "腾火踏浪" #Ability { id: "B58C", source: "炽红" }
 384.6 "腾火踏浪" #Ability { id: "B58C", source: "炽红" }
@@ -132,7 +131,7 @@ hideall "--sync--"
 
 # Fire cleared from arena
 426.8 label "loop"
-431.5 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+431.5 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 439.8 "兄弟同心" Ability { id: "B57A", source: "炽红" }
 447.9 "腾火踏浪" #Ability { id: "B58C", source: "炽红" }
 449.9 "腾火踏浪" #Ability { id: "B58C", source: "炽红" }
@@ -149,7 +148,7 @@ hideall "--sync--"
 489.3 "混合爆炸" Ability { id: "B5AB", source: "极限以太" }
 495.3 "炽焰冲击" Ability { id: "B580", source: "炽红" }
 
-502.4 "斗志昂扬" Ability { id: "B582", source: "炽红" }
+502.4 "斗志昂扬" Ability { id: "B582", source: "炽红" } # 读条ID B582 AOE
 508.6 "兄弟同心" Ability { id: "B57A", source: "炽红" }
 510.7 "--深蓝场中--" Ability { id: "B579", source: "深蓝" }
 518.1 "浪尖转体" Ability { id: "B88F", source: "深蓝" }
@@ -166,75 +165,75 @@ hideall "--sync--"
 557.8 "深海冲击" Ability { id: "B581", source: "深蓝" }
 565.0 "空中旋火" Ability { id: "B587", source: "炽红" }
 574.7 "旋绕烈火" Ability { id: "B589" }
-579.3 "斗志昂扬" StartsUsing { id: "B582", source: "炽红" } forcejump "loop"
+579.3 "--sync--" StartsUsing { id: "B582", source: "炽红" } forcejump "loop" # 读条ID B582 AOE
 
 
 # IGNORED ABILITIES
-# B57B Epic Brotherhood: HP sync ability, cast by both bosses, ignore the higher ID
-# B57C --sync--: VFX of Red Hot jumping off surfboard
-# B57D --sync--: VFX of Deep Blue jumping off surfboard
-# B57F Watersnaking: Cast at the same time as Firesnaking, ignore the higher ID and combine them
-# B583 Divers' Dare: Fire clear, cast by both bosses, ignore Blue's ID
-# B586 Alley-oop Inferno: Cast bar, not actual snapshot
-# B588 Pyrotation: Castbar, not actual snapshot
-# B58A Hot Aerial: Boss castbar
-# B58B Hot Aerial: Tower VFX
-# B58E Cutback Blaze: Cast bar, not actual snapshot
-# B59E Alley-oop Maelstrom: Cast bar, not actual cones
-# B5A2 Xtreme Spectacular: Extra phase transition castbar
-# B5A7 Blasting Snap: VFX
-# B5A8 Plunging Snap: VFX
-# B5AA Plunging Snap: Cast at the same time as B5A9, ignore the higher ID and combine them
-# B894 Insane Air: Duplicate cast from Blue, initial cast
-# B896 Insane Air: Duplicate cast from Blue, followup cast
-# BDFD --sync--: Red Hot's autoattacks
-# BDFE --sync--: Deep Blue's autoattacks
+# B57B 兄弟同心: HP sync ability, cast by both bosses, ignore the higher ID
+# B57C --sync--: VFX of 炽红 jumping off surfboard
+# B57D --sync--: VFX of 深蓝 jumping off surfboard
+# B57F 水蛇夺浪: Cast at the same time as 火蛇夺浪, ignore the higher ID and combine them
+# B583 斗志昂扬: Fire clear, cast by both bosses, ignore Blue's ID
+# B586 空中旋火: Cast bar, not actual snapshot
+# B588 旋绕烈火: Castbar, not actual snapshot
+# B58A 腾火踏浪: Boss castbar
+# B58B 腾火踏浪: Tower VFX
+# B58E 火浪回切: Cast bar, not actual snapshot
+# B59E 空中旋水: Cast bar, not actual cones
+# B5A2 极限炫技: Extra phase transition castbar
+# B5A7 火浪急转: VFX
+# B5A8 水浪急转: VFX
+# B5AA 水浪急转: Cast at the same time as B5A9, ignore the higher ID and combine them
+# B894 狂浪腾空: Duplicate cast from Blue, initial cast
+# B896 狂浪腾空: Duplicate cast from Blue, followup cast
+# BDFD --sync--: 炽红's autoattacks
+# BDFE --sync--: 深蓝's autoattacks
 
 # ALL ENCOUNTER ABILITIES
 # B578 --sync--
 # B579 --sync--
-# B57A Epic Brotherhood
-# B57B Epic Brotherhood
+# B57A 兄弟同心
+# B57B 兄弟同心
 # B57C --sync--
 # B57D --sync--
-# B57E Firesnaking
-# B57F Watersnaking
-# B580 Hot Impact
-# B581 Deep Impact
-# B582 Divers' Dare
-# B583 Divers' Dare
-# B586 Alley-oop Inferno
-# B587 Alley-oop Inferno
-# B588 Pyrotation
-# B589 Pyrotation: This cast is from an invisible actor whose name varies, so `source` field is removed in the timeline
-# B58A Hot Aerial
-# B58B Hot Aerial
-# B58C Hot Aerial
+# B57E 火蛇夺浪
+# B57F 水蛇夺浪
+# B580 炽焰冲击
+# B581 深海冲击
+# B582 斗志昂扬
+# B583 斗志昂扬
+# B586 空中旋火
+# B587 空中旋火
+# B588 旋绕烈火
+# B589 旋绕烈火: This cast is from an invisible actor whose name varies, so `source` field is removed in the timeline
+# B58A 腾火踏浪
+# B58B 腾火踏浪
+# B58C 腾火踏浪
 # B58D Unmitigated Explosion: Tower Missed
-# B58E Cutback Blaze
-# B58F Cutback Blaze
-# B590 Sick Swell: Creates wave
-# B591 Sick Swell: Wave KB effect + minor damage
-# B592 Sickest Take-off: Boss jumps away/to wave
-# B593 Sickest Take-off: Boss line cleave during wave KB
-# B598 Deep Varial
-# B59E Alley-oop Maelstrom
-# B59F Alley-oop Maelstrom
-# B5A0 Alley-oop Maelstrom
-# B5A1 Xtreme Spectacular
-# B5A2 Xtreme Spectacular
-# B5A3 Xtreme Spectacular
-# B5A7 Blasting Snap
-# B5A8 Plunging Snap
-# B5A9 Blasting Snap: This cast is from an invisible actor whose name varies, so `source` field is removed in the timeline
-# B5AA Plunging Snap
-# B5AB Steam Burst
-# B5DB Xtreme Spectacular
-# B7C9 Xtreme Spectacular
-# B88F Deep Varial
-# B893 Insane Air
-# B894 Insane Air
-# B895 Insane Air
-# B896 Insane Air
+# B58E 火浪回切
+# B58F 火浪回切
+# B590 惊涛骇浪: Creates wave
+# B591 惊涛骇浪: Wave KB effect + minor damage
+# B592 破势乘浪: Boss jumps away/to wave
+# B593 破势乘浪: Boss line cleave during wave KB
+# B598 浪尖转体
+# B59E 空中旋水
+# B59F 空中旋水
+# B5A0 空中旋水
+# B5A1 极限炫技
+# B5A2 极限炫技
+# B5A3 极限炫技
+# B5A7 火浪急转
+# B5A8 水浪急转
+# B5A9 火浪急转: This cast is from an invisible actor whose name varies, so `source` field is removed in the timeline
+# B5AA 水浪急转
+# B5AB 混合爆炸
+# B5DB 极限炫技
+# B7C9 极限炫技
+# B88F 浪尖转体
+# B893 狂浪腾空
+# B894 狂浪腾空
+# B895 狂浪腾空
+# B896 狂浪腾空
 # BDFD --sync--
 # BDFE --sync--

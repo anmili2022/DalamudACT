@@ -70,6 +70,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int TimelineVisibleSeconds = 90;
     public int TimelineMaxVisibleEntries = 8;
     public float TimelineRowGap = 1f;
+    public bool TimelineAutoDownloadOnEnter = false;
     public bool EnableTimelineDailyRoutinesTts = false;
     public bool TimelineTtsMechanic = true;
     public bool TimelineTtsSkillName = true;

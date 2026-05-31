@@ -22,7 +22,6 @@ internal static partial class TimelineParser
     private static readonly Regex MapEffectFlagsRegex = new(@"flags\s*:\s*\""(?<flags>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex MapEffectLocationRegex = new(@"location\s*:\s*\""(?<location>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex JumpRegex = new(@"(?:forcejump|jump)\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|'(?<label>[^'\\]*(?:\\.[^'\\]*)*)'|(?<label>\S+))", RegexOptions.Compiled);
-    private static readonly Regex MechanicHintRegex = new(@"#\s*(?<hint>AOE|范围|死刑|分散|分摊|远离|靠近|背对|击退|踩塔|停止|移动)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex ReplaceTextBlockRegex = new(@"'locale'\s*:\s*'cn'[\s\S]*?'replaceText'\s*:\s*\{(?<body>[\s\S]*?)\}\s*,", RegexOptions.Compiled);
     private static readonly Regex ReplaceEntryRegex = new(@"'(?<from>[^']+)'\s*:\s*'(?<to>[^']*)'", RegexOptions.Compiled);
 
@@ -237,38 +236,54 @@ internal static partial class TimelineParser
 
     private static string? ParseMechanicHint(string rest)
     {
-        var match = MechanicHintRegex.Match(rest);
-        if (!match.Success)
+        var commentIndex = rest.IndexOf('#');
+        if (commentIndex < 0 || commentIndex >= rest.Length - 1)
             return null;
 
-        var hint = match.Groups["hint"].Value.Trim();
+        var hint = RemoveMetadataCommentSegments(rest[(commentIndex + 1)..]).Trim();
+        if (string.IsNullOrWhiteSpace(hint) || !LooksLikeMechanicHint(hint))
+            return null;
+
         return hint.Equals("范围", StringComparison.OrdinalIgnoreCase) ? "AOE" : hint;
     }
 
-    private static IReadOnlyDictionary<uint, string> ParseActionResponses(string rest, IReadOnlyList<uint> actionIds)
+    private static bool LooksLikeMechanicHint(string hint)
+    {
+        if (Regex.IsMatch(hint, @"[\u3400-\u9FFF]"))
+            return true;
+
+        return Regex.IsMatch(hint, @"^(AOE|范围|死刑|分散|分摊|远离|靠近|背对|击退|踩塔|停止|移动)\b", RegexOptions.IgnoreCase);
+    }
+
+    private static IReadOnlyDictionary<uint, TimelineActionResponse> ParseActionResponses(string rest, IReadOnlyList<uint> actionIds)
     {
         if (actionIds.Count == 0)
-            return new Dictionary<uint, string>();
+            return new Dictionary<uint, TimelineActionResponse>();
 
         var commentIndex = rest.IndexOf('#');
         if (commentIndex < 0 || commentIndex >= rest.Length - 1)
-            return new Dictionary<uint, string>();
+            return new Dictionary<uint, TimelineActionResponse>();
 
         var comment = RemoveMetadataCommentSegments(rest[(commentIndex + 1)..]);
-        var idMatches = new List<(uint Id, int Index, int Length)>();
+        var idMatches = new List<(uint Id, int Index, int Length, TimelineActionResponseTiming Timing)>();
         foreach (var actionId in actionIds)
         {
             var hex = actionId.ToString("X");
-            var match = Regex.Match(comment, $@"(?<![0-9A-Fa-f]){Regex.Escape(hex)}(?![0-9A-Fa-f])", RegexOptions.IgnoreCase);
+            var match = Regex.Match(comment, $@"(?<kind>读条ID|结算ID)?\s*(?<![0-9A-Fa-f]){Regex.Escape(hex)}(?![0-9A-Fa-f])", RegexOptions.IgnoreCase);
             if (match.Success)
-                idMatches.Add((actionId, match.Index, match.Length));
+            {
+                var timing = match.Groups["kind"].Value == "读条ID"
+                    ? TimelineActionResponseTiming.StartsUsing
+                    : TimelineActionResponseTiming.Ability;
+                idMatches.Add((actionId, match.Index, match.Length, timing));
+            }
         }
 
         if (idMatches.Count == 0)
-            return new Dictionary<uint, string>();
+            return new Dictionary<uint, TimelineActionResponse>();
 
         idMatches.Sort(static (left, right) => left.Index.CompareTo(right.Index));
-        var responses = new Dictionary<uint, string>();
+        var responses = new Dictionary<uint, TimelineActionResponse>();
         for (var i = 0; i < idMatches.Count; i++)
         {
             var current = idMatches[i];
@@ -276,7 +291,7 @@ internal static partial class TimelineParser
             var responseEnd = i + 1 < idMatches.Count ? idMatches[i + 1].Index : comment.Length;
             var response = comment[responseStart..responseEnd].Trim(' ', '，', ',', ';', '；', '。');
             if (!string.IsNullOrWhiteSpace(response))
-                responses[current.Id] = response;
+                responses[current.Id] = new TimelineActionResponse(response, current.Timing);
         }
 
         return responses;

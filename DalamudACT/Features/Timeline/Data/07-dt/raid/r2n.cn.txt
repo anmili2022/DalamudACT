@@ -1,6 +1,7 @@
 ### Arcadion (R2N): AAC Light-heavyweight M2
+# ZoneId: 1227
 # -ii 917E 91C7 9A65 9166 9168 9172 9A6A 9165 916B 916C 916E 917C 916D 917F 9A66 9169
-# -it "Honey B. Lovely"
+# -it "蜂蜂小甜心"
 
 # 9163 = teleport to middle
 
@@ -9,41 +10,41 @@ hideall "--sync--"
 
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-5.6 "甜言蜜语" StartsUsing { id: "9164", source: "蜂蜂小甜心" }
+5.6 "--sync--" StartsUsing { id: "9164", source: "蜂蜂小甜心" }
 10.6 "甜言蜜语" Ability { id: "9164", source: "蜂蜂小甜心" }
 24.1 "甜心旋风" Ability { id: "9B3A", source: "蜂蜂小甜心" }
 33.9 "甜心烈风" Ability { id: "9B39", source: "蜂蜂小甜心" }
-41.2 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" }
-52.8 "甜心烈风/甜心旋风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
+41.2 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" } # 读条ID 9167 死刑
+52.8 "甜心旋风/甜心烈风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
 59.4 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 70.1 "蜂蜂演唱会" Ability { id: "9A7E", source: "蜂蜂小甜心" }
 
 # First hearts phase
 80.0 "温柔地爱我" Ability { id: "9174", source: "蜂蜂小甜心" }
-88.1 "心伤" Ability { id: "917A", source: "蜂蜂小甜心" }
+88.1 "心伤" Ability { id: "917A", source: "蜂蜂小甜心" } # 读条ID 917A 分散
 97.1 "炸裂" Ability { id: "9178", source: "蜂蜂小甜心" }
 99.1 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 105.4 "求爱" Ability { id: "9AC1", source: "蜂蜂小甜心" }
 105.4 "心震" duration 33
 110.5 "温柔地爱我" Ability { id: "9174", source: "蜂蜂小甜心" }
-138.4 "飞吻" Ability { id: "9173", source: "蜂蜂小甜心" }
+138.4 "飞吻" Ability { id: "9173", source: "蜂蜂小甜心" } # 读条ID 9173 离开正面
 146.1 "温柔地爱我" Ability { id: "9174", source: "蜂蜂小甜心" }
 152.2 "心震" duration 3.2
-160.7 "飞吻" Ability { id: "9173", source: "蜂蜂小甜心" }
-171.5 "蜂蜂落幕曲" Ability { id: "917B", source: "蜂蜂小甜心" }
+160.7 "飞吻" Ability { id: "9173", source: "蜂蜂小甜心" } # 读条ID 9173 离开正面
+171.5 "蜂蜂落幕曲" Ability { id: "917B", source: "蜂蜂小甜心" } # 读条ID 917B AOE
 # End first hearts phase
 
-180.6 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" }
+180.6 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" } # 读条ID 9167 死刑
 186.8 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 192.1 "毒液雨" Ability { id: "9169", source: "蜂蜂小甜心" }
-202.6 "甜心烈风/甜心旋风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
-212.9 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" }
+202.6 "甜心旋风/甜心烈风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
+212.9 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" } # 读条ID 9170 分摊
 219.9 "毒液滴落" Ability { id: "916A", source: "蜂蜂小甜心" }
 229.4 "甜心烈风/甜心旋风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
-239.7 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" }
+239.7 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" } # 读条ID 9170 分摊
 251.8 "告警信息素" Ability { id: "917D", source: "蜂蜂小甜心" }
 251.8 "盲目的爱" duration 34.3
-293.1 "甜心烈风/甜心旋风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
+293.1 "甜心旋风/甜心烈风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
 
 299.7 label "loop"
 299.7 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
@@ -51,28 +52,28 @@ hideall "--sync--"
 
 # Second hearts phase
 315.2 "温柔地爱我" Ability { id: "9174", source: "蜂蜂小甜心" }
-323.3 "心病" Ability { id: "9B8D", source: "蜂蜂小甜心" }
+323.3 "心病" Ability { id: "9B8D", source: "蜂蜂小甜心" } # 读条ID 9B8D 分组分摊
 323.3 "炸裂 x6" duration 17
 339.3 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 345.5 "求爱" Ability { id: "9AC1", source: "蜂蜂小甜心" }
 345.5 "心震" duration 42.1
 350.6 "温柔地爱我" Ability { id: "9174", source: "蜂蜂小甜心" }
-376.9 "飞吻" Ability { id: "9173", source: "蜂蜂小甜心" }
-387.6 "蜂蜂落幕曲" Ability { id: "917B", source: "蜂蜂小甜心" }
+376.9 "飞吻" Ability { id: "9173", source: "蜂蜂小甜心" } # 读条ID 9173 离开正面
+387.6 "蜂蜂落幕曲" Ability { id: "917B", source: "蜂蜂小甜心" } # 读条ID 917B AOE
 # End second hearts phase
 
-396.7 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" }
+396.7 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" } # 读条ID 9167 死刑
 402.9 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 408.1 "告警信息素" Ability { id: "917D", source: "蜂蜂小甜心" }
 408.1 "盲目的爱" duration 28.3
 413.1 "毒液滴落" Ability { id: "916A", source: "蜂蜂小甜心" }
 436.2 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
-445.4 "甜心烈风/甜心旋风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
-455.7 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" }
+445.4 "甜心旋风/甜心烈风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
+455.7 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" } # 读条ID 9170 分摊
 456.7 "毒液雨" Ability { id: "9169", source: "蜂蜂小甜心" }
 463.8 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 473.6 "甜心烈风/甜心旋风" Ability { id: ["9B39", "9B3A", "9B3B", "9B3C"], source: "蜂蜂小甜心" }
-483.9 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" }
+483.9 "毒液雨/毒液滴落" Ability { id: ["916F", "9170"], source: "蜂蜂小甜心" } # 读条ID 9170 分摊
 490.9 "甜言蜜语" Ability { id: "9164", source: "蜂蜂小甜心" }
-500.0 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" }
+500.0 "甜心突风" Ability { id: "9167", source: "蜂蜂小甜心" } # 读条ID 9167 死刑
 510.2 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" } forcejump "loop"

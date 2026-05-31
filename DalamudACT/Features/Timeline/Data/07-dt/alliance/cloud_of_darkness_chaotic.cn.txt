@@ -1,9 +1,8 @@
-﻿### 暗黑之云（混沌）
+### THE CLOUD OF DARKNESS (CHAOTIC)
 # ZoneId: 1241
-
 # -ii 9E0E 9E0F 9E11 9E12 9E14 9E16 9E17 9E1F 9E21 9E22 9E24 9E25 9E26 9E27 9E28 9E29 9E3B 9E3C 9E41 9E45 9E46 9E48 9E49 9E4B 9E4E 9E51 9E52 A183
-# -it "Stygian Shadow"
-# Cloud of Darkness and Atomos do not have 34 NameToggle lines
+# -it "生于黑暗之物"
+# 暗黑之云 and Atomos do not have 34 NameToggle lines
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -12,232 +11,232 @@ hideall "--sync--"
 
 # opener
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-13.6 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-14.3 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-25.7 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-26.5 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-38.9 "鏆椾箣澶ф硾婊? Ability { id: "9E3D", source: "鏆楅粦涔嬩簯" }
-41.9 "--sync--" Ability { id: "9E56", source: "鏆楅粦涔嬩簯" }
+13.6 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+14.3 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+25.7 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+26.5 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+38.9 "暗之大泛滥" Ability { id: "9E3D", source: "暗黑之云" }
+41.9 "--sync--" Ability { id: "9E56", source: "暗黑之云" }
 
 # diamond phase 1
-53.0 "闃村喎鎷ユ姳" Ability { id: ["9E39", "9E3A"], source: "鏆楅粦涔嬩簯" }
-61.0 "闃村喎鎷ユ姳" Ability { id: ["9E39", "9E3A"], source: "鏆楅粦涔嬩簯" }
-71.2 "鏍哥垎" StartsUsing { id: "9E58", source: "鏆楅粦涔嬩簯" } window 10,10 jump "flare-branch-1"
-73.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-75.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-76.2 "鏋佹" StartsUsing { id: "9E43", source: "鏆楅粦涔嬩簯" } window 10,10 jump "death-branch-1"
-76.2 "椋欓" StartsUsing { id: "9E4C", source: "鏆楅粦涔嬩簯" } window 10,10 jump "aero-branch-1"
-77.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-79.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
+53.0 "阴冷拥抱" Ability { id: ["9E39", "9E3A"], source: "暗黑之云" }
+61.0 "阴冷拥抱" Ability { id: ["9E39", "9E3A"], source: "暗黑之云" }
+71.2 "--sync--" StartsUsing { id: "9E58", source: "暗黑之云" } window 10,10 jump "flare-branch-1"
+73.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+75.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+76.2 "--sync--" StartsUsing { id: "9E43", source: "暗黑之云" } window 10,10 jump "death-branch-1" # 读条ID 9E43 远离再中间
+76.2 "--sync--" StartsUsing { id: "9E4C", source: "暗黑之云" } window 10,10 jump "aero-branch-1" # 读条ID 9E4C 击退
+77.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+79.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
 
-## Flare branch 1
+## 核爆 branch 1
 100.0 label "flare-branch-1"
-101.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-103.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-103.8 "鏍哥垎 (鍜忓敱)" Ability { id: "9E58", source: "鏆楅粦涔嬩簯" }
-105.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-107.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-111.9 "榛戞殫绁炲湥 (鍜忓敱)" Ability { id: "A12D", source: "鏆楅粦涔嬩簯" }
-112.9 "鏍哥垎 (浼ゅ)" Ability { id: "9E59", source: "鏆楅粦涔嬩簯" }
-120.7 "榛戞殫绁炲湥 (浼ゅ)" Ability { id: "A12E", source: "鏆楅粦涔嬩簯" }
-127.0 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-127.7 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-134.0 "瓒呰祴姝?瓒呰祴椋? Ability { id: ["9E53", "9E54"], source: "鏆楅粦涔嬩簯" }
-152.1 "瓒呯煶鍖? Ability { id: "9E4F", source: "鏆楅粦涔嬩簯" }
-153.0 "瓒呯煶鍖? Ability { id: "9E50", source: "鏆楅粦涔嬩簯" }
-164.0 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-164.7 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-166.9 "鍚稿紩/椋欓" Ability { id: ["9E47", "9E4D"], source: "鏆楅粦涔嬩簯" }
-179.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-181.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-183.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-185.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-196.8 "鏋佹/椋欓 (鍜忓敱)" Ability { id: ["9E43", "9E4C"], source: "鏆楅粦涔嬩簯" }
-197.4 "鍚稿紩/椋欓" Ability { id: ["9E44", "9E4A"], source: "鏆楅粦涔嬩簯" }
-205.5 "鏆椾箣娉涙互" StartsUsing { id: "9E3E", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "diamond-phase-1-end"
+101.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+103.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+103.8 "核爆 (cast)" Ability { id: "9E58", source: "暗黑之云" }
+105.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+107.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+111.9 "黑暗神圣 (cast)" Ability { id: "A12D", source: "暗黑之云" }
+112.9 "核爆 (damage)" Ability { id: "9E59", source: "暗黑之云" }
+120.7 "黑暗神圣 (damage)" Ability { id: "A12E", source: "暗黑之云" }
+127.0 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+127.7 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+134.0 "超附死/超附风" Ability { id: ["9E53", "9E54"], source: "暗黑之云" }
+152.1 "--sync--" Ability { id: "9E4F", source: "暗黑之云" }
+153.0 "超石化" Ability { id: "9E50", source: "暗黑之云" }
+164.0 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+164.7 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+166.9 "吸引/飙风" Ability { id: ["9E47", "9E4D"], source: "暗黑之云" }
+179.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+181.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+183.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+185.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+196.8 "极死/飙风 (cast)" Ability { id: ["9E43", "9E4C"], source: "暗黑之云" } # 读条ID 9E43 远离再中间 # 读条ID 9E4C 击退
+197.4 "吸引/飙风" Ability { id: ["9E44", "9E4A"], source: "暗黑之云" }
+205.5 "--sync--" StartsUsing { id: "9E3E", source: "暗黑之云" } window 10,10 forcejump "diamond-phase-1-end"
 
-## Death IV branch 1
+## 极死 branch 1
 300.0 label "death-branch-1"
-300.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-302.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-305.4 "鏋佹 (鍜忓敱)" Ability { id: "9E43", source: "鏆楅粦涔嬩簯" }
-306.0 "鍚稿紩" Ability { id: "9E44", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "death/aero-branch-merge-1"
+300.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+302.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+305.4 "极死 (cast)" Ability { id: "9E43", source: "暗黑之云" } # 读条ID 9E43 远离再中间
+306.0 "吸引" Ability { id: "9E44", source: "暗黑之云" } window 10,10 forcejump "death/aero-branch-merge-1"
 
-## Aero IV branch 1
+## 飙风 branch 1
 400.0 label "aero-branch-1"
-400.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-402.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-405.4 "椋欓 (鍜忓敱)" Ability { id: "9E4C", source: "鏆楅粦涔嬩簯" }
-406.0 "椋欓" Ability { id: "9E4A", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "death/aero-branch-merge-1"
+400.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+402.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+405.4 "飙风 (cast)" Ability { id: "9E4C", source: "暗黑之云" } # 读条ID 9E4C 击退
+406.0 "飙风" Ability { id: "9E4A", source: "暗黑之云" } window 10,10 forcejump "death/aero-branch-merge-1"
 
-## Death IV/Aero IV branch merge 1
+## 极死/飙风 branch merge 1
 500.0 label "death/aero-branch-merge-1"
-511.0 "瓒呰祴姝?瓒呰祴椋? Ability { id: ["9E53", "9E54"], source: "鏆楅粦涔嬩簯" }
-522.0 "杩炲皠寮忔尝鍔ㄧ偖 (鍜忓敱)" Ability { id: "9E40", source: "鏆楅粦涔嬩簯" }
-522.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-524.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-526.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-528.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-549.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-551.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-553.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-555.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-558.3 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-559.0 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-561.2 "鍚稿紩/椋欓" Ability { id: ["9E47", "9E4D"], source: "鏆楅粦涔嬩簯" }
-574.4 "鏍哥垎 (鍜忓敱)" Ability { id: "9E58", source: "鏆楅粦涔嬩簯" }
-583.4 "鏍哥垎 (浼ゅ)" Ability { id: "9E59", source: "鏆楅粦涔嬩簯" }
-594.7 "鏆椾箣娉涙互" StartsUsing { id: "9E3E", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "diamond-phase-1-end"
+511.0 "超附死/超附风" Ability { id: ["9E53", "9E54"], source: "暗黑之云" }
+522.0 "连射式波动炮 (cast)" Ability { id: "9E40", source: "暗黑之云" } # 读条ID 9E40 分队挡枪分摊
+522.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+524.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+526.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+528.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+549.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+551.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+553.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+555.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+558.3 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+559.0 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+561.2 "吸引/飙风" Ability { id: ["9E47", "9E4D"], source: "暗黑之云" }
+574.4 "核爆 (cast)" Ability { id: "9E58", source: "暗黑之云" }
+583.4 "核爆 (damage)" Ability { id: "9E59", source: "暗黑之云" }
+594.7 "--sync--" StartsUsing { id: "9E3E", source: "暗黑之云" } window 10,10 forcejump "diamond-phase-1-end"
 
 # end of diamond phase 1
 600.0 label "diamond-phase-1-end"
-606.9 "鏆椾箣娉涙互" Ability { id: "9E3E", source: "鏆楅粦涔嬩簯" }
-621.0 "鏆椾箣澶ф硾婊? Ability { id: "9E01", source: "鏆楅粦涔嬩簯" }
-624.0 "--sync--" Ability { id: "9E02", source: "鏆楅粦涔嬩簯" }
+606.9 "暗之泛滥" Ability { id: "9E3E", source: "暗黑之云" }
+621.0 "暗之大泛滥" Ability { id: "9E01", source: "暗黑之云" }
+624.0 "--sync--" Ability { id: "9E02", source: "暗黑之云" }
 
 # tile phase
 625.2 "--adds targetable--"
-639.5 "娣辨殫棰嗗煙" Ability { id: "9E08", source: "鏆楅粦涔嬩簯" }
-651.5 "娉㈠姩鐞? Ability { id: "9E18", source: "鏆楅粦涔嬩簯" }
-652.5 "涓夐噸鏆椾箣鎴樻妧" Ability { id: ["9E20", "9E23"], source: "鐢熶簬榛戞殫涔嬬墿" } duration 7
-662.7 "娉㈠姩鐖嗙偢" Ability { id: ["9E1A", "9E1B", "9E1C"], source: "鏆楅粦涔嬩簯" }
-682.7 "鎭愭儳涔嬩簯" Ability { id: ["9E09", "9E0B"], source: "鏆楅粦涔嬩簯" }
-683.5 "鎭愭儳涔嬩簯" Ability { id: ["9E0A", "9E0C"], source: "鏆楅粦涔嬩簯" }
-690.7 "娉㈠姩璇呭拻" Ability { id: "9E32", source: "鐢熶簬榛戞殫涔嬬墿" }
-691.7 "娉㈠姩璇呭拻" Ability { id: "9E33", source: "鐢熶簬榛戞殫涔嬬墿" }
-698.8 "璇呭拻寮忔尝鍔ㄧ偖" Ability { id: "9E34", source: "鏆楅粦涔嬩簯" }
-700.7 "绉嶅瓙寮?(鍜忓敱)" Ability { id: "9E2A", source: "鐢熶簬榛戞殫涔嬬墿" }
-714.7 "绉嶅瓙寮? Ability { id: "9E2B", source: "鐢熶簬榛戞殫涔嬬墿" }
-720.1 "鎭愭儳涔嬩簯" Ability { id: ["9E09", "9E0B"], source: "鏆楅粦涔嬩簯" }
-720.9 "鎭愭儳涔嬩簯" Ability { id: ["9E0A", "9E0C"], source: "鏆楅粦涔嬩簯" }
-724.9 "璇呭拻寮忔尝鍔ㄧ偖" Ability { id: "9E34", source: "鐢熶簬榛戞殫涔嬬墿" }
-734.0 "鑽嗘涓涚敓" Ability { id: "9E2C", source: "鐢熶簬榛戞殫涔嬬墿" }
-762.2 "鍑濊仛寮忔尝鍔ㄧ偖/鍒嗘暎寮忔尝鍔ㄧ偖" Ability { id: ["9E0D", "9E10"], source: "鏆楅粦涔嬩簯" }
-765.1 "--sync--" Ability { id: "9E2E", source: "鐢熶簬榛戞殫涔嬬墿" }
-774.1 "姝ｄ晶璺宠穬娉㈠姩鐐?渚ф璺宠穬娉㈠姩鐐? Ability { id: ["9E2F", "9E30"], source: "鐢熶簬榛戞殫涔嬬墿" }
-776.1 "璺宠穬娉㈠姩鐐? #Ability { id: "9E31", source: "鐢熶簬榛戞殫涔嬬墿" }
-777.5 "璺宠穬娉㈠姩鐐? #Ability { id: "9E31", source: "鐢熶簬榛戞殫涔嬬墿" }
-781.3 "鍥炴棆寮忔尝鍔ㄧ偖" Ability { id: ["9E13", "9E15"], source: "鏆楅粦涔嬩簯" } duration 7.5
-788.6 "璇呭拻寮忔尝鍔ㄧ偖" Ability { id: "9E34", source: "鐢熶簬榛戞殫涔嬬墿" }
-794.2 "纾旀潃" Ability { id: "9E36", source: "鐢熶簬榛戞殫涔嬬墿" }
-807.5 "娣锋矊杩繎" Ability { id: "A2C9", source: "鐢熶簬榛戞殫涔嬬墿" }
-807.5 "娣锋矊杩繎" Ability { id: "A2CA", source: "鏆楅粦涔嬩簯" }
-808.2 "娣锋矊杩繎" Ability { id: "A2CB", source: "鏆楅粦涔嬩簯" }
-819.1 "娉㈠姩璇呭拻" Ability { id: "9E32", source: "鐢熶簬榛戞殫涔嬬墿" }
-820.1 "娉㈠姩璇呭拻" Ability { id: "9E33", source: "鐢熶簬榛戞殫涔嬬墿" }
-822.2 "--sync--" Ability { id: "9E2E", source: "鐢熶簬榛戞殫涔嬬墿" }
-830.2 "娉㈠姩鐞? Ability { id: "9E18", source: "鏆楅粦涔嬩簯" }
-831.2 "姝ｄ晶璺宠穬娉㈠姩鐐?渚ф璺宠穬娉㈠姩鐐? Ability { id: ["9E2F", "9E30"], source: "鐢熶簬榛戞殫涔嬬墿" }
-833.2 "璺宠穬娉㈠姩鐐? #Ability { id: "9E31", source: "鐢熶簬榛戞殫涔嬬墿" }
-834.8 "璺宠穬娉㈠姩鐐? #Ability { id: "9E31", source: "鐢熶簬榛戞殫涔嬬墿" }
-841.5 "娉㈠姩鐖嗙偢" Ability { id: ["9E1A", "9E1B", "9E1C"], source: "鏆楅粦涔嬩簯" }
-845.3 "璇呭拻寮忔尝鍔ㄧ偖" Ability { id: "9E34", source: "鐢熶簬榛戞殫涔嬬墿" }
-847.5 "娣辨殫棰嗗煙" Ability { id: "9E08", source: "鏆楅粦涔嬩簯" }
-856.5 "娼滃湴寮忔尝鍔ㄧ偖 (鍜忓敱)" Ability { id: "9E1D", source: "鏆楅粦涔嬩簯" }
-861.5 "娼滃湴寮忔尝鍔ㄧ偖" Ability { id: "9E1E", source: "鏆楅粦涔嬩簯" } duration 5.2
-864.4 "涓夐噸鏆椾箣鎴樻妧" Ability { id: ["9E20", "9E23"], source: "鐢熶簬榛戞殫涔嬬墿" } duration 7
-876.2 "璇呭拻寮忔尝鍔ㄧ偖" Ability { id: "9E34", source: "鐢熶簬榛戞殫涔嬬墿" }
-890.4 "鎭愭儳涔嬩簯" Ability { id: ["9E09", "9E0B"], source: "鏆楅粦涔嬩簯" }
-891.1 "鎭愭儳涔嬩簯" Ability { id: ["9E0A", "9E0C"], source: "鏆楅粦涔嬩簯" }
-891.2 "--sync--" Ability { id: "9E2E", source: "鐢熶簬榛戞殫涔嬬墿" }
-900.2 "姝ｄ晶璺宠穬娉㈠姩鐐?渚ф璺宠穬娉㈠姩鐐? Ability { id: ["9E2F", "9E30"], source: "鐢熶簬榛戞殫涔嬬墿" }
-902.2 "璺宠穬娉㈠姩鐐? #Ability { id: "9E31", source: "鐢熶簬榛戞殫涔嬬墿" }
-903.8 "璺宠穬娉㈠姩鐐? #Ability { id: "9E31", source: "鐢熶簬榛戞殫涔嬬墿" }
-909.8 "鍑濊仛寮忔尝鍔ㄧ偖/鍒嗘暎寮忔尝鍔ㄧ偖" Ability { id: ["9E0D", "9E10"], source: "鏆楅粦涔嬩簯" }
-924.3 "璇呭拻寮忔尝鍔ㄧ偖" Ability { id: "9E34", source: "鐢熶簬榛戞殫涔嬬墿" }
-927.4 "--灏忔€笉鍙€変腑--"
-930.4 "浜戞暎" Ability { id: "9E06", source: "鐢熶簬榛戞殫涔嬬墿" }
-935.2 "鏆椾箣娉涙互" Ability { id: "9E07", source: "鏆楅粦涔嬩簯" }
+639.5 "深暗领域" Ability { id: "9E08", source: "暗黑之云" } # 读条ID 9E08 AOE
+651.5 "波动球" Ability { id: "9E18", source: "暗黑之云" }
+652.5 "三重暗之战技" Ability { id: ["9E20", "9E23"], source: "生于黑暗之物" } duration 7
+662.7 "波动爆炸" Ability { id: ["9E1A", "9E1B", "9E1C"], source: "暗黑之云" }
+682.7 "--sync--" Ability { id: ["9E09", "9E0B"], source: "暗黑之云" }
+683.5 "恐惧之云" Ability { id: ["9E0A", "9E0C"], source: "暗黑之云" }
+690.7 "--sync--" Ability { id: "9E32", source: "生于黑暗之物" }
+691.7 "波动诅咒" Ability { id: "9E33", source: "生于黑暗之物" } # 读条ID 9E33 AOE
+698.8 "诅咒式波动炮" Ability { id: "9E34", source: "暗黑之云" }
+700.7 "种子弹 (cast)" Ability { id: "9E2A", source: "生于黑暗之物" }
+714.7 "种子弹 (brambles drop)" Ability { id: "9E2B", source: "生于黑暗之物" }
+720.1 "--sync--" Ability { id: ["9E09", "9E0B"], source: "暗黑之云" }
+720.9 "恐惧之云" Ability { id: ["9E0A", "9E0C"], source: "暗黑之云" }
+724.9 "诅咒式波动炮" Ability { id: "9E34", source: "生于黑暗之物" }
+734.0 "荆棘丛生" Ability { id: "9E2C", source: "生于黑暗之物" }
+762.2 "凝聚式波动炮/分散式波动炮" Ability { id: ["9E0D", "9E10"], source: "暗黑之云" } # 读条ID 9E0D 分摊 # 读条ID 9E10 分散
+765.1 "--sync--" Ability { id: "9E2E", source: "生于黑暗之物" }
+774.1 "正侧跳跃波动炮/侧正跳跃波动炮" Ability { id: ["9E2F", "9E30"], source: "生于黑暗之物" } # 读条ID 9E2F 两侧再中间 # 读条ID 9E30 中间再两侧
+776.1 "跳跃波动炮" #Ability { id: "9E31", source: "生于黑暗之物" }
+777.5 "跳跃波动炮" #Ability { id: "9E31", source: "生于黑暗之物" }
+781.3 "回旋式波动炮" Ability { id: ["9E13", "9E15"], source: "暗黑之云" } duration 7.5
+788.6 "诅咒式波动炮" Ability { id: "9E34", source: "生于黑暗之物" }
+794.2 "磔杀" Ability { id: "9E36", source: "生于黑暗之物" }
+807.5 "--sync--" Ability { id: "A2C9", source: "生于黑暗之物" }
+807.5 "--sync--" Ability { id: "A2CA", source: "暗黑之云" }
+808.2 "混沌迫近" Ability { id: "A2CB", source: "暗黑之云" } # 读条ID A2CB AoE + 换位
+819.1 "--sync--" Ability { id: "9E32", source: "生于黑暗之物" }
+820.1 "波动诅咒" Ability { id: "9E33", source: "生于黑暗之物" } # 读条ID 9E33 AOE
+822.2 "--sync--" Ability { id: "9E2E", source: "生于黑暗之物" }
+830.2 "波动球" Ability { id: "9E18", source: "暗黑之云" }
+831.2 "正侧跳跃波动炮/侧正跳跃波动炮" Ability { id: ["9E2F", "9E30"], source: "生于黑暗之物" } # 读条ID 9E2F 两侧再中间 # 读条ID 9E30 中间再两侧
+833.2 "跳跃波动炮" #Ability { id: "9E31", source: "生于黑暗之物" }
+834.8 "跳跃波动炮" #Ability { id: "9E31", source: "生于黑暗之物" }
+841.5 "波动爆炸" Ability { id: ["9E1A", "9E1B", "9E1C"], source: "暗黑之云" }
+845.3 "诅咒式波动炮" Ability { id: "9E34", source: "生于黑暗之物" }
+847.5 "深暗领域" Ability { id: "9E08", source: "暗黑之云" } # 读条ID 9E08 AOE
+856.5 "潜地式波动炮 (cast)" Ability { id: "9E1D", source: "暗黑之云" }
+861.5 "潜地式波动炮 (chasing AoEs)" Ability { id: "9E1E", source: "暗黑之云" } duration 5.2
+864.4 "三重暗之战技" Ability { id: ["9E20", "9E23"], source: "生于黑暗之物" } duration 7
+876.2 "诅咒式波动炮" Ability { id: "9E34", source: "生于黑暗之物" }
+890.4 "--sync--" Ability { id: ["9E09", "9E0B"], source: "暗黑之云" }
+891.1 "恐惧之云" Ability { id: ["9E0A", "9E0C"], source: "暗黑之云" }
+891.2 "--sync--" Ability { id: "9E2E", source: "生于黑暗之物" }
+900.2 "正侧跳跃波动炮/侧正跳跃波动炮" Ability { id: ["9E2F", "9E30"], source: "生于黑暗之物" } # 读条ID 9E2F 两侧再中间 # 读条ID 9E30 中间再两侧
+902.2 "跳跃波动炮" #Ability { id: "9E31", source: "生于黑暗之物" }
+903.8 "跳跃波动炮" #Ability { id: "9E31", source: "生于黑暗之物" }
+909.8 "凝聚式波动炮/分散式波动炮" Ability { id: ["9E0D", "9E10"], source: "暗黑之云" } # 读条ID 9E0D 分摊 # 读条ID 9E10 分散
+924.3 "诅咒式波动炮" Ability { id: "9E34", source: "生于黑暗之物" }
+927.4 "--小怪不可选中--"
+930.4 "云散" Ability { id: "9E06", source: "生于黑暗之物" }
+935.2 "暗之泛滥" Ability { id: "9E07", source: "暗黑之云" }
 
 # transition
-938.3 "--sync--" Ability { id: "9E02", source: "鏆楅粦涔嬩簯" }
-951.3 "鏆椾箣澶ф硾婊? Ability { id: "9E3D", source: "鏆楅粦涔嬩簯" }
-954.3 "--sync--" Ability { id: "9E56", source: "鏆楅粦涔嬩簯" }
+938.3 "--sync--" Ability { id: "9E02", source: "暗黑之云" }
+951.3 "暗之大泛滥" Ability { id: "9E3D", source: "暗黑之云" }
+954.3 "--sync--" Ability { id: "9E56", source: "暗黑之云" }
 
 # diamond phase 2
-965.4 "闃村喎鎷ユ姳" Ability { id: ["9E39", "9E3A"], source: "鏆楅粦涔嬩簯" }
-973.4 "闃村喎鎷ユ姳" Ability { id: ["9E39", "9E3A"], source: "鏆楅粦涔嬩簯" }
-983.6 "鏍哥垎" StartsUsing { id: "9E58", source: "鏆楅粦涔嬩簯" } window 10,10 jump "flare-branch-2"
-985.4 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-987.4 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-988.6 "鏋佹" StartsUsing { id: "9E43", source: "鏆楅粦涔嬩簯" } window 10,10 jump "death-branch-2"
-988.6 "椋欓" StartsUsing { id: "9E4C", source: "鏆楅粦涔嬩簯" } window 10,10 jump "aero-branch-2"
-989.4 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-991.4 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
+965.4 "阴冷拥抱" Ability { id: ["9E39", "9E3A"], source: "暗黑之云" }
+973.4 "阴冷拥抱" Ability { id: ["9E39", "9E3A"], source: "暗黑之云" }
+983.6 "--sync--" StartsUsing { id: "9E58", source: "暗黑之云" } window 10,10 jump "flare-branch-2"
+985.4 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+987.4 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+988.6 "--sync--" StartsUsing { id: "9E43", source: "暗黑之云" } window 10,10 jump "death-branch-2" # 读条ID 9E43 远离再中间
+988.6 "--sync--" StartsUsing { id: "9E4C", source: "暗黑之云" } window 10,10 jump "aero-branch-2" # 读条ID 9E4C 击退
+989.4 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+991.4 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
 
-## Flare branch 2
+## 核爆 branch 2
 1000.0 label "flare-branch-2"
-1001.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1003.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1003.8 "鏍哥垎 (鍜忓敱)" Ability { id: "9E58", source: "鏆楅粦涔嬩簯" }
-1005.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1007.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1011.9 "榛戞殫绁炲湥 (鍜忓敱)" Ability { id: "A12D", source: "鏆楅粦涔嬩簯" }
-1012.9 "鏍哥垎 (浼ゅ)" Ability { id: "9E59", source: "鏆楅粦涔嬩簯" }
-1020.7 "榛戞殫绁炲湥 (浼ゅ)" Ability { id: "A12E", source: "鏆楅粦涔嬩簯" }
-1027.0 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-1027.7 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-1034.0 "瓒呰祴姝?瓒呰祴椋? Ability { id: ["9E53", "9E54"], source: "鏆楅粦涔嬩簯" }
-1052.1 "瓒呯煶鍖? Ability { id: "9E4F", source: "鏆楅粦涔嬩簯" }
-1053.0 "瓒呯煶鍖? Ability { id: "9E50", source: "鏆楅粦涔嬩簯" }
-1064.0 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-1064.7 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-1066.9 "鍚稿紩/椋欓" Ability { id: ["9E47", "9E4D"], source: "鏆楅粦涔嬩簯" }
-1079.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1081.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1083.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1085.0 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1096.8 "鏋佹/椋欓 (鍜忓敱)" Ability { id: ["9E43", "9E4C"], source: "鏆楅粦涔嬩簯" }
-1097.4 "鍚稿紩/椋欓" Ability { id: ["9E44", "9E4A"], source: "鏆楅粦涔嬩簯" }
-1105.5 "鏆椾箣澶ф硾婊? StartsUsing { id: "9E55", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "enrage"
+1001.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1003.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1003.8 "核爆 (cast)" Ability { id: "9E58", source: "暗黑之云" }
+1005.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1007.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1011.9 "黑暗神圣 (cast)" Ability { id: "A12D", source: "暗黑之云" }
+1012.9 "核爆 (damage)" Ability { id: "9E59", source: "暗黑之云" }
+1020.7 "黑暗神圣 (damage)" Ability { id: "A12E", source: "暗黑之云" }
+1027.0 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+1027.7 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+1034.0 "超附死/超附风" Ability { id: ["9E53", "9E54"], source: "暗黑之云" }
+1052.1 "--sync--" Ability { id: "9E4F", source: "暗黑之云" }
+1053.0 "超石化" Ability { id: "9E50", source: "暗黑之云" }
+1064.0 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+1064.7 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+1066.9 "吸引/飙风" Ability { id: ["9E47", "9E4D"], source: "暗黑之云" }
+1079.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1081.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1083.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1085.0 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1096.8 "极死/飙风 (cast)" Ability { id: ["9E43", "9E4C"], source: "暗黑之云" } # 读条ID 9E43 远离再中间 # 读条ID 9E4C 击退
+1097.4 "吸引/飙风" Ability { id: ["9E44", "9E4A"], source: "暗黑之云" }
+1105.5 "--sync--" StartsUsing { id: "9E55", source: "暗黑之云" } window 10,10 forcejump "enrage"
 
-## Death IV branch 2
+## 极死 branch 2
 1200.0 label "death-branch-2"
-1200.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1202.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1205.4 "鏋佹 (鍜忓敱)" Ability { id: "9E43", source: "鏆楅粦涔嬩簯" }
-1206.0 "鍚稿紩" Ability { id: "9E44", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "death/aero-branch-merge-2"
+1200.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1202.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1205.4 "极死 (cast)" Ability { id: "9E43", source: "暗黑之云" } # 读条ID 9E43 远离再中间
+1206.0 "吸引" Ability { id: "9E44", source: "暗黑之云" } window 10,10 forcejump "death/aero-branch-merge-2"
 
-## Aero IV branch 2
+## 飙风 branch 2
 1300.0 label "aero-branch-2"
-1300.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1302.8 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1305.4 "椋欓 (鍜忓敱)" Ability { id: "9E4C", source: "鏆楅粦涔嬩簯" }
-1306.0 "椋欓" Ability { id: "9E4A", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "death/aero-branch-merge-2"
+1300.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1302.8 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1305.4 "飙风 (cast)" Ability { id: "9E4C", source: "暗黑之云" } # 读条ID 9E4C 击退
+1306.0 "飙风" Ability { id: "9E4A", source: "暗黑之云" } window 10,10 forcejump "death/aero-branch-merge-2"
 
-## Death IV/Aero IV branch merge 2
+## 极死/飙风 branch merge 2
 1400.0 label "death/aero-branch-merge-2"
-1411.0 "瓒呰祴姝?瓒呰祴椋? Ability { id: ["9E53", "9E54"], source: "鏆楅粦涔嬩簯" }
-1422.0 "杩炲皠寮忔尝鍔ㄧ偖 (鍜忓敱)" Ability { id: "9E40", source: "鏆楅粦涔嬩簯" }
-1422.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-1424.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-1426.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-1428.9 "杩炲皠寮忔尝鍔ㄧ偖" #Ability { id: "9E42", source: "鏆楅粦涔嬩簯" }
-1449.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1451.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1453.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1455.1 "榻愬皠寮忔尝鍔ㄧ偖" #Ability { id: "9E3F", source: "鏆楅粦涔嬬牬鐗囦簯" }
-1458.3 "鏆椾箣鍒? Ability { id: ["9DFB", "9DFD", "9DFF"], source: "鏆楅粦涔嬩簯" }
-1459.0 "鏆椾箣鍒? Ability { id: ["9DFC", "9DFE", "9E00"], source: "鏆楅粦涔嬩簯" }
-1461.2 "鍚稿紩/椋欓" Ability { id: ["9E47", "9E4D"], source: "鏆楅粦涔嬩簯" }
-1474.4 "鏍哥垎 (鍜忓敱)" Ability { id: "9E58", source: "鏆楅粦涔嬩簯" }
-1483.4 "鏍哥垎 (浼ゅ)" Ability { id: "9E59", source: "鏆楅粦涔嬩簯" }
-1494.7 "鏆椾箣澶ф硾婊? StartsUsing { id: "9E55", source: "鏆楅粦涔嬩簯" } window 10,10 forcejump "enrage"
+1411.0 "超附死/超附风" Ability { id: ["9E53", "9E54"], source: "暗黑之云" }
+1422.0 "连射式波动炮 (cast)" Ability { id: "9E40", source: "暗黑之云" } # 读条ID 9E40 分队挡枪分摊
+1422.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+1424.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+1426.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+1428.9 "连射式波动炮" #Ability { id: "9E42", source: "暗黑之云" }
+1449.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1451.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1453.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1455.1 "齐射式波动炮" #Ability { id: "9E3F", source: "暗黑之破片云" }
+1458.3 "--sync--" Ability { id: ["9DFB", "9DFD", "9DFF"], source: "暗黑之云" }
+1459.0 "暗之刃" Ability { id: ["9DFC", "9DFE", "9E00"], source: "暗黑之云" }
+1461.2 "吸引/飙风" Ability { id: ["9E47", "9E4D"], source: "暗黑之云" }
+1474.4 "核爆 (cast)" Ability { id: "9E58", source: "暗黑之云" }
+1483.4 "核爆 (damage)" Ability { id: "9E59", source: "暗黑之云" }
+1494.7 "--sync--" StartsUsing { id: "9E55", source: "暗黑之云" } window 10,10 forcejump "enrage"
 
 # enrage
 1600.0 label "enrage"
-1612.0 "鏆椾箣澶ф硾婊?(鐙傛毚)" Ability { id: "9E55", source: "鏆楅粦涔嬩簯" }
+1612.0 "暗之大泛滥 (enrage)" Ability { id: "9E55", source: "暗黑之云" }
 
 
 # IGNORED ABILITIES
-# 9E0E Chaos-condensed Particle Beam
-# 9E0F Chaos-condensed Particle Beam
-# 9E11 Diffusive-force Particle Beam
-# 9E12 Diffusive-force Particle Beam
-# 9E14 Active-pivot Particle Beam
-# 9E16 Active-pivot Particle Beam
-# 9E17 Active-pivot Particle Beam
-# 9E1F Feint Particle Beam
+# 9E0E 凝聚式波动炮
+# 9E0F 凝聚式波动炮
+# 9E11 分散式波动炮
+# 9E12 分散式波动炮
+# 9E14 回旋式波动炮
+# 9E16 回旋式波动炮
+# 9E17 回旋式波动炮
+# 9E1F 潜地式波动炮
 # 9E21 the Art of Darkness
 # 9E22 the Art of Darkness
 # 9E24 the Art of Darkness
@@ -246,117 +245,117 @@ hideall "--sync--"
 # 9E27 Hyper-focused Particle Beam
 # 9E28 Multi-pronged Particle Beam
 # 9E29 Multi-pronged Particle Beam
-# 9E3B Grim Embrace
-# 9E3C Grim Embrace
-# 9E41 Rapid-sequence Particle Beam
-# 9E45 Death IV
-# 9E46 Death IV
-# 9E48 Death IV
-# 9E49 Death IV
-# 9E4B Aero IV
-# 9E4E Aero IV
-# 9E51 Break IV
-# 9E52 Break IV
+# 9E3B 阴冷拥抱
+# 9E3C 阴冷拥抱
+# 9E41 连射式波动炮
+# 9E45 极死
+# 9E46 极死
+# 9E48 极死
+# 9E49 极死
+# 9E4B 飙风
+# 9E4E 飙风
+# 9E51 超石化
+# 9E52 超石化
 # A183 Particle Beam
 
 # ALL ENCOUNTER ABILITIES
 # 9DF9 attack
 # 9DFA attack
-# 9DFB Blade of Darkness - under front right (cast)
-# 9DFC Blade of Darkness - under front right (damage)
-# 9DFD Blade of Darkness - under front left (cast)
-# 9DFE Blade of Darkness - under front left (damage)
-# 9DFF Blade of Darkness - out (cast)
-# 9E00 Blade of Darkness - out (damage)
-# 9E01 Deluge of Darkness - bleed aoe
+# 9DFB 暗之刃 - under front right (cast)
+# 9DFC 暗之刃 - under front right (damage)
+# 9DFD 暗之刃 - under front left (cast)
+# 9DFE 暗之刃 - under front left (damage)
+# 9DFF 暗之刃 - out (cast)
+# 9E00 暗之刃 - out (damage)
+# 9E01 暗之大泛滥 - bleed aoe
 # 9E02 --sync--
-# 9E06 Evaporation - adds absorbed into and damage boss
-# 9E07 Flood of Darkness
-# 9E08 Dark Dominion - aoe
-# 9E09 Ghastly Gloom - cross cleave (cast)
-# 9E0A Ghastly Gloom - cross cleave (damage)
-# 9E0B Ghastly Gloom - donut (cast)
-# 9E0C Ghastly Gloom - donut (damage)
-# 9E0D Chaos-condensed Particle Beam - cast
-# 9E0E Chaos-condensed Particle Beam - damage (to platform players)
-# 9E0F Chaos-condensed Particle Beam - damage (to tile players)
-# 9E10 Diffusive-force Particle Beam - cast
-# 9E11 Diffusive-force Particle Beam - damage
-# 9E12 Diffusive-force Particle Beam - damage
-# 9E13 Active-pivot Particle Beam - clockwise (cast)
-# 9E14 Active-pivot Particle Beam
-# 9E15 Active-pivot Particle Beam - counterclockwise (cast)
-# 9E16 Active-pivot Particle Beam - hidden cast
-# 9E17 Active-pivot Particle Beam - damage
-# 9E18 Particle Concentration
+# 9E06 云散 - adds absorbed into and damage boss
+# 9E07 暗之泛滥
+# 9E08 深暗领域 - aoe
+# 9E09 恐惧之云 - cross cleave (cast)
+# 9E0A 恐惧之云 - cross cleave (damage)
+# 9E0B 恐惧之云 - donut (cast)
+# 9E0C 恐惧之云 - donut (damage)
+# 9E0D 凝聚式波动炮 - cast
+# 9E0E 凝聚式波动炮 - damage (to platform players)
+# 9E0F 凝聚式波动炮 - damage (to tile players)
+# 9E10 分散式波动炮 - cast
+# 9E11 分散式波动炮 - damage
+# 9E12 分散式波动炮 - damage
+# 9E13 回旋式波动炮 - clockwise (cast)
+# 9E14 回旋式波动炮
+# 9E15 回旋式波动炮 - counterclockwise (cast)
+# 9E16 回旋式波动炮 - hidden cast
+# 9E17 回旋式波动炮 - damage
+# 9E18 波动球
 # 9E19 Particle Beam
 # 9E1A Particle Beam - 1 person tower soak
 # 9E1B Particle Beam - 2 person tower soak
 # 9E1C Particle Beam - 3 person tower soak
-# 9E1D Feint Particle Beam - dummy cast (from boss)
-# 9E1E Feint Particle Beam - hidden cast (one per targeted player)
-# 9E1F Feint Particle Beam - damage cast
-# 9E20 the Third Art of Darkness - cast (from adds)
+# 9E1D 潜地式波动炮 - dummy cast (from boss)
+# 9E1E 潜地式波动炮 - hidden cast (one per targeted player)
+# 9E1F 潜地式波动炮 - damage cast
+# 9E20 三重暗之战技 - cast (from adds)
 # 9E21 the Art of Darkness - right cleave (hidden cast)
 # 9E22 the Art of Darkness - right cleave (damage)
-# 9E23 the Third Art of Darkness - cast (from adds)
+# 9E23 三重暗之战技 - cast (from adds)
 # 9E24 the Art of Darkness - left cleave (hidden cast)
 # 9E25 the Art of Darkness - left cleave (damage)
 # 9E26 Hyper-focused Particle Beam - add protean (hidden cast)
 # 9E27 Hyper-focused Particle Beam - add protean (damage)
 # 9E28 Multi-pronged Particle Beam - pair stacks (hidden cast)
 # 9E29 Multi-pronged Particle Beam - pair stacks (damage)
-# 9E2A Evil Seed - cast (from adds)
-# 9E2B Evil Seed - brambles drop from players
-# 9E2C Thorny Vine - brambles tether to players
-# 9E2D Thorny Vine
+# 9E2A 种子弹 - cast (from adds)
+# 9E2B 种子弹 - brambles drop from players
+# 9E2C 荆棘丛生 - brambles tether to players
+# 9E2D 荆棘丛生
 # 9E2E --sync--
-# 9E2F Core-lateral Phaser - cleave middle then sides (cast)
-# 9E30 Lateral-core Phaser - cleave sides then middle (cast)
-# 9E31 Phaser - add cleave (damage from Lateral-core/Core-lateral Phaser)
-# 9E32 Curse of Darkness - dummy cast
-# 9E33 Curse of Darkness - aoe + debuffs
-# 9E34 Dark-energy Particle Beam - eye lasers
+# 9E2F 正侧跳跃波动炮 - cleave middle then sides (cast)
+# 9E30 侧正跳跃波动炮 - cleave sides then middle (cast)
+# 9E31 Phaser - add cleave (damage from Lateral-core/正侧跳跃波动炮)
+# 9E32 波动诅咒 - dummy cast
+# 9E33 波动诅咒 - aoe + debuffs
+# 9E34 诅咒式波动炮 - eye lasers
 # 9E35 attack
-# 9E36 Excruciate - tankbuster from Stygian Shadow
-# 9E39 Grim Embrace - hand will spawn in front of players
-# 9E3A Grim Embrace - hand will spawn behind players
-# 9E3B Grim Embrace
-# 9E3C Grim Embrace
-# 9E3D Deluge of Darkness - bleed aoe
-# 9E3E Flood of Darkness - aoe
-# 9E3F Razing-volley Particle Beam - line aoe
-# 9E40 Rapid-sequence Particle Beam - alliance wild charge (cast)
-# 9E41 Rapid-sequence Particle Beam - alliance wild charge (cast)
-# 9E42 Rapid-sequence Particle Beam - alliance wild charge (damage)
-# 9E43 Death IV
-# 9E44 Vortex
-# 9E45 Death IV
-# 9E46 Death IV
-# 9E47 Vortex
-# 9E48 Death IV
-# 9E49 Death IV
-# 9E4A Aero IV
-# 9E4B Aero IV
-# 9E4C Aero IV
-# 9E4D Aero IV
-# 9E4E Aero IV
-# 9E4F Break IV - gaze attack (cast from boss)
-# 9E50 Break IV - gaze attack (damage from boss)
-# 9E51 Break IV - gaze attack (cast from adds)
-# 9E52 Break IV - gaze attack (damage from adds)
-# 9E53 Endeath IV
-# 9E54 Enaero IV
-# 9E55 Deluge of Darkness - enrage
+# 9E36 磔杀 - tankbuster from 生于黑暗之物
+# 9E39 阴冷拥抱 - hand will spawn in front of players
+# 9E3A 阴冷拥抱 - hand will spawn behind players
+# 9E3B 阴冷拥抱
+# 9E3C 阴冷拥抱
+# 9E3D 暗之大泛滥 - bleed aoe
+# 9E3E 暗之泛滥 - aoe
+# 9E3F 齐射式波动炮 - line aoe
+# 9E40 连射式波动炮 - alliance wild charge (cast)
+# 9E41 连射式波动炮 - alliance wild charge (cast)
+# 9E42 连射式波动炮 - alliance wild charge (damage)
+# 9E43 极死
+# 9E44 吸引
+# 9E45 极死
+# 9E46 极死
+# 9E47 吸引
+# 9E48 极死
+# 9E49 极死
+# 9E4A 飙风
+# 9E4B 飙风
+# 9E4C 飙风
+# 9E4D 飙风
+# 9E4E 飙风
+# 9E4F 超石化 - gaze attack (cast from boss)
+# 9E50 超石化 - gaze attack (damage from boss)
+# 9E51 超石化 - gaze attack (cast from adds)
+# 9E52 超石化 - gaze attack (damage from adds)
+# 9E53 超附死
+# 9E54 超附风
+# 9E55 暗之大泛滥 - enrage
 # 9E56 --sync--
-# 9E58 Flare - cast
-# 9E59 Flare - damage
-# A12D Unholy Darkness - healer stacks (cast)
-# A12E Unholy Darkness - healer stacks (damage)
+# 9E58 核爆 - cast
+# 9E59 核爆 - damage
+# A12D 黑暗神圣 - healer stacks (cast)
+# A12E 黑暗神圣 - healer stacks (damage)
 # A182 Particle Beam
 # A183 Particle Beam - raidwide from tower soak failure
 # A184 attack
 # A185 attack
-# A2C9 Looming Chaos - cast (from adds)
-# A2CA Looming Chaos - cast (from boss)
-# A2CB Looming Chaos - aoe (from boss clone)
+# A2C9 混沌迫近 - cast (from adds)
+# A2CA 混沌迫近 - cast (from boss)
+# A2CB 混沌迫近 - aoe (from boss clone)

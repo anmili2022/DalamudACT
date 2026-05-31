@@ -21,7 +21,15 @@ internal sealed record TimelineEntry(
     bool IsSync,
     string? JumpLabel,
     float? JumpTimeSeconds,
-    IReadOnlyDictionary<uint, string> ActionResponses);
+    IReadOnlyDictionary<uint, TimelineActionResponse> ActionResponses);
+
+internal sealed record TimelineActionResponse(string Text, TimelineActionResponseTiming Timing);
+
+internal enum TimelineActionResponseTiming
+{
+    Ability,
+    StartsUsing,
+}
 
 internal sealed record TimelineDefinition(
     string Id,

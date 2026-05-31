@@ -36,6 +36,9 @@ internal sealed class TimelineService
     private readonly Dictionary<string, DateTime> observedStartsUsingCasts = new(StringComparer.Ordinal);
     private readonly List<ObservedTimelineAbility> pendingInitialAbilitySyncs = [];
     private string? forcedTimelinePath;
+    private string autoDownloadStatusText = string.Empty;
+    private readonly Dictionary<uint, DateTime> autoDownloadTimestamps = new();
+    private DateTime? lastAutoDownloadCheckUtc;
 
     public TimelineService(PluginConfiguration config)
     {
@@ -49,6 +52,40 @@ internal sealed class TimelineService
     public bool HasTimeline => definition != null;
 
     public bool HasForcedTimeline => !string.IsNullOrWhiteSpace(forcedTimelinePath);
+
+    public string AutoDownloadStatusText => autoDownloadStatusText;
+
+    public void TriggerAutoDownloadForZone()
+    {
+        if (!config.TimelineAutoDownloadOnEnter || loadedZoneId == 0)
+            return;
+
+        if (lastAutoDownloadCheckUtc.HasValue && (DateTime.UtcNow - lastAutoDownloadCheckUtc.Value).TotalMinutes < 5)
+            return;
+
+        if (autoDownloadTimestamps.TryGetValue(loadedZoneId, out var lastDl)
+            && (DateTime.UtcNow - lastDl).TotalHours < 1)
+        {
+            autoDownloadStatusText = "已是最新";
+            return;
+        }
+
+        lastAutoDownloadCheckUtc = DateTime.UtcNow;
+        _ = AutoDownloadAsync(loadedZoneId, loadedZoneName);
+    }
+
+    private async Task AutoDownloadAsync(uint zoneId, string zoneName)
+    {
+        autoDownloadStatusText = "检查中...";
+        var result = await remoteResources.AutoDownloadForZoneAsync(zoneId, zoneName).ConfigureAwait(true);
+        autoDownloadStatusText = result;
+
+        if (result.Contains("已下载") || result.Contains("已更新"))
+        {
+            autoDownloadTimestamps[zoneId] = DateTime.UtcNow;
+            ReloadCurrentTimeline();
+        }
+    }
 
     public IReadOnlyList<TimelineAvailableEntry> GetAvailableTimelineEntries()
     {
@@ -114,6 +151,7 @@ internal sealed class TimelineService
     public void Update(bool inCombat, uint zoneId, string zoneName)
     {
         EnsureTimelineForZone(zoneId, zoneName);
+        TriggerAutoDownloadForZone();
 
         if (definition == null)
         {
@@ -532,16 +570,16 @@ internal sealed class TimelineService
             return;
 
         var entry = wasRunning
-            ? candidates.OrderBy(entry => Math.Abs(entry.TimeSeconds - current)).FirstOrDefault(entry => entry.ActionResponses.ContainsKey(actionId))
-            : candidates.OrderBy(static entry => entry.TimeSeconds).FirstOrDefault(entry => entry.ActionResponses.ContainsKey(actionId));
-        if (entry == null || !entry.ActionResponses.TryGetValue(actionId, out var response) || string.IsNullOrWhiteSpace(response))
+            ? candidates.OrderBy(entry => Math.Abs(entry.TimeSeconds - current)).FirstOrDefault(entry => entry.ActionResponses.TryGetValue(actionId, out var response) && response.Timing == TimelineActionResponseTiming.Ability)
+            : candidates.OrderBy(static entry => entry.TimeSeconds).FirstOrDefault(entry => entry.ActionResponses.TryGetValue(actionId, out var response) && response.Timing == TimelineActionResponseTiming.Ability);
+        if (entry == null || !entry.ActionResponses.TryGetValue(actionId, out var response) || response.Timing != TimelineActionResponseTiming.Ability || string.IsNullOrWhiteSpace(response.Text))
             return;
 
-        var key = $"{entry.TimeSeconds:0.0}|{actionId:X}|{response}";
+        var key = BuildActionResponseKey(entry, actionId, response.Text);
         if (!spokenActionResponseKeys.Add(key))
             return;
 
-        var text = SanitizeTtsText(ApplyTtsCorrections($"{entry.DisplayText}，{response}"));
+        var text = SanitizeTtsText(ApplyTtsCorrections($"{entry.DisplayText}，{response.Text}"));
         if (string.IsNullOrWhiteSpace(text))
             return;
 
@@ -778,10 +816,20 @@ internal sealed class TimelineService
             if (!spokenTtsKeys.Add(key))
                 continue;
 
-            var hint = GetMechanicHint(entry);
-            var text = SanitizeTtsText(ApplyTtsCorrections(BuildTtsText(entry, hint)));
+            var mechanicHint = GetMechanicHint(entry);
+            var actionResponseHint = string.IsNullOrWhiteSpace(mechanicHint) ? GetActionResponseTimelineHint(entry) : null;
+            var text = SanitizeTtsText(ApplyTtsCorrections(BuildTtsText(entry, mechanicHint, actionResponseHint)));
             if (string.IsNullOrWhiteSpace(text))
                 continue;
+
+            if (!string.IsNullOrWhiteSpace(actionResponseHint))
+            {
+                foreach (var (actionId, response) in entry.ActionResponses)
+                {
+                    if (response.Timing == TimelineActionResponseTiming.Ability && !string.IsNullOrWhiteSpace(response.Text))
+                        spokenActionResponseKeys.Add(BuildActionResponseKey(entry, actionId, response.Text));
+                }
+            }
 
             if (!DalamudApi.TrySendChatCommand($"/pdr tts {text}"))
                 LogHelper.Debug("时间轴", $"发送 DailyRoutines TTS 命令失败：{text}");
@@ -794,14 +842,16 @@ internal sealed class TimelineService
             .Replace("\n", " ", StringComparison.Ordinal)
             .Trim();
 
-    private string BuildTtsText(TimelineEntry entry, string? hint)
+    private string BuildTtsText(TimelineEntry entry, string? mechanicHint, string? actionResponseHint)
     {
         if (entry.EventType == "Timer")
             return config.TimelineTtsResponse ? entry.DisplayText : string.Empty;
 
         var parts = new List<string>();
-        if (config.TimelineTtsMechanic && !string.IsNullOrWhiteSpace(hint))
-            parts.Add(hint);
+        if (config.TimelineTtsMechanic && !string.IsNullOrWhiteSpace(mechanicHint))
+            parts.Add(mechanicHint);
+        if (config.TimelineTtsResponse && !string.IsNullOrWhiteSpace(actionResponseHint))
+            parts.Add(actionResponseHint);
         if (config.TimelineTtsSkillName)
             parts.Add(entry.DisplayText);
         return string.Join("，", parts);
@@ -819,6 +869,22 @@ internal sealed class TimelineService
         => string.IsNullOrWhiteSpace(entry.MechanicHint)
             ? mechanicHints.GetHint(entry)
             : entry.MechanicHint;
+
+    private static string? GetActionResponseTimelineHint(TimelineEntry entry)
+    {
+        if (entry.ActionResponses.Count == 0)
+            return null;
+
+        var responses = entry.ActionResponses.Values
+            .Select(static response => response.Text)
+            .Where(static response => !string.IsNullOrWhiteSpace(response))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+        return responses.Count == 0 ? null : string.Join(" / ", responses);
+    }
+
+    private static string BuildActionResponseKey(TimelineEntry entry, uint actionId, string response)
+        => $"{entry.TimeSeconds:0.0}|{actionId:X}|{response}";
 
     private bool RequiresSyncBeforeStart()
     {

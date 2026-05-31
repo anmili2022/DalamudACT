@@ -1,24 +1,23 @@
 ### AAC HEAVYWEIGHT M4 (SAVAGE)
 # ZoneId: 1327
-
 hideall "--Reset--"
 hideall "--sync--"
 
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
-### Phase 1: Lindwurm
+### Phase 1: 林德布鲁姆
 # -ii B4D3 B4B2 B6F9 B4B4 B4B3 B4BD B4BE B4BF B4C0 B53E B4B5 B4B1 BE0A B570 B56F B4AD B76A B469 B769
-# -it "Lindwurm"
+# -it "林德布鲁姆"
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
 # P2 ActorControl director update corresponds to "Alas, the battle isn't over yet... But don't despair, Champion!"
 0.0 "--sync--" ActorControl { command: '80000027', data0: '15', data1: '02', data2: '330A' } window 0,1 jump "r12s-p2-start"
 # P2 Additional later sync in case above line happens before in combat
-1.0 "--sync--" AddedCombatant { npcNameId: "14380", name: "Lindschrat", job: "00", level: "64", ownerId: "0{4}", worldId: "00" } window 10,3 jump "r12s-p2-start" # Sync to P2 immediately through AddCombatant.
-10.6 "补天之手" StartsUsing { id: "B4D7", source: "林德布鲁姆" } window 15,10
+1.0 "--sync--" AddedCombatant { npcNameId: "14380", name: "人形分身", job: "00", level: "64", ownerId: "0{4}", worldId: "00" } window 10,3 jump "r12s-p2-start" # Sync to P2 immediately through AddCombatant.
+10.6 "--sync--" StartsUsing { id: "B4D7", source: "林德布鲁姆" } window 15,10
 15.6 "补天之手" Ability { id: "B4D7", source: "林德布鲁姆" }
 25.8 "--sync--" Ability { id: "B7C4", source: "林德布鲁姆" }
-40.8 "致命灾变" Ability { id: "B495", source: "林德布鲁姆" }
+40.8 "--sync--" Ability { id: "B495", source: "林德布鲁姆" }
 40.9 "致命灾变 1" #Ability { id: ["B496", "B498"], source: "林德布鲁姆" }
 43.9 "致命灾变 2" #Ability { id: ["B496", "B498"], source: "林德布鲁姆" }
 46.9 "致命灾变 3" #Ability { id: ["B496", "B498"], source: "林德布鲁姆" }
@@ -49,24 +48,24 @@ hideall "--sync--"
 134.7 "残暴拘束" Ability { id: ["B4B8", "B4B9", "B4BA", "B4BB"], source: "林德布鲁姆" }
 134.7 "细胞落地 4" #Ability { id: "B4B6", source: "林德布鲁姆" }
 135.7 "--止步--" Ability { id: "B472", source: "林德布鲁姆" } duration 5
-140.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
+140.7 "蜕鳞 1" Ability { id: "B4BC", source: "林德布鲁姆" }
 143.7 "--sync--" Ability { id: "B4C1", source: "林德布鲁姆" }
-145.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
+145.7 "蜕鳞 2" Ability { id: "B4BC", source: "林德布鲁姆" }
 145.7 "--连线 1--"
-150.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
+150.7 "蜕鳞 3" Ability { id: "B4BC", source: "林德布鲁姆" }
 150.7 "--连线 2--"
-152.7 "细胞变异" Ability { id: "B4B7", source: "连环细胞" }
-155.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
+152.7 "细胞变异 1" Ability { id: "B4B7", source: "连环细胞" }
+155.7 "蜕鳞 4" Ability { id: "B4BC", source: "林德布鲁姆" }
 155.7 "--连线 3--"
-157.7 "细胞变异" Ability { id: "B4B7", source: "连环细胞" }
-160.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
+157.7 "细胞变异 2" Ability { id: "B4B7", source: "连环细胞" }
+160.7 "蜕鳞 5" Ability { id: "B4BC", source: "林德布鲁姆" }
 160.7 "--连线 4--"
-162.7 "细胞变异" Ability { id: "B4B7", source: "连环细胞" }
-165.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
-167.7 "细胞变异" Ability { id: "B4B7", source: "连环细胞" }
-170.7 "蜕鳞" Ability { id: "B4BC", source: "林德布鲁姆" }
+162.7 "细胞变异 3" Ability { id: "B4B7", source: "连环细胞" }
+165.7 "蜕鳞 6" Ability { id: "B4BC", source: "林德布鲁姆" }
+167.7 "细胞变异 4" Ability { id: "B4B7", source: "连环细胞" }
+170.7 "蜕鳞 7" Ability { id: "B4BC", source: "林德布鲁姆" }
 176.7 "巨蟒绞缠" Ability { id: "B4C2", source: "林德布鲁姆" }
-185.8 "溅血" Ability { id: "B9C4", source: "林德布鲁姆" }
+185.8 "溅血 (咏唱栏)" Ability { id: "B9C4", source: "林德布鲁姆" }
 188.2 "溅血" Ability { id: "B9C6", source: "林德布鲁姆" }
 189.9 "--sync--" Ability { id: "B4CB", source: "林德布鲁姆" }
 
@@ -76,7 +75,7 @@ hideall "--sync--"
 212.0 "盛大登场" #Ability { id: ["B4A1", "B4A0"], source: "林德布鲁姆" } duration 1.2
 215.6 "震场" Ability { id: ["B4A5", "B4A4"], source: "林德布鲁姆" }
 218.0 "细胞爆炸 x8" #Ability { id: "B4B0", source: "林德布鲁姆" }
-218.2 "细胞飞散" Ability { id: "B923", source: "林德布鲁姆" }
+218.2 "细胞飞散 x8" Ability { id: "B923", source: "林德布鲁姆" }
 220.6 "--targetable--"
 226.9 "分裂灾变 (咏唱)" Ability { id: "B4A7", source: "林德布鲁姆" }
 228.0 "分裂灾变" Ability { id: "B4AB", source: "林德布鲁姆" }
@@ -96,11 +95,11 @@ hideall "--sync--"
 266.6 "细胞亡语 x4" #Ability { id: "B4AC", source: "林德布鲁姆" }
 266.8 "细胞爆炸 x4" #Ability { id: "B4AA", source: "林德布鲁姆" }
 279.4 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-286.1 "溅血" Ability { id: "B9C3", source: "林德布鲁姆" }
+286.1 "溅血 (咏唱栏)" Ability { id: "B9C3", source: "林德布鲁姆" }
 288.5 "溅血" Ability { id: "B9C6", source: "林德布鲁姆" }
 290.2 "--sync--" Ability { id: "B4CC", source: "林德布鲁姆" }
 299.3 "--sync--" Ability { id: "B7C4", source: "林德布鲁姆" }
-314.3 "致命灾变" Ability { id: "B495", source: "林德布鲁姆" }
+314.3 "--sync--" Ability { id: "B495", source: "林德布鲁姆" }
 314.4 "致命灾变 1" #Ability { id: ["B496", "B498"], source: "林德布鲁姆" }
 317.4 "致命灾变 2" #Ability { id: ["B496", "B498"], source: "林德布鲁姆" }
 320.4 "致命灾变 3" #Ability { id: ["B496", "B498"], source: "林德布鲁姆" }
@@ -108,8 +107,8 @@ hideall "--sync--"
 326.4 "--sync--" Ability { id: "B7C5", source: "林德布鲁姆" }
 
 # Slaughershed 1
-338.5 "喋血" Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } window 338,5
-340.9 "喋血" Ability { id: "ADC9", source: "林德布鲁姆" }
+338.5 "喋血 1 (咏唱栏)" Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } window 338,5
+340.9 "喋血 1" Ability { id: "ADC9", source: "林德布鲁姆" }
 342.6 "--sync--" Ability { id: "B4CB", source: "林德布鲁姆" } jump "r12s-p1-scourge-left-1"
 342.6 "--sync--" Ability { id: "B4CD", source: "林德布鲁姆" } jump "r12s-p1-scourge-right-1"
 342.6 "--sync--" Ability { id: "B4CE", source: "林德布鲁姆" } jump "r12s-p1-raptor-left-1"
@@ -124,54 +123,54 @@ hideall "--sync--"
 367.4 "喋血 2 (咏唱栏)" #Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" }
 369.8 "喋血 2" #Ability { id: "ADC9", source: "林德布鲁姆" }
 
-# Serpentine Scourge Left First
+# 灾变吐息 左 First
 442.6 label "r12s-p1-scourge-left-1"
 449.6 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 449.6 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 450.0 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-455.1 "灾变吐息" Ability { id: "B4D1", source: "林德布鲁姆" }
+455.1 "灾变吐息 左" Ability { id: "B4D1", source: "林德布鲁姆" }
 456.1 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-459.8 "灾变吐息" Ability { id: "B4D2", source: "林德布鲁姆" }
+459.8 "灾变吐息 右" Ability { id: "B4D2", source: "林德布鲁姆" }
 460.8 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-464.4 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
+464.4 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
 
-# Serpentine Scourge Right First
+# 灾变吐息 右 First
 540.6 label "r12s-p1-scourge-right-1"
 547.6 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 547.6 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 548.0 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-553.1 "灾变吐息" Ability { id: "B4D2", source: "林德布鲁姆" }
+553.1 "灾变吐息 右" Ability { id: "B4D2", source: "林德布鲁姆" }
 554.1 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-557.7 "灾变吐息" Ability { id: "B4D1", source: "林德布鲁姆" }
+557.7 "灾变吐息 左" Ability { id: "B4D1", source: "林德布鲁姆" }
 558.7 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-562.4 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
+562.4 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
 
-# Raptor Knuckles Left First
+# 追猎重击 左 First
 641.1 label "r12s-p1-raptor-left-1"
 648.1 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 648.1 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 648.5 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-653.6 "追猎重击" Ability { id: "B4D0", source: "林德布鲁姆" }
-654.4 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-658.3 "追猎重击" Ability { id: "B4CF", source: "林德布鲁姆" }
-659.1 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-662.9 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
+653.6 "追猎重击 东北" Ability { id: "B4D0", source: "林德布鲁姆" }
+654.4 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+658.3 "追猎重击 西北" Ability { id: "B4CF", source: "林德布鲁姆" }
+659.1 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+662.9 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
 
-# Raptor Knuckles Right First
+# 追猎重击 右 First
 742.7 label "r12s-p1-raptor-right-1"
 749.7 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 749.7 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 750.1 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-755.2 "追猎重击" Ability { id: "B4CF", source: "林德布鲁姆" }
-756.1 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-759.9 "追猎重击" Ability { id: "B4D0", source: "林德布鲁姆" }
-760.7 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-764.5 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
+755.2 "追猎重击 西北" Ability { id: "B4CF", source: "林德布鲁姆" }
+756.1 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+759.9 "追猎重击 东北" Ability { id: "B4D0", source: "林德布鲁姆" }
+760.7 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+764.5 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed2"
 
-# Slaughtershed 2
+# 喋血 2
 864.4 label "r12s-p1-slaughtershed2"
-867.4 "喋血" Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" }
-869.8 "喋血" Ability { id: "ADC9", source: "林德布鲁姆" }
+867.4 "喋血 2 (咏唱栏)" Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" }
+869.8 "喋血 2" Ability { id: "ADC9", source: "林德布鲁姆" }
 
 871.5 "--sync--" Ability { id: "B4CB", source: "林德布鲁姆" } jump "r12s-p1-scourge-left-2"
 871.5 "--sync--" Ability { id: "B4CD", source: "林德布鲁姆" } jump "r12s-p1-scourge-right-2"
@@ -187,54 +186,54 @@ hideall "--sync--"
 896.3 "喋血 3 (咏唱栏)" #Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" }
 898.7 "喋血 3" #Ability { id: "ADC9", source: "林德布鲁姆" }
 
-# Serpentine Scourge Left Second
+# 灾变吐息 左 Second
 971.6 label "r12s-p1-scourge-left-2"
 978.6 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 978.6 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 979.0 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-984.1 "灾变吐息" Ability { id: "B4D1", source: "林德布鲁姆" }
+984.1 "灾变吐息 左" Ability { id: "B4D1", source: "林德布鲁姆" }
 985.1 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-988.7 "灾变吐息" Ability { id: "B4D2", source: "林德布鲁姆" }
+988.7 "灾变吐息 右" Ability { id: "B4D2", source: "林德布鲁姆" }
 989.7 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-993.3 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
+993.3 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
 
-# Serpentine Scourge Right Second
+# 灾变吐息 右 Second
 1069.9 label "r12s-p1-scourge-right-2"
 1076.9 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1076.9 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1077.3 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1082.4 "灾变吐息" Ability { id: "B4D2", source: "林德布鲁姆" }
+1082.4 "灾变吐息 右" Ability { id: "B4D2", source: "林德布鲁姆" }
 1083.4 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-1087.0 "灾变吐息" Ability { id: "B4D1", source: "林德布鲁姆" }
+1087.0 "灾变吐息 左" Ability { id: "B4D1", source: "林德布鲁姆" }
 1088.0 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-1091.7 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
+1091.7 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
 
-# Raptor Knuckles Left Second
+# 追猎重击 左 Second
 1171.5 label "r12s-p1-raptor-left-2"
 1178.5 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1178.5 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1178.9 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1184.0 "追猎重击" Ability { id: "B4D0", source: "林德布鲁姆" }
-1184.8 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1188.6 "追猎重击" Ability { id: "B4CF", source: "林德布鲁姆" }
-1189.4 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1193.3 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
+1184.0 "追猎重击 东北" Ability { id: "B4D0", source: "林德布鲁姆" }
+1184.8 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1188.6 "追猎重击 西北" Ability { id: "B4CF", source: "林德布鲁姆" }
+1189.4 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1193.3 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
 
-# Raptor Knuckles Right Second
+# 追猎重击 右 Second
 1271.5 label "r12s-p1-raptor-right-2"
 1278.5 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1278.5 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1278.9 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1284.0 "追猎重击" Ability { id: "B4CF", source: "林德布鲁姆" }
-1284.8 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1288.6 "追猎重击" Ability { id: "B4D0", source: "林德布鲁姆" }
-1289.4 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1293.3 "喋血" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
+1284.0 "追猎重击 右" Ability { id: "B4CF", source: "林德布鲁姆" }
+1284.8 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1288.6 "追猎重击 左" Ability { id: "B4D0", source: "林德布鲁姆" }
+1289.4 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1293.3 "--sync--" StartsUsing { id: ["B4C3", "B4C6"], source: "林德布鲁姆" } forcejump "r12s-p1-slaughtershed3"
 
-# Slaughtershed 3
+# 喋血 3
 1393.3 label "r12s-p1-slaughtershed3"
-1396.3 "喋血" Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" }
-1398.7 "喋血" Ability { id: "ADC9", source: "林德布鲁姆" }
+1396.3 "喋血 3 (咏唱栏)" Ability { id: ["B4C3", "B4C6"], source: "林德布鲁姆" }
+1398.7 "喋血 3" Ability { id: "ADC9", source: "林德布鲁姆" }
 
 1400.4 "--sync--" Ability { id: "B4CB", source: "林德布鲁姆" } jump "r12s-p1-scourge-left-3"
 1400.4 "--sync--" Ability { id: "B4CD", source: "林德布鲁姆" } jump "r12s-p1-scourge-right-3"
@@ -250,84 +249,84 @@ hideall "--sync--"
 1431.5 "补天之手 (狂暴)?" #Ability { id: "B2C7", source: "林德布鲁姆" }
 1436.7 "过愈过伤 (狂暴)?" #Ability { id: "B538", source: "林德布鲁姆" }
 
-# Serpentine Scourge Left Third
+# 灾变吐息 左 Third
 1498.8 label "r12s-p1-scourge-left-3"
 1505.8 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1505.8 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1506.2 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1511.3 "灾变吐息" Ability { id: "B4D1", source: "林德布鲁姆" }
+1511.3 "灾变吐息 左" Ability { id: "B4D1", source: "林德布鲁姆" }
 1512.3 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-1515.9 "灾变吐息" Ability { id: "B4D2", source: "林德布鲁姆" }
+1515.9 "灾变吐息 右" Ability { id: "B4D2", source: "林德布鲁姆" }
 1516.9 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-1526.5 "补天之手" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
+1526.5 "--sync--" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
 1526.5 "--不可选中?--"
 1531.5 "补天之手 (狂暴)?" #Ability { id: "B2C7", source: "林德布鲁姆" }
 1536.7 "过愈过伤 (狂暴)?" #Ability { id: "B538", source: "林德布鲁姆" }
 1536.8 "--不可选中?--"
 1536.8 "过愈过伤 (狂暴)?" #Ability { id: "B53A", source: "林德布鲁姆" }
-1546.7 "过愈过伤" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
+1546.7 "--sync--" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
 
-# Serpentine Scourge Right Third
+# 灾变吐息 右 Third
 1600.4 label "r12s-p1-scourge-right-3"
 1607.4 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1607.4 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1607.8 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1612.9 "灾变吐息" Ability { id: "B4D2", source: "林德布鲁姆" }
+1612.9 "灾变吐息 左/右" Ability { id: "B4D2", source: "林德布鲁姆" }
 1613.9 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-1617.6 "灾变吐息" Ability { id: "B4D1", source: "林德布鲁姆" }
+1617.6 "灾变吐息 右/左" Ability { id: "B4D1", source: "林德布鲁姆" }
 1618.6 "灾变吐息" Ability { id: "B9BC", source: "林德布鲁姆" }
-1626.5 "补天之手" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
+1626.5 "--sync--" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
 1626.5 "--不可选中?--"
 1631.5 "补天之手 (狂暴)?" #Ability { id: "B2C7", source: "林德布鲁姆" }
 1636.7 "过愈过伤 (狂暴)?" #Ability { id: "B538", source: "林德布鲁姆" }
 1636.8 "--不可选中?--"
 1636.8 "过愈过伤 (狂暴)?" #Ability { id: "B53A", source: "林德布鲁姆" }
 
-1646.7 "过愈过伤" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
+1646.7 "--sync--" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
 
-# Raptor Knuckles Left Third
+# 追猎重击 左 Third
 1700.4 label "r12s-p1-raptor-left-3"
 1707.4 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1707.4 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1707.8 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1712.9 "追猎重击" Ability { id: "B4D0", source: "林德布鲁姆" }
-1713.7 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1717.5 "追猎重击" Ability { id: "B4CF", source: "林德布鲁姆" }
-1718.3 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1726.5 "补天之手" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
+1712.9 "追猎重击 东北" Ability { id: "B4D0", source: "林德布鲁姆" }
+1713.7 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1717.5 "追猎重击 西北" Ability { id: "B4CF", source: "林德布鲁姆" }
+1718.3 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1726.5 "--sync--" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
 1726.5 "--不可选中?--"
 1731.5 "补天之手 (狂暴)?" #Ability { id: "B2C7", source: "林德布鲁姆" }
 1736.7 "过愈过伤 (狂暴)?" #Ability { id: "B538", source: "林德布鲁姆" }
 1736.8 "--不可选中?--"
 1736.8 "过愈过伤 (狂暴)?" #Ability { id: "B53A", source: "林德布鲁姆" }
-1746.7 "过愈过伤" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
+1746.7 "--sync--" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
 
-# Raptor Knuckles Right Third
+# 追猎重击 右 Third
 1800.4 label "r12s-p1-raptor-right-3"
 1807.4 "细胞爆炸 x4" #Ability { id: "B4D4", source: "林德布鲁姆" }
 1807.4 "细胞轰炸" Ability { id: "B4D5", source: "林德布鲁姆" }
 1807.8 "大爆炸" Ability { id: "B49F", source: "林德布鲁姆" }
-1812.9 "追猎重击" Ability { id: "B4CF", source: "林德布鲁姆" }
-1813.7 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1817.5 "追猎重击" Ability { id: "B4D0", source: "林德布鲁姆" }
-1818.3 "追猎重击" Ability { id: "B9C7", source: "林德布鲁姆" }
-1826.5 "补天之手" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
+1812.9 "追猎重击 西北" Ability { id: "B4CF", source: "林德布鲁姆" }
+1813.7 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1817.5 "追猎重击 东北" Ability { id: "B4D0", source: "林德布鲁姆" }
+1818.3 "--knockback--" Ability { id: "B9C7", source: "林德布鲁姆" }
+1826.5 "--sync--" StartsUsing { id: "B2C7", source: "林德布鲁姆" } jump "r12s-p1-enrage-alt"
 1826.5 "--不可选中?--"
 1831.5 "补天之手 (狂暴)?" #Ability { id: "B2C7", source: "林德布鲁姆" }
 1836.7 "过愈过伤 (狂暴)?" #Ability { id: "B538", source: "林德布鲁姆" }
 1836.8 "--不可选中?--"
 1836.8 "过愈过伤 (狂暴)?" #Ability { id: "B53A", source: "林德布鲁姆" }
-1846.7 "过愈过伤" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
+1846.7 "--sync--" StartsUsing { id: "B538", source: "林德布鲁姆" } window 20,3 forcejump "r12s-p1-enrage"
 
-# 狂暴 sequence (Above 20%?)
+# Enrage sequence (Above 20%?)
 1926.5 label "r12s-p1-enrage-alt"
 1931.5 "补天之手 (狂暴)" Ability { id: "B2C7", source: "林德布鲁姆" }
 
-# 狂暴 sequence
+# Enrage sequence
 2027.7 label "r12s-p1-enrage"
-2036.7 "过愈过伤 (狂暴)" Ability { id: "B538", source: "林德布鲁姆" } window 510,5
+2036.7 "过愈过伤 (狂暴)?" Ability { id: "B538", source: "林德布鲁姆" } window 510,5
 2036.8 "--untargetable--"
-2036.8 "过愈过伤 (狂暴)" Ability { id: "B53A", source: "林德布鲁姆" }
+2036.8 "过愈过伤 (狂暴)?" Ability { id: "B53A", source: "林德布鲁姆" }
 
 # Kill/Transition sequence
 2036.8 "过愈过伤" Ability { id: "B539", source: "林德布鲁姆" }
@@ -337,27 +336,27 @@ hideall "--sync--"
 2117.7 "--targetable--"
 
 
-### Phase 2: Lindwurm II
+### Phase 2: 林德布鲁姆 II
 # -p B528:3015.7
 # -ii B51F B4DA B4DB B4DD B4DF B4E3 B4E6 B4F0 B4E9 B8E1 B4EA B922 BE5D BBE3 B508 B4F5 B512 B513 B514 B515 B4F9 B51B
-# -it "Lindwurm"
+# -it "林德布鲁姆"
 3000.5 label "r12s-p2-start"
-3010.7 "境中奇焰" StartsUsing { id: "B528", source: "林德布鲁姆" } window 3100,10
+3010.7 "--sync--" StartsUsing { id: "B528", source: "林德布鲁姆" } window 3100,10
 3015.7 "境中奇焰" Ability { id: "B528", source: "林德布鲁姆" }
 3022.9 "--middle--" Ability { id: "B4D9", source: "林德布鲁姆" } window 5,5
-3028.0 "自我复制" Ability { id: "B4D8", source: "林德布鲁姆" }
-3039.7 "天顶猛击" Ability { id: "B4DE", source: "人形分身" }
-3040.5 "有翼灾变" Ability { id: "B4DC", source: "林德布鲁姆" }
+3028.0 "自我复制 1" Ability { id: "B4D8", source: "林德布鲁姆" }
+3039.7 "天顶猛击 x2" Ability { id: "B4DE", source: "人形分身" }
+3040.5 "有翼灾变 x4" Ability { id: "B4DC", source: "林德布鲁姆" }
 3040.7 "强力魔法 x4" #Ability { id: "B4E0", source: "林德布鲁姆" }
-3045.3 "蛇踢" Ability { id: "B527", source: "林德布鲁姆" }
+3045.3 "回旋蛇踢" Ability { id: "B527", source: "林德布鲁姆" }
 3053.7 "--分身移动 1--" #Ability { id: "B4D9", source: "人形分身" }
 3054.7 "--分身移动 2--" #Ability { id: "B4D9", source: "人形分身" }
-3061.0 "天顶猛击" Ability { id: "B4DE", source: "人形分身" }
-3061.8 "有翼灾变" Ability { id: "B4DC", source: "林德布鲁姆" }
+3061.0 "天顶猛击 x2" Ability { id: "B4DE", source: "人形分身" }
+3061.8 "有翼灾变 x4" Ability { id: "B4DC", source: "林德布鲁姆" }
 3062.1 "强力魔法 x4" #Ability { id: "B4E0", source: "林德布鲁姆" }
-3069.4 "双重飞踢" Ability { id: "B520", source: "林德布鲁姆" }
-3070.0 "双重飞踢" Ability { id: ["B521", "B522", "B523", "B524"], source: "林德布鲁姆" }
-3074.6 "双重飞踢" Ability { id: "B525", source: "林德布鲁姆" }
+3069.4 "双重飞踢 (咏唱栏)" Ability { id: "B520", source: "林德布鲁姆" }
+3070.0 "双重飞踢 1" Ability { id: ["B521", "B522", "B523", "B524"], source: "林德布鲁姆" }
+3074.6 "双重飞踢 2" Ability { id: "B525", source: "林德布鲁姆" }
 3077.0 "魔力连击" Ability { id: "B526", source: "林德布鲁姆" }
 
 3091.2 "模仿细胞" Ability { id: "B4E1", source: "林德布鲁姆" }
@@ -367,48 +366,48 @@ hideall "--sync--"
 3097.0 "--分身 x2 4--" #ActorControlExtra { category: "0197", param1: "11D2" }
 3099.1 "--连线锁定--" Tether { id: "0175", source: "模仿细胞" }
 3102.2 "--sync--" Ability { id: "B4E2", source: "林德布鲁姆" }
-3105.4 "自我复制" Ability { id: "B4D8", source: "林德布鲁姆" }
+3105.4 "自我复制 2" Ability { id: "B4D8", source: "林德布鲁姆" }
 3108.6 "--boss 分身 x6--" ActorControlExtra { category: "0197", param1: "11D5" }
 3113.8 "--连线--"  #Tether { id: ["016F", "0170", "0171", "0176"] } # These could change hands causing sync issue
-3121.8 "--连线锁定--" Tether { id: "0175", source: ["Lindschrat", "Lindwurm"] }
+3121.8 "--连线锁定--" Tether { id: "0175", source: ["人形分身", "林德布鲁姆"] }
 3127.8 "落火飞溅" Ability { id: "B4E4", source: "林德布鲁姆" }
-3128.5 "炎波" Ability { id: "B4E5", source: "林德布鲁姆" }
-3129.9 "魔力爆发" Ability { id: "B4E7", source: "林德布鲁姆" }
-3135.5 "重猛击" Ability { id: "B4E8", source: "人形分身" }
-3136.7 "细胞附身" Ability { id: "B4EA", source: "林德布鲁姆" }
-3137.3 "指向性冲击波" Ability { id: "B4EB", source: "林德布鲁姆" }
-3141.1 "蛇踢" Ability { id: "B527", source: "林德布鲁姆" }
+3128.5 "炎波 x4" Ability { id: "B4E5", source: "林德布鲁姆" }
+3129.9 "魔力爆发 x3" Ability { id: "B4E7", source: "林德布鲁姆" }
+3135.5 "重猛击 x2" Ability { id: "B4E8", source: "人形分身" }
+3136.7 "细胞附身 x2" Ability { id: "B4EA", source: "林德布鲁姆" }
+3137.3 "指向性冲击波 x2" Ability { id: "B4EB", source: "林德布鲁姆" }
+3141.1 "回旋蛇踢" Ability { id: "B527", source: "林德布鲁姆" }
 
-# Reenactment 1
-# NOTE: Order dependent on tethers during and Staging 1 and Replication 2
+# 时空重现 1
+# NOTE: Order dependent on tethers during and 模仿细胞 1 and 自我复制 2
 # Initial VFX spells happen at same time, but damage casts differ:
 # +0s B4ED Fireball Splash (Initial VFX abilities also happen here)
-# +1.2s BBE3 Mana Burst
-# +1.4s BE5D Heavy Slam, B8E1 Scalding Waves
-# +1.6s B922 Hemorrhagic Projection
+# +1.2s BBE3 魔力爆发
+# +1.4s BE5D 重猛击, B8E1 炎波
+# +1.6s B922 指向性冲击波
 # These Abilities Sync same time:
 # B4ED Fireball Splash
-# B4EE Mana Burst (VFX)
-# B4EF Heavy Slam (VFX)
-# B4F1 Grotesquerie (VFX)
-3151.3 "时空重现" Ability { id: "B4EC", source: "林德布鲁姆" }
+# B4EE 魔力爆发 (VFX)
+# B4EF 重猛击 (VFX)
+# B4F1 细胞附身 (VFX)
+3151.3 "时空重现 1" Ability { id: "B4EC", source: "林德布鲁姆" }
 3159.4 "--南/北分身--" duration 1.6
 3159.4 "近界阴怒/远界阴怒" Ability { id: ["B52E", "B52F"], source: "林德布鲁姆" }
-3160.6 "阴怒波" Ability { id: "B530", source: "林德布鲁姆" }
-3163.3 "落火飞溅/魔力爆发/重猛击/细胞附身" Ability { id: ["B4ED", "B4EE", "B4EF", "B4F1"], source: "人形分身" } duration 1.6
-3167.4 "落火飞溅/魔力爆发/重猛击/细胞附身" Ability { id: ["B4ED", "B4EE", "B4EF", "B4F1"], source: "人形分身" } duration 1.6
-3171.4 "落火飞溅/魔力爆发/重猛击/细胞附身" Ability { id: ["B4ED", "B4EE", "B4EF", "B4F1"], source: "人形分身" } duration 1.6
+3160.6 "阴怒波 x2" Ability { id: "B530", source: "林德布鲁姆" }
+3163.3 "--东北/西南分身--" Ability { id: ["B4ED", "B4EE", "B4EF", "B4F1"], source: "人形分身" } duration 1.6
+3167.4 "--东/西分身--" Ability { id: ["B4ED", "B4EE", "B4EF", "B4F1"], source: "人形分身" } duration 1.6
+3171.4 "--东南/西北分身--" Ability { id: ["B4ED", "B4EE", "B4EF", "B4F1"], source: "人形分身" } duration 1.6
 
 3178.6 "--middle--" Ability { id: "B4D9", source: "林德布鲁姆" } window 5,5
 
-# Blood Mana / Blood Wakening Phase (Superchain)
+# 魔力球 / 魔力球苏醒 Phase (Superchain)
 3183.8 "变异细胞" Ability { id: "B505", source: "林德布鲁姆" } window 10,10
 3185.0 "--sync--" Ability { id: "B506", source: "林德布鲁姆" }
 3190.0 "魔力球" Ability { id: "B4FB", source: "林德布鲁姆" }
 3193.3 "--黑洞--" Ability { id: "BCB0", source: "魔力晶球" }
 3193.7 "--碎片--" Ability { id: "B4FD", source: "魔力晶球" }
 3200.7 "魔力扩散 x2" #Ability { id: "B4FE", source: "林德布鲁姆" } # Goes off when soaked by player
-3202.2 "细胞爆炸" Ability { id: "B507", source: "林德布鲁姆" }
+3202.2 "细胞爆炸 x8" Ability { id: "B507", source: "林德布鲁姆" }
 3203.2 "--近碎片被吃--" Ability { id: "B4FF", source: "魔力晶球" }
 3204.1 "--sync--" Ability { id: "BCB0", source: "魔力晶球" } # Blackhole 1
 3206.2 "--远碎片被吃--" Ability { id: "B4FF", source: "魔力晶球" }
@@ -418,34 +417,34 @@ hideall "--sync--"
 
 3216.7 "魔力球苏醒" Ability { id: "B500", source: "林德布鲁姆" }
 3217.9 "--sync--" Ability { id: "B4FC", source: "魔力晶球" }
-3218.3 "林德布鲁姆狂水/林德布鲁姆暴风/纵向震雷/横向烈炎" Ability { id: ["B501", "B502", "B503", "B504"], source: "林德布鲁姆" }
+3218.3 "黑洞 1" Ability { id: ["B501", "B502", "B503", "B504"], source: "林德布鲁姆" }
 3222.9 "--sync--" Ability { id: "B4FC", source: "魔力晶球" }
-3223.3 "林德布鲁姆狂水/林德布鲁姆暴风/纵向震雷/横向烈炎" Ability { id: ["B501", "B502", "B503", "B504"], source: "林德布鲁姆" }
+3223.3 "黑洞 2" Ability { id: ["B501", "B502", "B503", "B504"], source: "林德布鲁姆" }
 3227.6 "阴界近景/阴界远景" Ability { id: ["B52B", "B52C"], source: "林德布鲁姆" }
-3228.8 "阴界波" Ability { id: "B52D", source: "林德布鲁姆" }
-3231.8 "细胞爆炸" Ability { id: "B507", source: "林德布鲁姆" }
+3228.8 "阴界波 x3" Ability { id: "B52D", source: "林德布鲁姆" }
+3231.8 "细胞爆炸 x8" Ability { id: "B507", source: "林德布鲁姆" }
 3235.8 "境中奇焰" Ability { id: "B528", source: "林德布鲁姆" }
-3245.0 "双重飞踢" Ability { id: "B520", source: "林德布鲁姆" }
-3245.6 "双重飞踢" Ability { id: ["B521", "B522", "B523", "B524"], source: "林德布鲁姆" }
-3250.2 "双重飞踢" Ability { id: "B525", source: "林德布鲁姆" }
+3245.0 "双重飞踢 (咏唱栏)" Ability { id: "B520", source: "林德布鲁姆" }
+3245.6 "双重飞踢 1" Ability { id: ["B521", "B522", "B523", "B524"], source: "林德布鲁姆" }
+3250.2 "双重飞踢 2" Ability { id: "B525", source: "林德布鲁姆" }
 3252.6 "魔力连击" Ability { id: "B526", source: "林德布鲁姆" }
-# NOTE: Sync commented to avoid jumps before Idyllic Dream B509
+# NOTE: Sync commented to avoid jumps before 境中奇梦 B509
 3260.7 "--middle--" #Ability { id: "B4D9", source: "林德布鲁姆" } window 5,5
 
-# Idyllic Dream
+# 境中奇梦
 3268.8 "境中奇梦" Ability { id: "B509", source: "林德布鲁姆" }
 3275.0 "模仿细胞" Ability { id: "B4E1", source: "林德布鲁姆" }
 3276.3 "--分身 x4 1--" #ActorControlExtra { category: "0197", param1: "11D2" }
 3278.3 "--分身 x4 2--" #ActorControlExtra { category: "0197", param1: "11D2" }
 3280.4 "--连线锁定--" Tether { id: "0175", source: "模仿细胞" }
 3283.4 "--sync--" Ability { id: "B4E2", source: "林德布鲁姆" }
-3290.1 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
-3296.2 "自我复制" Ability { id: "B4D8", source: "林德布鲁姆" }
+3290.1 "心象投影 1" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
+3296.2 "自我复制 3" Ability { id: "B4D8", source: "林德布鲁姆" }
 3299.4 "--boss 分身 x3--" ActorControlExtra { category: "0197", param1: "11D5" }
-3308.6 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
+3308.6 "心象投影 2" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
 3309.6 "力量喷涌 x2" #Ability { id: ["B50F", "B510"], source: "人形分身" }
 3309.6 "回旋蛇踢" #Ability { id: "B511", source: "人形分身" }
-3314.7 "自我复制" Ability { id: "B4D8", source: "林德布鲁姆" }
+3314.7 "自我复制 4" Ability { id: "B4D8", source: "林德布鲁姆" }
 3317.9 "--boss 分身 x2 1--" #ActorControlExtra { category: "0197", param1: "11D5" }
 3318.9 "--boss 分身 x2 2--" #ActorControlExtra { category: "0197", param1: "11D5" }
 3319.9 "--boss 分身 x2 3--" #ActorControlExtra { category: "0197", param1: "11D5" }
@@ -453,320 +452,320 @@ hideall "--sync--"
 3326.1 "--连线--" #Tether { id: ["0170", "0171"], source: "人形分身" } # These could change hands causing sync issue
 3334.1 "--连线锁定--" Tether { id: "0175", source: "人形分身" }
 
-# Twisted Vision 3: Towers Preview
-3334.3 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
-3338.7 "蛇踢" Ability { id: "BE95", source: "林德布鲁姆" }
+# 心象投影 3: Towers Preview
+3334.3 "心象投影 3" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
+3338.7 "回旋蛇踢" Ability { id: "BE95", source: "林德布鲁姆" }
 3338.9 "力量喷涌 x4" #Ability { id: "B516", source: "林德布鲁姆" } # Front/Back are apparently counting as their own casts
 3342.8 "林德布鲁姆陨石" Ability { id: "B4F2", source: "林德布鲁姆" }
 3348.9 "陨落" Ability { id: "B4F3", source: "林德布鲁姆" }
-3355.0 "境中奇奥" Ability { id: "B529", source: "林德布鲁姆" }
+3355.0 "境中奇奥 (咏唱栏)" Ability { id: "B529", source: "林德布鲁姆" }
 3356.2 "境中奇奥" Ability { id: "B9D9", source: "林德布鲁姆" }
 
-# Twisted Vision 4: First Stacks/Defamations
-# Orders could be different, but we can detect B517 abiltiy to know if Mana Burst is coming 1.2s before B518
-3363.0 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
-3369.6 "重猛击" Ability { id: "B519", source: "人形分身" } # Or B517 Mana Burst (Lindschrat) happens here
-3370.8 "魔力爆发" Ability { id: "B518", source: "林德布鲁姆" }
-3374.6 "重猛击" Ability { id: "B519", source: "人形分身" } # Or B517 Mana Burst (Lindschrat) happens here
-3375.8 "魔力爆发" Ability { id: "B518", source: "林德布鲁姆" }
-3379.6 "重猛击" Ability { id: "B519", source: "人形分身" } # Or B517 Mana Burst (Lindschrat) happens here
-3380.8 "魔力爆发" Ability { id: "B518", source: "林德布鲁姆" }
-3384.6 "重猛击" Ability { id: "B519", source: "人形分身" } # Or B517 Mana Burst (Lindschrat) happens here
-3385.8 "魔力爆发" Ability { id: "B518", source: "林德布鲁姆" }
+# 心象投影 4: First Stacks/Defamations
+# Orders could be different, but we can detect B517 abiltiy to know if 魔力爆发 is coming 1.2s before B518
+3363.0 "心象投影 4" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
+3369.6 "分身 1 重猛击?" Ability { id: "B519", source: "人形分身" } # Or B517 魔力爆发 (人形分身) happens here
+3370.8 "分身 1 魔力爆发?" Ability { id: "B518", source: "林德布鲁姆" }
+3374.6 "分身 2 重猛击?" Ability { id: "B519", source: "人形分身" } # Or B517 魔力爆发 (人形分身) happens here
+3375.8 "分身 2 魔力爆发?" Ability { id: "B518", source: "林德布鲁姆" }
+3379.6 "分身 3 重猛击?" Ability { id: "B519", source: "人形分身" } # Or B517 魔力爆发 (人形分身) happens here
+3380.8 "分身 3 魔力爆发?" Ability { id: "B518", source: "林德布鲁姆" }
+3384.6 "分身 4 重猛击?" Ability { id: "B519", source: "人形分身" } # Or B517 魔力爆发 (人形分身) happens here
+3385.8 "分身 4 魔力爆发?" Ability { id: "B518", source: "林德布鲁姆" }
 
-# Twisted Vision 5: Towers
-3393.6 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
-3398.0 "轰击" Ability { id: "B4F4", source: "林德布鲁姆" }
+# 心象投影 5: Towers
+3393.6 "心象投影 5" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
+3398.0 "轰击 x8" Ability { id: "B4F4", source: "林德布鲁姆" }
 3398.6 "--热病 x2--" duration 5
-3398.7 "林德布鲁姆昏暗" Ability { id: "B4F6", source: "林德布鲁姆" }
+3398.7 "林德布鲁姆昏暗 x2" Ability { id: "B4F6", source: "林德布鲁姆" }
 3398.7 "--死宣 x2--" duration 8
-3403.7 "林德布鲁姆垒石 x2" #Ability { id: "B4F7", source: "林德布鲁姆" }
+3403.7 "林德布鲁姆垒石 x2" #Ability { id: "B4F7", source: "林德布鲁姆" } # 读条ID B4F7 (避开土塔)
 3408.7 "林德布鲁姆震雷 x4" #Ability { id: "B4FA", source: "林德布鲁姆" }
 3408.7 "林德布鲁姆闪耀 x4" #Ability { id: "B4F8", source: "林德布鲁姆" }
 3417.1 "空间裂断" Ability { id: "B51C", source: "林德布鲁姆" }
 3420.2 "--分身开始传送--" Ability { id: "B51D", source: "人形分身" }
 3423.3 "--分身抵达平台--" Ability { id: "B4D9", source: "人形分身" }
 
-# Twisted Vision 6: Reenactment 2 Part 1
+# 心象投影 6: 时空重现 2 Part 1
 # NOTE: Practical solution seems to be that you have x2 mana burts + x2 heavy slams
 # This is because mana burts hits will knockback and heavy slams give Magic Vulns
 # In theory you could do somehow get here and survive with:
-# 3x Mana Burst + 1 Heavy Slam => 3x Heavy Slam + 1 Mana Burst or
-# 3x Heavy Slam + 1 Mana Burst => 3x Mana Burst + 1 Heavy Slam 
+# 3x 魔力爆发 + 1 重猛击 => 3x 重猛击 + 1 魔力爆发 or
+# 3x 重猛击 + 1 魔力爆发 => 3x 魔力爆发 + 1 重猛击 
 # But those would probably require lots of mit and tank immune probably on 2/3 of the heavy slams in the 3 set
-3429.6 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
+3429.6 "心象投影 6" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
 3430.6 "力量喷涌" Ability { id: ["B50F", "B510"], source: "人形分身" }
-3430.6 "蛇踢" Ability { id: "BCAF", source: "人形分身" }
-3435.7 "时空重现" Ability { id: "B4EC", source: "林德布鲁姆" }
-3439.0 "魔力爆发" Ability { id: "BBE3", source: "林德布鲁姆" }
-3439.2 "重猛击" Ability { id: "BE5D", source: "林德布鲁姆" }
+3430.6 "回旋蛇踢" Ability { id: "BCAF", source: "人形分身" }
+3435.7 "时空重现 2" Ability { id: "B4EC", source: "林德布鲁姆" }
+3439.0 "分身 魔力爆发 x2" Ability { id: "BBE3", source: "林德布鲁姆" }
+3439.2 "分身 重猛击 x2" Ability { id: "BE5D", source: "林德布鲁姆" }
 
-# Twisted Vision 7: Safe Platform + Front/Back or Sides Platform
-3444.8 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
-3449.2 "蛇踢" Ability { id: "BE95", source: "林德布鲁姆" }
+# 心象投影 7: Safe Platform + Front/Back or Sides Platform
+3444.8 "心象投影 7" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
+3449.2 "回旋蛇踢" Ability { id: "BE95", source: "林德布鲁姆" }
 3449.4 "力量喷涌" Ability { id: "B516", source: "林德布鲁姆" }
 
-# Twisted Vision 8: Reenactment 2 Part 2
-3452.3 "心象投影" Ability { id: "BBE2", source: "林德布鲁姆" }
+# 心象投影 8: 时空重现 2 Part 2
+3452.3 "心象投影 8" Ability { id: "BBE2", source: "林德布鲁姆" } # 读条ID BBE2 踩光/彩色陨石塔 / 移动到安全平台侧再避开扇形 / 看安全格
 3458.6 "--sync--" Ability { id: "B51E", source: "人形分身" }
-3459.8 "魔力爆发" Ability { id: "BBE3", source: "林德布鲁姆" }
-3460.0 "重猛击" Ability { id: "BE5D", source: "林德布鲁姆" }
+3459.8 "分身 魔力爆发 x2" Ability { id: "BBE3", source: "林德布鲁姆" }
+3460.0 "分身 重猛击 x2" Ability { id: "BE5D", source: "林德布鲁姆" }
 3464.8 "力量喷涌" Ability { id: "B516", source: "林德布鲁姆" }
 3470.7 "境中奇梦" Ability { id: "B509", source: "林德布鲁姆" }
-3478.8 "双重飞踢" Ability { id: "B520", source: "林德布鲁姆" }
-3479.6 "双重飞踢" Ability { id: ["B521", "B522", "B523", "B524"], source: "林德布鲁姆" }
-3484.2 "双重飞踢" Ability { id: "B525", source: "林德布鲁姆" }
+3478.8 "双重飞踢 (咏唱栏)" Ability { id: "B520", source: "林德布鲁姆" }
+3479.6 "双重飞踢 1" Ability { id: ["B521", "B522", "B523", "B524"], source: "林德布鲁姆" }
+3484.2 "双重飞踢 2" Ability { id: "B525", source: "林德布鲁姆" }
 3486.6 "魔力连击" Ability { id: "B526", source: "林德布鲁姆" }
 
-# 狂暴 Sequence
-3499.8 "自我复制" Ability { id: "B46C", source: "林德布鲁姆" }
-3513.2 "境中奇狱" Ability { id: "B533", source: "林德布鲁姆" }
+# Enrage Sequence
+3499.8 "自我复制 5" Ability { id: "B46C", source: "林德布鲁姆" }
+3513.2 "境中奇狱 1 (boss) " Ability { id: "B533", source: "林德布鲁姆" } # 读条ID B533 AOE
 3513.2 "境中奇狱 1 x4 (分身)" #Ability { id: "B534", source: "人形分身" }
-3529.4 "境中奇狱" Ability { id: "B533", source: "林德布鲁姆" }
+3529.4 "境中奇狱 2 (boss)" Ability { id: "B533", source: "林德布鲁姆" } # 读条ID B533 AOE
 3529.4 "境中奇狱 2 x8 (分身)" #Ability { id: "B535", source: "人形分身" }
-3542.3 "境中奇狱" StartsUsing { id: "B537", source: "林德布鲁姆" }
-3552.3 "境中奇狱" Ability { id: "B537", source: "林德布鲁姆" }
-3552.3 "境中奇狱 x16 (Clones 狂暴)" #Ability { id: "BEC1", source: "人形分身" }
+3542.3 "--sync--" StartsUsing { id: "B537", source: "林德布鲁姆" }
+3552.3 "境中奇狱 (Boss Enrage)" Ability { id: "B537", source: "林德布鲁姆" }
+3552.3 "境中奇狱 x16 (Clones Enrage)" #Ability { id: "BEC1", source: "人形分身" }
 
 # IGNORED ABILITIES
 # Phase 1
 # B4D3 --sync--: Attack autos
 # B4B2 Unmitigated Explosion: Missed blob tower
 # B6F9 Unmitigated Explosion: Breaking chain before Bonds of Flesh expires
-# B4B4 Dramatic Lysis: Damage from breaking a tether; These can be broken at various times
-# B4B5 Dramatic Lysis: 6s to break tether, else this applies every 1s, doing damage and giving a damage down
-# B4B3 Roiling Mass: Damage from soaking a tether-created tower; The towers can be created at various times
-# B4BD Constrictor: VFX Ending of Cruel Coil B4B8
-# B4BE Constrictor: VFX Ending of Cruel Coil B4B9
-# B4BF Constrictor: VFX Ending of Cruel Coil B4BA
-# B4C0 Constrictor: VFX Ending of Cruel Coil B4BB
-# B4B1 Metamitosis: VFX
-# B469 Ravenous Reach: VFX
-# B769 Ravenous Reach: VFX
-# B76A Ravenous Reach: VFX
-# B56F --sync--: These happen same time as Bring Down the House BE0A
-# B570 --sync--: These happen same time as Bring Down the House BE0A
-# BE0A Bring Down the House: VFX
-# B4CF Raptor Knuckles: VFX for knockback from NW
-# B4D0 Raptor Knuckles: VFX for knockback from NE
-# B4AD Cell Death: Failing Cell Shedding by not getting hit by Ravenous Reach
+# B4B4 细胞爆炸: Damage from breaking a tether; These can be broken at various times
+# B4B5 细胞爆炸: 6s to break tether, else this applies every 1s, doing damage and giving a damage down
+# B4B3 细胞变异: Damage from soaking a tether-created tower; The towers can be created at various times
+# B4BD 巨蟒绞缠: VFX Ending of 残暴拘束 B4B8
+# B4BE 巨蟒绞缠: VFX Ending of 残暴拘束 B4B9
+# B4BF 巨蟒绞缠: VFX Ending of 残暴拘束 B4BA
+# B4C0 巨蟒绞缠: VFX Ending of 残暴拘束 B4BB
+# B4B1 细胞飞散: VFX
+# B469 极饿伸展: VFX
+# B769 极饿伸展: VFX
+# B76A 极饿伸展: VFX
+# B56F --sync--: These happen same time as 震场 BE0A
+# B570 --sync--: These happen same time as 震场 BE0A
+# BE0A 震场: VFX
+# B4CF 追猎重击: VFX for knockback from NW
+# B4D0 追猎重击: VFX for knockback from NE
+# B4AD Cell Death: Failing 细胞亡语 by not getting hit by 极饿伸展
 
 # Phase 2
 # B51F --sync--: Attack autos
-# B4DA Winged Scourge: VFX E/W clones Facing S, Cleaving Front/Back (North/South)
-# B4DB Winged Scourge: VFX N/S clones Facing W, Cleaving Front/Back (East/West)
-# B4DD Top-tier Slam: VFX (cast that gives Fire Debuff)
-# B4DF Mighty Magic: VFX (cast that gives Dark Debuff)
-# B4E3 Firefall Splash: VFX
-# B4E6 Mana Burst: VFX
-# B4F0 Unmitigated Impact: No one stacked in a Heavy Slam, causes 1035 Sustained Damage DoT
+# B4DA 有翼灾变: VFX E/W clones Facing S, Cleaving Front/Back (North/South)
+# B4DB 有翼灾变: VFX N/S clones Facing W, Cleaving Front/Back (East/West)
+# B4DD 天顶猛击: VFX (cast that gives Fire Debuff)
+# B4DF 强力魔法: VFX (cast that gives Dark Debuff)
+# B4E3 落火飞溅: VFX
+# B4E6 魔力爆发: VFX
+# B4F0 Unmitigated Impact: No one stacked in a 重猛击, causes 1035 Sustained Damage DoT
 # B4E9 Grotesquerie: VFX
-# B8E1 Scalding Waves: Used in Reenactment (Proteans), Ignored due to timing being strategy-based
-# B4EA Grotesquerie: Used in Reenactment, Ignored due to timing being strategy-based
-# BBE3 Mana Burst: Used in Reenactment (Damage + Knockback), Ignored due to timing being strategy-based
-# BE5D Heavy Slam: Used in Reenactment (Stack with Clone, requires at least 1 player), Ignored due to timing being strategy-based
-# B922 Hemorrhagic Projection: Used in Reenactment (Damage), Ignored due to timing being strategy-based
+# B8E1 炎波: Used in 时空重现 (Proteans), Ignored due to timing being strategy-based
+# B4EA Grotesquerie: Used in 时空重现, Ignored due to timing being strategy-based
+# BBE3 魔力爆发: Used in 时空重现 (Damage + Knockback), Ignored due to timing being strategy-based
+# BE5D 重猛击: Used in 时空重现 (Stack with 分身, requires at least 1 player), Ignored due to timing being strategy-based
+# B922 指向性冲击波: Used in 时空重现 (Damage), Ignored due to timing being strategy-based
 # B508 Unmitigated Explosion: Getting hit when you have Mitigation α or failing to get hit with Mitigation β, applies 30s damage down
-# B4FF --sync--: VFX Mana Spheres eaten by Black Hole
-# BCB0 --sync--: VFX Black Hole light eruption
-# B4F5 Unmitigated Explosion: Missing Cosmic Kiss Tower (Twisted Vision 5)
-# B512 Power Gusher: VFX during Twisted Vision 2 with B50F and B510
-# B513 Power Gusher: VFX during Twisted Vision 3, related to the B50F
-# B514 Power Gusher: VFX during Twisted Vision 3, related to the B510
-# B515 Snaking Kick: VFX during Twisted Vision 3
+# B4FF --sync--: VFX 魔力晶球s eaten by 黑洞
+# BCB0 --sync--: VFX 黑洞 light eruption
+# B4F5 Unmitigated Explosion: Missing 轰击 Tower (心象投影 5)
+# B512 力量喷涌: VFX during 心象投影 2 with B50F and B510
+# B513 力量喷涌: VFX during 心象投影 3, related to the B50F
+# B514 力量喷涌: VFX during 心象投影 3, related to the B510
+# B515 回旋蛇踢: VFX during 心象投影 3
 # B4F9 Pyretic Wurm: Damage suffered when player moves while under affect of 12A0 Hot-blooded
-# B51B Power Gusher: VFX during Twisted Vision 8, related to B516
+# B51B 力量喷涌: VFX during 心象投影 8, related to B516
 
 # ALL ENCOUNTER ABILITIES
 # Phase 1
-# ADC9 Slaughtershed
-# B2C7 The Fixer: Alternative enrage
-# B469 Ravenous Reach: VFX
+# ADC9 喋血
+# B2C7 补天之手: Alternative enrage
+# B469 极饿伸展: VFX
 # B46E --sync--
 # B472 --sync-- Animation coinciding with boss jumping to middle and binding the players
 # B479 --sync--
-# B495 Mortal Slayer: VFX, B496 and B498 have distance and AOE components so this is nearest sync
-# B496 Mortal Slayer: Green (DPS/Healer) Orbs
-# B498 Mortal Slayer: Purple (Tank) Orbs
+# B495 致命灾变: VFX, B496 and B498 have distance and AOE components so this is nearest sync
+# B496 致命灾变: Green (DPS/Healer) Orbs
+# B498 致命灾变: Purple (Tank) Orbs
 # B49A --sync--: Animation for Wyrm moving West (Cleaving East)
 # B49B --sync--: Animation for Wyrm moving East (Cleaving West)
-# B49D Ravenous Reach
-# B49E Phagocyte Spotlight
+# B49D 极饿伸展
+# B49E 细胞落地
 # B49F Burst
-# B4A0 Grand Entrance: Small circle aoe of wyrm going into ground? Does a knockback and gives damage down
-# B4A1 Grand Entrance: Only cast when caradinals are safe; Small circle aoe of wyrm coming out of ground? Does a knockback and gives damage down
-# B4A2 Grand Entrance: Only cast when intercardinal are safe
-# B4A3 Grand Entrance
-# B4A4 Bring Down the House
-# B4A5 Bring Down the House
-# B4A6 Bring Down the House
-# B4A7 Split Scourge
-# B4A8 Venomous Scourge
-# B4AA Dramatic Lysis: Spread AoE damage
-# B4AB Split Scourge
-# B4AC Cell Shedding
+# B4A0 盛大登场: Small circle aoe of wyrm going into ground? Does a knockback and gives damage down
+# B4A1 盛大登场: Only cast when caradinals are safe; Small circle aoe of wyrm coming out of ground? Does a knockback and gives damage down
+# B4A2 盛大登场: Only cast when intercardinal are safe
+# B4A3 盛大登场
+# B4A4 震场
+# B4A5 震场
+# B4A6 震场
+# B4A7 分裂灾变
+# B4A8 滴液灾变
+# B4AA 细胞爆炸: Spread AoE damage
+# B4AB 分裂灾变
+# B4AC 细胞亡语
 # B4AD Cell Death
-# B4AE Fourth-wall Fusion
-# B4AF Hemorrhagic Projection
-# B4B0 Dramatic Lysis
-# B4B1 Metamitosis
+# B4AE 细胞轰炸
+# B4AF 指向性冲击波
+# B4B0 细胞爆炸
+# B4B1 细胞飞散
 # B4B2 Unmitigated Explosion
-# B4B3 Roiling Mass: Chain Tower soaks
-# B4B4 Dramatic Lysis
-# B4B5 Dramatic Lysis
-# B4B6 Phagocyte Spotlight
-# B4B7 Roiling Mass: Blob Tower Soaks
-# B4B8 Cruel Coil: Starts east, turns counterclock
-# B4B9 Cruel Coil: Starts west, turns counterclock
-# B4BA Cruel Coil: Starts north, turns counterclock
-# B4BB Cruel Coil: Starts south, turns counterclock
-# B4BC Skinsplitter
-# B4BD Constrictor: VFX Ending of Cruel Coil B4B8
-# B4BE Constrictor: VFX Ending of Cruel Coil B4B9
-# B4BF Constrictor: VFX Ending of Cruel Coil B4BA
-# B4C0 Constrictor: VFX Ending of Cruel Coil B4BB
+# B4B3 细胞变异: Chain Tower soaks
+# B4B4 细胞爆炸
+# B4B5 细胞爆炸
+# B4B6 细胞落地
+# B4B7 细胞变异: Blob Tower Soaks
+# B4B8 残暴拘束: Starts east, turns counterclock
+# B4B9 残暴拘束: Starts west, turns counterclock
+# B4BA 残暴拘束: Starts north, turns counterclock
+# B4BB 残暴拘束: Starts south, turns counterclock
+# B4BC 蜕鳞
+# B4BD 巨蟒绞缠: VFX Ending of 残暴拘束 B4B8
+# B4BE 巨蟒绞缠: VFX Ending of 残暴拘束 B4B9
+# B4BF 巨蟒绞缠: VFX Ending of 残暴拘束 B4BA
+# B4C0 巨蟒绞缠: VFX Ending of 残暴拘束 B4BB
 # B4C1 --sync--
-# B4C2 Constrictor: "soft enrage" damage for Cruel Coil
-# B4C3 Slaughtershed
-# B4C6 Slaughtershed
-# B4CB --sync--: Animation that indicates B4D1 Serpintine Scourge (Left Hand/E) is first
-# B4CC --sync--: Animation that indicates B4CF Raptor Knuckles (Right Hand/NW) is first
-# B4CD --sync--: Animation that indicates B4D2 Serpintine Scourge (Right hand/W) is first
-# B4CE --sync--: Animation that indicates B4D0 Raptor Knuckles (Left Hand/NE) is first
-# B4CF Raptor Knuckles
-# B4D0 Raptor Knuckles
-# B4D1 Serpentine Scourge
-# B4D2 Serpentine Scourge
+# B4C2 巨蟒绞缠: "soft enrage" damage for 残暴拘束
+# B4C3 喋血
+# B4C6 喋血
+# B4CB --sync--: Animation that indicates B4D1 Serpintine Scourge (左 Hand/E) is first
+# B4CC --sync--: Animation that indicates B4CF 追猎重击 (右 Hand/NW) is first
+# B4CD --sync--: Animation that indicates B4D2 Serpintine Scourge (右 hand/W) is first
+# B4CE --sync--: Animation that indicates B4D0 追猎重击 (左 Hand/NE) is first
+# B4CF 追猎重击
+# B4D0 追猎重击
+# B4D1 灾变吐息
+# B4D2 灾变吐息
 # B4D3 --sync--
-# B4D4 Dramatic Lysis
-# B4D5 Fourth-wall Fusion
-# B4D6 Visceral Burst
-# B4D7 The Fixer
+# B4D4 细胞爆炸
+# B4D5 细胞轰炸
+# B4D6 脏腑爆裂
+# B4D7 补天之手
 # B4F5 Unmitigated Explosion
 # B4F9 Pyretic Wurm
-# B538 Refreshing Overkill: 狂暴 castbar
-# B539 Refreshing Overkill: Non-enrage
-# B53A Refreshing Overkill: 狂暴
-# B53E Skinsplitter: Damage from running into snake during Cruel Coil
+# B538 过愈过伤: Enrage castbar
+# B539 过愈过伤: Non-enrage
+# B53A 过愈过伤: Enrage
+# B53E 蜕鳞: Damage from running into snake during 残暴拘束
 # B56F --sync--
 # B570 --sync--
 # B571 --sync--
 # B6F9 Unmitigated Explosion
-# B769 Ravenous Reach: VFX
-# B76A Ravenous Reach: VFX
+# B769 极饿伸展: VFX
+# B76A 极饿伸展: VFX
 # B7C4 --sync--
 # B7C5 --sync--
-# B923 Metamitosis
-# B9B9 Fourth-wall Fusion
-# B9BC Serpentine Scourge
-# B9C3 Splattershed
-# B9C4 Splattershed
-# B9C6 Splattershed
-# B9C7 Raptor Knuckles: Damage
+# B923 细胞飞散
+# B9B9 细胞轰炸
+# B9BC 灾变吐息
+# B9C3 溅血
+# B9C4 溅血
+# B9C6 溅血
+# B9C7 追猎重击: Damage
 # B9DB --sync--
-# BE09 Feral Fission
-# BE0A Bring Down the House
-# BEBD Grotesquerie: Act 1
-# BEBE Grotesquerie: Act 2
-# BEBF Grotesquerie: Act 3
-# BEC0 Grotesquerie: Curtain Call
+# BE09 野性分裂
+# BE0A 震场
+# BEBD 细胞附身·早期
+# BEBE 细胞附身·中期
+# BEBF 细胞附身·晚期
+# BEC0 细胞附身·末期
 
 # Phase 2
-# B46C Replication
-# B4D8 Replication
+# B46C 自我复制
+# B4D8 自我复制
 # B4D9 --sync--
-# B4DA Winged Scourge
-# B4DB Winged Scourge
-# B4DC Winged Scourge
-# B4DD Top-tier Slam
-# B4DE Top-tier Slam
-# B4DF Mighty Magic
-# B4E0 Mighty Magic
-# B4E1 Staging
+# B4DA 有翼灾变
+# B4DB 有翼灾变
+# B4DC 有翼灾变
+# B4DD 天顶猛击
+# B4DE 天顶猛击
+# B4DF 强力魔法
+# B4E0 强力魔法
+# B4E1 模仿细胞
 # B4E2 --sync--
-# B4E3 Firefall Splash
-# B4E4 Firefall Splash
-# B4E5 Scalding Waves
-# B4E6 Mana Burst
-# B4E7 Mana Burst
+# B4E3 落火飞溅
+# B4E4 落火飞溅
+# B4E5 炎波
+# B4E6 魔力爆发
+# B4E7 魔力爆发
 # B51F --sync--
-# B4E8 Heavy Slam: Stack on Player, requires at least 1 additional player
-# B4E9 Grotesquerie
-# B4EA Grotesquerie: Used in Reenactment
-# B4EB Hemorrhagic Projection
-# B4EC Reenactment
-# B4ED Firefall Splash: Used in Reenactment (Damage)
-# B4EE Mana Burst: VFX used in Reenactment
-# B4EF Heavy Slam: VFX used in Reenactment
+# B4E8 重猛击: Stack on Player, requires at least 1 additional player
+# B4E9 细胞附身
+# B4EA Grotesquerie: Used in 时空重现
+# B4EB 指向性冲击波
+# B4EC 时空重现
+# B4ED 落火飞溅: Used in 时空重现 (Damage)
+# B4EE 魔力爆发: VFX used in 时空重现
+# B4EF 重猛击: VFX used in 时空重现
 # B4F0 Unmitigated Impact
-# B4F1 Grotesquerie: VFX used in Reenactment
-# B4F2 Lindwurm's Meteor
-# B4F3 Downfall
-# B4F4 Cosmic Kiss
+# B4F1 Grotesquerie: VFX used in 时空重现
+# B4F2 林德布鲁姆陨石
+# B4F3 陨落
+# B4F4 轰击
 # B4F5 Unmitigated Explosion
-# B4F6 Lindwurm's Dark II
-# B4F7 Lindwurm's Stone III
-# B4F8 Lindwurm's Glare
-# B4FA Lindwurm's Thunder II
-# B4FB Blood Mana
+# B4F6 林德布鲁姆昏暗
+# B4F7 林德布鲁姆垒石
+# B4F8 林德布鲁姆闪耀
+# B4FA 林德布鲁姆震雷
+# B4FB 魔力球
 # B4FC --sync--
 # B4FD --sync--
-# B4FE Bloody Burst
+# B4FE 魔力扩散
 # B4FF --sync--
-# B500 Blood Wakening
-# B501 Lindwurm's Water III
-# B502 Lindwurm's Aero III
+# B500 魔力球苏醒
+# B501 林德布鲁姆's Water III
+# B502 林德布鲁姆's Aero III
 # B503 Straightforward Thunder II
 # B504 Sideways Fire II
-# B505 Mutating Cells
+# B505 变异细胞
 # B506 --sync--
-# B507 Dramatic Lysis
+# B507 细胞爆炸
 # B508 Unmitigated Explosion
-# B509 Idyllic Dream
-# B50F Power Gusher
-# B510 Power Gusher
-# B511 Snaking Kick
-# B512 Power Gusher
-# B513 Power Gusher
-# B514 Power Gusher
-# B515 Snaking Kick
-# B516 Power Gusher: Cast during Twisted Vision 7 and 8
-# B517 Mana Burst: VFX during Twisted Vision 4, happens 1.2s before B518, useful for sync branch
-# B518 Mana Burst
-# B519 Heavy Slam
-# B51A Power Gusher
-# B51B Power Gusher
-# B51C Temporal Curtain
+# B509 境中奇梦
+# B50F 力量喷涌
+# B510 力量喷涌
+# B511 回旋蛇踢
+# B512 力量喷涌
+# B513 力量喷涌
+# B514 力量喷涌
+# B515 回旋蛇踢
+# B516 力量喷涌: Cast during 心象投影 7 and 8
+# B517 魔力爆发: VFX during 心象投影 4, happens 1.2s before B518, useful for sync branch
+# B518 魔力爆发
+# B519 重猛击
+# B51A 力量喷涌
+# B51B 力量喷涌
+# B51C 空间裂断
 # B51D --sync--
 # B51E --sync--
 # B51F --sync--: Attack
-# B520 Double Sobat: Castbar
-# B521 Double Sobat: 0 degree left turn then B525
-# B522 Double Sobat: 90 degree left turn then B525
-# B523 Double Sobat: 180 degree left turn then B525
-# B524 Double Sobat: 270 degree left turn (turns to the right)
-# B525 Double Sobat: Followup cleave
-# B526 Esoteric Finisher
-# B527 Snaking Kick
-# B528 Arcadia Aflame
-# B529 Arcadian Arcanum
-# B52B Netherworld Near
-# B52C Netherworld Far
-# B52D Wailing Wave
-# B52E Netherwrath Near
-# B52F Netherwrath Far
-# B530 Timeless Spite
-# B533 Arcadian Hell
-# B534 Arcadian Hell
-# B535 Arcadian Hell
-# B537 Arcadian Hell
-# B8E1 Scalding Waves: Used in Reenactment (Proteans)
-# B922 Hemorrhagic Projection: Used in Reenactment (Damage)
-# B9D9 Arcadian Arcanum
-# BBE2 Twisted Vision
-# BBE3 Mana Burst: Used in Reenactment (Damage + Knockback)
-# BCAF Snaking Kick
+# B520 双重飞踢: Castbar
+# B521 双重飞踢: 0 degree left turn then B525
+# B522 双重飞踢: 90 degree left turn then B525
+# B523 双重飞踢: 180 degree left turn then B525
+# B524 双重飞踢: 270 degree left turn (turns to the right)
+# B525 双重飞踢: Followup cleave
+# B526 魔力连击
+# B527 回旋蛇踢
+# B528 境中奇焰
+# B529 境中奇奥
+# B52B 阴界近景
+# B52C 阴界远景
+# B52D 阴界波
+# B52E 近界阴怒
+# B52F 远界阴怒
+# B530 阴怒波
+# B533 境中奇狱
+# B534 境中奇狱
+# B535 境中奇狱
+# B537 境中奇狱
+# B8E1 炎波: Used in 时空重现 (Proteans)
+# B922 指向性冲击波: Used in 时空重现 (Damage)
+# B9D9 境中奇奥
+# BBE2 心象投影
+# BBE3 魔力爆发: Used in 时空重现 (Damage + Knockback)
+# BCAF 回旋蛇踢
 # BCB0 --sync--: Blackhole spawn
-# BE5D Heavy Slam: Used in Reenactment (Stack with Clone, requires at least 1 player)
-# BE95 Snaking Kick
-# BEC1 Arcadian Hell
+# BE5D 重猛击: Used in 时空重现 (Stack with 分身, requires at least 1 player)
+# BE95 回旋蛇踢
+# BEC1 境中奇狱

@@ -1,58 +1,59 @@
-﻿### 雾锁航路
+### IHUYKATUMU
+# ZoneId: 1167
 
 hideall "--Reset--"
 hideall "--sync--"
 
-# 封锁解除了
+# .*is no longer sealed
 0.0 "--Reset--" SystemLogMessage { id: "7DE" } window 0,100000 jump 0
 
 #~~~~~~~~~~~~~~~#
 # 首领海牛 #
 #~~~~~~~~~~~~~~~#
-# TODO: Does Shore Shaker timing vary depending on when adds die?
+# TODO: Does 地动岸摇 timing vary depending on when adds die?
 
 # -ii 8E92 8E93 8E94 8E95 8E96 8E97 8E98 8E9F 8EA0 8E90 8E8F
 # ic "Petit Punutiy" "Prodigious Punutiy"
 # -p 8E8C:1010.1
 
-# 海牛水池已被封锁
+# The Punutiy Pool will be sealed off
 1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "132A" } window 1000,1
-1010.1 "海牛重压" Ability { id: "8E8C", source: "首领海牛" } window 1011,5
+1010.1 "海牛 Press" Ability { id: "8E8C", source: "首领海牛" } window 1011,5 # 读条ID 8E8C AOE
 1016.3 "水化波动" Ability { id: "8E8D", source: "首领海牛" }
-1030.1 "重吐于世" Ability { id: "8E8E", source: "首领海牛" }
+1030.1 "重吐于世" Ability { id: "8E8E", source: "首领海牛" } # 读条ID 8E8E 躲开 Boss 吸气 + 全场 AoE
 1042.2 "塌方 x8" #Ability { id: "8E91", source: "首领海牛" } duration 10
-1055.2 "腐烂" Ability { id: "8E99", source: "生息陷阱草" }
+1055.2 "腐烂" Ability { id: "8E99", source: "生息陷阱草" } # 读条ID 8E99 进入月环
 1060.4 "水化波动" Ability { id: "8E8D", source: "首领海牛" }
 # timing on 8E9A seems to vary between pulls, perhaps due to auto-attack timing?
 1073.3 "海牛之声" Ability { id: "8E9A", source: "首领海牛" } window 5,5
 1076.9 "--sync--" Ability { id: "8E9E", source: "海牛" }
-# Both Prodigious Punutiys use Punutiy Flop (8E9C) (large AoE)
-# Petit Punutiy uses Punutiy Flop (8EA1) (small AoE)
-# Punutiy uses Hydrowave (8E9D) (conal AoE)
-1084.9 "水化波动" Ability { id: "8E9D", source: "海牛" }
-1102.9 "地动岸摇" StartsUsing { id: "8EA2", source: "首领海牛" } window 18,18
+# Both Prodigious Punutiys use 海牛猛跃 (8E9C) (large AoE)
+# Petit Punutiy uses 海牛猛跃 (8EA1) (small AoE)
+# Punutiy uses 水化波动 (8E9D) (conal AoE)
+1084.9 "海牛 Flop/水化波动" Ability { id: "8E9D", source: "海牛" }
+1102.9 "--sync--" StartsUsing { id: "8EA2", source: "首领海牛" } window 18,18
 1106.9 "地动岸摇 (咏唱)" Ability { id: "8EA2", source: "首领海牛" }
 1107.9 "地动岸摇 (圈)" Ability { id: "8EA3", source: "首领海牛" }
-1109.9 "地动岸摇" Ability { id: "8EA4", source: "首领海牛" }
-1111.9 "地动岸摇" Ability { id: "8EA5", source: "首领海牛" }
-1122.7 "重吐于世" Ability { id: "8E8E", source: "首领海牛" }
+1109.9 "地动岸摇 (内环)" Ability { id: "8EA4", source: "首领海牛" }
+1111.9 "地动岸摇 (外环)" Ability { id: "8EA5", source: "首领海牛" }
+1122.7 "重吐于世" Ability { id: "8E8E", source: "首领海牛" } # 读条ID 8E8E 躲开 Boss 吸气 + 全场 AoE
 1134.8 "塌方 x8" #Ability { id: "8E91", source: "首领海牛" } duration 8
-1147.8 "腐烂" Ability { id: "8E99", source: "生息陷阱草" }
+1147.8 "腐烂" Ability { id: "8E99", source: "生息陷阱草" } # 读条ID 8E99 进入月环
 1153.0 "水化波动" Ability { id: "8E8D", source: "首领海牛" }
-1165.2 "海牛重压" Ability { id: "8E8C", source: "首领海牛" }
+1165.2 "海牛 Press" Ability { id: "8E8C", source: "首领海牛" } # 读条ID 8E8C AOE
 
 # loop begins
 1181.5 "海牛之声" Ability { id: "8E9A", source: "首领海牛" } window 5,5
 1185.1 "--sync--" Ability { id: "8E9E", source: "海牛" }
-1193.1 "水化波动" Ability { id: "8E9D", source: "海牛" }
-1211.5 "地动岸摇" StartsUsing { id: "8EA2", source: "首领海牛" } window 18,18
+1193.1 "海牛 Flop/水化波动" Ability { id: "8E9D", source: "海牛" }
+1211.5 "--sync--" StartsUsing { id: "8EA2", source: "首领海牛" } window 18,18
 1215.5 "地动岸摇 (咏唱)" Ability { id: "8EA2", source: "首领海牛" }
 1216.5 "地动岸摇 (圈)" Ability { id: "8EA3", source: "首领海牛" }
-1218.5 "地动岸摇" Ability { id: "8EA4", source: "首领海牛" }
-1220.5 "地动岸摇" Ability { id: "8EA5", source: "首领海牛" }
+1218.5 "地动岸摇 (内环)" Ability { id: "8EA4", source: "首领海牛" }
+1220.5 "地动岸摇 (外环)" Ability { id: "8EA5", source: "首领海牛" }
 1223.9 "水化波动" Ability { id: "8E8D", source: "首领海牛" }
-1234.0 "海牛重压" Ability { id: "8E8C", source: "首领海牛" }
-1246.2 "海牛重压" Ability { id: "8E8C", source: "首领海牛" }
+1234.0 "海牛 Press" Ability { id: "8E8C", source: "首领海牛" } # 读条ID 8E8C AOE
+1246.2 "海牛 Press" Ability { id: "8E8C", source: "首领海牛" } # 读条ID 8E8C AOE
 
 1260.5 "海牛之声" Ability { id: "8E9A", source: "首领海牛" } forcejump 1181.5
 
@@ -60,7 +61,7 @@ hideall "--sync--"
 # 瞌睡怪 #
 #~~~~~~~~~#
 
-# TODO: Does Flagrant Spread + Sneeze timing vary depending on when adds die?
+# TODO: Does Flagrant Spread + 喷嚏 timing vary depending on when adds die?
 
 # -ii 8E80 8EAB 8EAC 8EAD 8EAA 8E85
 # -p 8F9A:2000.1
@@ -68,31 +69,31 @@ hideall "--sync--"
 # Note: Flagrant Spread (8EAA/8E85) not included because timing is variable and the
 # casts are often interrupted due to quick add deaths
 
-# 瞌睡怪洞窟已被封锁
+# 瞌睡怪's Grotto will be sealed off
 2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "132B" } window 2000,1
 2000.1 "--sync--" Ability { id: "8F9A", source: "瞌睡怪" } window 2001,5
-2014.4 "上击" Ability { id: "98DC", source: "瞌睡怪" } window 2015,5
+2014.4 "上击" Ability { id: "98DC", source: "瞌睡怪" } window 2015,5 # 读条ID 98DC 死刑
 2025.2 "播种" Ability { id: "8E7C", source: "瞌睡怪" }
 2030.8 "瞌睡舞" Ability { id: "8E7D", source: "瞌睡怪" }
 2035.7 "出现" Ability { id: "8E7E", source: "生息藤蔓大口花" }
-2046.7 "敲击" Ability { id: "8E7F", source: "生息藤蔓大口花" }
+2046.7 "敲击 (小)" Ability { id: "8E7F", source: "生息藤蔓大口花" } # 读条ID 8E7F 注意触手直线AoE (小)
 2055.1 "--sync--" Ability { id: "8E81", source: "瞌睡怪" }
-2061.7 "敲击" Ability { id: "8E82", source: "生息藤蔓大口花" }
-2066.8 "喷嚏" Ability { id: "8E7B", source: "瞌睡怪" }
+2061.7 "敲击 (大)" Ability { id: "8E82", source: "生息藤蔓大口花" } # 读条ID 8E82 注意触手直线AoE (大)
+2066.8 "喷嚏" Ability { id: "8E7B", source: "瞌睡怪" } # 读条ID 8E7B 离开正面
 2080.2 "呕吐" Ability { id: "8E83", source: "瞌睡怪" }
 2081.5 "--sync--" Ability { id: "8E84", source: "绿色凝块" }
-2124.5 "喷嚏" Ability { id: "8E7B", source: "瞌睡怪" }
-2136.8 "上击" Ability { id: "98DC", source: "瞌睡怪" }
+2124.5 "喷嚏" Ability { id: "8E7B", source: "瞌睡怪" } # 读条ID 8E7B 离开正面
+2136.8 "上击" Ability { id: "98DC", source: "瞌睡怪" } # 读条ID 98DC 死刑
 
 # loop begins
 2149.0 "播种" Ability { id: "8E7C", source: "瞌睡怪" }
 2154.6 "瞌睡舞" Ability { id: "8E7D", source: "瞌睡怪" }
 2159.5 "出现" Ability { id: "8E7E", source: "生息藤蔓大口花" }
-2170.5 "敲击" Ability { id: "8E7F", source: "生息藤蔓大口花" }
+2170.5 "敲击 (小)" Ability { id: "8E7F", source: "生息藤蔓大口花" } # 读条ID 8E7F 注意触手直线AoE (小)
 2178.8 "--sync--" Ability { id: "8E81", source: "瞌睡怪" }
-2185.3 "敲击" Ability { id: "8E82", source: "生息藤蔓大口花" }
-2190.5 "喷嚏" Ability { id: "8E7B", source: "瞌睡怪" }
-2202.9 "上击" Ability { id: "98DC", source: "瞌睡怪" }
+2185.3 "敲击 (大)" Ability { id: "8E82", source: "生息藤蔓大口花" } # 读条ID 8E82 注意触手直线AoE (大)
+2190.5 "喷嚏" Ability { id: "8E7B", source: "瞌睡怪" } # 读条ID 8E7B 离开正面
+2202.9 "上击" Ability { id: "98DC", source: "瞌睡怪" } # 读条ID 98DC 死刑
 
 2217.9 "播种" Ability { id: "8E7C", source: "瞌睡怪" } forcejump 2149
 
@@ -101,44 +102,44 @@ hideall "--sync--"
 #~~~~~~~~~~#
 
 # -ii 8DF8 8DF6 8DFA 8DFD 8DFE 8E01 8E05
-# -ic "Ihuykatumu Sandworm"
+# -ic "生息沙虫"
 # -p 8DF4:3009.3
 
-# 屏息之间已被封锁
+# Breathcatch will be sealed off
 3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "132C" } window 3000,1
 3009.3 "空气削割" Ability { id: "8DF4", source: "亚波伦" } window 3010,5
 3019.0 "镰击" Ability { id: "8DFB", source: "亚波伦" }
-3040.2 "强风" Ability { id: "8DF5", source: "亚波伦" }
+3040.2 "强风" Ability { id: "8DF5", source: "亚波伦" } # 读条ID 8DF5 AOE
 3056.3 "单蝗成群" Ability { id: "8DF7", source: "亚波伦" }
 3062.0 "飞蝗之刃" Ability { id: "8DF9", source: "亚波伦" }
 3069.6 "飞蝗之刃" Ability { id: "8DF9", source: "亚波伦" }
 3081.5 "闪电镰" Ability { id: "8DFC", source: "亚波伦" }
-3090.6 "扇状放电" Ability { id: "8DFF", source: "亚波伦" }
-3094.6 "扇状放电" Ability { id: "8DFF", source: "亚波伦" }
+3090.6 "扇状放电 1" Ability { id: "8DFF", source: "亚波伦" }
+3094.6 "扇状放电 2" Ability { id: "8DFF", source: "亚波伦" }
 3097.0 "暴雷" Ability { id: "8E00", source: "亚波伦" }
 3105.1 "--sync--" Ability { id: "8E02", source: "生息沙虫" }
-3117.2 "强风" Ability { id: "8DF5", source: "亚波伦" }
+3117.2 "强风" Ability { id: "8DF5", source: "亚波伦" } # 读条ID 8DF5 AOE
 3135.0 "镰击" Ability { id: "8E04", source: "亚波伦" }
 3139.9 "风镰" Ability { id: "8E06", source: "亚波伦" }
 3144.6 "空气绞割" Ability { id: "8E03", source: "亚波伦" }
 3156.8 "唤风" Ability { id: "8E07", source: "亚波伦" }
-3166.8 "风刃" Ability { id: "8E08", source: "亚波伦" }
+3166.8 "风刃 1" Ability { id: "8E08", source: "亚波伦" }
 3170.0 "空气削割" Ability { id: "8DF4", source: "亚波伦" }
-3174.9 "风刃" Ability { id: "8E08", source: "亚波伦" }
-3182.9 "风刃" Ability { id: "8E08", source: "亚波伦" }
+3174.9 "风刃 2" Ability { id: "8E08", source: "亚波伦" }
+3182.9 "风刃 3" Ability { id: "8E08", source: "亚波伦" }
 3184.7 "暴雷" Ability { id: "8E00", source: "亚波伦" }
 
 # loop begins
 3197.7 "闪电镰" Ability { id: "8DFC", source: "亚波伦" }
-3206.7 "扇状放电" Ability { id: "8DFF", source: "亚波伦" }
-3210.7 "扇状放电" Ability { id: "8DFF", source: "亚波伦" }
+3206.7 "扇状放电 1" Ability { id: "8DFF", source: "亚波伦" }
+3210.7 "扇状放电 2" Ability { id: "8DFF", source: "亚波伦" }
 3215.9 "空气削割" Ability { id: "8DF4", source: "亚波伦" }
-3223.0 "强风" Ability { id: "8DF5", source: "亚波伦" }
+3223.0 "强风" Ability { id: "8DF5", source: "亚波伦" } # 读条ID 8DF5 AOE
 3230.4 "唤风" Ability { id: "8E07", source: "亚波伦" }
-3240.4 "风刃" Ability { id: "8E08", source: "亚波伦" }
+3240.4 "风刃 1" Ability { id: "8E08", source: "亚波伦" }
 3243.6 "空气削割" Ability { id: "8DF4", source: "亚波伦" }
-3248.4 "风刃" Ability { id: "8E08", source: "亚波伦" }
-3256.4 "风刃" Ability { id: "8E08", source: "亚波伦" }
+3248.4 "风刃 2" Ability { id: "8E08", source: "亚波伦" }
+3256.4 "风刃 3" Ability { id: "8E08", source: "亚波伦" }
 3258.4 "暴雷" Ability { id: "8E00", source: "亚波伦" }
 3270.1 "镰击" Ability { id: "8DFB", source: "亚波伦" }
 

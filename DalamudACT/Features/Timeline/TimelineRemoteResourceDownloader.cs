@@ -92,6 +92,49 @@ internal sealed class TimelineRemoteResourceDownloader
         return false;
     }
 
+    public async Task<string> AutoDownloadForZoneAsync(uint zoneId, string zoneName)
+    {
+        try
+        {
+            List<TimelineIndexEntry> entries;
+            try
+            {
+                entries = await DownloadIndexAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch
+            {
+                return "索引下载失败";
+            }
+
+            var entry = entries.FirstOrDefault(item => item.Matches(zoneId, zoneName));
+            if (entry == null)
+                return string.IsNullOrWhiteSpace(zoneName)
+                    ? $"ZoneId={zoneId}：无在线时间轴"
+                    : $"{zoneName} ({zoneId})：无在线时间轴";
+
+            var hadLocal = GetLocalizedFileNameCandidates(entry.File)
+                .Select(candidate => Path.Combine(GetCacheDataDirectory(), candidate))
+                .Any(File.Exists);
+
+            var downloaded = await DownloadTimelineFileAsync(entry.File, CancellationToken.None).ConfigureAwait(false);
+            if (!downloaded)
+                return $"{Path.GetFileNameWithoutExtension(entry.File)}：下载失败";
+
+            return hadLocal
+                ? $"{Path.GetFileNameWithoutExtension(entry.File)}：已更新"
+                : $"{Path.GetFileNameWithoutExtension(entry.File)}：已下载";
+        }
+        catch (OperationCanceledException)
+        {
+            return "下载已取消";
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("时间轴", ex, "自动下载时间轴失败");
+            return "下载失败";
+        }
+    }
+
     private static HttpClient CreateHttpClient()
         => new() { Timeout = TimeSpan.FromSeconds(8) };
 

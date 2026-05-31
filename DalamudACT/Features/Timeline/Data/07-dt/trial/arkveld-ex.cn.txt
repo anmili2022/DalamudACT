@@ -1,6 +1,5 @@
 ### The Windward Wilds (Extreme)
 # ZoneId: 1306
-
 hideall "--Reset--"
 hideall "--sync--"
 
@@ -8,7 +7,7 @@ hideall "--sync--"
 
 # ALL ENCOUNTER ABILITIES
 #
-# Chainblade Blow
+# 锁刃敲打
 #  Early Phase:
 #  First cleave brings arm down with AB6F or AB70
 #  First hit is AB71 or B015
@@ -36,78 +35,78 @@ hideall "--sync--"
 #  Appears to be the start of exaflares after first towers, but also happens
 #  during the likely enrage.
 #
-# AB60 Wyvern's Weal
-# ABA0 Wyvern's Weal
-# ABA1 Wyvern's Weal
-# ABA2 Wyvern's Weal
+# AB60 龙闪炮
+# ABA0 龙闪炮
+# ABA1 龙闪炮
+# ABA2 龙闪炮
 # AB61 --sync--
 #  Chasing line aoe from Arkveld.
 #
-# AB73 Wyvern's Radiance
-# AB74 Wyvern's Radiance
-# AB79 Wyvern's Radiance
-# AB7A Wyvern's Radiance
-# AB80 Wyvern's Radiance
-# AB81 Wyvern's Radiance
-# AB87 Wyvern's Radiance
-# AB88 Wyvern's Radiance
-# AB89 Wyvern's Radiance
-# AB8A Wyvern's Radiance
-# AB94 Wyvern's Radiance
-# AB95 Wyvern's Radiance
-# AB9D Wyvern's Radiance
-# ABA4 Wyvern's Radiance
-# ABA5 Wyvern's Radiance
-# ABA6 Wyvern's Radiance
-# ABA8 Wyvern's Radiance
-# ABA9 Wyvern's Radiance
-# ABAA Wyvern's Radiance
-# AF09 Wyvern's Radiance
-# AF0A Wyvern's Radiance
-# B01D Wyvern's Radiance
-# B020 Wyvern's Radiance
-# B025 Wyvern's Radiance
-# B028 Wyvern's Radiance
-# B02E Wyvern's Radiance
-# B02F Wyvern's Radiance
+# AB73 龙闪
+# AB74 龙闪
+# AB79 龙闪
+# AB7A 龙闪
+# AB80 龙闪
+# AB81 龙闪
+# AB87 龙闪
+# AB88 龙闪
+# AB89 龙闪
+# AB8A 龙闪
+# AB94 龙闪
+# AB95 龙闪
+# AB9D 龙闪
+# ABA4 龙闪
+# ABA5 龙闪
+# ABA6 龙闪
+# ABA8 龙闪
+# ABA9 龙闪
+# ABAA 龙闪
+# AF09 龙闪
+# AF0A 龙闪
+# B01D 龙闪
+# B020 龙闪
+# B025 龙闪
+# B028 龙闪
+# B02E 龙闪
+# B02F 龙闪
 #  Some sort of ability used constantly throughout fight inbetween
 #  mechanics. Not sure if its an auto attack or not.
 #
-# Guardian Siegeflight + Wyvern's Siegeflight
-#  Wyvern's Siegeflight is the setup for the red line dash
-#  Guardian's Siegeflight is the setup for the white line dash
+# Guardian 锁刃飞翔突进 + Wyvern's 锁刃飞翔突进
+#  Wyvern's 锁刃飞翔突进 is the setup for the red line dash
+#  Guardian's 锁刃飞翔突进 is the setup for the white line dash
 #
-# Siegeflight:
+# 锁刃飞翔突进:
 #  Early phase:
-#  AB7B Guardian Siegeflight - Red line telegraph
-#  AB7C Guardian Siegeflight - Red line dash
-#  AB7E Wyvern's Siegeflight - White line telegraph
-#  AB7F Wyvern's Siegeflight - White line dash
+#  AB7B Guardian 锁刃飞翔突进 - Red line telegraph
+#  AB7C Guardian 锁刃飞翔突进 - Red line dash
+#  AB7E Wyvern's 锁刃飞翔突进 - White line telegraph
+#  AB7F Wyvern's 锁刃飞翔突进 - White line dash
 #
 #  After powerup:
-#  B029 Guardian Siegeflight - Red line telegraph
-#  B02A Wyvern's Siegeflight - White line telegraph
-#  B02B Guardian Siegeflight - Red line dash
-#  B02D Wyvern's Siegeflight - White line dash
+#  B029 Guardian 锁刃飞翔突进 - Red line telegraph
+#  B02A Wyvern's 锁刃飞翔突进 - White line telegraph
+#  B02B Guardian 锁刃飞翔突进 - Red line dash
+#  B02D Wyvern's 锁刃飞翔突进 - White line dash
 #
 #  B030 --sync--
 #  B046 --sync--
 #  B037 --sync--
 #  B045 --sync--
-#   Appear to possibly be the actual dashes going with Siegeflight, not 100%
+#   Appear to possibly be the actual dashes going with 锁刃飞翔突进, not 100%
 #   sure. Some of them used during early phase while the rest used during
 #   post-powerup phase.
 #
-# AB83 Dragonspark - Red line explosions (center safe)
-# AB82 White Flash - White line explosions (edges safe)
+# AB83 龙光 - Red line explosions (center safe)
+# AB82 白光 - White line explosions (edges safe)
 #
-# AB7D Guardian Resonance
-# AB90 Guardian Resonance
-# AB91 Guardian Resonance
-# AB93 Guardian Resonance
-# AB92 Greater Resonance
-# B02C Guardian Resonance
-# AB8F Aetheric Resonance
+# AB7D 护龙共振
+# AB90 护龙共振
+# AB91 护龙共振
+# AB93 护龙共振
+# AB92 护龙大共振
+# B02C 护龙共振
+# AB8F 地脉共振
 #  Skills used during tower spawns. AB90 appears to be when towers hit.
 #
 # AB84 --sync--
@@ -115,13 +114,13 @@ hideall "--sync--"
 #  Skills used during setup of dashes + expanding rings mechanic. Unsure if there
 #  is anything we can sync to for the ring explosion timing.
 #
-# AB85 Rush
-# AB86 Rush
+# AB85 突进
+# AB86 突进
 #  Appear to be the actual dashes, with AB85 being the first dash and AB86
 #  being both follow-up dashes. Haven't found a good sync for the expanding
 #  rings.
 #
-# Wyvern's Ouroblade
+# 回旋锁刃【龙闪】
 #  The giant halfroom cleave along with spread aoes. Only the first hit
 #  shows in the timeline.
 #
@@ -133,56 +132,56 @@ hideall "--sync--"
 #  B032 and B032 are the first hit, each being a different half
 #  B033 and B034 are the secondary follow-up hit similar to chainblade blow
 #
-# AB96 Wyvern's Vengeance
-# AB97 Wyvern's Vengeance
+# AB96 波状龙闪
+# AB97 波状龙闪
 #  Appears to line up with exaflare hits, but there are so many its hard to
 #  use as a timeline sync. Ideally we want to sync specific hits for the
 #  central exaflares. For now, these are excluded from the timeline.
 #
-# ABB0 Wyvern's Vengeance
-# ABB1 Wyvern's Vengeance
+# ABB0 波状龙闪
+# ABB1 波状龙闪
 #  These likely line up to the side coming exaflares, but finding good
 #  timeline entries for these is difficult.
 #
-# AB9C Wild Energy
+# AB9C 龙光扩散
 #  Appears to be the skill which triggers the aoe explosions on players
 #  Happens around Ourobalde and during exaflares
 #
-# AB9E Forged Fury
-# AB9F Forged Fury
-# AEF8 Forged Fury
-# AEF9 Forged Fury
+# AB9E 护龙乱击
+# AB9F 护龙乱击
+# AEF8 护龙乱击
+# AEF9 护龙乱击
 #  Power up skill, plus raid wide.
 #
-# ABA3 Wyvern's Rattle
+# ABA3 锁哭龙闪
 #  Single rolling line aoe, appears along side baited aoes
 #
-# ABA7 Wrathful Rattle
+# ABA7 锁哭龙闪·改
 #  Double rolling line aoes, from both vertical and horizontal
 #
-# ABAB Chainblade Charge
-# ABAC Chainblade Charge
-# AF0C Chainblade Charge
+# ABAB 锁刃下挥
+# ABAC 锁刃下挥
+# AF0C 锁刃下挥
 #  Party stack mechanic. First two abilities are wind-up, third is the hit.
 #
-# ABAD Steeltail Thrust
-# AF05 Steeltail Thrust
-# AF06 Steeltail Thrust
-# B035 Steeltail Thrust
+# ABAD 龙尾突刺
+# AF05 龙尾突刺
+# AF06 龙尾突刺
+# B035 龙尾突刺
 #  Tail thrust. One might be the animation while one is thie hit, not sure.
 #  It looks like damage is on the second skill.
 #
-# ABAE Roar
-# ABAF Roar
-# B092 Roar
+# ABAE 咆哮
+# ABAF 咆哮
+# B092 咆哮
 #   Raidwide. B092 might be the larger damage one.
 #
-# ABB3 Clamorous Chase
-# ABB4 Clamorous Chase
-# ABB5 Clamorous Chase
-# ABB6 Clamorous Chase
-# ABB7 Clamorous Chase
-# ABB8 Clamorous Chase
+# ABB3 锁刃跃动
+# ABB4 锁刃跃动
+# ABB5 锁刃跃动
+# ABB6 锁刃跃动
+# ABB7 锁刃跃动
+# ABB8 锁刃跃动
 #  Limit cut. ABB3 and ABB6 happen at the start. ABB4 and ABB7 are the
 #  dashes, while ABB5 and ABB8 are the wing slices, each depending on which
 #  direction the initial dashes go.
@@ -190,8 +189,8 @@ hideall "--sync--"
 # B077 --sync--
 #  Consistently appears to be the jumps to the edge of the map.
 #
-# ABB2 Forged Fury
-# AF4E Forged Fury
+# ABB2 护龙乱击
+# AF4E 护龙乱击
 #  Power up used during enrage.
 #
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
@@ -228,28 +227,28 @@ hideall "--sync--"
 73.0 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" }
 # Jump to edge
 82.8 "--sync--" Ability { id: "B077", source: "护锁刃龙" } window 5,5
-# Rush (line dashes + expanding rings)
+# 突进 (line dashes + expanding rings)
 87.6 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 88.6 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
 89.6 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 90.6 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
-91.0 "突进" Ability { id: "AB85", source: "护锁刃龙" }
+91.0 "突进 (1)" Ability { id: "AB85", source: "护锁刃龙" }
 91.6 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 92.6 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
 93.2 "突进 (2)" #Ability { id: "AB86", source: "护锁刃龙" }
 95.2 "突进 (3)" #Ability { id: "AB86", source: "护锁刃龙" }
 # Jump to center?
-101.5 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+101.5 "(center)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
 # Half room + aoes
 108.7 "回旋锁刃【龙闪】" Ability { id: "(AB8B|AB8D)", source: "护锁刃龙" }
 109.7 "--sync--" Ability { id: "(AB8C|AB8E)", source: "护锁刃龙" }
 109.9 "龙光扩散 (圆形AOE)" #Ability { id: "AB9C", source: "护锁刃龙" }
 # Tail thrust
-116.9 "龙尾突刺" Ability { id: "ABAD", source: "护锁刃龙" }
+116.9 "--sync--" Ability { id: "ABAD", source: "护锁刃龙" }
 117.5 "龙尾突刺" Ability { id: "AF05", source: "护锁刃龙" }
 # Party Raid stack?
-125.6 "锁刃下挥" Ability { id: "ABAB", source: "护锁刃龙" }
-125.8 "锁刃下挥" Ability { id: "ABAC", source: "护锁刃龙" }
+125.6 "--sync--" Ability { id: "ABAB", source: "护锁刃龙" }
+125.8 "--sync--" Ability { id: "ABAC", source: "护锁刃龙" }
 127.9 "锁刃下挥" Ability { id: "AF0C", source: "护锁刃龙" }
 # Third Chainblade
 135.6 "--sync--" Ability { id: "(AB6F|AB70)", source: "护锁刃龙" }
@@ -261,21 +260,21 @@ hideall "--sync--"
 # Raidwide
 148.6 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" }
 # Jump to middle
-158.4 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+158.4 "(center)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
 # Tower spawn -> bait -> towers
-169.4 "护龙共振" Ability { id: "AB93", source: "护锁刃龙" }
+169.4 "--sync--" Ability { id: "AB93", source: "护锁刃龙" }
 173.1 "地脉共振" Ability { id: "AB8F", source: "护锁刃龙" }
 174.4 "护龙共振" Ability { id: "AB90", source: "护锁刃龙" }
 # Exaflares + Aoes?
-# Probably can't sync to the Wyvern's Vengeance due to inconsistency
+# Probably can't sync to the 波状龙闪 due to inconsistency
 176.4 "--sync--" Ability { id: "AB53", source: "护锁刃龙" }
-199.1 "龙光扩散" Ability { id: "AB9C", source: "护锁刃龙" }
-207.1 "龙光扩散" Ability { id: "AB9C", source: "护锁刃龙" }
+199.1 "龙光扩散 (圆形AOE)" Ability { id: "AB9C", source: "护锁刃龙" }
+207.1 "龙光扩散 (圆形AOE)" Ability { id: "AB9C", source: "护锁刃龙" }
 # Power up + big raid wide
 215.1 "护龙乱击" Ability { id: "AB9E", source: "护锁刃龙" } duration 5.2
-217.1 "护龙乱击" Ability { id: "AB9F", source: "护锁刃龙" }
-218.0 "护龙乱击" Ability { id: "AEF8", source: "护锁刃龙" }
-220.4 "护龙乱击" Ability { id: "AEF9", source: "护锁刃龙" }
+217.1 "--sync--" Ability { id: "AB9F", source: "护锁刃龙" }
+218.0 "--sync--" Ability { id: "AEF8", source: "护锁刃龙" }
+220.4 "--sync--" Ability { id: "AEF9", source: "护锁刃龙" }
 # Leap to edge
 229.2 "--sync--" Ability { id: "B077", source: "护锁刃龙" } window 5,5
 # Raidwide
@@ -301,9 +300,9 @@ hideall "--sync--"
 # Raid wide
 277.4 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" }
 # Jump to center
-286.2 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+286.2 "(center)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
 # Towers appear -> Baits -> Towers
-297.1 "护龙共振" Ability { id: "AB93", source: "护锁刃龙" }
+297.1 "--sync--" Ability { id: "AB93", source: "护锁刃龙" }
 300.8 "地脉共振" Ability { id: "AB8F", source: "护锁刃龙" }
 302.0 "护龙共振" Ability { id: "AB90", source: "护锁刃龙" }
 # Some logs don't have this?
@@ -311,7 +310,7 @@ hideall "--sync--"
 # Jump to edge?
 304.0 "--sync--" Ability { id: "B077", source: "护锁刃龙" }
 # Line Sweap 1
-314.3 "龙闪炮" Ability { id: "ABA0", source: "护锁刃龙" }
+314.3 "--sync--" Ability { id: "ABA0", source: "护锁刃龙" }
 315.1 "龙闪炮" Ability { id: "AB60", source: "护锁刃龙" } duration 6.7
 # Line Sweap 2 (Stacks)
 321.6 "--sync--" Ability { id: "AB61", source: "护锁刃龙" }
@@ -321,7 +320,7 @@ hideall "--sync--"
 331.0 "--sync--" Ability { id: "AB61", source: "护锁刃龙" }
 333.5 "龙闪炮" Ability { id: "AB60", source: "护锁刃龙" } duration 7.6
 340.8 "--sync--" Ability { id: "AB61", source: "护锁刃龙" }
-345.7 "龙光扩散" Ability { id: "AB9C", source: "护锁刃龙" }
+345.7 "龙光扩散 (圆形AOE)" Ability { id: "AB9C", source: "护锁刃龙" }
 # Autos for a bit
 # Raid Wide
 358.0 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" } window 5,5
@@ -345,23 +344,23 @@ hideall "--sync--"
 404.1 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
 405.1 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 406.1 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
-406.5 "突进" Ability { id: "AB85", source: "护锁刃龙" }
+406.5 "突进 (1)" Ability { id: "AB85", source: "护锁刃龙" }
 407.1 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 408.1 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
 408.7 "突进 (2)" #Ability { id: "AB86", source: "护锁刃龙" }
 410.7 "突进 (3)" #Ability { id: "AB86", source: "护锁刃龙" }
 # Jump to center
-417.4 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+417.4 "(center)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
 # Half room cleave + Aoes
 423.8 "回旋锁刃【龙闪】" Ability { id: "(B031|B032)", source: "护锁刃龙" }
 424.8 "--sync--" Ability { id: "(B033|B034)", source: "护锁刃龙" }
-425.0 "龙光扩散" Ability { id: "AB9C", source: "护锁刃龙" }
+425.0 "龙光扩散 (圆形AOE)" Ability { id: "AB9C", source: "护锁刃龙" }
 # Tail thrust
-431.0 "龙尾突刺" Ability { id: "B035", source: "护锁刃龙" }
+431.0 "--sync--" Ability { id: "B035", source: "护锁刃龙" }
 431.6 "龙尾突刺" Ability { id: "AF06", source: "护锁刃龙" }
 # Party Stack
-439.8 "锁刃下挥" Ability { id: "ABAB", source: "护锁刃龙" }
-440.0 "锁刃下挥" Ability { id: "ABAC", source: "护锁刃龙" }
+439.8 "--sync--" Ability { id: "ABAB", source: "护锁刃龙" }
+440.0 "--sync--" Ability { id: "ABAC", source: "护锁刃龙" }
 442.1 "锁刃下挥" Ability { id: "AF0C", source: "护锁刃龙" }
 # Chainblade
 450.0 "--sync--" Ability { id: "(B019|B01A)", source: "护锁刃龙" }
@@ -373,21 +372,21 @@ hideall "--sync--"
 # Raidwide
 463.1 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" }
 # Jump to center
-472.9 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+472.9 "(center)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
 # Towers spawn -> baits -> Towers
-483.9 "护龙共振" Ability { id: "AB93", source: "护锁刃龙" }
+483.9 "--sync--" Ability { id: "AB93", source: "护锁刃龙" }
 487.6 "地脉共振" Ability { id: "AB8F", source: "护锁刃龙" }
 488.8 "护龙共振" Ability { id: "AB90", source: "护锁刃龙" }
 # Raidwide
 495.8 "咆哮 (全屏)" Ability { id: "ABAF", source: "护锁刃龙" }
 # Exaflares from side
 # Not sure what to sync here, perhaps abilities don't have Arkveld as the
-# source? The Wyvern's Vengeance might be an auto attack or else its timing
+# source? The 波状龙闪 might be an auto attack or else its timing
 # is inconsistent. Perhaps it is related to the tower explosions but the
 # timing is off depending on what order the exaflares come?
 # Party Stack
-515.4 "锁刃下挥" Ability { id: "ABAB", source: "护锁刃龙" } window 10,10
-515.6 "锁刃下挥" Ability { id: "ABAC", source: "护锁刃龙" }
+515.4 "--sync--" Ability { id: "ABAB", source: "护锁刃龙" } window 10,10
+515.6 "--sync--" Ability { id: "ABAC", source: "护锁刃龙" }
 517.7 "锁刃下挥" Ability { id: "AF0C", source: "护锁刃龙" }
 # Chainblade
 525.6 "--sync--" Ability { id: "(B019|B01A)", source: "护锁刃龙" }
@@ -426,23 +425,23 @@ hideall "--sync--"
 603.3 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
 604.3 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 605.3 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
-605.7 "突进" Ability { id: "AB85", source: "护锁刃龙" }
+605.7 "突进 (1)" Ability { id: "AB85", source: "护锁刃龙" }
 606.3 "--sync--" #Ability { id: "AB84", source: "护锁刃龙" }
 607.3 "--sync--" #Ability { id: "B036", source: "护锁刃龙" }
 607.9 "突进 (2)" #Ability { id: "AB86", source: "护锁刃龙" }
 609.8 "突进 (3)" #Ability { id: "AB86", source: "护锁刃龙" }
 # Jump to center
-616.5 "(中央)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
+616.5 "(center)" Ability { id: "AB33", source: "护锁刃龙" } window 5,5
 # Half room + aoes
 622.8 "回旋锁刃【龙闪】" Ability { id: "(B031|B032)", source: "护锁刃龙" }
 623.8 "--sync--" Ability { id: "(B033|B034)", source: "护锁刃龙" }
-624.0 "龙光扩散" Ability { id: "AB9C", source: "护锁刃龙" }
+624.0 "龙光扩散 (圆形AOE)" Ability { id: "AB9C", source: "护锁刃龙" }
 # Tail thrust
-630.0 "龙尾突刺" Ability { id: "B035", source: "护锁刃龙" }
+630.0 "--sync--" Ability { id: "B035", source: "护锁刃龙" }
 630.6 "龙尾突刺" Ability { id: "AF06", source: "护锁刃龙" }
 # Party stack
-638.8 "锁刃下挥" Ability { id: "ABAB", source: "护锁刃龙" }
-639.0 "锁刃下挥" Ability { id: "ABAC", source: "护锁刃龙" }
+638.8 "--sync--" Ability { id: "ABAB", source: "护锁刃龙" }
+639.0 "--sync--" Ability { id: "ABAC", source: "护锁刃龙" }
 641.1 "锁刃下挥" Ability { id: "AF0C", source: "护锁刃龙" }
 # Chainblade
 649.0 "--sync--" Ability { id: "(B019|B01A)", source: "护锁刃龙" }
@@ -454,12 +453,12 @@ hideall "--sync--"
 # Raidwide
 662.1 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" }
 # Jump center
-672.7 "(中央)" Ability { id: "AB33", source: "护锁刃龙" }
+672.7 "(center)" Ability { id: "AB33", source: "护锁刃龙" }
 # Raidwide
 679.1 "咆哮 (全屏)" Ability { id: "ABAE", source: "护锁刃龙" }
 # Likely enrage sequence
 682.9 "--sync--" Ability { id: "AB53", source: "护锁刃龙" }
 692.0 "护龙乱击" Ability { id: "ABB2", source: "护锁刃龙" } duration 5.2
-694.0 "护龙乱击" Ability { id: "AB9F", source: "护锁刃龙" }
-694.9 "护龙乱击" Ability { id: "AEF8", source: "护锁刃龙" }
-697.2 "护龙乱击 (狂暴)" Ability { id: "AF4E", source: "护锁刃龙" }
+694.0 "--sync--" Ability { id: "AB9F", source: "护锁刃龙" }
+694.9 "--sync--" Ability { id: "AEF8", source: "护锁刃龙" }
+697.2 "(enrage)" Ability { id: "AF4E", source: "护锁刃龙" }

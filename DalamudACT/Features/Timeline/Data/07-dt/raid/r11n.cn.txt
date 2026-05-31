@@ -1,6 +1,5 @@
 ### AAC HEAVYWEIGHT (M3)
 # ZoneId: 1324
-
 hideall "--Reset--"
 hideall "--sync--"
 
@@ -12,53 +11,53 @@ hideall "--sync--"
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-10.4 "天顶的主宰" Ability { id: "B3B6", source: "霸王" }
-20.5 "铸兵之令：猛攻" Ability { id: ["B3B7", "B3B8"], source: "霸王" }
-28.6 "铸兵猛攻" Ability { id: ["B3BA", "B3BC"], source: "霸王" }
-34.7 "铸兵之令：猛攻" Ability { id: ["B3B7", "B3B8"], source: "霸王" }
-42.8 "铸兵猛攻" Ability { id: ["B3BA", "B3BC"], source: "霸王" }
+10.4 "天顶的主宰" Ability { id: "B3B6", source: "霸王" } # 读条ID B3B6 AOE
+20.5 "铸兵之令 (斧头/镰刀)" Ability { id: ["B3B7", "B3B8"], source: "霸王" }
+28.6 "铸兵猛攻 (内/外)" Ability { id: ["B3BA", "B3BC"], source: "霸王" }
+34.7 "铸兵之令 (镰刀/斧头)" Ability { id: ["B3B7", "B3B8"], source: "霸王" }
+42.8 "铸兵猛攻 (外/内)" Ability { id: ["B3BA", "B3BC"], source: "霸王" }
 53.9 "彗星雨" Ability { id: "B3C8", source: "霸王" }
-60.0 "彗星" Ability { id: "B3C9", source: "霸王" }
+60.0 "彗星 (咏唱栏)" Ability { id: "B3C9", source: "霸王" }
 62.9 "彗星风暴 1" #Ability { id: "B3CA", source: "霸王" }
 65.0 "彗星风暴 2" #Ability { id: "B3CA", source: "霸王" }
-67.0 "铸兵之令：猛攻" Ability { id: "B3B9", source: "霸王" } # Always sword
+67.0 "铸兵之令 (大剑)" Ability { id: "B3B9", source: "霸王" } # Always sword
 67.1 "彗星风暴 3" #Ability { id: "B3CA", source: "霸王" }
-75.1 "铸兵猛攻" Ability { id: "B3BE", source: "霸王" } # Always sword
+75.1 "铸兵猛攻 (X型)" Ability { id: "B3BE", source: "霸王" } # Always sword
 81.3 "--middle--" Ability { id: "B3B4", source: "霸王" }
 86.6 "历战之兵武" Ability { id: "B3CC", source: "霸王" } window 86.6,10
-94.9 "铸兵突袭" Ability { id: "B3CD", source: "霸王" }
-97.1 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-101.2 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-105.3 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+94.9 "铸兵突袭 (咏唱栏)" Ability { id: "B3CD", source: "霸王" }
+97.1 "铸兵突袭 1" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+101.2 "铸兵突袭 2" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+105.3 "铸兵突袭 3" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
 107.4 "--middle--" Ability { id: "B3B4", source: "霸王" }
 112.4 "历战之兵武" Ability { id: "B3CC", source: "霸王" }
-120.8 "铸兵突袭" Ability { id: "B3CD", source: "霸王" }
-123.0 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-127.1 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-131.2 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+120.8 "铸兵突袭 (咏唱栏)" Ability { id: "B3CD", source: "霸王" }
+123.0 "铸兵突袭 1" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+127.1 "铸兵突袭 2" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+131.2 "铸兵突袭 3" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
 138.4 "--middle--" Ability { id: "B3B4", source: "霸王" }
 142.7 "铸兵之令：统治" Ability { id: "B7BA", source: "霸王" } window 142.7,10
-153.4 "统治的战舞" Ability { id: "B3D1", source: "霸王" } duration 5
+153.4 "统治的战舞 x8" Ability { id: "B3D1", source: "霸王" } duration 5 # 读条ID B3D1 AOE
 164.1 "爆炸" Ability { id: "B3D3", source: "霸王" }
 166.8 "铸兵之令：轰击" Ability { id: "B3D5", source: "霸王" }
-177.9 "铸兵轰击" Ability { id: "B3C0", source: "霸王" }
+177.9 "拔刀突击" Ability { id: "B3C0", source: "霸王" }
 179.3 "冲击" Ability { id: "B3C2", source: "霸王" }
 185.3 "--middle--" Ability { id: "B3B4", source: "霸王" }
 192.7 "霸王大漩涡" Ability { id: "B3D7", source: "霸王" }
 198.4 "历战之极武" Ability { id: "B7EB", source: "霸王" }
 206.2 "铸兵崩落" Ability { id: "B7EC", source: "霸王" }
-208.4 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-212.1 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-215.8 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-219.5 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-223.2 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
-226.9 "铸兵突袭" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+208.4 "铸兵突袭 1" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+212.1 "铸兵突袭 2" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+215.8 "铸兵突袭 3" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+219.5 "铸兵突袭 4" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+223.2 "铸兵突袭 5" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
+226.9 "铸兵突袭 6" Ability { id: ["B3CE", "B3CF", "B3D0"], source: "霸王" }
 229.1 "--middle--" Ability { id: "B3B4", source: "霸王" }
 231.0 "强风 1" #Ability { id: "B3D9", source: "霸王" }
 233.0 "强风 2" #Ability { id: "B3D9", source: "霸王" }
 236.8 "万劫不朽的统治" Ability { id: "B3DA", source: "霸王" } window 236.8,10
-246.9 "举世无双的霸王" Ability { id: "B3DB", source: "霸王" }
-249.9 "举世无双的霸王 (伤害)" Ability { id: "B3DC", source: "霸王" }
+246.9 "举世无双的霸王 (咏唱栏)" Ability { id: "B3DB", source: "霸王" }
+249.9 "举世无双的霸王 (伤害)" Ability { id: "B3DC", source: "霸王" } # 读条ID B3DC AOE
 254.1 "--middle--" Ability { id: "B3B4", source: "霸王" }
 261.4 "流星雨" Ability { id: "B3DD", source: "霸王" }
 270.5 "轰击" Ability { id: "B3DE", source: "彗星" }
@@ -67,45 +66,45 @@ hideall "--sync--"
 291.3 "轰击" Ability { id: "B3DE", source: "彗星" }
 302.3 "重陨石" Ability { id: "B3E3", source: "霸王" }
 302.3 "夺命链" #Ability { id: "B3E0", source: "霸王" }
-305.5 "双重霸王坠击" Ability { id: "B3E4", source: "霸王" } # Double Tyrannhilation
-315.3 "双重霸王坠击" Ability { id: "B3E5", source: "霸王" }
-316.4 "冲击波" Ability { id: "B3E6", source: "霸王" }
+305.5 "--sync--" Ability { id: "B3E4", source: "霸王" } # 双重霸王坠击
+315.3 "双重霸王坠击" Ability { id: "B3E5", source: "霸王" } # 读条ID B3E5 2颗陨石后方躲避
+316.4 "冲击波 1" Ability { id: "B3E6", source: "霸王" }
 316.8 "--sync--" Ability { id: "B3E7", source: "彗星" }
-319.8 "再生因子" Ability { id: "B487", source: "霸王" }
-319.9 "冲击波" Ability { id: "B3E6", source: "霸王" }
+319.8 "--sync--" Ability { id: "B487", source: "霸王" }
+319.9 "冲击波 2" Ability { id: "B3E6", source: "霸王" }
 320.3 "--sync--" Ability { id: "B3E7", source: "彗星" }
 321.3 "--sync--" Ability { id: "B402", source: "霸王" }
-330.0 "绝命分断击" Ability { id: "B3E8", source: "霸王" } window 330,10
-332.0 "绝命分断击" Ability { id: "BA8F", source: "霸王" }
-339.1 "王者陨石" Ability { id: "B3E9", source: "霸王" }
+330.0 "绝命分断击 (咏唱栏)" Ability { id: "B3E8", source: "霸王" } window 330,10 # 读条ID B3E8 向两侧短距离击退
+332.0 "绝命分断击 (分裂)" Ability { id: "BA8F", source: "霸王" }
+339.1 "王者陨石 (咏唱栏)" Ability { id: "B3E9", source: "霸王" } # 读条ID B3E9 诱导3次圈圈
 343.2 "王者陨石 1" #Ability { id: "B3EA", source: "霸王" }
 345.2 "王者陨石 2" #Ability { id: "B3EA", source: "霸王" }
 347.2 "王者陨石 3" #Ability { id: "B3EA", source: "霸王" }
 351.2 "王者陨石雨" Ability { id: "B3EB", source: "霸王" }
 356.9 "兽焰连尾击" Ability { id: "B3F7", source: "霸王" }
 357.8 "遮天陨石" Ability { id: "B3EC", source: "霸王" }
-370.3 "爆炸" Ability { id: "B3ED", source: "霸王" }
-375.5 "王者陨石" Ability { id: "B3E9", source: "霸王" }
+370.3 "爆炸" Ability { id: "B3ED", source: "霸王" } # 读条ID B3ED 踩击退塔
+375.5 "王者陨石 (咏唱栏)" Ability { id: "B3E9", source: "霸王" } # 读条ID B3E9 诱导3次圈圈
 379.6 "王者陨石 1" #Ability { id: "B3EA", source: "霸王" }
 381.6 "王者陨石 2" #Ability { id: "B3EA", source: "霸王" }
 383.6 "王者陨石 3" #Ability { id: "B3EA", source: "霸王" }
 385.6 "王者陨石雨" Ability { id: "B3EB", source: "霸王" }
 389.0 "遮天陨石" Ability { id: "B3EC", source: "霸王" }
-400.6 "爆炸" Ability { id: "B3ED", source: "霸王" }
-403.2 "登天碎地" Ability { id: "B3F3", source: "霸王" } window 403.2,10
-412.6 "登天碎地" Ability { id: "B3F4", source: "霸王" }
-424.3 "天顶的主宰" Ability { id: "B3B6", source: "霸王" }
+400.6 "爆炸" Ability { id: "B3ED", source: "霸王" } # 读条ID B3ED 踩击退塔
+403.2 "登天碎地 (平台坠落)" Ability { id: "B3F3", source: "霸王" } window 403.2,10
+412.6 "登天碎地 (平台投掷)" Ability { id: "B3F4", source: "霸王" }
+424.3 "天顶的主宰" Ability { id: "B3B6", source: "霸王" } # 读条ID B3B6 AOE
 
 427.5 label "r11n-loop"
 427.5 "--middle--" Ability { id: "B3B4", source: "霸王" }
 429.7 "--sync--" Ability { id: "B3FE", source: "霸王" }
-436.3 "碎心踢" Ability { id: "B3FF", source: "霸王" }
+436.3 "碎心踢 (咏唱栏)" Ability { id: "B3FF", source: "霸王" }
 437.4 "碎心踢 x5" duration 9 #Ability { id: "B400", source: "霸王" }
 447.4 "--sync--" Ability { id: "B401", source: "霸王" }
-455.4 "碎心踢" Ability { id: "B3FF", source: "霸王" }
+455.4 "碎心踢 (咏唱栏)" Ability { id: "B3FF", source: "霸王" }
 456.5 "碎心踢 x5" duration 9 #Ability { id: "B400", source: "霸王" }
 466.5 "--sync--" Ability { id: "B402", source: "霸王" }
-477.6 "王者陨石" Ability { id: "B3E9", source: "霸王" }
+477.6 "王者陨石 (咏唱栏)" Ability { id: "B3E9", source: "霸王" } # 读条ID B3E9 诱导3次圈圈
 481.6 "王者陨石 1" #Ability { id: "B3EA", source: "霸王" }
 483.6 "王者陨石 2" #Ability { id: "B3EA", source: "霸王" }
 485.6 "王者陨石 3" #Ability { id: "B3EA", source: "霸王" }
@@ -119,7 +118,7 @@ hideall "--sync--"
 524.3 "彗星风暴 3" #Ability { id: "B3CA", source: "霸王" }
 530.3 "王者陨石雨" Ability { id: "B3EB", source: "霸王" }
 537.7 "遮天陨石" #Ability { id: "B3EC", source: "霸王" }
-544.1 "天顶的主宰" Ability { id: "B3B6", source: "霸王" }
+544.1 "天顶的主宰" Ability { id: "B3B6", source: "霸王" } # 读条ID B3B6 AOE
 553.2 "火焰流" Ability { id: "B3FA", source: "霸王" }
 557.4 "爆炸" Ability { id: "B3FD", source: "霸王" }
 561.8 "--middle--" Ability { id: "B3B4", source: "霸王" } forcejump "r11n-loop"
@@ -127,107 +126,107 @@ hideall "--sync--"
 
 # IGNORED ABILITIES
 # B3B5 --sync--: auto-attack
-# B3BB Smashdown: basic chariot AoE (axe)
-# B3BD Smashdown: basic dynamo AoE (scythe)
-# B3BF Smashdown: basic cross AoE (sword)
-# B3C1 Raw Steel: shared tank cleave
-# B3CB Comet: follow-up Comet spread AoE (leaves Cometite puddle)
-# B3D2 Dance of Domination
-# B3D4 Dance of Domination
+# B3BB 铸兵猛攻: basic chariot AoE (axe)
+# B3BD 铸兵猛攻: basic dynamo AoE (scythe)
+# B3BF 铸兵猛攻: basic cross AoE (大剑)
+# B3C1 拔刀突击: shared tank cleave
+# B3CB 彗星: follow-up 彗星 spread AoE (leaves 彗星风暴 puddle)
+# B3D2 统治的战舞
+# B3D4 统治的战舞
 # B3D8 Charybdis
-# B3DF Unmitigated Explosion: meteor tower failure
-# B3E1 Unmitigated Explosion
-# B3E2 Explosion: unknown, something to do with Shockwave mechanic
-# B3EE Unmitigated Explosion: knockback tower failure
-# B3F8 Fire and Fury: conal AoE front (Majestic Meteor)
-# B3F9 Fire and Fury: conal AoE back (Majestic Meteor)
-# B540 Assault Evolved: Assault Apex axe charge
-# B541 Assault Evolved: Assault Apex scythe charge
-# B542 Assault Evolved: Assault Apex sword charge
-# B7B9 Explosion: Sword Quiver orthogonal lines
-# B7E9 Dance of Domination: Sword Quiver raidwide
+# B3DF Unmitigated 爆炸: meteor tower failure
+# B3E1 Unmitigated 爆炸
+# B3E2 爆炸: unknown, something to do with 冲击波 mechanic
+# B3EE Unmitigated 爆炸: knockback tower failure
+# B3F8 兽焰连尾击: conal AoE front (王者陨石)
+# B3F9 兽焰连尾击: conal AoE back (王者陨石)
+# B540 铸兵突袭: 铸兵崩落 axe charge
+# B541 铸兵突袭: 铸兵崩落 scythe charge
+# B542 铸兵突袭: 铸兵崩落 sword charge
+# B7B9 爆炸: Sword Quiver orthogonal lines
+# B7E9 统治的战舞: Sword Quiver raidwide
 
 # ALL ENCOUNTER ABILITIES
 # B3B4 --sync--: re-center
 # B3B5 --sync--: auto-attack
-# B3B6 Crown of Arcadia: raidwide
-# B3B7 Draw Steel: basic axe stance
-# B3B8 Draw Steel: basic scythe stance
-# B3B9 Draw Steel: basic sword stance
-# B3BA Smashdown: basic chariot AoE castbar (axe)
-# B3BB Smashdown: basic chariot AoE (axe)
-# B3BC Smashdown: basic dynamo AoE castbar (scythe)
-# B3BD Smashdown: basic dynamo AoE (scythe)
-# B3BE Smashdown: basic cross AoE castbar (sword)
-# B3BF Smashdown: basic cross AoE (sword)
-# B3C0 Raw Steel: Impact + Raw Steel castbar
-# B3C1 Raw Steel: shared tank cleave
-# B3C2 Impact: purple spread circle
-# B3C8 Void Stardust: Comet castbar
-# B3C9 Comet: initial Comet spread AoE (leaves Cometite puddle)
-# B3CA Cometite: Comet puddle resolve
-# B3CB Comet: follow-up Comet spread AoE (leaves Cometite puddle)
+# B3B6 天顶的主宰: raidwide
+# B3B7 铸兵之令: basic axe stance
+# B3B8 铸兵之令: basic scythe stance
+# B3B9 铸兵之令: basic sword stance
+# B3BA 铸兵猛攻: basic chariot AoE castbar (axe)
+# B3BB 铸兵猛攻: basic chariot AoE (axe)
+# B3BC 铸兵猛攻: basic dynamo AoE castbar (scythe)
+# B3BD 铸兵猛攻: basic dynamo AoE (scythe)
+# B3BE 铸兵猛攻: basic cross AoE castbar (大剑)
+# B3BF 铸兵猛攻: basic cross AoE (大剑)
+# B3C0 拔刀突击: 冲击 + Raw Steel castbar
+# B3C1 拔刀突击: shared tank cleave
+# B3C2 冲击: purple spread circle
+# B3C8 彗星雨: 彗星 castbar
+# B3C9 彗星: initial 彗星 spread AoE (leaves 彗星风暴 puddle)
+# B3CA 彗星风暴: 彗星 puddle resolve
+# B3CB 彗星: follow-up 彗星 spread AoE (leaves 彗星风暴 puddle)
 # B3CC Trophy Weapons: tether weapon summon castbar
-# B3CD Assault Evolved: tether weapon sequence castbar
-# B3CE Assault Evolved: tether chariot AoE (axe)
-# B3CF Assault Evolved: tether dynamo AoE (scythe)
-# B3D0 Assault Evolved: tether cross AoE (sword)
-# B3D1 Dance of Domination: Sword Quiver raidwide 1
-# B3D2 Dance of Domination: Sword Quiver raidwide 2
-# B3D3 Explosion: Sword Quiver diagonal lines
-# B3D4 Dance of Domination: Sword Quiver raidwide 3-7
-# B3D5 Raw Steel Trophy: empowered axe stance
-# B3D7 Charybdistopia: set party HP to 1
+# B3CD 铸兵突袭: tether weapon sequence castbar
+# B3CE 铸兵突袭: tether chariot AoE (axe)
+# B3CF 铸兵突袭: tether dynamo AoE (scythe)
+# B3D0 铸兵突袭: tether cross AoE (大剑)
+# B3D1 统治的战舞: Sword Quiver raidwide 1
+# B3D2 统治的战舞: Sword Quiver raidwide 2
+# B3D3 爆炸: Sword Quiver diagonal lines
+# B3D4 统治的战舞: Sword Quiver raidwide 3-7
+# B3D5 铸兵之令：轰击: empowered axe stance
+# B3D7 霸王大漩涡: set party HP to 1
 # B3D8 Charybdis: standing in tornadoes?
-# B3D9 Powerful Gust: tornado fan AoEs
-# B3DA Immortal Reign: Behemoth form change
-# B3DB One and Only: Behemoth raidwide castbar
-# B3DC One and Only: Behemoth raidwide
+# B3D9 强风: tornado fan AoEs
+# B3DA 万劫不朽的统治: Behemoth form change
+# B3DB 举世无双的霸王: Behemoth raidwide castbar
+# B3DC 举世无双的霸王: Behemoth raidwide
 # B3DD Meteorain: meteor phase castbar
-# B3DE Cosmic Kiss: meteor tower
-# B3DF Unmitigated Explosion: meteor tower failure
-# B3E0 Foregone Fatality: tank tether
-# B3E1 Unmitigated Explosion: meteor explosion (probably tank tether failure?)
-# B3E2 Explosion: unknown, something to do with Shockwave mechanic
-# B3E3 Massive Meteor: party stack
-# B3E4 Double Tyrannhilation: Shockwave stance
-# B3E5 Double Tyrannhilation: Shockwave castbar
-# B3E6 Shockwave: LoS meteor
-# B3E7 --sync--: meteor disintigration (Shockwave)
-# B3E8 Flatliner: platform split castbar
-# B3E9 Majestic Meteor: meteor puddle castbar
-# B3EA Majestic Meteor: meteor puddles
-# B3EB Majestic Meteorain: portal meteors
-# B3EC Mammoth Meteor: proximity meteor AoE
-# B3ED Explosion: knockback towers
-# B3EE Unmitigated Explosion: knockback tower failure
-# B3EF Arcadion Avalanche: west platform destruction
-# B3F0 Arcadion Avalanche: west platform toss (north safe)
-# B3F1 Arcadion Avalanche: west platform destruction
-# B3F2 Arcadion Avalanche: west platform toss (south safe)
-# B3F3 Arcadion Avalanche: east platform destruction
-# B3F4 Arcadion Avalanche: east platform toss (south safe)
-# B3F5 Arcadion Avalanche: east platform destruction
-# B3F6 Arcadion Avalanche: east platform toss (north safe)
-# B3F7 Fire and Fury: conal AoE castbar (Majestic Meteor)
-# B3F8 Fire and Fury: conal AoE front (Majestic Meteor)
-# B3F9 Fire and Fury: conal AoE back (Majestic Meteor)
-# B3FA Great Wall of Fire: tank laser castbar
-# B3FB Great Wall of Fire: tank laser
-# B3FC Great Wall of Fire: tank laser follow-up animation
-# B3FD Explosion: tank laser follow-up
-# B3FE --sync--: Heartbreak Kick stance change
-# B3FF Heartbreak Kick: stack tower hit 1
-# B400 Heartbreak Kick: stack tower hits 2-6
+# B3DE 轰击: meteor tower
+# B3DF Unmitigated 爆炸: meteor tower failure
+# B3E0 夺命链: tank tether
+# B3E1 Unmitigated 爆炸: meteor explosion (probably tank tether failure?)
+# B3E2 爆炸: unknown, something to do with 冲击波 mechanic
+# B3E3 重陨石: party stack
+# B3E4 双重霸王坠击: 冲击波 stance
+# B3E5 双重霸王坠击: 冲击波 castbar
+# B3E6 冲击波: LoS meteor
+# B3E7 --sync--: meteor disintigration (冲击波)
+# B3E8 绝命分断击: platform split castbar
+# B3E9 王者陨石: meteor puddle castbar
+# B3EA 王者陨石: meteor puddles
+# B3EB 王者陨石雨: portal meteors
+# B3EC 遮天陨石: proximity meteor AoE
+# B3ED 爆炸: knockback towers
+# B3EE Unmitigated 爆炸: knockback tower failure
+# B3EF 登天碎地: west platform destruction
+# B3F0 登天碎地: west platform toss (north safe)
+# B3F1 登天碎地: west platform destruction
+# B3F2 登天碎地: west platform toss (south safe)
+# B3F3 登天碎地: east platform destruction
+# B3F4 登天碎地: east platform toss (south safe)
+# B3F5 登天碎地: east platform destruction
+# B3F6 登天碎地: east platform toss (north safe)
+# B3F7 兽焰连尾击: conal AoE castbar (王者陨石)
+# B3F8 兽焰连尾击: conal AoE front (王者陨石)
+# B3F9 兽焰连尾击: conal AoE back (王者陨石)
+# B3FA 火焰流: tank laser castbar
+# B3FB 火焰流: tank laser
+# B3FC 火焰流: tank laser follow-up animation
+# B3FD 爆炸: tank laser follow-up
+# B3FE --sync--: 碎心踢 stance change
+# B3FF 碎心踢: stack tower hit 1
+# B400 碎心踢: stack tower hits 2-6
 # B401 --sync--: stance change from tornado?
 # B402 --sync--: stance change to ???
 # B487 --sync--: boss tornado animation start during LoS meteors?
-# B540 Assault Evolved: Assault Apex axe charge
-# B541 Assault Evolved: Assault Apex scythe charge
-# B542 Assault Evolved: Assault Apex sword charge
-# B7B9 Explosion: Sword Quiver orthogonal lines
-# B7BA Dance of Domination Trophy: empowered sword stance
-# B7E9 Dance of Domination: Sword Quiver raidwide
-# B7EB Ultimate Trophy Weapons: empowered tether weapon summon castbar
-# B7EC Assault Apex: empowered tether weapon sequence castbar
-# BA8F Flatliner: platform split
+# B540 铸兵突袭: 铸兵崩落 axe charge
+# B541 铸兵突袭: 铸兵崩落 scythe charge
+# B542 铸兵突袭: 铸兵崩落 sword charge
+# B7B9 爆炸: Sword Quiver orthogonal lines
+# B7BA 铸兵之令：统治: empowered sword stance
+# B7E9 统治的战舞: Sword Quiver raidwide
+# B7EB 历战之极武: empowered tether weapon summon castbar
+# B7EC 铸兵崩落: empowered tether weapon sequence castbar
+# BA8F 绝命分断击: platform split

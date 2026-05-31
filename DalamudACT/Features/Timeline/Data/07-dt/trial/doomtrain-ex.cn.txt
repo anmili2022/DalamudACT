@@ -1,8 +1,7 @@
 ### HELL ON RAILS (EXTREME)
 # ZoneId: 1308
-
 # -ii B237 B24E B251 B287 B288 B289 B258 B259 B25C B26E B271 B276 B277 B278 B27A B27B B280 B28A B28B B28D B28E B290 B294 B599 B59A
-# -it "Doomtrain" "Aether"
+# -it "格莱杨拉波尔" "以太晶球"
 # -p B24C:500
 
 hideall "--Reset--"
@@ -17,7 +16,7 @@ hideall "--sync--"
 22.4 "等离子射线/超增压排雾"
 25.5 "爆雷/重爆雷"
 31.4 "超增压" Ability { id: ["B25F", "B260"], source: "格莱杨拉波尔" }
-39.4 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+39.4 "超增压抽雾/超增压急行" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
 42.4 "超增压排雾/等离子射线"
 44.4 "重爆雷/爆雷"
 52.3 "无控急行" Ability { id: "B270", source: "格莱杨拉波尔" }
@@ -36,7 +35,7 @@ hideall "--sync--"
 95.2 "雷转质射线" Ability { id: "B273", source: "护卫炮塔" }
 98.1 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
 106.8 "雷转质射线" Ability { id: "B273", source: "护卫炮塔" }
-107.7 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+107.7 "超增压抽雾/超增压急行" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
 109.7 "超增压排雾/等离子射线"
 112.8 "重爆雷/爆雷"
 120.7 "无控急行" Ability { id: "B270", source: "格莱杨拉波尔" }
@@ -67,23 +66,23 @@ hideall "--sync--"
 224.1 "--sync--" HeadMarker { id: '019C' } window 12,12
 231.9 "以太炮/以太冲击波"
 232.0 "以太射线"
-234.8 "--untargetable--" NameToggle { name: "Aether" } window 12,12 forcejump "adds-enrage"
+234.8 "--untargetable--" NameToggle { name: "以太晶球" } window 12,12 forcejump "adds-enrage"
 
 # Sync to invisible cast that starts phase change animation
-500.0 "无尽狂奔" Ability { id: "B24C", source: "格莱杨拉波尔" } window 500.0,0
+500.0 "--sync--" Ability { id: "B24C", source: "格莱杨拉波尔" } window 500.0,0
 515.1 "无尽狂奔" Ability { id: "B24D", source: "格莱杨拉波尔" }
 
 # Car 3, again
 515.4 "--targetable--"
 533.4 "冲击波" Ability { id: "B283", source: "格莱杨拉波尔" }
 543.3 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
-550.9 "脱轨捶打" Ability { id: "B250", source: "格莱杨拉波尔" } duration 3.5
+550.9 "脱轨捶打 x3" Ability { id: "B250", source: "格莱杨拉波尔" } duration 3.5 # 读条ID B250 踩塔 x3再下一节车厢
 559.9 "脱轨" Ability { id: "B28F", source: "格莱杨拉波尔" }
 
 # Car 4
 565.0 "--sync--" Ability { id: "B257", source: "格莱杨拉波尔" }
-571.0 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-575.0 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+571.0 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+575.0 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
 585.1 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 587.5 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 592.8 "魔法阵展开" Ability { id: "B9A7", source: "格莱杨拉波尔" }
@@ -95,26 +94,26 @@ hideall "--sync--"
 632.4 "重雷" #Ability { id: "B292", source: "格莱杨拉波尔" }
 645.1 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 647.5 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
-649.8 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-653.8 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+649.8 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+653.8 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
 662.4 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
-672.0 "脱轨捶打" Ability { id: "B284", source: "格莱杨拉波尔" } duration 4.9
+672.0 "脱轨捶打 x4" Ability { id: "B284", source: "格莱杨拉波尔" } duration 4.9 # 读条ID B284 踩塔 x4再下一节车厢
 683.1 "脱轨" Ability { id: "B28F", source: "格莱杨拉波尔" }
 
 # Car 5
 688.2 "--sync--" Ability { id: "B257", source: "格莱杨拉波尔" }
-700.2 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+700.2 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" } # 读条ID B264 分散处理黄圈再双T死刑
 701.2 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
-702.2 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-706.2 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
-715.3 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+702.2 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+706.2 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
+715.3 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" } # 读条ID B264 分散处理黄圈再双T死刑
 716.3 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
 722.9 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
-731.5 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+731.5 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" } # 读条ID B264 分散处理黄圈再双T死刑
 732.5 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
-733.5 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-737.5 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
-748.6 "脱轨捶打" Ability { id: "B285", source: "格莱杨拉波尔" } duration 6.5
+733.5 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+737.5 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
+748.6 "脱轨捶打 x5" Ability { id: "B285", source: "格莱杨拉波尔" } duration 6.5 # 读条ID B285 踩塔 x5再下一节车厢
 760.2 "脱轨" Ability { id: "B28F", source: "格莱杨拉波尔" }
 
 # Car 6
@@ -125,10 +124,10 @@ hideall "--sync--"
 792.4 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 794.8 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 804.4 "雷转质射线" #Ability { id: "B273", source: "护卫炮塔" }
-807.3 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" }
+807.3 "念动反应" Ability { id: "B264", source: "格莱杨拉波尔" } # 读条ID B264 分散处理黄圈再双T死刑
 808.3 "掉落" #Ability { id: "B265", source: "格莱杨拉波尔" }
-809.3 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-813.3 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
+809.3 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+813.3 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
 821.5 "雷转质射线" #Ability { id: "B272", source: "护卫炮塔" }
 823.4 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
 826.4 "等离子射线/超增压排雾"
@@ -140,114 +139,114 @@ hideall "--sync--"
 862.0 "重雷" Ability { id: "B292", source: "格莱杨拉波尔" }
 873.0 "雷光雨" #Ability { id: "B291", source: "格莱杨拉波尔" }
 873.0 "重雷" Ability { id: "B292", source: "格莱杨拉波尔" }
-875.4 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-879.4 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
-889.3 "超增压急行/超增压抽雾" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
+875.4 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+879.4 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
+889.3 "超增压抽雾/超增压急行" Ability { id: ["B266", "B26D"], source: "格莱杨拉波尔" }
 891.3 "超增压排雾/等离子射线"
 894.4 "重爆雷/爆雷"
 903.5 "前照光/雷鸣吐息" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 905.9 "雷鸣吐息/前照光" #Ability { id: ["B279", "B27C"], source: "格莱杨拉波尔" }
 914.8 "雷电爆发" #Ability { id: "B293", source: "格莱杨拉波尔" }
-916.4 "雷光一闪" Ability { id: "B261", source: "格莱杨拉波尔" }
-920.4 "雷光一闪" Ability { id: "B262", source: "格莱杨拉波尔" }
-930.4 "脱轨捶打" Ability { id: "B286", source: "格莱杨拉波尔" } duration 7.1
-952.6 "脱轨 (狂暴)" Ability { id: "B28E", source: "格莱杨拉波尔" }
+916.4 "雷光一闪 (诱导)" Ability { id: "B261", source: "格莱杨拉波尔" }
+920.4 "雷光一闪 (爆炸)" Ability { id: "B262", source: "格莱杨拉波尔" }
+930.4 "脱轨捶打 x7" Ability { id: "B286", source: "格莱杨拉波尔" } duration 7.1 # 读条ID B286 踩塔 x6再狂暴
+952.6 "脱轨 (enrage)" Ability { id: "B28E", source: "格莱杨拉波尔" }
 
 # For sync reasons, adds enrage is after end of fight timeline
 2000.0 label "adds-enrage"
-2004.2 "无尽狂奔" Ability { id: "B24C", source: "格莱杨拉波尔" }
-2019.3 "无尽狂奔 (狂暴)" Ability { id: "B24D", source: "格莱杨拉波尔" }
+2004.2 "--sync--" Ability { id: "B24C", source: "格莱杨拉波尔" }
+2019.3 "无尽狂奔 (enrage)" Ability { id: "B24D", source: "格莱杨拉波尔" }
 
 
 # IGNORED ABILITIES
-# B237 Unlimited Express: VFX
-# B24E Shockwave: VFX
-# B251 Derailment Siege: VFX
-# B287 Derailment Siege: VFX
-# B288 Derailment Siege: VFX
-# B289 Derailment Siege: VFX
-# B258 Hail of Thunder: VFX
-# B259 Hail of Thunder: VFX
-# B25C Lightning Burst: VFX
-# B26E Dead Man's Blastpipe: VFX
-# B271 Electray: Extra spam
-# B276 Electray: Extra spam
-# B277 Thunderous Breath: VFX
-# B278 Thunderous Breath: VFX
-# B27A Headlight: VFX
-# B27B Headlight: VFX
-# B280 Dead Man's Windpipe: VFX
-# B28A Derailment Siege: Followup hits for tower
-# B28B Derailment Siege: Big hit at the end
-# B28D Derail: VFX
-# B28E Derail: VFX
-# B290 Derail: VFX
+# B237 无控急行: VFX
+# B24E 冲击波: VFX
+# B251 脱轨捶打: VFX
+# B287 脱轨捶打: VFX
+# B288 脱轨捶打: VFX
+# B289 脱轨捶打: VFX
+# B258 雷光雨: VFX
+# B259 雷光雨: VFX
+# B25C 雷电爆发: VFX
+# B26E 超增压排雾: VFX
+# B271 雷转质射线: Extra spam
+# B276 雷转质射线: Extra spam
+# B277 雷鸣吐息: VFX
+# B278 雷鸣吐息: VFX
+# B27A 前照光: VFX
+# B27B 前照光: VFX
+# B280 超增压抽雾: VFX
+# B28A 脱轨捶打: Followup hits for tower
+# B28B 脱轨捶打: Big hit at the end
+# B28D 脱轨: VFX
+# B28E 脱轨: VFX
+# B290 脱轨: VFX
 # B294 --sync--: Autoattack
-# B599 Derail: VFX
-# B59A Derail: VFX
+# B599 脱轨: VFX
+# B59A 脱轨: VFX
 
 # ALL ENCOUNTER ABILITIES
-# B237 Unlimited Express
-# B23C Turret Crossing
-# B246 Runaway Train
+# B237 无控急行
+# B23C 炮塔出击
+# B246 无尽狂奔
 # B247 Overdraught
 # B249 --sync--
-# B24C Runaway Train
-# B24D Runaway Train
-# B24E Shockwave
-# B250 Derailment Siege
-# B251 Derailment Siege
+# B24C 无尽狂奔
+# B24D 无尽狂奔
+# B24E 冲击波
+# B250 脱轨捶打
+# B251 脱轨捶打
 # B257 --sync--
-# B258 Hail of Thunder
-# B259 Hail of Thunder
-# B25C Lightning Burst
-# B25F Dead Man's Overdraught
-# B260 Dead Man's Overdraught
-# B261 Third Rail
-# B262 Third Rail
-# B264 Psychokinesis
-# B265 Plummet
-# B266 Dead Man's Express
-# B267 Plasma Beam
-# B268 Plasma Beam
-# B26A Plasma Beam
+# B258 雷光雨
+# B259 雷光雨
+# B25C 雷电爆发
+# B25F 超增压
+# B260 超增压
+# B261 雷光一闪
+# B262 雷光一闪
+# B264 念动反应
+# B265 掉落
+# B266 超增压急行
+# B267 等离子射线
+# B268 等离子射线
+# B26A 等离子射线
 # B26B Plasma
-# B26C Hyperexplosive Plasma
-# B26D Dead Man's Windpipe
-# B26E Dead Man's Blastpipe
-# B26F Dead Man's Blastpipe
-# B270 Unlimited Express
-# B271 Electray
-# B272 Electray
-# B273 Electray
-# B276 Electray
-# B277 Thunderous Breath
-# B278 Thunderous Breath
-# B279 Thunderous Breath
-# B27A Headlight
-# B27B Headlight
-# B27C Headlight
-# B27D Aetherial Ray
-# B280 Dead Man's Windpipe
-# B281 Aetherochar
-# B282 Aetherosote
-# B283 Shockwave
-# B284 Derailment Siege
-# B285 Derailment Siege
-# B286 Derailment Siege
-# B287 Derailment Siege
-# B288 Derailment Siege
-# B289 Derailment Siege
-# B28A Derailment Siege
-# B28B Derailment Siege
-# B28D Derail
-# B28E Derail
-# B28F Derail
-# B290 Derail
-# B291 Hail of Thunder
-# B292 Hyperconductive Plasma
-# B293 Lightning Burst
+# B26C 重爆雷
+# B26D 超增压抽雾
+# B26E 超增压排雾
+# B26F 超增压排雾
+# B270 无控急行
+# B271 雷转质射线
+# B272 雷转质射线
+# B273 雷转质射线
+# B276 雷转质射线
+# B277 雷鸣吐息
+# B278 雷鸣吐息
+# B279 雷鸣吐息
+# B27A 前照光
+# B27B 前照光
+# B27C 前照光
+# B27D 以太射线
+# B280 超增压抽雾
+# B281 以太炮
+# B282 以太冲击波
+# B283 冲击波
+# B284 脱轨捶打
+# B285 脱轨捶打
+# B286 脱轨捶打
+# B287 脱轨捶打
+# B288 脱轨捶打
+# B289 脱轨捶打
+# B28A 脱轨捶打
+# B28B 脱轨捶打
+# B28D 脱轨
+# B28E 脱轨
+# B28F 脱轨
+# B290 脱轨
+# B291 雷光雨
+# B292 重雷
+# B293 雷电爆发
 # B294 --sync--
-# B599 Derail
-# B59A Derail
-# B9A7 Arcane Revelation
+# B599 脱轨
+# B59A 脱轨
+# B9A7 魔法阵展开

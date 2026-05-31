@@ -1,12 +1,13 @@
 ### Arcadion (R2S): AAC Light-heavyweight M2 Savage
+# ZoneId: 1228
 
 # -ii 91C8 91B1 91B4 91AE 91AF 91B0 9193 91AB
 
 # 91C8 - Boss autos
-# 91B1, 91B4 - Extra Laceration hits
-# 91AE, 91AF, 91B0 - Animations during Laceration hits
-# 9193 - Poison Sting puddle drop damage. Not the actual puddle spawn
-# 91AB - Big Burst damage from players resolving a/b debuffs in soft enrage
+# 91B1, 91B4 - Extra 斩击 hits
+# 91AE, 91AF, 91B0 - Animations during 斩击 hits
+# 9193 - 毒针 puddle drop damage. Not the actual puddle spawn
+# 91AB - 大爆炸 damage from players resolving a/b debuffs in soft enrage
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -14,13 +15,13 @@ hideall "--sync--"
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-10.6 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" }
-17.7 "毒液雨/毒液滴落 (咏唱)" Ability { id: ["9184", "9185"], source: "蜂蜂小甜心" }
+10.6 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" } # 读条ID 9183 AOE
+17.7 "毒液雨/毒液滴落 (咏唱)" Ability { id: ["9184", "9185"], source: "蜂蜂小甜心" } # 读条ID 9184 存储分散 # 读条ID 9185 存储分摊
 19.8 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 28.8 "甜心烈风/甜心旋风 (咏唱)" Ability { id: ["9186", "9187"], source: "蜂蜂小甜心" }
 29.6 "甜心烈风/甜心旋风 (伤害)" Ability { id: ["9AC9", "9ACA"], source: "蜂蜂小甜心" }
 34.0 "毒液雨/毒液滴落 (伤害)" Ability { id: ["9189", "918A"], source: "蜂蜂小甜心" }
-40.0 "毒液滴落/毒液雨 (咏唱)" Ability { id: ["9185", "9184"], source: "蜂蜂小甜心" }
+40.0 "毒液滴落/毒液雨 (咏唱)" Ability { id: ["9185", "9184"], source: "蜂蜂小甜心" } # 读条ID 9185 存储分摊 # 读条ID 9184 存储分散
 47.7 "甜心旋风/甜心烈风 (咏唱)" Ability { id: ["9187", "9186"], source: "蜂蜂小甜心" }
 48.4 "甜心旋风/甜心烈风 (伤害)" Ability { id: ["9ACA", "9AC9"], source: "蜂蜂小甜心" }
 53.0 "毒液滴落/毒液雨 (伤害)" Ability { id: ["918A", "9189"], source: "蜂蜂小甜心" }
@@ -29,9 +30,9 @@ hideall "--sync--"
 69.1 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 
 # First Beat
-73.2 "蜂蜂演唱会【首演】 (咏唱)" Ability { id: "9C24", source: "蜂蜂小甜心" }
+73.2 "蜂蜂演唱会【首演】 (咏唱)" Ability { id: "9C24", source: "蜂蜂小甜心" } # 读条ID 9C24 AOE
 79.5 "蜂蜂演唱会【首演】 (伤害)" Ability { id: "9A7F", source: "蜂蜂小甜心" }
-87.4 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" }
+87.4 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" } # 读条ID 91AC 内斜角再外斜角再外正点 # 读条ID 91AD 外正点再外斜角再内斜角
 88.6 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
 91.6 "斩击" Ability { id: "91B2", source: "蜂蜂小甜心" }
 94.9 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
@@ -46,11 +47,11 @@ hideall "--sync--"
 137.3 "求爱 (伤害)" Ability { id: "9B7E", source: "蜂蜂小甜心" }
 150.4 "温柔地爱我" Ability { id: "919F", source: "蜂蜂小甜心" }
 158.5 "心病" Ability { id: "91A0", source: "蜂蜂小甜心" }
-168.6 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" }
+168.6 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" } # 读条ID 91AC 内斜角再外斜角再外正点 # 读条ID 91AD 外正点再外斜角再内斜角
 169.8 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
 172.8 "斩击" Ability { id: "91B2", source: "蜂蜂小甜心" }
 176.1 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
-187.2 "蜂蜂落幕曲" Ability { id: "918F", source: "蜂蜂小甜心" }
+187.2 "蜂蜂落幕曲" Ability { id: "918F", source: "蜂蜂小甜心" } # 读条ID 918F AOE
 # End First Beat
 
 201.4 "杀人针/杀人斩 (咏唱)" Ability { id: ["919C", "919B"], source: "蜂蜂小甜心" }
@@ -60,9 +61,9 @@ hideall "--sync--"
 243.3 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 
 # Second Beat
-247.6 "蜂蜂演唱会【再演】" Ability { id: "9C25", source: "蜂蜂小甜心" }
+247.6 "蜂蜂演唱会【再演】" Ability { id: "9C25", source: "蜂蜂小甜心" } # 读条ID 9C25 AOE
 253.9 "蜂蜂演唱会【再演】" Ability { id: "9C27", source: "蜂蜂小甜心" }
-261.8 "爱之雨/爱之滴 (咏唱)" Ability { id: ["9B08", "9B09"], source: "蜂蜂小甜心" }
+261.8 "爱之雨/爱之滴 (咏唱)" Ability { id: ["9B08", "9B09"], source: "蜂蜂小甜心" } # 读条ID 9B08 存储分散 # 读条ID 9B09 存储分摊
 271.9 "温柔地爱我" Ability { id: "919F", source: "蜂蜂小甜心" }
 276.0 "心震" #Ability { id: "91A7", source: "蜂蜂小甜心" }
 278.0 "心震" #Ability { id: "91A7", source: "蜂蜂小甜心" }
@@ -72,24 +73,24 @@ hideall "--sync--"
 284.0 "心震" #Ability { id: "91A7", source: "蜂蜂小甜心" }
 286.0 "心伤" Ability { id: "91A1", source: "蜂蜂小甜心" }
 287.0 "炸裂" Ability { id: "91A3", source: "蜂蜂小甜心" }
-296.0 "甜心烈风/甜心旋风 (咏唱)" Ability { id: ["9B0C", "9B0D"], source: "蜂蜂小甜心" }
-296.8 "甜心烈风/甜心旋风 (伤害)" Ability { id: ["9B10", "9B11"], source: "蜂蜂小甜心" }
+296.0 "甜心旋风/甜心烈风 (咏唱)" Ability { id: ["9B0C", "9B0D"], source: "蜂蜂小甜心" }
+296.8 "甜心旋风/甜心烈风 (伤害)" Ability { id: ["9B10", "9B11"], source: "蜂蜂小甜心" }
 297.0 "--sync--" Ability { id: "9B0A", source: "甜甜的心" }
 301.2 "爱之雨/爱之滴 (咏唱)" Ability { id: ["9B0E", "9B0F"], source: "蜂蜂小甜心" }
 301.3 "碎裂" Ability { id: "9B0B", source: "甜甜的心" }
 301.6 "--sync--" Ability { id: "918E", source: "蜂蜂小甜心" }
-310.2 "蜂蜂落幕曲" Ability { id: "918F", source: "蜂蜂小甜心" }
+310.2 "蜂蜂落幕曲" Ability { id: "918F", source: "蜂蜂小甜心" } # 读条ID 918F AOE
 # End Second Beat
 
 321.4 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
-328.5 "毒液雨/毒液滴落 (咏唱)" Ability { id: ["9184", "9185"], source: "蜂蜂小甜心" }
+328.5 "毒液雨/毒液滴落 (咏唱)" Ability { id: ["9184", "9185"], source: "蜂蜂小甜心" } # 读条ID 9184 存储分散 # 读条ID 9185 存储分摊
 333.6 "告警信息素" Ability { id: "917D", source: "蜂蜂小甜心" }
 341.5 "毒针 (咏唱)" Ability { id: "9194", source: "蜂蜂小甜心" }
-341.7 "毒针" Ability { id: "9195", source: "蜂蜂小甜心" }
+341.7 "毒针 (放圈)" Ability { id: "9195", source: "蜂蜂小甜心" }
 343.0 "盲目的爱" duration 25
-346.7 "毒针" Ability { id: "9195", source: "蜂蜂小甜心" }
-351.7 "毒针" Ability { id: "9195", source: "蜂蜂小甜心" }
-356.8 "毒针" Ability { id: "9195", source: "蜂蜂小甜心" }
+346.7 "毒针 (放圈)" Ability { id: "9195", source: "蜂蜂小甜心" }
+351.7 "毒针 (放圈)" Ability { id: "9195", source: "蜂蜂小甜心" }
+356.8 "毒针 (放圈)" Ability { id: "9195", source: "蜂蜂小甜心" }
 367.0 "小蜂刺 (咏唱)" Ability { id: "91A8", source: "蜂蜂小甜心" }
 368.0 "小蜂刺 (伤害)" Ability { id: "91A9", source: "蜂蜂小甜心" }
 375.0 "杀人针/杀人斩 (咏唱)" Ability { id: ["919C", "919B"], source: "蜂蜂小甜心" }
@@ -100,27 +101,27 @@ hideall "--sync--"
 402.4 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 
 # Third Beat
-406.5 "蜂蜂演唱会【三演】" Ability { id: "9C26", source: "蜂蜂小甜心" }
+406.5 "蜂蜂演唱会【三演】" Ability { id: "9C26", source: "蜂蜂小甜心" } # 读条ID 9C26 AOE
 412.8 "蜂蜂演唱会【三演】" Ability { id: "9C28", source: "蜂蜂小甜心" }
-419.7 "爱之雨/爱之滴 (咏唱)" Ability { id: ["9B08", "9B09"], source: "蜂蜂小甜心" }
-426.8 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" }
+419.7 "爱之雨/爱之滴 (咏唱)" Ability { id: ["9B08", "9B09"], source: "蜂蜂小甜心" } # 读条ID 9B08 存储分散 # 读条ID 9B09 存储分摊
+426.8 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" } # 读条ID 91AC 内斜角再外斜角再外正点 # 读条ID 91AD 外正点再外斜角再内斜角
 428.0 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
 431.0 "斩击" Ability { id: "91B2", source: "蜂蜂小甜心" }
 434.3 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
-438.9 "爆炸" Ability { id: "91B6", source: "蜂蜂小甜心" }
+438.9 "大爆炸" Ability { id: "91B6", source: "蜂蜂小甜心" }
 442.2 "炸裂" Ability { id: "91A3", source: "蜂蜂小甜心" }
-446.4 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" }
+446.4 "环环心连心/圆圆心连心" Ability { id: ["91AC", "91AD"], source: "蜂蜂小甜心" } # 读条ID 91AC 内斜角再外斜角再外正点 # 读条ID 91AD 外正点再外斜角再内斜角
 447.6 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
 450.6 "斩击" Ability { id: "91B2", source: "蜂蜂小甜心" }
 453.9 "斩击" Ability { id: "91B3", source: "蜂蜂小甜心" }
-458.9 "爆炸" Ability { id: "91B6", source: "蜂蜂小甜心" }
+458.9 "大爆炸" Ability { id: "91B6", source: "蜂蜂小甜心" }
 461.9 "炸裂" Ability { id: "91A3", source: "蜂蜂小甜心" }
-471.7 "甜心烈风/甜心旋风 (咏唱)" Ability { id: ["9B0C", "9B0D"], source: "蜂蜂小甜心" }
-472.5 "甜心烈风/甜心旋风 (伤害)" Ability { id: ["9B10", "9B11"], source: "蜂蜂小甜心" }
+471.7 "甜心旋风/甜心烈风 (咏唱)" Ability { id: ["9B0C", "9B0D"], source: "蜂蜂小甜心" }
+472.5 "甜心旋风/甜心烈风 (伤害)" Ability { id: ["9B10", "9B11"], source: "蜂蜂小甜心" }
 472.7 "--sync--" Ability { id: "9B0A", source: "甜甜的心" }
 476.9 "爱之雨/爱之滴 (咏唱)" Ability { id: ["9B0E", "9B0F"], source: "蜂蜂小甜心" }
 477.0 "碎裂" Ability { id: "9B0B", source: "甜甜的心" }
-484.9 "蜂蜂落幕曲" Ability { id: "918F", source: "蜂蜂小甜心" }
+484.9 "蜂蜂落幕曲" Ability { id: "918F", source: "蜂蜂小甜心" } # 读条ID 918F AOE
 # End Third Beat
 
 498.0 "杀人针/杀人斩 (咏唱)" Ability { id: ["919C", "919B"], source: "蜂蜂小甜心" }
@@ -128,10 +129,10 @@ hideall "--sync--"
 508.2 "--middle--" Ability { id: "9163", source: "蜂蜂小甜心" }
 511.3 "黑心 (咏唱)" Ability { id: "91AA", source: "蜂蜂小甜心" }
 515.0 "黑心 (伤害)" Ability { id: "91D2", source: "蜂蜂小甜心" }
-531.5 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" }
-548.6 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" }
-565.7 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" }
-582.9 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" }
-604.9 "骤然心痛" Ability { id: "91B7", source: "蜂蜂小甜心" }
+531.5 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" } # 读条ID 9183 AOE
+548.6 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" } # 读条ID 9183 AOE
+565.7 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" } # 读条ID 9183 AOE
+582.9 "甜言蜜语" Ability { id: "9183", source: "蜂蜂小甜心" } # 读条ID 9183 AOE
+604.9 "骤然心痛 (眩晕 enrage)" Ability { id: "91B7", source: "蜂蜂小甜心" }
 605.9 "--sync--" Ability { id: "9703", source: "蜂蜂小甜心" }
 608.1 "蜂蜂落幕曲 (狂暴)" Ability { id: "91B8", source: "蜂蜂小甜心" }

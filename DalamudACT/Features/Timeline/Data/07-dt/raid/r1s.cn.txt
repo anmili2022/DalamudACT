@@ -1,27 +1,28 @@
 ### Arcadion (R1S): AAC Light-heavyweight M1 Savage
+# ZoneId: 1226
 
 # -ii 98F0 943D 943E 9467 9464 9459 945A 947F 9443 996C 9444 94A6 9442 9B83 9472 9479 948A 948B 948C 948D 948E 948F 9490 9491 9492 9308 9493 9AD0 9AD1
-# -it "Black Cat"
+# -it "黑猫"
 
 # 98F0 - autoattacks
 # 943D - Quadruple Crossing 0.7s telegraph, pointless
 # 943E - Quadruple Crossing second telegraph castbar, pointless
 # 9467, 9464 - Clone animation change for second One-two Paw cleave
-# 9459 - Leaping Quadruple Crossing 0.7s telegraph, pointless
-# 945A - Leaping Quadruple Crossing second telegraph castbar, pointless
-# 947F - Clone Quadruple Swipe hidden castbar for telegraph/animation
-# 9443, 996C - Mouser telegraphs
-# 9444, 94A6 - Mouser hits
-# 9442 - Mouser end animation
+# 9459 - 猫跳四连尖甲 0.7s telegraph, pointless
+# 945A - 猫跳四连尖甲 second telegraph castbar, pointless
+# 947F - Clone 四重利爪 hidden castbar for telegraph/animation
+# 9443, 996C - 捕鼠 telegraphs
+# 9444, 94A6 - 捕鼠 hits
+# 9442 - 捕鼠 end animation
 # 9B83 - Invisible clone uses this for some reason, doesn't do anything
-# 9472, 946F - Leaping One-two Paw clone's cast
-# 9476, 9473 - Leaping One-two Paw clone's jump animation
-# 9479, 9853 - Leaping Quadruple Crossing clone's castbar, pointless
-# 947A - Leaping Quadruple Crossing clone's jump, pointless
-# 947B - Leaping Quadruple Crossing clone's 0.7s telegraph, pointless
-# 947C - Leaping Quadruple Crossing clone's second telegraph castbar, pointless
-# 948A, 948B, 948C, 948D, 948E, 948F, 9490, 9491, 9492, 9493, 9AD0, 9AD1 - Predaceous Pounce telegraphs
-# 9B18, 9B1D, 9488, 9966, 9489 - Predaceous Pounce hits
+# 9472, 946F - 猫跳二连尖甲 clone's cast
+# 9476, 9473 - 猫跳二连尖甲 clone's jump animation
+# 9479, 9853 - 猫跳四连尖甲 clone's castbar, pointless
+# 947A - 猫跳四连尖甲 clone's jump, pointless
+# 947B - 猫跳四连尖甲 clone's 0.7s telegraph, pointless
+# 947C - 猫跳四连尖甲 clone's second telegraph castbar, pointless
+# 948A, 948B, 948C, 948D, 948E, 948F, 9490, 9491, 9492, 9493, 9AD0, 9AD1 - 迅猫急袭 telegraphs
+# 9B18, 9B1D, 9488, 9966, 9489 - 迅猫急袭 hits
 
 hideall "--Reset--"
 hideall "--sync--"
@@ -36,8 +37,8 @@ hideall "--sync--"
 17.1 "四连尖甲 (伤害)" Ability { id: "943F", source: "黑猫" }
 20.0 "四连尖甲 (伤害)" Ability { id: "9440", source: "黑猫" }
 23.0 "四连尖甲 (伤害)" Ability { id: "9440", source: "黑猫" }
-32.4 "踩奶" Ability { id: "9495", source: "黑猫" }
-34.4 "踩奶" Ability { id: "9496", source: "黑猫" }
+32.4 "踩奶 (一)" Ability { id: "9495", source: "黑猫" } # 读条ID 9495 死刑
+34.4 "踩奶 (二)" Ability { id: "9496", source: "黑猫" }
 44.4 "--middle--" Ability { id: "9308", source: "黑猫" }
 49.4 "猫生九命" Ability { id: "9461", source: "黑猫" }
 56.4 "二连尖甲 (咏唱)" Ability { id: ["9439", "9436"], source: "黑猫" }
@@ -49,12 +50,12 @@ hideall "--sync--"
 78.7 "猫生九命" Ability { id: "9461", source: "黑猫" }
 81.7 "二连尖甲 (伤害)" Ability { id: ["9467", "9465"], source: "灵魂之影" }
 84.7 "二连尖甲 (伤害)" Ability { id: ["9468", "9466"], source: "灵魂之影" }
-86.7 "四重利爪/双重利爪 (咏唱)" Ability { id: ["945D", "945F"], source: "黑猫" }
+86.7 "四重利爪/双重利爪 (咏唱)" Ability { id: ["945D", "945F"], source: "黑猫" } # 读条ID 945D 和搭档分摊
 87.7 "四重利爪/双重利爪 (伤害)" Ability { id: ["945E", "9460"], source: "黑猫" }
 92.7 "灵魂之影" Ability { id: "9462", source: "黑猫" }
 99.7 "猫跳四连尖甲 (咏唱)" Ability { id: ["9457", "982F"], source: "黑猫" }
 100.1 "--sync--" Ability { id: "9463", source: "灵魂之影" }
-100.8 "猫跳四连尖甲" Ability { id: "9458", source: "黑猫" }
+100.8 "猫跳四连尖甲 (跳)" Ability { id: "9458", source: "黑猫" }
 101.6 "猫跳四连尖甲 (伤害)" Ability { id: "945B", source: "黑猫" }
 104.5 "猫跳四连尖甲 (伤害)" Ability { id: "945B", source: "黑猫" }
 107.4 "猫跳四连尖甲 (伤害)" Ability { id: "945C", source: "黑猫" }
@@ -62,45 +63,45 @@ hideall "--sync--"
 111.1 "四重利爪/双重利爪" Ability { id: ["9480", "9482"], source: "灵魂之影" }
 121.8 "血腥抓挠" Ability { id: "9494", source: "黑猫" }
 
-# Tiles 1 phase, starting with Mouser
+# Tiles 1 phase, starting with 捕鼠
 131.9 "--middle--" Ability { id: "9308", source: "黑猫" }
-135.3 "捕鼠" StartsUsing { id: "9441", source: "黑猫" } duration 9.7
-145.0 "捕鼠" Ability { id: "9441", source: "黑猫" } duration 10.4
+135.3 "捕鼠 (预兆)" StartsUsing { id: "9441", source: "黑猫" } duration 9.7
+145.0 "捕鼠 (命中)" Ability { id: "9441", source: "黑猫" } duration 10.4
 166.0 "模仿之猫" Ability { id: "9445", source: "黑猫" }
-175.9 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" }
-178.3 "腾身开膛" Ability { id: ["9447", "9449"], source: "模仿猫" }
+175.9 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" } # 读条ID 9446 向前击飞 (瞄准完好的地板) / 击飞 # 读条ID 9448 被砸 (站在完好的场地) / 被砸
+178.3 "腾身开膛 (命中)" Ability { id: ["9447", "9449"], source: "模仿猫" }
 179.2 "冲击波" Ability { id: "944A", source: "模仿猫" }
 182.1 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
-187.1 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" }
-189.5 "腾身开膛" Ability { id: ["9447", "9449"], source: "模仿猫" }
+187.1 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" } # 读条ID 9446 向前击飞 (瞄准完好的地板) / 击飞 # 读条ID 9448 被砸 (站在完好的场地) / 被砸
+189.5 "腾身开膛 (命中)" Ability { id: ["9447", "9449"], source: "模仿猫" }
 190.4 "冲击波" Ability { id: "944A", source: "模仿猫" }
 193.3 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
-198.3 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" }
-200.7 "腾身开膛" Ability { id: ["9447", "9449"], source: "模仿猫" }
+198.3 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" } # 读条ID 9446 向前击飞 (瞄准完好的地板) / 击飞 # 读条ID 9448 被砸 (站在完好的场地) / 被砸
+200.7 "腾身开膛 (命中)" Ability { id: ["9447", "9449"], source: "模仿猫" }
 201.6 "冲击波" Ability { id: "944A", source: "模仿猫" }
 202.2 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
-209.5 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" }
-211.9 "腾身开膛" Ability { id: ["9447", "9449"], source: "模仿猫" }
+209.5 "腾身开膛 (咏唱)" Ability { id: ["9446", "9448"], source: "模仿猫" } # 读条ID 9446 向前击飞 (瞄准完好的地板) / 击飞 # 读条ID 9448 被砸 (站在完好的场地) / 被砸
+211.9 "腾身开膛 (命中)" Ability { id: ["9447", "9449"], source: "模仿猫" }
 212.8 "冲击波" Ability { id: "944A", source: "模仿猫" }
 213.4 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
 216.1 "--middle--" Ability { id: "9308", source: "黑猫" }
-223.2 "踩奶" Ability { id: "9495", source: "黑猫" }
-225.2 "踩奶" Ability { id: "9496", source: "黑猫" }
+223.2 "踩奶 (一)" Ability { id: "9495", source: "黑猫" } # 读条ID 9495 死刑
+225.2 "踩奶 (二)" Ability { id: "9496", source: "黑猫" }
 235.2 "冲击波 (咏唱)" Ability { id: "944B", source: "黑猫" }
-236.2 "冲击波" Ability { id: "944C", source: "黑猫" }
+236.2 "冲击波 (命中)" Ability { id: "944C", source: "黑猫" }
 240.0 "猫怪突风" Ability { id: "9B84", source: "黑猫" }
 # End tiles 1 phase
 
 250.3 "--middle--" Ability { id: "9308", source: "黑猫" }
 255.3 "猫生九命" Ability { id: "9461", source: "黑猫" }
 262.3 "猫跳二连尖甲 (咏唱)" Ability { id: ["9450", "944F"], source: "黑猫" }
-263.3 "猫跳二连尖甲" Ability { id: ["9454", "9451"], source: "黑猫" }
+263.3 "猫跳二连尖甲 (跳)" Ability { id: ["9454", "9451"], source: "黑猫" }
 264.1 "猫跳二连尖甲 (伤害)" Ability { id: ["9456", "9452"], source: "黑猫" }
 266.1 "猫跳二连尖甲 (伤害)" Ability { id: ["9455", "9453"], source: "黑猫" }
 271.3 "灵魂之影" Ability { id: "9462", source: "黑猫" }
 276.3 "猫生九命" Ability { id: "9461", source: "黑猫" }
 283.5 "猫跳四连尖甲 (咏唱)" Ability { id: "9457", source: "黑猫" }
-284.5 "猫跳四连尖甲" Ability { id: "9458", source: "黑猫" }
+284.5 "猫跳四连尖甲 (跳)" Ability { id: "9458", source: "黑猫" }
 285.3 "猫跳四连尖甲 (伤害)" Ability { id: "945B", source: "黑猫" }
 288.2 "猫跳四连尖甲 (伤害)" Ability { id: "945B", source: "黑猫" }
 291.1 "猫跳四连尖甲 (伤害)" Ability { id: "945C", source: "黑猫" }
@@ -149,44 +150,44 @@ hideall "--sync--"
 500.0 label "tiles2"
 500.0 "血腥抓挠" Ability { id: "9494", source: "黑猫" }
 511.1 "--middle--" Ability { id: "9308", source: "黑猫" }
-514.6 "捕鼠" StartsUsing { id: "9441", source: "黑猫" } duration 9.7
-524.3 "捕鼠" Ability { id: "9441", source: "黑猫" } duration 10.4
+514.6 "捕鼠 (预兆)" StartsUsing { id: "9441", source: "黑猫" } duration 9.7
+524.3 "捕鼠 (命中)" Ability { id: "9441", source: "黑猫" } duration 10.4
 545.4 "模仿之猫" Ability { id: "9445", source: "黑猫" }
 551.6 "--middle--" Ability { id: "9308", source: "黑猫" }
 553.6 "--sync--" Ability { id: "6854", source: "黑猫" }
-555.2 "腾身开膛 (咏唱)" Ability { id: "9448", source: "模仿猫" }
-557.6 "腾身开膛" Ability { id: "9449", source: "模仿猫" }
+555.2 "腾身开膛 (咏唱)" Ability { id: "9448", source: "模仿猫" } # 读条ID 9448 被砸 (站在完好的场地) / 被砸
+557.6 "腾身开膛 (命中)" Ability { id: "9449", source: "模仿猫" }
 558.5 "冲击波" Ability { id: "944A", source: "模仿猫" }
-558.7 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" }
+558.7 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" } # 读条ID 9497 分摊 # 读条ID 9499 职能分散站位
 558.9 "超暗影/碎裂尖甲 (伤害)" #Ability { id: ["9498", "949A"], source: "黑猫" }
 558.9 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
 564.0 "--middle--" Ability { id: "9308", source: "黑猫" }
-567.6 "腾身开膛 (咏唱)" Ability { id: "9446", source: "模仿猫" }
-570.0 "腾身开膛" Ability { id: "9447", source: "模仿猫" }
+567.6 "腾身开膛 (咏唱)" Ability { id: "9446", source: "模仿猫" } # 读条ID 9446 向前击飞 (瞄准完好的地板) / 击飞
+570.0 "腾身开膛 (命中)" Ability { id: "9447", source: "模仿猫" }
 570.9 "冲击波" Ability { id: "944A", source: "模仿猫" }
-571.1 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" }
+571.1 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" } # 读条ID 9497 分摊 # 读条ID 9499 职能分散站位
 572.0 "超暗影/碎裂尖甲 (伤害)" #Ability { id: ["9498", "949A"], source: "黑猫" }
 573.8 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
 576.5 "--middle--" Ability { id: "9308", source: "黑猫" }
-580.1 "腾身开膛 (咏唱)" Ability { id: "9448", source: "模仿猫" }
-582.5 "腾身开膛" Ability { id: "9449", source: "模仿猫" }
+580.1 "腾身开膛 (咏唱)" Ability { id: "9448", source: "模仿猫" } # 读条ID 9448 被砸 (站在完好的场地) / 被砸
+582.5 "腾身开膛 (命中)" Ability { id: "9449", source: "模仿猫" }
 583.4 "冲击波" Ability { id: "944A", source: "模仿猫" }
-583.5 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" }
+583.5 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" } # 读条ID 9497 分摊 # 读条ID 9499 职能分散站位
 583.8 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
 584.2 "超暗影/碎裂尖甲 (伤害)" #Ability { id: ["9498", "949A"], source: "黑猫" }
 588.6 "--middle--" Ability { id: "9308", source: "黑猫" }
 590.6 "--sync--" Ability { id: "6854", source: "黑猫" }
-592.2 "腾身开膛 (咏唱)" Ability { id: "9446", source: "模仿猫" }
-594.6 "腾身开膛" Ability { id: "9447", source: "模仿猫" }
+592.2 "腾身开膛 (咏唱)" Ability { id: "9446", source: "模仿猫" } # 读条ID 9446 向前击飞 (瞄准完好的地板) / 击飞
+594.6 "腾身开膛 (命中)" Ability { id: "9447", source: "模仿猫" }
 595.5 "冲击波" Ability { id: "944A", source: "模仿猫" }
-595.7 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" }
+595.7 "超暗影/碎裂尖甲 (咏唱)" Ability { id: ["9497", "9499"], source: "黑猫" } # 读条ID 9497 分摊 # 读条ID 9499 职能分散站位
 595.9 "超暗影/碎裂尖甲 (伤害)" #Ability { id: ["9498", "949A"], source: "黑猫" }
 598.2 "冲击" Ability { id: ["9953", "9954"], source: "模仿猫" }
 599.0 "--middle--" Ability { id: "9308", source: "黑猫" }
-606.0 "踩奶" Ability { id: "9495", source: "黑猫" }
-608.1 "踩奶" Ability { id: "9496", source: "黑猫" }
+606.0 "踩奶 (一)" Ability { id: "9495", source: "黑猫" } # 读条ID 9495 死刑
+608.1 "踩奶 (二)" Ability { id: "9496", source: "黑猫" }
 619.1 "冲击波 (咏唱)" Ability { id: "944B", source: "黑猫" }
-620.1 "冲击波" Ability { id: "944C", source: "黑猫" }
+620.1 "冲击波 (击退)" Ability { id: "944C", source: "黑猫" }
 623.9 "猫怪突风" Ability { id: "9B84", source: "黑猫" }
 # End tiles 2 phase
 
@@ -204,14 +205,14 @@ hideall "--sync--"
 662.1 "倾盆大猫 (分摊)" #Ability { id: "949F", source: "黑猫" }
 662.1 "倾盆大猫 (连线)" #Ability { id: "949D", source: "黑猫" }
 673.4 "模仿之猫" Ability { id: "9445", source: "黑猫" }
-678.5 "迅猫急袭" StartsUsing { id: "9AD3", source: "模仿猫" } duration 12.7
+678.5 "迅猫急袭 (预兆)" StartsUsing { id: "9AD3", source: "模仿猫" } duration 12.7
 688.6 "--middle--" Ability { id: "9308", source: "黑猫" }
-691.2 "迅猫急袭" Ability { id: "9AD3", source: "模仿猫" } duration 4.8
+691.2 "迅猫急袭 (命中)" Ability { id: "9AD3", source: "模仿猫" } duration 4.8
 696.0 "二连尖甲 (咏唱)" Ability { id: "9439", source: "黑猫" }
 696.7 "二连尖甲 (伤害)" Ability { id: "943B", source: "黑猫" }
 699.7 "二连尖甲 (伤害)" Ability { id: "943A", source: "黑猫" }
 710.7 "--middle--" Ability { id: "9308", source: "黑猫" }
 # These are pulled from fflogs and manually re-timed, might not be perfectly accurate
 713.8 "捕鼠 (咏唱)" StartsUsing { id: "9B8E", source: "黑猫" } duration 8
-# 狂暴 ends at 10:02:xxx into pull
+# Enrage ends at 10:02:xxx into pull
 721.8 "捕鼠 (狂暴)" Ability { id: "9B8E", source: "黑猫" } duration 8.5

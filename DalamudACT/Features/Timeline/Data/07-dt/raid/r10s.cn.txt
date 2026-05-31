@@ -1,32 +1,31 @@
 ### AAC HEAVYWEIGHT M2 (SAVAGE)
 # ZoneId: 1323
-
 # -ii BDFF BE00 B5BA B57C B5DA B5C3 B5FB B57B
-# -it "Deep Blue" "Red Hot" "Watery Grave"
+# -it "深蓝" "炽红" "水牢"
 
 hideall "--Reset--"
 hideall "--sync--"
 
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
-# Red Hot
+# 炽红
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
 14.6 "炽焰冲击" Ability { id: "B5B6", source: "炽红" }
 20.7 "--四边中点--" Ability { id: "B578", source: "炽红" }
-30.3 "浪顶炽火" Ability { id: "B5BB", source: "炽红" }
-33.5 "浪顶炽火" Ability { id: "B5BC", source: "炽红" }
-36.8 "浪顶炽火" Ability { id: "B5BD", source: "炽红" }
-39.9 "浪顶炽火" Ability { id: "B5BE", source: "炽红" }
+30.3 "浪顶炽火 1" Ability { id: "B5BB", source: "炽红" }
+33.5 "浪顶炽火 2" Ability { id: "B5BC", source: "炽红" }
+36.8 "浪顶炽火 3" Ability { id: "B5BD", source: "炽红" }
+39.9 "浪顶炽火 4" Ability { id: "B5BE", source: "炽红" }
 52.3 "空中旋火" Ability { id: "B5C0", source: "炽红" }
 53.1 "空中旋火" Ability { id: "B5C1", source: "炽红" }
-61.9 "火浪回切" Ability { id: "B5C9", source: "炽红" }
+61.9 "火浪回切" Ability { id: "B5C9", source: "炽红" } # 读条ID B5C9 向火区引导扇形伤害
 62.8 "火浪回切" Ability { id: "B5CA", source: "炽红" }
-68.4 "旋绕巨火" Ability { id: "B5C2", source: "炽红" } duration 4.9
+68.4 "旋绕巨火 x3" Ability { id: "B5C2", source: "炽红" } duration 4.9
 82.5 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
 86.6 "--north--" Ability { id: "B578", source: "炽红" }
 88.8 "--untargetable--"
 
-# Deep Blue
+# 深蓝
 90.7 "--targetable--"
 96.9 "惊涛骇浪" Ability { id: "B5CB", source: "深蓝" }
 106.0 "破势乘浪" Ability { id: "B5CD", source: "深蓝" }
@@ -35,32 +34,32 @@ hideall "--sync--"
 115.0 "惊涛骇浪" #Ability { id: "B5CC", source: "深蓝" }
 117.1 "--targetable--"
 117.5 "浪花飞溅/浪涛翻涌" Ability { id: ["B5CF", "B5D0"], source: "深蓝" }
-125.2 "交错旋水/双重旋水" Ability { id: ["B5E0", "B5DD"], source: "深蓝" }
+125.2 "--sync--" Ability { id: ["B5E0", "B5DD"], source: "深蓝" }
 125.9 "交错旋水/双重旋水" #Ability { id: ["B5E1", "B5DE"], source: "深蓝" }
 128.5 "交错旋水/双重旋水" #Ability { id: ["B5E2", "B5DF"], source: "深蓝" }
-136.3 "深海冲击" Ability { id: "B5B7", source: "深蓝" }
+136.3 "深海冲击 (引导)" Ability { id: "B5B7", source: "深蓝" } # 读条ID B5B7 靠近深蓝
 136.5 "深海冲击 (伤害)" #Ability { id: "ADC6", source: "深蓝" }
 143.5 "斗志昂扬" Ability { id: "B5B9", source: "深蓝" }
 149.6 "--west--" Ability { id: "B579", source: "深蓝" }
 151.6 "--targetable--"
-160.9 "极限炫技" Ability { id: "B5D9", source: "炽红" }
+160.9 "极限炫技" Ability { id: "B5D9", source: "炽红" } # 读条ID B5D9 去上/下 + 高伤害 AOE
 
 # Transition
 161.7 "--untargetable--"
 168.7 "极限炫技 (直线)" Ability { id: "B5A4", source: "极限兄弟" }
 169.7 "极限炫技 x6" duration 3.5 #Ability { id: "B5DC", source: "极限兄弟" }
-173.6 "极限炫技" Ability { id: "B7CA", source: "极限兄弟" }
+173.6 "极限炫技 (大)" Ability { id: "B7CA", source: "极限兄弟" }
 
-# Insane Air 1
+# 狂浪腾空 1
 177.4 "--targetable--"
-178.8 "兄弟同心" Ability { id: "B57A", source: "炽红" }
+178.8 "兄弟同心 x2" Ability { id: "B57A", source: "炽红" }
 186.0 "--sync--" Ability { id: "B578", source: "炽红" }
 
-# Each boss does, in random order (Red Hot/Deep Blue):
-# 1 tankbuster (Blasting Snap/Vertical Plunge)
-# 1 stack (Re-entry Blast/Re-entry Plunge)
-# 2 proteans (Plunging Snap)
-# Timeline entries are for Red Hot's ability names, since there's no castbar
+# Each boss does, in random order (炽红/深蓝):
+# 1 tankbuster (火浪急转/Vertical Plunge)
+# 1 stack (炽红返场/Re-entry Plunge)
+# 2 proteans (水浪急转)
+# Timeline entries are for 炽红's ability names, since there's no castbar
 194.6 "狂浪腾空" Ability { id: "B897", source: "炽红" }
 196.5 "火浪急转/水浪急转/炽红返场 (引导)" #Ability { id: "B5EF", source: "炽红" }
 197.6 "火浪急转/水浪急转/炽红返场 (伤害)" #Ability { id: "B5F6", source: "深蓝" }
@@ -74,15 +73,15 @@ hideall "--sync--"
 218.4 "火浪急转/水浪急转/炽红返场 (引导)" #Ability { id: "B5EF", source: "炽红" }
 219.5 "火浪急转/水浪急转/炽红返场 (伤害)" #Ability { id: "B5F6", source: "深蓝" }
 219.9 "--sync--" Ability { id: "B57D", source: "深蓝" }
-229.1 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
+229.1 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
 235.3 "--sync--" Ability { id: "B578", source: "炽红" }
 
 # Snaking
-237.7 "兄弟同心" Ability { id: "B57A", source: "炽红" }
-244.8 "火蛇夺浪" Ability { id: "B381", source: "炽红" }
+237.7 "兄弟同心 x2" Ability { id: "B57A", source: "炽红" }
+244.8 "火蛇夺浪/水蛇夺浪" Ability { id: "B381", source: "炽红" }
 250.0 "--sync--" Ability { id: "B578", source: "炽红" }
 256.8 "空中旋火" Ability { id: "B5C0", source: "炽红" }
-257.4 "交错旋水/双重旋水" Ability { id: ["B5E0", "B5DD"], source: "深蓝" }
+257.4 "--sync--" Ability { id: ["B5E0", "B5DD"], source: "深蓝" }
 257.4 "空中旋火" #Ability { id: "B5C1", source: "炽红" }
 258.0 "交错旋水/双重旋水" Ability { id: ["B5E1", "B5DE"], source: "深蓝" }
 260.6 "交错旋水/双重旋水" #Ability { id: ["B5E2", "B5DF"], source: "深蓝" }
@@ -95,7 +94,7 @@ hideall "--sync--"
 280.0 "浪花飞溅/浪涛翻涌" Ability { id: ["B5D7", "B5D8"], source: "深蓝" }
 280.1 "空中旋火" Ability { id: "B5C1", source: "炽红" }
 281.4 "--sync--" #Ability { id: "B578", source: "炽红" }
-288.5 "腾火踏浪" Ability { id: "B5C4", source: "炽红" }
+288.5 "腾火踏浪" Ability { id: "B5C4", source: "炽红" } # 读条ID B5C4 引导四连跳
 288.9 "--炽红 跳--" #Ability { id: "B91D", source: "炽红" }
 290.0 "腾火踏浪 1" #Ability { id: "B91E", source: "深蓝" }
 290.9 "--炽红 跳--" #Ability { id: "B91D", source: "炽红" }
@@ -103,43 +102,43 @@ hideall "--sync--"
 292.1 "破势乘浪" Ability { id: "B5CD", source: "深蓝" }
 292.1 "--untargetable--"
 292.9 "--炽红 跳--" #Ability { id: "B91D", source: "炽红" }
-294.1 "腾火踏浪" Ability { id: "B920", source: "炽红" }
+294.1 "腾火踏浪 3" Ability { id: "B920", source: "炽红" }
 295.0 "--炽红 跳--" #Ability { id: "B91D", source: "炽红" }
-296.2 "腾火踏浪" Ability { id: "B921", source: "炽红" }
+296.2 "腾火踏浪 4" Ability { id: "B921", source: "炽红" }
 301.3 "破势乘浪" Ability { id: "B5CE", source: "深蓝" }
 301.3 "惊涛骇浪" #Ability { id: "B5CC", source: "深蓝" }
 303.3 "--targetable--"
-303.7 "浪花飞溅/浪涛翻涌" Ability { id: ["B5CF", "B5D0"], source: ["Red Hot", "Deep Blue"] }
-306.3 "火浪回切" Ability { id: "B5C9", source: "炽红" }
-307.2 "火浪回切" #Ability { id: "B5CA", source: ["Red Hot", "Deep Blue"] } # Possible bugged log
-313.2 "深海冲击" Ability { id: "B5B7", source: "深蓝" }
+303.7 "浪花飞溅/浪涛翻涌" Ability { id: ["B5CF", "B5D0"], source: ["炽红", "深蓝"] }
+306.3 "火浪回切" Ability { id: "B5C9", source: "炽红" } # 读条ID B5C9 向火区引导扇形伤害
+307.2 "火浪回切" #Ability { id: "B5CA", source: ["炽红", "深蓝"] } # Possible bugged log
+313.2 "深海冲击 (引导)" Ability { id: "B5B7", source: "深蓝" } # 读条ID B5B7 靠近深蓝
 313.5 "深海冲击 (伤害)" #Ability { id: "ADC6", source: "深蓝" }
-320.5 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
-326.7 "兄弟同心" Ability { id: "B57A", source: "炽红" }
-328.8 "腾水踏浪 (塔)" StartsUsing { id: "B5E3", source: "深蓝" } duration 5
-334.8 "腾水踏浪" Ability { id: "B5E4", source: "深蓝" } duration 2
+320.5 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
+326.7 "兄弟同心 x2" Ability { id: "B57A", source: "炽红" }
+328.8 "腾水踏浪 (塔)" StartsUsing { id: "B5E3", source: "深蓝" } duration 5 # 读条ID B5E3 踩塔
+334.8 "腾水踏浪 (伤害 + 眩晕)" Ability { id: "B5E4", source: "深蓝" } duration 2
 335.9 "--sync--" Ability { id: "B57D", source: "深蓝" }
 
-# Bubble/Deep Aerial
-# Xtreme Wave has two casts per boss per set
+# Bubble/腾水踏浪
+# 极限浪波 has two casts per boss per set
 # The lower ID cast of each boss is the actual line snapshot and is the important mechanic to time
 # The higher ID cast is the secondary hit on anyone in the path of the line that wasn't the original target
-# Drop the higher ID casts. Only keep Red Hot's casts for timeline cleanliness
+# Drop the higher ID casts. Only keep 炽红's casts for timeline cleanliness
 337.3 "--小怪可选中--"
 337.9 "--untargetable--"
 337.9 "--sync--" Ability { id: "B578", source: "炽红" }
-345.7 "极限浪波" Ability { id: "B5C5", source: "炽红" }
-347.8 "混合爆破" Ability { id: "ADC7", source: "水牢" }
-354.1 "极限浪波" Ability { id: "B5C7", source: "炽红" }
-356.2 "混合爆破" Ability { id: "ADC7", source: "水牢" }
-362.6 "极限浪波" Ability { id: "B5C7", source: "炽红" }
-364.7 "混合爆破" Ability { id: "ADC7", source: "水牢" }
-371.1 "极限浪波" Ability { id: "B5C7", source: "炽红" }
-373.2 "混合爆破" Ability { id: "ADC7", source: "水牢" }
-379.6 "极限浪波" Ability { id: "B5C7", source: "炽红" }
-381.7 "混合爆破" Ability { id: "ADC7", source: "水牢" }
-388.3 "极限浪波" Ability { id: "B5C7", source: "炽红" }
-390.4 "混合爆破" Ability { id: "ADC7", source: "水牢" }
+345.7 "极限浪波 1" Ability { id: "B5C5", source: "炽红" }
+347.8 "混合爆破 1" Ability { id: "ADC7", source: "水牢" }
+354.1 "极限浪波 2" Ability { id: "B5C7", source: "炽红" }
+356.2 "混合爆破 2" Ability { id: "ADC7", source: "水牢" }
+362.6 "极限浪波 3" Ability { id: "B5C7", source: "炽红" }
+364.7 "混合爆破 3" Ability { id: "ADC7", source: "水牢" }
+371.1 "极限浪波 4" Ability { id: "B5C7", source: "炽红" }
+373.2 "混合爆破 4" Ability { id: "ADC7", source: "水牢" }
+379.6 "极限浪波 5" Ability { id: "B5C7", source: "炽红" }
+381.7 "混合爆破 5" Ability { id: "ADC7", source: "水牢" }
+388.3 "极限浪波 6" Ability { id: "B5C7", source: "炽红" }
+390.4 "混合爆破 6" Ability { id: "ADC7", source: "水牢" }
 390.6 "--targetable--"
 390.6 "--sync--" Ability { id: "B57D", source: "深蓝" }
 392.8 "--小怪不可选中--"
@@ -151,8 +150,8 @@ hideall "--sync--"
 393.2 "浪崩 x2 (狂暴)" #Ability { id: "B5EB", source: "水牢" }
 
 # Arena Split
-398.7 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
-404.8 "兄弟同心" Ability { id: "B57A", source: "炽红" }
+398.7 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
+404.8 "兄弟同心 x2" Ability { id: "B57A", source: "炽红" }
 406.9 "--炽红 北--" Ability { id: "B578", source: "炽红" }
 409.9 "惊涛骇浪" Ability { id: "B5CB", source: "深蓝" }
 414.3 "浪顶炽火" Ability { id: "B5BF", source: "炽红" }
@@ -168,12 +167,12 @@ hideall "--sync--"
 444.7 "惊涛骇浪" #Ability { id: "B5CC", source: "深蓝" }
 446.7 "--深蓝可选中--"
 447.1 "浪涛翻涌" Ability { id: "B5D0", source: "深蓝" }
-451.8 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
+451.8 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
 
-# Insane Air 2
+# 狂浪腾空 2
 457.9 "--sync--" Ability { id: "B578", source: "炽红" }
-460.3 "兄弟同心" Ability { id: "B57A", source: "炽红" }
-467.4 "极限火蛇夺浪" Ability { id: "B5AE", source: "炽红" }
+460.3 "兄弟同心 x2" Ability { id: "B57A", source: "炽红" }
+467.4 "极限火蛇夺浪/极限水蛇夺浪" Ability { id: "B5AE", source: "炽红" }
 472.6 "--sync--" Ability { id: "B578", source: "炽红" }
 482.3 "狂浪腾空" Ability { id: "B5E6", source: "炽红" }
 484.2 "火浪急转/水浪急转/炽红返场 (引导)" #Ability { id: "B5EF", source: "炽红" }
@@ -192,130 +191,130 @@ hideall "--sync--"
 516.6 "火浪急转/水浪急转/炽红返场 (伤害)" #Ability { id: "B5F2", source: "深蓝" }
 517.0 "--sync--" Ability { id: "B57D", source: "深蓝" }
 518.0 "救生" Ability { id: "B5B0", source: "炽红" }
-526.0 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
+526.0 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
 
 # Double Alley-oop
-532.2 "兄弟同心" Ability { id: "B57A", source: "炽红" }
+532.2 "兄弟同心 x2" Ability { id: "B57A", source: "炽红" }
 534.3 "--sync--" Ability { id: "B579", source: "深蓝" }
 542.1 "交错旋水/双重旋水"
 544.3 "空中旋火" #Ability { id: "B5C1", source: "炽红" }
 544.7 "交错旋水/双重旋水"
-552.3 "旋绕巨火" Ability { id: "B5C2", source: "炽红" } duration 4.9
-553.2 "深海冲击" Ability { id: "B5B7", source: "深蓝" }
+552.3 "旋绕巨火 x3" Ability { id: "B5C2", source: "炽红" } duration 4.9
+553.2 "深海冲击 (引导)" Ability { id: "B5B7", source: "深蓝" } # 读条ID B5B7 靠近深蓝
 553.4 "深海冲击 (伤害)" Ability { id: "ADC6", source: "深蓝" }
 
 # Soft -> hard enrage
-566.5 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
-575.6 "斗志昂扬" Ability { id: "B5B8", source: "炽红" }
+566.5 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
+575.6 "斗志昂扬 x2" Ability { id: "B5B8", source: "炽红" }
 585.3 "--sync--" Ability { id: "B578", source: "炽红" }
-587.4 "无归浪卷" StartsUsing { id: "B5FC", source: "炽红" }
+587.4 "--sync--" StartsUsing { id: "B5FC", source: "炽红" }
 596.4 "无归浪卷 (狂暴)" Ability { id: "B5FC", source: "炽红" }
 
 
 # IGNORED ABILITIES
-# B5BA Flame Floater: VFX
-# B57C --sync--: Red Hot dismounting from surfboard
-# B5DA Xtreme Spectacular: Deep Blue cast, same time as Red Hot
+# B5BA 浪顶炽火: VFX
+# B57C --sync--: 炽红 dismounting from surfboard
+# B5DA 极限炫技: 深蓝 cast, same time as 炽红
 # B5C3 Pyrotation: Actual hits, but covered by duration
-# B57B Epic Brotherhood: VFX for Deep Blue sharing health with Red Hot
+# B57B 兄弟同心: VFX for 深蓝 sharing health with 炽红
 # B5FB Steam Burst: Water/Fire mechanics overlap, could vary when they occur
 # BDFF --sync--: autoattack
 # BE00 --sync--: autoattack
 
 # ALL ENCOUNTER ABILITIES
-# ADC6 Deep Impact
-# ADC7 Scathing Steam
+# ADC6 深海冲击
+# ADC7 混合爆破
 # B381 Firesnaking
 # B382 Watersnaking
 # B578 --sync--
 # B579 --sync--
-# B57A Epic Brotherhood
-# B57B Epic Brotherhood
+# B57A 兄弟同心
+# B57B 兄弟同心
 # B57C --sync--
 # B57D --sync--
-# B580 Hot Impact
-# B596 Freaky Pyrotation
-# B597 Freaky Pyrotation
-# B5A4 Xtreme Spectacular
-# B5AE Xtreme Firesnaking
-# B5AF Xtreme Watersnaking
-# B5B0 Bailout
-# B5B1 Bailout
-# B5B6 Hot Impact
-# B5B7 Deep Impact
-# B5B8 Divers' Dare
-# B5B9 Divers' Dare
-# B5BA Flame Floater
-# B5BB Flame Floater
-# B5BC Flame Floater
-# B5BD Flame Floater
-# B5BE Flame Floater
-# B5BF Flame Floater
-# B5C0 Alley-oop Inferno
-# B5C1 Alley-oop Inferno
+# B580 炽焰冲击
+# B596 异常旋绕巨火
+# B597 异常旋绕巨火
+# B5A4 极限炫技
+# B5AE 极限火蛇夺浪
+# B5AF 极限水蛇夺浪
+# B5B0 救生
+# B5B1 救生
+# B5B6 炽焰冲击
+# B5B7 深海冲击
+# B5B8 斗志昂扬
+# B5B9 斗志昂扬
+# B5BA 浪顶炽火
+# B5BB 浪顶炽火
+# B5BC 浪顶炽火
+# B5BD 浪顶炽火
+# B5BE 浪顶炽火
+# B5BF 浪顶炽火
+# B5C0 空中旋火
+# B5C1 空中旋火
 # B5C2 Pyrotation
 # B5C3 Pyrotation
-# B5C4 Hot Aerial
-# B5C5 Xtreme Wave
-# B5C6 Xtreme Wave
-# B5C7 Xtreme Wave
-# B5C8 Xtreme Wave
-# B5C9 Cutback Blaze
-# B5CA Cutback Blaze
-# B5CB Sick Swell
-# B5CC Sick Swell
-# B5CD Sickest Take-off
-# B5CE Sickest Take-off
-# B5CF Awesome Splash
-# B5D0 Awesome Slab
-# B5D1 Xtreme Wave
-# B5D2 Xtreme Wave
-# B5D3 Deep Varial
-# B5D4 Flame Floater
-# B5D7 Awesome Splash
-# B5D9 Xtreme Spectacular
-# B5DA Xtreme Spectacular
-# B5DC Xtreme Spectacular
-# B5DD Alley-oop Double-dip
-# B5DE Alley-oop Double-dip
-# B5DF Alley-oop Double-dip
-# B5E0 Reverse Alley-oop
-# B5E1 Reverse Alley-oop
-# B5E2 Reverse Alley-oop
-# B5E3 Deep Aerial
-# B5E4 Deep Aerial
-# B5E6 Insane Air
-# B5E7 Insane Air
-# B5E8 Insane Air
-# B5E9 Insane Air
+# B5C4 腾火踏浪
+# B5C5 极限浪波
+# B5C6 极限浪波
+# B5C7 极限浪波
+# B5C8 极限浪波
+# B5C9 火浪回切
+# B5CA 火浪回切
+# B5CB 惊涛骇浪
+# B5CC 惊涛骇浪
+# B5CD 破势乘浪
+# B5CE 破势乘浪
+# B5CF 浪花飞溅
+# B5D0 浪涛翻涌
+# B5D1 极限浪波
+# B5D2 极限浪波
+# B5D3 浪尖转体
+# B5D4 浪顶炽火
+# B5D7 浪花飞溅
+# B5D9 极限炫技
+# B5DA 极限炫技
+# B5DC 极限炫技
+# B5DD 双重旋水
+# B5DE 双重旋水
+# B5DF 双重旋水
+# B5E0 交错旋水
+# B5E1 交错旋水
+# B5E2 交错旋水
+# B5E3 腾水踏浪
+# B5E4 腾水踏浪
+# B5E6 狂浪腾空
+# B5E7 狂浪腾空
+# B5E8 狂浪腾空
+# B5E9 狂浪腾空
 # B5EA --sync--
-# B5EB Impact Zone: Failing to kill Watery Grave, this does ~1.5mil damage
-# B5EC Impact Zone: Failing to kill Watery Grave, this goes off twice <0.2s after B5EB, ~130k damage each
-# B5EF Blasting Snap
-# B5F0 Plunging Snap
-# B5F1 Blasting Snap
-# B5F2 Plunging Snap
-# B5F3 Re-entry Blast
+# B5EB 浪崩: Failing to kill 水牢, this does ~1.5mil damage
+# B5EC 浪崩: Failing to kill 水牢, this goes off twice <0.2s after B5EB, ~130k damage each
+# B5EF 火浪急转
+# B5F0 水浪急转
+# B5F1 火浪急转
+# B5F2 水浪急转
+# B5F3 炽红返场
 # B5F4 Re-entry Plunge
-# B5F5 Re-entry Blast
+# B5F5 炽红返场
 # B5F6 Re-entry Plunge
 # B5F7 Vertical Blast
 # B5F8 Vertical Plunge
 # B5F9 Vertical Blast
 # B5FA Vertical Plunge
 # B5FB Steam Burst
-# B5FC Over the Falls
-# B5FD Over the Falls
-# B7CA Xtreme Spectacular
-# B891 Deep Varial
-# B897 Insane Air
-# B898 Insane Air
-# B899 Insane Air
-# B89A Insane Air
-# B91D Hot Aerial
-# B91E Hot Aerial
-# B91F Hot Aerial
-# B920 Hot Aerial
-# B921 Hot Aerial
+# B5FC 无归浪卷
+# B5FD 无归浪卷
+# B7CA 极限炫技
+# B891 浪尖转体
+# B897 狂浪腾空
+# B898 狂浪腾空
+# B899 狂浪腾空
+# B89A 狂浪腾空
+# B91D 腾火踏浪
+# B91E 腾火踏浪
+# B91F 腾火踏浪
+# B920 腾火踏浪
+# B921 腾火踏浪
 # BDFF --sync--
 # BE00 --sync--

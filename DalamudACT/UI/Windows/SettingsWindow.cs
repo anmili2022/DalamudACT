@@ -19,6 +19,7 @@ internal sealed partial class SettingsWindow : Window
 {
     private static readonly string PluginVersion = typeof(SettingsWindow).Assembly.GetName().Version?.ToString() ?? "未知版本";
     private readonly PluginConfiguration config;
+    private bool showAdvancedSettings;
     private readonly LocalStatsService statsService;
     private readonly PartyMonitorService? monitorService;
     private readonly Action openMainWindow;
@@ -61,7 +62,7 @@ internal sealed partial class SettingsWindow : Window
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
         this.openTimelineListWindow = openTimelineListWindow;
-        Size = new Vector2(620f, 760f);
+        Size = new Vector2(480f, 520f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
 
@@ -69,7 +70,26 @@ internal sealed partial class SettingsWindow : Window
     {
         BgAlpha = Math.Clamp(config.WindowOpacity, 0.2f, 1f);
 
+        if (showAdvancedSettings)
+        {
+            DrawAdvancedSettings();
+        }
+        else
+        {
+            DrawQuickSettings();
+        }
+    }
+
+    private void DrawAdvancedSettings()
+    {
         ImGui.TextUnformatted("设置");
+        ImGui.SameLine();
+        if (ImGui.Button("← 简易设置"))
+        {
+            showAdvancedSettings = false;
+            Size = new Vector2(480f, 520f);
+        }
+
         ImGui.Separator();
 
         if (ImGui.Button("打开主界面"))

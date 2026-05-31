@@ -1,14 +1,15 @@
 ### Arcadion (R3S): AAC Light-heavyweight M3 Savage
+# ZoneId: 1230
 
 # -ii 9A82 9426 9424 93F3
 
 # 9A82 - Autoattacks
-# 9426 - Followup hits for Brutal Impact
-# 9424 - Followup hits for Knuckle Sandwich
-# 93F3 - Fusefield spark explosions
-# 941D - Infernal Spin animation
-# 941E, 9BB0 - Infernal Spin AoEs
-# 9417, 9419, 9418, 941A, 941B - Explosive Rain AoEs
+# 9426 - Followup hits for 野蛮碎击
+# 9424 - Followup hits for 拳面猛击
+# 93F3 - 导火线区域 spark explosions
+# 941D - 超华丽野蛮旋火 animation
+# 941E, 9BB0 - 超华丽野蛮旋火 AoEs
+# 9417, 9419, 9418, 941A, 941B - 爆弹雨 AoEs
 
 # 93D8/93DA = Lariats, no burning hands
 # 93D9/93DB = Lariats, with burning hands
@@ -22,18 +23,18 @@ hideall "--sync--"
 0.0 "--Reset--" ActorControl { command: "4000000F" } window 0,100000 jump 0
 
 0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
-6.8 "野蛮碎击" StartsUsing { id: "9425", source: "野蛮爆弹" } window 7,0
-11.5 "野蛮碎击" Ability { id: "9425", source: "野蛮爆弹" } duration 3.2
-20.9 "拳面猛击" Ability { id: "9423", source: "野蛮爆弹" } duration 3
+6.8 "--sync--" StartsUsing { id: "9425", source: "野蛮爆弹" } window 7,0 # 读条ID 9425 AOE
+11.5 "野蛮碎击 x4" Ability { id: "9425", source: "野蛮爆弹" } duration 3.2 # 读条ID 9425 AOE
+20.9 "拳面猛击 x4" Ability { id: "9423", source: "野蛮爆弹" } duration 3
 28.1 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
-37.0 "四分双重碎颈臂/八分双重碎颈臂 (咏唱)" Ability { id: ["93DA", "93D8"], source: "野蛮爆弹" }
+37.0 "四分双重碎颈臂/八分双重碎颈臂 (咏唱)" Ability { id: ["93DA", "93D8"], source: "野蛮爆弹" } # 读条ID 93DA 钢铁 + 双人分摊 # 读条ID 93D8 钢铁 + 八方分散
 37.7 "怒焰碎颈臂" Ability { id: "93DD", source: "野蛮爆弹" }
 37.7 "四分双重碎颈臂/八分双重碎颈臂 (伤害)" Ability { id: ["93EA", "93E8"], source: "野蛮爆弹" }
-47.8 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DE", "93E0"], source: "野蛮爆弹" }
+47.8 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DE", "93E0"], source: "野蛮爆弹" } # 读条ID 93DE 远离 + 分散 # 读条ID 93E0 远离 + 双人分摊
 48.7 "八分强震冲/四分强震冲 (伤害)" Ability { id: ["93EC", "93F6"], source: "野蛮爆弹" }
 51.8 "强震冲" Ability { id: "93E2", source: "野蛮爆弹" }
 52.4 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
-60.0 "野蛮碎击" Ability { id: "9425", source: "野蛮爆弹" } duration 3.2
+60.0 "野蛮碎击 x4" Ability { id: "9425", source: "野蛮爆弹" } duration 3.2 # 读条ID 9425 AOE
 
 76.4 "野蛮爆炸" Ability { id: "93FB", source: "野蛮爆弹" }
 86.8 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
@@ -45,15 +46,15 @@ hideall "--sync--"
 
 109.3 "打药" Ability { id: "9407", source: "野蛮爆弹" }
 134.0 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
-142.9 "八分双重碎颈臂/四分双重碎颈臂 (咏唱)" Ability { id: ["93D9", "93DB"], source: "野蛮爆弹" }
+142.9 "四分双重碎颈臂/八分双重碎颈臂 (咏唱)" Ability { id: ["93D9", "93DB"], source: "野蛮爆弹" } # 读条ID 93D9 月环 + 八方分散 # 读条ID 93DB 月环 + 双人分摊
 143.7 "怒焰碎颈臂" Ability { id: "93DC", source: "野蛮爆弹" }
-143.8 "八分双重碎颈臂/四分双重碎颈臂 (伤害)" Ability { id: ["93E9", "93EB"], source: "野蛮爆弹" }
-153.8 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DF", "93E1"], source: "野蛮爆弹" }
+143.8 "四分双重碎颈臂/八分双重碎颈臂 (伤害)" Ability { id: ["93E9", "93EB"], source: "野蛮爆弹" }
+153.8 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DF", "93E1"], source: "野蛮爆弹" } # 读条ID 93DF 击退 + 分散 # 读条ID 93E1 击退 + 双人分摊
 154.7 "八分强震冲/四分强震冲 (伤害)" Ability { id: ["93ED", "93F6"], source: "野蛮爆弹" }
 157.9 "强震冲" Ability { id: "93E3", source: "野蛮爆弹" }
 158.6 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
-166.3 "野蛮碎击" Ability { id: "9425", source: "野蛮爆弹" } duration 5.2
-177.6 "拳面猛击" Ability { id: "9423", source: "野蛮爆弹" } duration 5.1
+166.3 "野蛮碎击 x6" Ability { id: "9425", source: "野蛮爆弹" } duration 5.2 # 读条ID 9425 AOE
+177.6 "拳面猛击 x6" Ability { id: "9423", source: "野蛮爆弹" } duration 5.1
 189.0 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 
 195.4 "组队战" Ability { id: "93E7", source: "野蛮爆弹" }
@@ -61,10 +62,10 @@ hideall "--sync--"
 214.0 "碎颈臂连击" Ability { id: "9B35", source: "野蛮爆弹的幻影" }
 216.9 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 218.3 "碎颈臂连击" Ability { id: "9B37", source: "野蛮爆弹的幻影" }
-225.7 "八分双重碎颈臂/四分双重碎颈臂 (咏唱)" Ability { id: ["93D9", "93DB", "93DA", "93D8"], source: "野蛮爆弹" }
+225.7 "四分双重碎颈臂/八分双重碎颈臂 (咏唱)" Ability { id: ["93D9", "93DB", "93DA", "93D8"], source: "野蛮爆弹" } # 读条ID 93D9 月环 + 八方分散 # 读条ID 93DB 月环 + 双人分摊 # 读条ID 93DA 钢铁 + 双人分摊 # 读条ID 93D8 钢铁 + 八方分散
 226.5 "怒焰碎颈臂" #Ability { id: "93DD", source: "野蛮爆弹" }
-226.5 "八分双重碎颈臂/四分双重碎颈臂 (伤害)" Ability { id: ["93E9", "93EB", "93EA", "93E8"], source: "野蛮爆弹" }
-233.6 "野蛮碎击" Ability { id: "9425", source: "野蛮爆弹" } duration 5.2
+226.5 "四分双重碎颈臂/八分双重碎颈臂 (伤害)" Ability { id: ["93E9", "93EB", "93EA", "93E8"], source: "野蛮爆弹" }
+233.6 "野蛮碎击 x6" Ability { id: "9425", source: "野蛮爆弹" } duration 5.2 # 读条ID 9425 AOE
 246.0 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 
 253.0 "零式导火线爆弹" Ability { id: "9406", source: "野蛮爆弹" }
@@ -72,7 +73,7 @@ hideall "--sync--"
 265.2 "爆炸" Ability { id: "9404", source: "野蛮爆弹" }
 270.1 "自爆" Ability { id: "9402", source: "导火线爆弹怪" }
 270.2 "爆炸" Ability { id: "9405", source: "野蛮爆弹" }
-277.2 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DE", "93E0", "93DF", "93E1"], source: "野蛮爆弹" }
+277.2 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DE", "93E0", "93DF", "93E1"], source: "野蛮爆弹" } # 读条ID 93DE 远离 + 分散 # 读条ID 93E0 远离 + 双人分摊 # 读条ID 93DF 击退 + 分散 # 读条ID 93E1 击退 + 双人分摊
 278.0 "八分强震冲/四分强震冲 (伤害)" Ability { id: ["93EC", "93F6", "93ED", "93F6"], source: "野蛮爆弹" }
 281.2 "强震冲" Ability { id: "93E2", source: "野蛮爆弹" }
 290.0 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
@@ -82,12 +83,12 @@ hideall "--sync--"
 305.3 "--sync--" Ability { id: "93F0", source: "野蛮爆弹" }
 305.3 "Mana 爆炸 x8" duration 30
 345.5 "--sync--" Ability { id: "93F1", source: "野蛮爆弹" }
-353.7 "拳面猛击" Ability { id: "9423", source: "野蛮爆弹" } duration 5.1
+353.7 "拳面猛击 x6" Ability { id: "9423", source: "野蛮爆弹" } duration 5.1
 364.0 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 
 370.8 "打药" Ability { id: "9427", source: "野蛮爆弹" }
-389.9 "八分超豪华野蛮大乱击/四分超豪华野蛮大乱击" Ability { id: ["9752", "940A"], source: "野蛮爆弹" }
-391.0 "超豪华野蛮大乱击" Ability { id: "940B", source: "野蛮爆弹" } duration 19
+389.9 "八分超豪华野蛮大乱击/Quadroboom Bombarian Special" Ability { id: ["9752", "940A"], source: "野蛮爆弹" } # 读条ID 9752 钢铁再月环再击退再分散 # 读条ID 940A 钢铁再月环再击退再双人分摊
+391.0 "超豪华野蛮大乱击 x10" Ability { id: "940B", source: "野蛮爆弹" } duration 19
 413.7 "野蛮爆震" Ability { id: "9753", source: "野蛮爆弹" }
 418.7 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 425.5 "导火线爆弹" Ability { id: "93FF", source: "野蛮爆弹" }
@@ -101,12 +102,12 @@ hideall "--sync--"
 456.6 "碎颈臂连击" Ability { id: "9BEE", source: "野蛮爆弹的幻影" }
 460.9 "碎颈臂连击" Ability { id: "9BEF", source: "野蛮爆弹的幻影" }
 460.9 "碎颈臂连击" Ability { id: "9BF0", source: "野蛮爆弹的幻影" }
-469.3 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DE", "93E0", "93DF", "93E1"], source: "野蛮爆弹" }
+469.3 "八分强震冲/四分强震冲 (咏唱)" Ability { id: ["93DE", "93E0", "93DF", "93E1"], source: "野蛮爆弹" } # 读条ID 93DE 远离 + 分散 # 读条ID 93E0 远离 + 双人分摊 # 读条ID 93DF 击退 + 分散 # 读条ID 93E1 击退 + 双人分摊
 470.2 "八分强震冲/四分强震冲 (伤害)" Ability { id: ["93EC", "93F6", "93ED", "93F6"], source: "野蛮爆弹" }
 473.4 "强震冲" Ability { id: "93E3", source: "野蛮爆弹" }
 474.5 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
-482.7 "野蛮碎击" Ability { id: "9425", source: "野蛮爆弹" } duration 7.3
-496.1 "拳面猛击" Ability { id: "9423", source: "野蛮爆弹" } duration 7.4
+482.7 "野蛮碎击 x8" Ability { id: "9425", source: "野蛮爆弹" } duration 7.3 # 读条ID 9425 AOE
+496.1 "拳面猛击 x8" Ability { id: "9423", source: "野蛮爆弹" } duration 7.4
 508.5 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 
 515.3 "设置导火线" Ability { id: "9403", source: "野蛮爆弹" }
@@ -115,10 +116,10 @@ hideall "--sync--"
 535.7 "爆炸" Ability { id: "9404", source: "野蛮爆弹" }
 536.8 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 540.8 "爆炸" #Ability { id: "9405", source: "野蛮爆弹" }
-545.6 "八分双重碎颈臂/四分双重碎颈臂 (咏唱)" Ability { id: ["93D9", "93DB", "93DA", "93D8"], source: "野蛮爆弹" }
+545.6 "四分双重碎颈臂/八分双重碎颈臂 (咏唱)" Ability { id: ["93D9", "93DB", "93DA", "93D8"], source: "野蛮爆弹" } # 读条ID 93D9 月环 + 八方分散 # 读条ID 93DB 月环 + 双人分摊 # 读条ID 93DA 钢铁 + 双人分摊 # 读条ID 93D8 钢铁 + 八方分散
 546.4 "怒焰碎颈臂" Ability { id: "93DC", source: "野蛮爆弹" }
-546.4 "八分双重碎颈臂/四分双重碎颈臂 (伤害)" Ability { id: ["93E9", "93EB", "93EA", "93E8"], source: "野蛮爆弹" }
-553.7 "野蛮碎击" Ability { id: "9425", source: "野蛮爆弹" } duration 7.3
+546.4 "四分双重碎颈臂/八分双重碎颈臂 (伤害)" Ability { id: ["93E9", "93EB", "93EA", "93E8"], source: "野蛮爆弹" }
+553.7 "野蛮碎击 x8" Ability { id: "9425", source: "野蛮爆弹" } duration 7.3 # 读条ID 9425 AOE
 
 573.2 "野蛮爆炸" Ability { id: "93FB", source: "野蛮爆弹" }
 584.2 "爆炸" Ability { id: "968E", source: "野蛮爆弹" }
@@ -130,7 +131,7 @@ hideall "--sync--"
 597.6 "碎颈臂连击" Ability { id: "9AED", source: "野蛮爆弹" }
 597.6 "碎颈臂连击" Ability { id: "9AF3", source: "野蛮爆弹" }
 600.2 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
-613.0 "拳面猛击" Ability { id: "9423", source: "野蛮爆弹" } duration 7.4
+613.0 "拳面猛击 x8" Ability { id: "9423", source: "野蛮爆弹" } duration 7.4
 628.4 "--middle--" Ability { id: "93F4", source: "野蛮爆弹" }
 
 635.4 "打药" Ability { id: "9998", source: "野蛮爆弹" }

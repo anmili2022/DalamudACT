@@ -1,186 +1,227 @@
 # RELEASE RUNBOOK
 
-## 目的
+## Purpose
 
-这份文档只解决一件事：
+This is the release checklist for DalamudACT. Follow it exactly so releases do not repeat the same mistakes around version metadata, tag creation, packaging `Timeline/Data`, or accidentally committing local scratch files.
 
-- 下次发版时，不再重新试版本号、tag 规则、workflow 入口和打包方式
+## Current Release Model
 
-## 结论先写前面
+- Official branch: `main`
+- Official release tag format: `*.*.*.*`, for example `0.15.2.51`
+- Official workflow: `.github/workflows/release.yml`
+- Test tags: `testing_*` use `.github/workflows/test_release.yml`, not the official release workflow.
+- Release asset name: `DalamudACT.zip`
+- Do not publish from `build.yml` / `latest` for official releases.
 
-当前仓库的正式发布流程固定为：
+## Files To Update
 
-1. 更新代码和文档
-2. 统一所有版本引用
-3. 本地构建通过
-4. 推送 `master`
-5. 推送正式 tag
-6. 由 `.github/workflows/release.yml` 自动创建 GitHub Release
-
-正式版本不要走：
-
-- `testing_*` tag
-- `latest` / nightly
-
-## 正式版本要改哪些文件
-
-把下面这些文件里的版本号统一改成同一个值，例如 `0.15.2.1`：
+For a release version such as `0.15.2.52`, update every one of these before committing:
 
 - `DalamudACT/DalamudACT.csproj`
+  - `<AssemblyVersion>`
 - `DalamudACT/DalamudACT.json`
+  - `AssemblyVersion`
 - `Data/DalamudACT.json`
+  - `AssemblyVersion`
 - `repo.json`
-- `md/CHANGELOG.md`
+  - `AssemblyVersion`
+  - `TestingAssemblyVersion`
+  - `DownloadLinkInstall`
+  - `DownloadLinkTesting`
+  - `DownloadLinkUpdate`
+  - `LastUpdated`
 - `md/RELEASE-NOTES.md`
+  - Keep `{{VERSION}}` placeholders intact.
+  - Update the content to match the actual release.
 
-### 具体字段
-
-#### `DalamudACT/DalamudACT.csproj`
-
-- `<AssemblyVersion>`
-
-#### `DalamudACT/DalamudACT.json`
-
-- `"AssemblyVersion"`
-
-#### `Data/DalamudACT.json`
-
-- `"AssemblyVersion"`
-
-#### `repo.json`
-
-- `"AssemblyVersion"`
-- `"TestingAssemblyVersion"`
-- `"DownloadLinkInstall"`
-- `"DownloadLinkTesting"`
-- `"DownloadLinkUpdate"`
-- `"LastUpdated"`
-
-## 正式发布前的本地验证
-
-先跑：
+Use a current Unix timestamp for `repo.json` `LastUpdated`:
 
 ```powershell
-dotnet build E:\git\DalamudACT\DalamudACT.sln
+[DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
 ```
 
-如需手动验证 release 构建参数，用：
+## Pre-Commit Checks
+
+Always inspect the worktree before staging:
 
 ```powershell
-dotnet build E:\git\DalamudACT\DalamudACT\DalamudACT.csproj -c Release -p:Version=0.15.2.1 -p:FileVersion=0.15.2.1 -p:AssemblyVersion=0.15.2.1
+git status --short
+git diff --stat
+git log --oneline -10
 ```
 
-## 正式发布命令顺序
+Do not use `git add .` for releases. Stage explicit files only.
 
-### 1. 提交本次修改
+Known local scratch file that must not be committed:
+
+```txt
+1.txt
+```
+
+If `1.txt` exists, leave it untracked.
+
+## Build Verification
+
+Run this before committing:
 
 ```powershell
-git -C E:\git\DalamudACT status --short
-git -C E:\git\DalamudACT add .
-git -C E:\git\DalamudACT commit -m "fix: finalize npc party tracking and release docs"
+dotnet build --no-restore
 ```
 
-### 2. 推送主分支
+Expected result:
+
+```txt
+0 warnings
+0 errors
+```
+
+If release-specific build parameters need checking:
 
 ```powershell
-git -C E:\git\DalamudACT push origin master
+dotnet build ./DalamudACT/DalamudACT.csproj `
+  --configuration Release `
+  --no-restore `
+  -p:Version=0.15.2.52 `
+  -p:FileVersion=0.15.2.52 `
+  -p:AssemblyVersion=0.15.2.52
 ```
 
-### 3. 创建正式 tag
+## Commit
+
+After staging only intended files:
 
 ```powershell
-git -C E:\git\DalamudACT -c tag.gpgSign=false tag -a 0.15.2.1 -m "DalamudACT 0.15.2.1"
-git -C E:\git\DalamudACT push origin 0.15.2.1
+git diff --cached --stat
+git commit -m "chore: release 0.15.2.52"
 ```
 
-说明：
+Feature-heavy releases may use a feature commit message, but the version metadata must already be included in the same pushed commit or in a separate release commit before tagging.
 
-- 当前这台机器启用了 `tag.gpgSign=true`
-- 直接执行 `git tag 0.15.2.1` 会被 GPG 签名流程卡住
-- 本次实际可用命令是上面这条：临时关闭 tag 签名，再创建带注释 tag
+## Tag Creation
 
-## GitHub Actions 对应关系
+Use a non-interactive annotated tag command:
 
-### 正式发版
+```powershell
+git tag -a 0.15.2.52 -m "0.15.2.52"
+```
 
-- workflow：`.github/workflows/release.yml`
-- 触发：普通 tag
-- 示例：`0.15.2.1`
+Do not run plain `git tag 0.15.2.52` on this machine. It may open an editor or signing flow and block the release process.
 
-### 测试发版
+If local git signing config ever causes trouble, use:
 
-- workflow：`.github/workflows/test_release.yml`
-- 触发：`testing_*`
-- 示例：`testing_0.15.2.1`
+```powershell
+git -c tag.gpgSign=false tag -a 0.15.2.52 -m "0.15.2.52"
+```
 
-### nightly/latest
+Verify the tag exists before pushing:
 
-- workflow：`.github/workflows/build.yml`
-- 用途：分支构建和 `latest`
-- 不用于当前正式版本仓库发版
+```powershell
+git tag --list 0.15.2.52
+```
 
-## release.yml 当前打包规则
+## Push
 
-正式 workflow 会：
+Push `main` first, then the tag:
 
-1. 清理 `output`
-2. 下载 Dalamud 依赖
-3. 用 tag 版本执行 Release 构建
-4. 更新输出目录中的 manifest 版本
-5. 打包以下文件为 `DalamudACT.zip`
-   - `output/DalamudACT.dll`
-   - `output/DalamudACT.json`
-   - `output/DalamudACT.deps.json`
-6. 创建 GitHub Release 并上传 zip
+```powershell
+git push origin main
+git push origin 0.15.2.52
+```
 
-## 发布后要检查什么
+The tag push triggers `.github/workflows/release.yml`.
 
-### 仓库侧
+## Workflow Checks
 
-1. tag 是否存在
-2. Actions 的 `Create Release` 是否成功
-3. Release 页面是否生成
-4. 附件里是否有 `DalamudACT.zip`
+Watch the release workflow:
 
-### 元数据侧
+```powershell
+gh run list --limit 5
+gh run watch <run-id> --exit-status
+```
 
-1. `repo.json` 的下载链接是否都指向同一个 tag
-2. manifest 版本是否与 tag 一致
+Then verify the GitHub Release:
 
-### 游戏侧
+```powershell
+gh release view 0.15.2.52 --json url,tagName,name,isDraft,isPrerelease,assets
+```
 
-1. 插件是否能正常加载
-2. 主窗口版本号是否正确
-3. NPC 队友战斗是否能正常统计
+Expected:
 
-## 如果自动 release 失败
+- `isDraft: false`
+- `isPrerelease: false`
+- asset `DalamudACT.zip` exists
+- asset digest is present
+- release URL matches the tag
 
-不要先乱改 workflow，先按这个顺序查：
+## Packaging Rules
 
-1. 看 `.github/workflows/release.yml` 是否被当前 tag 触发
-2. 看 Actions 日志里失败在哪一步
-3. 看 zip 是否已经构建出来
-4. 看 tag 名称是否和版本号一致
-5. 看 `repo.json` 是否已经提前指向该 tag
+Official workflow currently packages:
 
-## 手动兜底方案
+- `./output/DalamudACT.dll`
+- `./output/DalamudACT.json`
+- `./output/DalamudACT.deps.json`
+- `./output/Timeline`
 
-如果 workflow 暂时失败，但必须先发包：
+The workflow must copy built-in timelines before archiving:
 
-1. 本地执行 release 构建
-2. 手动确认 `output` 下有：
-   - `DalamudACT.dll`
-   - `DalamudACT.json`
-   - `DalamudACT.deps.json`
-3. 本地压缩成 `DalamudACT.zip`
-4. 在 GitHub 上用同名 tag 手动创建 Release，并上传 zip
-5. 保持 `repo.json` 中的版本号和下载链接与这个 tag 完全一致
+```powershell
+New-Item -ItemType Directory -Force -Path ./output/Timeline | Out-Null
+Copy-Item -Path ./DalamudACT/Features/Timeline/Data -Destination ./output/Timeline/Data -Recurse -Force
+```
 
-## 不要再试验的点
+Do not remove `Timeline/Data` from the release asset. If it is missing, installed users can see `当前区域没有时间轴` even when source files exist.
 
-- 正式版本不要用 `testing_*` tag
-- 正式版本不要依赖 `build.yml` 的 `latest`
-- 这台机器如果直接 `git tag`，会被 `tag.gpgSign=true` 卡住；请直接用 `git -c tag.gpgSign=false tag -a ...`
-- tag 名称必须和版本号完全一致
-- `repo.json` 的下载链接必须提前改到目标 tag
-- 版本号不要只改 `csproj`，manifest 和 `repo.json` 也要一起改
+## Timeline Path Rules
+
+Current local development timeline source path is intentionally hardcoded in runtime code:
+
+```txt
+E:\git\DalamudACT\DalamudACT\Features\Timeline\Data
+```
+
+Do not change this hardcoded path unless the maintainer explicitly asks for it in the same session.
+
+This hardcoded path is for local development. Official release packages still need bundled `Timeline/Data` as described above.
+
+## Post-Release Checks
+
+After the workflow succeeds, record these in the final response or handoff:
+
+- Release URL
+- Commit hash
+- Tag
+- Asset name and size
+- SHA256 digest
+- Build/workflow success
+- Any remaining untracked files, especially `1.txt`
+
+Example:
+
+```txt
+Release: https://github.com/anmili2022/DalamudACT/releases/tag/0.15.2.51
+Asset: DalamudACT.zip
+SHA256: 58d3e43debcd6e8c6e27d698ac0082954def1ec8f3a38c6bd65a345c24ec2b3c
+```
+
+## If Release Fails
+
+Do not immediately edit workflow files. Check in this order:
+
+1. Did the tag match `*.*.*.*` exactly?
+2. Did `repo.json` links point to the new tag before tagging?
+3. Did the workflow fail before or after archive creation?
+4. Did `DalamudACT.zip` include `Timeline/Data`?
+5. Did `md/RELEASE-NOTES.md` render correctly with `{{VERSION}}` replaced?
+6. Was the tag pushed from the intended commit?
+
+If the workflow file itself was fixed after a failed tag run, prefer `workflow_dispatch` with the existing tag rather than re-running the stale failed run.
+
+## Do Not
+
+- Do not use `git add .` for releases.
+- Do not commit `1.txt`.
+- Do not use `testing_*` tags for official releases.
+- Do not create plain tags that open an editor/signing prompt.
+- Do not remove `Timeline/Data` from release packaging.
+- Do not change the hardcoded local timeline path without explicit maintainer approval.
+- Do not tag before version metadata and release notes are updated.

@@ -17,6 +17,7 @@ internal sealed class PluginUI : IDisposable
     private readonly StatusObserverWindow statusObserverWindow;
     private readonly TimelineService timelineService;
     private readonly TimelineWindow timelineWindow;
+    private readonly TimelineListWindow timelineListWindow;
     private bool windowDrawFaulted;
 
     public PluginUI(PluginConfiguration config, LocalStatsService statsService, PartyMonitorService monitorService, TimelineService timelineService)
@@ -25,13 +26,14 @@ internal sealed class PluginUI : IDisposable
         this.timelineService = timelineService;
 
         mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
-        settingsWindow = new SettingsWindow(config, statsService, monitorService, timelineService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
+        settingsWindow = new SettingsWindow(config, statsService, monitorService, timelineService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenTimelineListWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
         partyMonitorWindow = new PartyMonitorWindow(config, monitorService, ToggleSettingsWindow);
         statusObserverService = new StatusObserverService(config);
         statusObserverWindow = new StatusObserverWindow(config, statusObserverService, ToggleSettingsWindow);
         timelineWindow = new TimelineWindow(config, timelineService, ToggleSettingsWindow);
+        timelineListWindow = new TimelineListWindow(timelineService);
 
         AddWindow(windowSystem, mainWindow);
         AddWindow(windowSystem, settingsWindow);
@@ -40,6 +42,7 @@ internal sealed class PluginUI : IDisposable
         AddWindow(windowSystem, partyMonitorWindow);
         AddWindow(windowSystem, statusObserverWindow);
         AddWindow(windowSystem, timelineWindow);
+        AddWindow(windowSystem, timelineListWindow);
 
         mainWindow.IsOpen = false;
         settingsWindow.IsOpen = false;
@@ -48,6 +51,7 @@ internal sealed class PluginUI : IDisposable
         partyMonitorWindow.IsOpen = config.PartyMonitor.ShowPartyMonitorWindow;
         statusObserverWindow.IsOpen = config.StatusObserver.ShowWindow;
         timelineWindow.IsOpen = config.ShowTimelineWindow;
+        timelineListWindow.IsOpen = false;
     }
 
     public void Draw()
@@ -134,6 +138,8 @@ internal sealed class PluginUI : IDisposable
     private void OpenSettingsWindow() => settingsWindow.IsOpen = true;
 
     private void OpenCombatTimelineWindow() => combatTimelineWindow.IsOpen = true;
+
+    private void OpenTimelineListWindow() => timelineListWindow.IsOpen = true;
 
     public void ToggleFloatingStatsWindow()
     {

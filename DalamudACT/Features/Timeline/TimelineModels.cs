@@ -9,6 +9,7 @@ internal sealed record TimelineEntry(
     string EventType,
     IReadOnlyList<uint> ActionIds,
     string? Source,
+    IReadOnlyList<string> Sources,
     float? DurationSeconds,
     string? MechanicHint,
     string? SystemLogId,

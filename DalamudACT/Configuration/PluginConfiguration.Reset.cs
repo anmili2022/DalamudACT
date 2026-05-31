@@ -19,6 +19,7 @@ public sealed partial class PluginConfiguration
         EncounterTimeoutSeconds = 30;
         HistoryPreviewSeconds = 8;
         CombatTimelineRecordingEnabled = false;
+        CombatTimelineMapEffectEnabled = false;
         CombatTimelineMaxEntries = 500;
         ShowTimelineWindow = false;
         LockTimelineWindow = false;

@@ -14,13 +14,14 @@ internal static partial class TimelineParser
     private static readonly Regex LabelLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+label\s+\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect|Timer)\b", RegexOptions.Compiled);
     private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
-    private static readonly Regex IdRegex = new(@"id\s*:\s*\""(?<id>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
-    private static readonly Regex Param1Regex = new(@"param1\s*:\s*\""(?<param1>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
+    private static readonly Regex IdRegex = new(@"id\s*:\s*['\""`]*(?<id>[0-9A-Fa-f]+)['\""`]*", RegexOptions.Compiled);
+    private static readonly Regex Param1Regex = new(@"param1\s*:\s*['\""`]*(?<param1>[0-9A-Fa-f]+)['\""`]*", RegexOptions.Compiled);
     private static readonly Regex DurationRegex = new(@"duration\s+(?<duration>\d+(?:\.\d+)?)", RegexOptions.Compiled);
-    private static readonly Regex SourceRegex = new(@"source\s*:\s*\""(?<source>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
+    private static readonly Regex SourceListRegex = new(@"source\s*:\s*\[(?<sources>[^\]]+)\]", RegexOptions.Compiled);
+    private static readonly Regex SourceRegex = new(@"source\s*:\s*['\""`](?<source>[^'\""`\\]*(?:\\.[^'\""`\\]*)*)['\""`]", RegexOptions.Compiled);
     private static readonly Regex MapEffectFlagsRegex = new(@"flags\s*:\s*\""(?<flags>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex MapEffectLocationRegex = new(@"location\s*:\s*\""(?<location>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
-    private static readonly Regex JumpRegex = new(@"jump\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|(?<label>\S+))", RegexOptions.Compiled);
+    private static readonly Regex JumpRegex = new(@"(?:forcejump|jump)\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|'(?<label>[^'\\]*(?:\\.[^'\\]*)*)'|(?<label>\S+))", RegexOptions.Compiled);
     private static readonly Regex MechanicHintRegex = new(@"#\s*(?<hint>AOE|范围|死刑|分散|分摊|远离|靠近|背对|击退|踩塔|停止|移动)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex ReplaceTextBlockRegex = new(@"'locale'\s*:\s*'cn'[\s\S]*?'replaceText'\s*:\s*\{(?<body>[\s\S]*?)\}\s*,", RegexOptions.Compiled);
     private static readonly Regex ReplaceEntryRegex = new(@"'(?<from>[^']+)'\s*:\s*'(?<to>[^']*)'", RegexOptions.Compiled);
@@ -98,8 +99,8 @@ internal static partial class TimelineParser
         var eventType = eventMatch.Success ? eventMatch.Groups["type"].Value : string.Empty;
         var actionIds = ParseActionIds(rest);
         var duration = ParseOptionalFloat(DurationRegex.Match(rest), "duration");
-        var sourceMatch = SourceRegex.Match(rest);
-        var source = sourceMatch.Success ? Unescape(sourceMatch.Groups["source"].Value) : null;
+        var sources = ParseSources(rest);
+        var source = sources.Count == 1 ? sources[0] : null;
         var displayText = ApplyChineseReplacements(text, replacements);
         var mechanicHint = ParseMechanicHint(rest);
         var actionResponses = ParseActionResponses(rest, actionIds);
@@ -116,7 +117,7 @@ internal static partial class TimelineParser
         var jumpTimeSeconds = TryParseJumpTime(jumpRaw);
         var jumpLabel = jumpTimeSeconds.HasValue ? null : jumpRaw;
 
-        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses);
+        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, sources, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses);
     }
 
     private static float? TryParseJumpTime(string? rawJump)
@@ -157,7 +158,7 @@ internal static partial class TimelineParser
         var listMatch = IdListRegex.Match(rest);
         if (listMatch.Success)
         {
-            foreach (Match quotedId in Regex.Matches(listMatch.Groups["ids"].Value, @"\""(?<id>[0-9A-Fa-f]+)\"""))
+            foreach (Match quotedId in Regex.Matches(listMatch.Groups["ids"].Value, @"['\""`](?<id>[0-9A-Fa-f]+)['\""`]"))
                 AddActionId(ids, quotedId.Groups["id"].Value);
             return ids;
         }
@@ -167,6 +168,31 @@ internal static partial class TimelineParser
             AddActionId(ids, idMatch.Groups["id"].Value);
 
         return ids;
+    }
+
+    private static IReadOnlyList<string> ParseSources(string rest)
+    {
+        var sources = new List<string>();
+        var listMatch = SourceListRegex.Match(rest);
+        if (listMatch.Success)
+        {
+            foreach (Match quotedSource in Regex.Matches(listMatch.Groups["sources"].Value, @"['\""`](?<source>[^'\""`\\]*(?:\\.[^'\""`\\]*)*)['\""`]"))
+                AddSource(sources, quotedSource.Groups["source"].Value);
+            return sources;
+        }
+
+        var sourceMatch = SourceRegex.Match(rest);
+        if (sourceMatch.Success)
+            AddSource(sources, sourceMatch.Groups["source"].Value);
+
+        return sources;
+    }
+
+    private static void AddSource(List<string> sources, string rawSource)
+    {
+        var source = Unescape(rawSource).Trim();
+        if (!string.IsNullOrWhiteSpace(source))
+            sources.Add(source);
     }
 
     private static string? ParseSystemLogId(string rest)

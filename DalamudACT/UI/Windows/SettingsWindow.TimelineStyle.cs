@@ -20,6 +20,9 @@ internal sealed partial class SettingsWindow
             16.8f,
             () =>
             {
+                DrawTimelineRemoteControls();
+                ImGui.Separator();
+
                 DrawForceLoadTimelineControls();
                 ImGui.Separator();
 
@@ -105,50 +108,6 @@ internal sealed partial class SettingsWindow
                 DrawCompactHelp("样式说明", "时间条间隔只控制每条机制之间的距离；时间轴窗口透明度仍在“窗口设置”里控制，并且只影响黑色窗体背景。DailyRoutines TTS 需要已安装并启用 Daily Routines，实际发送命令格式为 /pdr tts 文本。 ");
 
                 ImGui.Separator();
-                ImGui.TextUnformatted("在线时间轴");
-
-                var remoteOperationRunning = timelineRemoteOperationRunning;
-                if (remoteOperationRunning)
-                {
-                    ImGui.BeginDisabled();
-                }
-
-                if (ImGui.Button("刷新当前副本时间轴"))
-                    RunTimelineRemoteOperation(async cancellationToken =>
-                    {
-                        if (timelineService == null)
-                            return "时间轴服务未初始化。";
-
-                        var message = await timelineService.RefreshCurrentZoneTimelineAsync(CreateTimelineRemoteProgress(), cancellationToken).ConfigureAwait(false);
-                        timelineService.ReloadCurrentTimeline();
-                        return message;
-                    });
-
-                ImGui.SameLine();
-                if (ImGui.Button("更新时间轴"))
-                    RunTimelineRemoteOperation(async cancellationToken =>
-                    {
-                        if (timelineService == null)
-                            return "时间轴服务未初始化。";
-
-                        var message = await timelineService.DownloadAllTimelinesAsync(CreateTimelineRemoteProgress(), cancellationToken).ConfigureAwait(false);
-                        timelineService.ReloadCurrentTimeline();
-                        return message;
-                    });
-
-                if (remoteOperationRunning)
-                {
-                    ImGui.EndDisabled();
-                    ImGui.SameLine();
-                    ImGui.TextUnformatted("下载中...");
-                }
-
-                DrawCompactHelp("在线时间轴说明", "刷新当前副本时间轴只下载当前区域匹配的时间轴；更新时间轴会下载索引中的所有时间轴，用于离线使用或批量更新。在线缓存位置为 pluginConfigs/DalamudACT/Timeline/RemoteCache/Data，用户手动时间轴仍然优先。 ");
-
-                if (!string.IsNullOrWhiteSpace(timelineRemoteStatusText))
-                    ImGui.TextWrapped(timelineRemoteStatusText);
-
-                ImGui.Separator();
                 ImGui.TextUnformatted("网络包增强模式");
                 var rawPacketDebug = config.TimelineRawPacketDebug;
                 if (ImGui.Checkbox("启用网络包增强模式", ref rawPacketDebug))
@@ -173,6 +132,50 @@ internal sealed partial class SettingsWindow
                     config.Save();
                 }
             });
+    }
+
+    private void DrawTimelineRemoteControls()
+    {
+        ImGui.TextUnformatted("在线时间轴");
+
+        var remoteOperationRunning = timelineRemoteOperationRunning;
+        if (remoteOperationRunning)
+            ImGui.BeginDisabled();
+
+        if (ImGui.Button("刷新当前副本时间轴"))
+            RunTimelineRemoteOperation(async cancellationToken =>
+            {
+                if (timelineService == null)
+                    return "时间轴服务未初始化。";
+
+                var message = await timelineService.RefreshCurrentZoneTimelineAsync(CreateTimelineRemoteProgress(), cancellationToken).ConfigureAwait(false);
+                timelineService.ReloadCurrentTimeline();
+                return message;
+            });
+
+        ImGui.SameLine();
+        if (ImGui.Button("更新时间轴"))
+            RunTimelineRemoteOperation(async cancellationToken =>
+            {
+                if (timelineService == null)
+                    return "时间轴服务未初始化。";
+
+                var message = await timelineService.DownloadAllTimelinesAsync(CreateTimelineRemoteProgress(), cancellationToken).ConfigureAwait(false);
+                timelineService.ReloadCurrentTimeline();
+                return message;
+            });
+
+        if (remoteOperationRunning)
+        {
+            ImGui.EndDisabled();
+            ImGui.SameLine();
+            ImGui.TextUnformatted("下载中...");
+        }
+
+        DrawCompactHelp("在线时间轴说明", "刷新当前副本时间轴只下载当前区域匹配的时间轴；更新时间轴会下载索引中的所有时间轴，用于离线使用或批量更新。在线缓存位置为 pluginConfigs/DalamudACT/Timeline/RemoteCache/Data，用户手动时间轴仍然优先。 ");
+
+        if (!string.IsNullOrWhiteSpace(timelineRemoteStatusText))
+            ImGui.TextWrapped(timelineRemoteStatusText);
     }
 
     private void RunTimelineRemoteOperation(Func<CancellationToken, Task<string>> operation)
@@ -222,6 +225,10 @@ internal sealed partial class SettingsWindow
 
         if (ImGui.Button("强制加载时间轴"))
             timelineRemoteStatusText = timelineService.ForceLoadTimelineFile(timelineForceLoadPath);
+
+        ImGui.SameLine();
+        if (ImGui.Button("显示已有时间轴"))
+            openTimelineListWindow();
 
         ImGui.SameLine();
         if (ImGui.Button("取消强制加载"))

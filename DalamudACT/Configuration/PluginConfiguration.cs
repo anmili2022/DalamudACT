@@ -58,6 +58,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int EncounterTimeoutSeconds = 30;
     public int HistoryPreviewSeconds = 8;
     public bool CombatTimelineRecordingEnabled = false;
+    public bool CombatTimelineMapEffectEnabled = false;
     public int CombatTimelineMaxEntries = 500;
     public bool ShowTimelineWindow = false;
     public bool LockTimelineWindow = false;
@@ -403,9 +404,6 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
         if (Version < 25)
             CombatTimelineMaxEntries = 500;
-
-        if (Version < 57)
-            CombatTimelineRecordingEnabled = false;
 
         if (Version < 26)
             FloatingStatsParticipantDisplayMode = FloatingStatsParticipantDisplayMode.Auto;

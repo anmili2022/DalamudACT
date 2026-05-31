@@ -13,36 +13,34 @@ namespace DalamudACT;
 /// </summary>
 internal sealed partial class CombatTimelineWindow : Window
 {
-    private enum TimelineCampFilter
+    [Flags]
+    private enum TimelineContentFilter
     {
-        All,
-        Friendly,
-        Hostile,
+        None = 0,
+        Output = 1 << 0,
+        TakenDamage = 1 << 1,
+        Heal = 1 << 2,
+        Death = 1 << 3,
+        Mitigation = 1 << 4,
+        Cast = 1 << 5,
+        Status = 1 << 6,
+        MapEffect = 1 << 7,
+        CombatBoundary = 1 << 8,
     }
 
-    private enum TimelineKindFilter
-    {
-        All,
-        Damage,
-        Heal,
-        Cast,
-        Status,
-        Failure,
-        Death,
-        CombatBoundary,
-    }
+    private const TimelineContentFilter DefaultContentFilters = TimelineContentFilter.Output
+                                                                 | TimelineContentFilter.TakenDamage
+                                                                 | TimelineContentFilter.Heal
+                                                                 | TimelineContentFilter.Death
+                                                                 | TimelineContentFilter.CombatBoundary;
 
     private static readonly TimeSpan InlineFeedbackDuration = TimeSpan.FromSeconds(2.4);
 
     private readonly PluginConfiguration config;
     private readonly LocalStatsService statsService;
-    private string actorFilter = string.Empty;
-    private string actionFilter = string.Empty;
-    private string actionSearchText = string.Empty;
-    private string targetFilter = string.Empty;
-    private TimelineCampFilter actorCampFilter;
-    private TimelineCampFilter targetCampFilter;
-    private TimelineKindFilter kindFilter;
+    private string characterFilter = string.Empty;
+    private string textSearchFilter = string.Empty;
+    private TimelineContentFilter contentFilters = DefaultContentFilters;
     private bool autoScroll = true;
     private bool drawFaulted;
     private int lastRenderedEntryCount = -1;
@@ -67,18 +65,15 @@ internal sealed partial class CombatTimelineWindow : Window
             BgAlpha = Math.Clamp(config.WindowOpacity, 0.2f, 1f);
 
             var entries = statsService.CombatTimelineEntries;
-            var filteredEntries = FilterEntries(entries, actorFilter, actorCampFilter, targetFilter, targetCampFilter, kindFilter, actionFilter);
-            var actorOptions = BuildActorOptions(entries, actorFilter, actorCampFilter);
-            var targetOptions = BuildTargetOptions(entries, targetFilter, targetCampFilter);
-            var actionOptions = BuildActionOptions(entries, actionFilter, actorFilter, actorCampFilter, targetFilter, targetCampFilter, kindFilter, actionSearchText);
+            var filteredEntries = FilterEntries(entries, characterFilter, contentFilters, textSearchFilter);
+            var characterOptions = BuildCharacterOptions(entries, characterFilter);
 
             ImGui.TextUnformatted("战斗流水");
             ImGui.SameLine();
             ImGui.TextDisabled(BuildCountSummary(entries.Count, filteredEntries.Count));
             ImGui.Separator();
-            ImGui.TextWrapped("这里会按时间顺序记录进入战斗、攻击、治疗、未命中、战斗不能和战斗结束等关键事件。");
 
-            DrawToolbar(filteredEntries, actorOptions, targetOptions, actionOptions);
+            DrawToolbar(filteredEntries, characterOptions);
             ImGui.Spacing();
             DrawTimelineTable(filteredEntries);
             drawFaulted = false;

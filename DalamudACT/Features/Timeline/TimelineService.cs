@@ -15,6 +15,7 @@ internal sealed class TimelineService
     private const float AbilitySyncMaxDriftSeconds = 12f;
     private const double InitialAbilitySyncConfirmWindowSeconds = 20d;
     private const double InitialAbilitySyncPairToleranceSeconds = 3d;
+    private const string HardcodedSourceTimelineDataDirectory = @"E:\git\DalamudACT\DalamudACT\Features\Timeline\Data";
     private readonly PluginConfiguration config;
     private readonly TimelineMechanicHintProvider mechanicHints = new();
     private readonly AeAssistResourceDownloader aeAssistResources = new();
@@ -32,6 +33,7 @@ internal sealed class TimelineService
     private readonly HashSet<string> spokenTtsKeys = new(StringComparer.Ordinal);
     private readonly HashSet<string> spokenActionResponseKeys = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DateTime> lastInstantTtsByActionKey = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, DateTime> observedStartsUsingCasts = new(StringComparer.Ordinal);
     private readonly List<ObservedTimelineAbility> pendingInitialAbilitySyncs = [];
     private string? forcedTimelinePath;
 
@@ -47,6 +49,19 @@ internal sealed class TimelineService
     public bool HasTimeline => definition != null;
 
     public bool HasForcedTimeline => !string.IsNullOrWhiteSpace(forcedTimelinePath);
+
+    public IReadOnlyList<TimelineAvailableEntry> GetAvailableTimelineEntries()
+    {
+        return GetTimelineIndex()
+            .Select(entry =>
+            {
+                var path = GetTimelineTextCandidatePaths(entry.FileName).FirstOrDefault(File.Exists) ?? string.Empty;
+                return new TimelineAvailableEntry(entry.Id, entry.Name, entry.ZoneId, entry.FileName, path);
+            })
+            .OrderBy(entry => entry.ZoneId ?? uint.MaxValue)
+            .ThenBy(entry => entry.Name, StringComparer.Ordinal)
+            .ToList();
+    }
 
     public string DebugText
     {
@@ -128,6 +143,93 @@ internal sealed class TimelineService
         spokenActionResponseKeys.Clear();
         lastInstantTtsByActionKey.Clear();
         pendingInitialAbilitySyncs.Clear();
+        observedStartsUsingCasts.Clear();
+    }
+
+    public void PollStartsUsingCasts(DateTime nowUtc, bool inCombat)
+    {
+        if (definition == null || !inCombat)
+        {
+            observedStartsUsingCasts.Clear();
+            return;
+        }
+
+        foreach (var battleChara in DalamudApi.ObjectTable.OfType<Dalamud.Game.ClientState.Objects.Types.IBattleChara>())
+        {
+            if (!BattleCharaReflectionAccessor.IsLikelyHostileBattleNpc(battleChara))
+                continue;
+
+            var actionId = BattleCharaReflectionAccessor.GetCastingActionId(battleChara);
+            if (actionId == 0)
+                continue;
+
+            var sourceId = BattleCharaReflectionAccessor.GetActorId(battleChara);
+            var sourceName = battleChara.Name.TextValue?.Trim() ?? string.Empty;
+            ObserveStartsUsing(actionId, nowUtc, sourceId, sourceName);
+        }
+    }
+
+    private void ObserveStartsUsing(uint actionId, DateTime nowUtc, uint sourceId, string sourceName)
+    {
+        if (definition == null || actionId == 0)
+            return;
+
+        var key = $"{sourceId:X8}:{actionId:X8}";
+        if (observedStartsUsingCasts.TryGetValue(key, out var lastSeen) && (nowUtc - lastSeen).TotalSeconds < 3d)
+            return;
+
+        var wasRunning = startedAtUtc.HasValue;
+        var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
+        var candidates = definition.Entries
+            .Where(entry => entry.EventType == "StartsUsing"
+                            && entry.ActionIds.Contains(actionId)
+                            && IsSourceMatch(entry, sourceName))
+            .ToList();
+        if (candidates.Count == 0)
+            return;
+
+        observedStartsUsingCasts[key] = nowUtc;
+        var syncEntry = candidates
+            .OrderBy(entry => Math.Abs(entry.TimeSeconds - current))
+            .First();
+
+        var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
+        if (wasRunning && Math.Abs(targetTime - current) > AbilitySyncMaxDriftSeconds)
+        {
+            LogHelper.Debug(
+                "时间轴",
+                $"忽略读条同步大幅回跳：actionId={actionId:X}, source={sourceName}, current={current:0.0}, target={targetTime:0.0}, entry={syncEntry.DisplayText}");
+            return;
+        }
+
+        ApplyAbilitySync(syncEntry, nowUtc, wasRunning
+            ? $"已同步：{definition.Name} / {syncEntry.DisplayText}"
+            : $"已读条同步：{definition.Name} / {syncEntry.DisplayText}");
+        LogHelper.Debug("时间轴", $"StartsUsing 同步命中：actionId={actionId:X}, source={sourceName}, time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}");
+    }
+
+    private static bool IsSourceMatch(TimelineEntry entry, string sourceName)
+    {
+        if (entry.Sources.Count == 0)
+            return true;
+
+        foreach (var source in entry.Sources)
+        {
+            if (string.Equals(source, sourceName, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            try
+            {
+                if (Regex.IsMatch(sourceName, source, RegexOptions.IgnoreCase))
+                    return true;
+            }
+            catch
+            {
+                // Treat invalid source regexes as literal names.
+            }
+        }
+
+        return false;
     }
 
     public void ObserveMapEffect(uint entityId, uint flags, uint location, DateTime nowUtc)
@@ -323,7 +425,7 @@ internal sealed class TimelineService
         var wasRunning = startedAtUtc.HasValue;
         var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
         var candidates = definition.Entries
-            .Where(entry => entry.ActionIds.Contains(actionId))
+            .Where(entry => entry.EventType == "Ability" && entry.ActionIds.Contains(actionId))
             .ToList();
         if (candidates.Count == 0)
             return;
@@ -376,8 +478,8 @@ internal sealed class TimelineService
             if (observedDelta <= 0.25d || observed.ActionId == actionId)
                 continue;
 
-            var firstEntries = definition.Entries.Where(entry => entry.ActionIds.Contains(observed.ActionId));
-            var secondEntries = definition.Entries.Where(entry => entry.ActionIds.Contains(actionId));
+            var firstEntries = definition.Entries.Where(entry => entry.EventType == "Ability" && entry.ActionIds.Contains(observed.ActionId));
+            var secondEntries = definition.Entries.Where(entry => entry.EventType == "Ability" && entry.ActionIds.Contains(actionId));
             foreach (var first in firstEntries)
             foreach (var second in secondEntries)
             {
@@ -638,6 +740,7 @@ internal sealed class TimelineService
         spokenTtsKeys.Clear();
         spokenActionResponseKeys.Clear();
         pendingInitialAbilitySyncs.Clear();
+        observedStartsUsingCasts.Clear();
         definition = TimelineParser.ParseTimelineTextFile("forced", name, path);
         sourcePath = path;
         timelineLoadedAtUtc = DateTime.UtcNow;
@@ -740,8 +843,7 @@ internal sealed class TimelineService
         if (timelineIndex != null)
             return timelineIndex;
 
-        var entries = new List<TimelineIndexEntry>();
-        var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var entriesById = new Dictionary<string, TimelineIndexEntry>(StringComparer.OrdinalIgnoreCase);
         foreach (var path in GetTimelineIndexCandidatePaths())
         {
             try
@@ -754,10 +856,10 @@ internal sealed class TimelineService
                 LogHelper.Debug("时间轴", $"加载时间轴索引：{path}，entries={loadedEntries.Count}");
                 foreach (var entry in loadedEntries)
                 {
-                    if (string.IsNullOrWhiteSpace(entry.Id) || !seenIds.Add(entry.Id))
+                    if (string.IsNullOrWhiteSpace(entry.Id))
                         continue;
 
-                    entries.Add(entry);
+                    entriesById[entry.Id] = entry;
                 }
             }
             catch (Exception ex)
@@ -766,7 +868,7 @@ internal sealed class TimelineService
             }
         }
 
-        timelineIndex = entries;
+        timelineIndex = entriesById.Values.ToList();
         return timelineIndex;
     }
 
@@ -775,6 +877,7 @@ internal sealed class TimelineService
         yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", "timeline-index.json");
         foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
             yield return Path.Combine(sourceDirectory, "timeline-index.json");
+        yield return Path.Combine(HardcodedSourceTimelineDataDirectory, "timeline-index.json");
         yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", "timeline-index.json");
         yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), "timeline-index.json");
     }
@@ -786,6 +889,7 @@ internal sealed class TimelineService
             yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", candidateFileName);
             foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
                 yield return Path.Combine(sourceDirectory, candidateFileName);
+            yield return Path.Combine(HardcodedSourceTimelineDataDirectory, candidateFileName);
             yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", candidateFileName);
             yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), candidateFileName);
         }
@@ -845,5 +949,7 @@ internal sealed class TimelineService
     }
 
     private sealed record ObservedTimelineAbility(uint ActionId, DateTime ObservedAtUtc);
+
+    public sealed record TimelineAvailableEntry(string Id, string Name, uint? ZoneId, string FileName, string ResolvedPath);
 
 }

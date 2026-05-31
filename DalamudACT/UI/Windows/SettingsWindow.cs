@@ -24,6 +24,7 @@ internal sealed partial class SettingsWindow : Window
     private readonly Action openMainWindow;
     private readonly Action toggleFloatingStatsPanel;
     private readonly Action openCombatTimelineWindow;
+    private readonly Action openTimelineListWindow;
     private readonly TimelineService? timelineService;
     private readonly Dictionary<string, float> adaptiveChildHeights = new();
     private string floatingStyleShareCode = string.Empty;
@@ -48,7 +49,8 @@ internal sealed partial class SettingsWindow : Window
         TimelineService? timelineService,
         Action openMainWindow,
         Action toggleFloatingStatsPanel,
-        Action openCombatTimelineWindow)
+        Action openCombatTimelineWindow,
+        Action openTimelineListWindow)
         : base($"DPS统计 设置 v{PluginVersion}###SettingsWindow")
     {
         this.config = config;
@@ -58,6 +60,7 @@ internal sealed partial class SettingsWindow : Window
         this.openMainWindow = openMainWindow;
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
+        this.openTimelineListWindow = openTimelineListWindow;
         Size = new Vector2(620f, 760f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }

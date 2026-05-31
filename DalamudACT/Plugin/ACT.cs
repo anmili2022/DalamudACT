@@ -111,6 +111,7 @@ public sealed partial class ACT : IDalamudPlugin
             statsService.PollCombatTimelineHostileCasts(DateTime.UtcNow, inCombat);
             monitorService.Update();
             timelineService.Update(inCombat, DalamudApi.GetTerritoryTypeId(), zoneName);
+            timelineService.PollStartsUsingCasts(DateTime.UtcNow, inCombat);
             UpdateRawGamePacketHookState();
             frameworkUpdateFaulted = false;
         }

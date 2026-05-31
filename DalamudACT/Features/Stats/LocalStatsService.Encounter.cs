@@ -109,10 +109,11 @@ internal sealed partial class LocalStatsService
             AppendEncounterStartIfNeededLocked(wasStarted, timeUtc);
             if (shouldAppendTimelineEntry)
             {
+                var targetSnapshotText = BuildCombatTimelineDamageSnapshotText(sourceId, targetId);
                 AppendCombatTimelineEntryLocked(
                     timeUtc,
                     CombatTimelineEntryKind.Damage,
-                    $"{loggedSourceName} 使用{FormatActionNameWithId(actionName, actionId)} 攻击 {loggedTargetName}，造成 {CreateDamageString(amount, useSuffix: true, useDecimals: true)} 伤害{FormatCriticalSuffix(critical)}。",
+                    $"{loggedSourceName} 使用{FormatActionNameWithId(actionName, actionId)} 攻击 {loggedTargetName}，造成 {CreateDamageString(amount, useSuffix: true, useDecimals: true)} 伤害{FormatCriticalSuffix(critical)}{targetSnapshotText}。",
                     loggedSourceName,
                     loggedTargetName,
                     sourceIsFriendly,

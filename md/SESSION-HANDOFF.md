@@ -100,6 +100,7 @@
 - 不要 `git checkout -- .`。
 - 不要提交 `1.txt`。
 - 不要恢复 `ActorControl Hook`。
+- 不要更改时间轴硬编码源码路径：`E:\git\DalamudACT\DalamudACT\Features\Timeline\Data`。
 - 不要把本机绝对路径 `E:\git\DalamudACT\...` 写进发布运行时代码。
 - 不要再次从发布包里移除 `Timeline/Data`。
 

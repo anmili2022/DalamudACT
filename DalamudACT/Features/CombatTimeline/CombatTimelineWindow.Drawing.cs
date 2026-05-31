@@ -11,9 +11,7 @@ internal sealed partial class CombatTimelineWindow
 {
     private void DrawToolbar(
         IReadOnlyList<LocalStatsService.CombatTimelineEntry> filteredEntries,
-        IReadOnlyList<string> actorOptions,
-        IReadOnlyList<string> targetOptions,
-        IReadOnlyList<string> actionOptions)
+        IReadOnlyList<string> characterOptions)
     {
         var recordingEnabled = config.CombatTimelineRecordingEnabled;
         if (ImGui.Checkbox("开始记录", ref recordingEnabled))
@@ -76,10 +74,7 @@ internal sealed partial class CombatTimelineWindow
         DrawRetentionControls();
 
         ImGui.Spacing();
-        DrawFilterControls(actorOptions, targetOptions, actionOptions);
-
-        ImGui.Spacing();
-        DrawQuickFilterControls();
+        DrawFilterControls(characterOptions);
     }
 
     private void DrawTimelineTable(IReadOnlyList<LocalStatsService.CombatTimelineEntry> entries)
@@ -112,7 +107,7 @@ internal sealed partial class CombatTimelineWindow
                 var entry = entries[index];
                 var isSelected = selectedTimelineIndices.Contains(index);
 
-                ImGui.PushStyleColor(ImGuiCol.Text, GetEntryColor(entry.Kind));
+                ImGui.PushStyleColor(ImGuiCol.Text, GetEntryColor(entry));
                 if (isSelected)
                     ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.30f, 0.48f, 0.78f, 0.55f));
                 ImGui.PushID(index);
@@ -190,9 +185,12 @@ internal sealed partial class CombatTimelineWindow
         ImGui.TextDisabled(inlineFeedbackText);
     }
 
-    private static Vector4 GetEntryColor(LocalStatsService.CombatTimelineEntryKind kind)
+    private static Vector4 GetEntryColor(LocalStatsService.CombatTimelineEntry entry)
     {
-        return kind switch
+        if (IsUnmitigatedTakenDamageEntry(entry))
+            return new Vector4(1f, 0.36f, 0.30f, 1f);
+
+        return entry.Kind switch
         {
             LocalStatsService.CombatTimelineEntryKind.CombatStart => new Vector4(0.48f, 0.92f, 0.60f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Heal => new Vector4(0.40f, 0.92f, 0.72f, 1f),
@@ -252,48 +250,41 @@ internal sealed partial class CombatTimelineWindow
 
         ImGui.SameLine();
         ImGui.TextDisabled($"当前：{GetRetentionDisplayText()}");
+
+        var mapEffectEnabled = config.CombatTimelineMapEffectEnabled;
+        if (ImGui.Checkbox("显示场地特效", ref mapEffectEnabled))
+        {
+            config.CombatTimelineMapEffectEnabled = mapEffectEnabled;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后会把 MapEffect 场地特效写入新的战斗流水；关闭不会移除已有记录。 ");
     }
 
-    private void DrawFilterControls(
-        IReadOnlyList<string> actorOptions,
-        IReadOnlyList<string> targetOptions,
-        IReadOnlyList<string> actionOptions)
+    private void DrawFilterControls(IReadOnlyList<string> characterOptions)
     {
-        DrawCampFilterCombo("角色阵营：", "timeline_actor_camp_filter", ref actorCampFilter);
+        DrawFilterCombo("角色：", "timeline_character_filter", ref characterFilter, characterOptions, "全部");
         ImGui.SameLine();
-        DrawFilterCombo("只显示角色：", "timeline_actor_filter", ref actorFilter, actorOptions, "全部");
+        DrawSearchInput("技能/全文搜索：", "timeline_text_search", ref textSearchFilter);
 
-        DrawCampFilterCombo("被攻击人阵营：", "timeline_target_camp_filter", ref targetCampFilter);
+        ImGui.Spacing();
+        DrawContentFilterCheckbox("输出", TimelineContentFilter.Output);
         ImGui.SameLine();
-        DrawFilterCombo("只显示被攻击人：", "timeline_target_filter", ref targetFilter, targetOptions, "全部");
-
-        DrawFilterCombo("只显示技能：", "timeline_action_filter", ref actionFilter, actionOptions, "全部");
+        DrawContentFilterCheckbox("承伤", TimelineContentFilter.TakenDamage);
         ImGui.SameLine();
-        DrawSearchInput("技能搜索：", "timeline_action_search", ref actionSearchText);
-    }
-
-    private void DrawQuickFilterControls()
-    {
-        DrawKindFilterCombo();
+        DrawContentFilterCheckbox("治疗", TimelineContentFilter.Heal);
         ImGui.SameLine();
-        ImGui.AlignTextToFramePadding();
-        ImGui.TextDisabled("快捷查看：");
-
+        DrawContentFilterCheckbox("死亡", TimelineContentFilter.Death);
         ImGui.SameLine();
-        if (ImGui.SmallButton("玩家输出"))
-            ApplyQuickFilterPlayerOutput();
-
+        DrawContentFilterCheckbox("减伤分析", TimelineContentFilter.Mitigation);
         ImGui.SameLine();
-        if (ImGui.SmallButton("敌打我方"))
-            ApplyQuickFilterEnemyHitFriendly();
-
+        DrawContentFilterCheckbox("读条", TimelineContentFilter.Cast);
         ImGui.SameLine();
-        if (ImGui.SmallButton("治疗"))
-            ApplyQuickFilterKind(TimelineKindFilter.Heal);
-
+        DrawContentFilterCheckbox("状态", TimelineContentFilter.Status);
         ImGui.SameLine();
-        if (ImGui.SmallButton("死亡"))
-            ApplyQuickFilterKind(TimelineKindFilter.Death);
+        DrawContentFilterCheckbox("场地特效", TimelineContentFilter.MapEffect);
+        ImGui.SameLine();
+        DrawContentFilterCheckbox("进出战", TimelineContentFilter.CombatBoundary);
 
         ImGui.SameLine();
         ImGui.BeginDisabled(!HasAnyActiveFilter());
@@ -302,64 +293,15 @@ internal sealed partial class CombatTimelineWindow
         ImGui.EndDisabled();
     }
 
-    private static void DrawCampFilterCombo(string label, string id, ref TimelineCampFilter currentValue)
+    private void DrawContentFilterCheckbox(string label, TimelineContentFilter flag)
     {
-        const string emptyLabel = "全部";
-        var previewValue = GetCampFilterLabel(currentValue);
-
-        ImGui.AlignTextToFramePadding();
-        ImGui.TextDisabled(label);
-        ImGui.SameLine();
-        ImGui.SetNextItemWidth(110f);
-        if (!ImGui.BeginCombo($"##{id}", previewValue))
+        var enabled = contentFilters.HasFlag(flag);
+        if (!ImGui.Checkbox(label, ref enabled))
             return;
 
-        try
-        {
-            foreach (var value in Enum.GetValues<TimelineCampFilter>())
-            {
-                var isSelected = value == currentValue;
-                var optionLabel = value == TimelineCampFilter.All ? emptyLabel : GetCampFilterLabel(value);
-                if (ImGui.Selectable(optionLabel, isSelected))
-                    currentValue = value;
-
-                if (isSelected)
-                    ImGui.SetItemDefaultFocus();
-            }
-        }
-        finally
-        {
-            ImGui.EndCombo();
-        }
-    }
-
-    private void DrawKindFilterCombo()
-    {
-        var previewValue = GetKindFilterLabel(kindFilter);
-
-        ImGui.AlignTextToFramePadding();
-        ImGui.TextDisabled("事件类型：");
-        ImGui.SameLine();
-        ImGui.SetNextItemWidth(120f);
-        if (!ImGui.BeginCombo("##timeline_kind_filter", previewValue))
-            return;
-
-        try
-        {
-            foreach (var value in Enum.GetValues<TimelineKindFilter>())
-            {
-                var isSelected = value == kindFilter;
-                if (ImGui.Selectable(GetKindFilterLabel(value), isSelected))
-                    kindFilter = value;
-
-                if (isSelected)
-                    ImGui.SetItemDefaultFocus();
-            }
-        }
-        finally
-        {
-            ImGui.EndCombo();
-        }
+        contentFilters = enabled
+            ? contentFilters | flag
+            : contentFilters & ~flag;
     }
 
     private static void DrawFilterCombo(

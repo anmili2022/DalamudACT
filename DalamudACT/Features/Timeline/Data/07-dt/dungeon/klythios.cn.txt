@@ -13,7 +13,7 @@ hideall "--sync--"
 #~~~~~~~~~~~~#
 
 # 距花冠广场被封锁还有15秒。
-1000.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+1000.0 "--sync--" InCombat { inGameCombat: "1" } window 1000,1
 1010.5 "凶眼注目" Ability { id: "BF00", source: "装甲之眼" } # AOE
 1026.8 "石化光束" Ability { id: "C400", source: "装甲之眼" }
 1037.0 "石化光束" Ability { id: "C3FF", source: "装甲之眼" }
@@ -38,7 +38,7 @@ hideall "--sync--"
 #~~~~~~~~~~#
 
 # 距材料存放场被封锁还有15秒。
-2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1584" } window 10000,0
+2000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1584" } window 2000,0
 2012.0 "暗黑冲击" Ability { id: "BEF4", source: "乔尔特" } # AOE
 # 2012.8 "暗黑冲击" Ability { id: "C4E8", source: "乔尔特" } # AOE # 附属判定候选
 2024.8 "肉弹" Ability { id: "BEE6", source: "乔尔特" }
@@ -69,7 +69,7 @@ hideall "--sync--"
 # 玛帕斯 #
 #~~~~~~~~#
 
-3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1585" } window 10000,0
+3000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1585" } window 3000,0
 3006.0 "废品处理" Ability { id: "BF18", source: "玛帕斯" } # AOE
 3012.0 "虚无黑暗" Ability { id: "C489", source: "玛帕斯" }
 3021.9 "废料干涉" Ability { id: "BF19", source: "玛帕斯" }

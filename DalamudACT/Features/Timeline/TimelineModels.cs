@@ -21,7 +21,9 @@ internal sealed record TimelineEntry(
     bool IsSync,
     string? JumpLabel,
     float? JumpTimeSeconds,
-    IReadOnlyDictionary<uint, TimelineActionResponse> ActionResponses);
+    IReadOnlyDictionary<uint, TimelineActionResponse> ActionResponses,
+    float WindowFirst = -2.5f,
+    float WindowLast = 2.5f);
 
 internal sealed record TimelineActionResponse(string Text, TimelineActionResponseTiming Timing);
 

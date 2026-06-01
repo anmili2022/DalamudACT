@@ -22,6 +22,7 @@ internal static partial class TimelineParser
     private static readonly Regex MapEffectFlagsRegex = new(@"flags\s*:\s*\""(?<flags>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex MapEffectLocationRegex = new(@"location\s*:\s*\""(?<location>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex JumpRegex = new(@"(?:forcejump|jump)\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|'(?<label>[^'\\]*(?:\\.[^'\\]*)*)'|(?<label>\S+))", RegexOptions.Compiled);
+    private static readonly Regex WindowRegex = new(@"window\s+(?<first>-?\d+(?:\.\d+)?)\s*,\s*(?<last>-?\d+(?:\.\d+)?)", RegexOptions.Compiled);
     private static readonly Regex ReplaceTextBlockRegex = new(@"'locale'\s*:\s*'cn'[\s\S]*?'replaceText'\s*:\s*\{(?<body>[\s\S]*?)\}\s*,", RegexOptions.Compiled);
     private static readonly Regex ReplaceEntryRegex = new(@"'(?<from>[^']+)'\s*:\s*'(?<to>[^']*)'", RegexOptions.Compiled);
 
@@ -116,7 +117,15 @@ internal static partial class TimelineParser
         var jumpTimeSeconds = TryParseJumpTime(jumpRaw);
         var jumpLabel = jumpTimeSeconds.HasValue ? null : jumpRaw;
 
-        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, sources, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses);
+        var windowMatch = WindowRegex.Match(rest);
+        var windowFirst = windowMatch.Success
+            ? float.TryParse(windowMatch.Groups["first"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var wf) ? wf : -2.5f
+            : -2.5f;
+        var windowLast = windowMatch.Success
+            ? float.TryParse(windowMatch.Groups["last"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var wl) ? wl : 2.5f
+            : 2.5f;
+
+        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, sources, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses, windowFirst, windowLast);
     }
 
     private static float? TryParseJumpTime(string? rawJump)

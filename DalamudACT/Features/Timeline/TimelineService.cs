@@ -361,7 +361,7 @@ internal sealed class TimelineService
             return null;
 
         var candidates = definition.Entries
-            .Where(entry => entry.EventType == "SystemLogMessage" && (IsSystemLogResetEntry(entry) || entry.TimeSeconds > Math.Max(0f, lastSystemLogSyncTimeSeconds) + 1f))
+            .Where(entry => entry.EventType == "SystemLogMessage" && (IsSystemLogResetEntry(entry) || IsWithinSystemLogWindow(entry)))
             .OrderBy(entry => entry.TimeSeconds)
             .ToList();
 
@@ -380,6 +380,20 @@ internal sealed class TimelineService
 
     private static bool IsSystemLogResetEntry(TimelineEntry entry)
         => entry.JumpTimeSeconds is <= 0.5f;
+
+    private bool IsWithinSystemLogWindow(TimelineEntry entry)
+    {
+        if (startedAtUtc == null)
+            return entry.TimeSeconds > Math.Max(0f, lastSystemLogSyncTimeSeconds) + 1f;
+
+        var currentTime = (float)(DateTime.UtcNow - startedAtUtc.Value).TotalSeconds;
+        var windowMin = entry.TimeSeconds - entry.WindowFirst;
+        var windowMax = entry.TimeSeconds + entry.WindowLast;
+        if (currentTime < windowMin || currentTime > windowMax)
+            return false;
+
+        return entry.TimeSeconds > lastSystemLogSyncTimeSeconds + 1f;
+    }
 
     private static bool IsLogMessageMatch(TimelineEntry entry, string message)
     {

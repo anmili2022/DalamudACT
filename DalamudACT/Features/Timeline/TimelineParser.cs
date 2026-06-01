@@ -23,6 +23,7 @@ internal static partial class TimelineParser
     private static readonly Regex MapEffectLocationRegex = new(@"location\s*:\s*\""(?<location>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex JumpRegex = new(@"(?:forcejump|jump)\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|'(?<label>[^'\\]*(?:\\.[^'\\]*)*)'|(?<label>\S+))", RegexOptions.Compiled);
     private static readonly Regex WindowRegex = new(@"window\s+(?<first>-?\d+(?:\.\d+)?)\s*,\s*(?<last>-?\d+(?:\.\d+)?)", RegexOptions.Compiled);
+    private static readonly Regex TaggedResponseRegex = new(@"(?<kind>读条ID|结算ID)\s*(?<id>[0-9A-Fa-f]+)\s*(?<text>.*?)(?=\s*(?:[#;；]\s*)?(?:读条ID|结算ID)\s*[0-9A-Fa-f]+\b|$)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     private static readonly Regex ReplaceTextBlockRegex = new(@"'locale'\s*:\s*'cn'[\s\S]*?'replaceText'\s*:\s*\{(?<body>[\s\S]*?)\}\s*,", RegexOptions.Compiled);
     private static readonly Regex ReplaceEntryRegex = new(@"'(?<from>[^']+)'\s*:\s*'(?<to>[^']*)'", RegexOptions.Compiled);
 
@@ -249,8 +250,8 @@ internal static partial class TimelineParser
         if (commentIndex < 0 || commentIndex >= rest.Length - 1)
             return null;
 
-        var hint = RemoveMetadataCommentSegments(rest[(commentIndex + 1)..]).Trim();
-        if (string.IsNullOrWhiteSpace(hint) || !LooksLikeMechanicHint(hint))
+        var hint = RemoveTaggedResponseSegments(rest[(commentIndex + 1)..]).Trim();
+        if (string.IsNullOrWhiteSpace(hint) || ContainsTaggedResponseMarker(hint) || !LooksLikeMechanicHint(hint))
             return null;
 
         return hint.Equals("范围", StringComparison.OrdinalIgnoreCase) ? "AOE" : hint;
@@ -273,10 +274,31 @@ internal static partial class TimelineParser
         if (commentIndex < 0 || commentIndex >= rest.Length - 1)
             return new Dictionary<uint, TimelineActionResponse>();
 
-        var comment = RemoveMetadataCommentSegments(rest[(commentIndex + 1)..]);
+        var rawComment = rest[(commentIndex + 1)..];
+        var responses = new Dictionary<uint, TimelineActionResponse>();
+        var actionIdSet = actionIds.ToHashSet();
+        foreach (Match match in TaggedResponseRegex.Matches(rawComment))
+        {
+            if (!uint.TryParse(match.Groups["id"].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var id) || !actionIdSet.Contains(id))
+                continue;
+
+            var response = NormalizeResponseText(match.Groups["text"].Value);
+            if (string.IsNullOrWhiteSpace(response))
+                continue;
+
+            var timing = match.Groups["kind"].Value == "读条ID"
+                ? TimelineActionResponseTiming.StartsUsing
+                : TimelineActionResponseTiming.Ability;
+            responses[id] = new TimelineActionResponse(response, timing);
+        }
+
+        var comment = RemoveTaggedResponseSegments(rawComment);
         var idMatches = new List<(uint Id, int Index, int Length, TimelineActionResponseTiming Timing)>();
         foreach (var actionId in actionIds)
         {
+            if (responses.ContainsKey(actionId))
+                continue;
+
             var hex = actionId.ToString("X");
             var match = Regex.Match(comment, $@"(?<kind>读条ID|结算ID)?\s*(?<![0-9A-Fa-f]){Regex.Escape(hex)}(?![0-9A-Fa-f])", RegexOptions.IgnoreCase);
             if (match.Success)
@@ -289,16 +311,15 @@ internal static partial class TimelineParser
         }
 
         if (idMatches.Count == 0)
-            return new Dictionary<uint, TimelineActionResponse>();
+            return responses;
 
         idMatches.Sort(static (left, right) => left.Index.CompareTo(right.Index));
-        var responses = new Dictionary<uint, TimelineActionResponse>();
         for (var i = 0; i < idMatches.Count; i++)
         {
             var current = idMatches[i];
             var responseStart = current.Index + current.Length;
             var responseEnd = i + 1 < idMatches.Count ? idMatches[i + 1].Index : comment.Length;
-            var response = comment[responseStart..responseEnd].Trim(' ', '，', ',', ';', '；', '。');
+            var response = NormalizeResponseText(comment[responseStart..responseEnd]);
             if (!string.IsNullOrWhiteSpace(response))
                 responses[current.Id] = new TimelineActionResponse(response, current.Timing);
         }
@@ -306,13 +327,21 @@ internal static partial class TimelineParser
         return responses;
     }
 
-    private static string RemoveMetadataCommentSegments(string comment)
+    private static string NormalizeResponseText(string response)
+        => response.Trim(' ', '#', '，', ',', ';', '；', '。');
+
+    private static string RemoveTaggedResponseSegments(string comment)
         => string.Join(
             " # ",
             comment.Split('#')
                 .Select(static part => part.Trim())
-                .Where(static part => !part.Contains("读条ID", StringComparison.Ordinal)
-                                      && !part.Contains("结算ID", StringComparison.Ordinal)));
+                .Select(static part => TaggedResponseRegex.Replace(part, string.Empty).Trim())
+                .Where(static part => !ContainsTaggedResponseMarker(part))
+                .Where(static part => !string.IsNullOrWhiteSpace(part)));
+
+    private static bool ContainsTaggedResponseMarker(string text)
+        => text.Contains("读条ID", StringComparison.OrdinalIgnoreCase)
+           || text.Contains("结算ID", StringComparison.OrdinalIgnoreCase);
 
     private static Dictionary<string, string> ParseChineseReplacements(string script)
     {

@@ -195,6 +195,97 @@ TTS 内容模式：
 
 `仅机制类型` 已改为严格模式：没有机制类型时不再退回播技能名。
 
+### 2026-06-02：最终 TTS 文本 2 秒去重
+
+背景：
+
+- 排查游戏崩溃时发现，时间轴/机制播报会在毫秒级连续发送多条相同的 `/pdr tts` 命令。
+- 典型日志表现为同一时刻连续出现多条同样文本，例如 `诶欧意`。
+- DailyRoutines / EdgeTTS 每收到一条 `/pdr tts` 都可能创建一条播放任务，短时间并发进入 NAudio / Windows 音频输出链路，增加崩溃风险。
+
+根因：
+
+- 旧逻辑主要按时间轴条目、技能应对 key、`sourceId + actionId` 去重。
+- 多个不同事件经过 TTS 修正后可能得到同一句最终文本，例如多个 AOE 最终都修正成 `诶欧意`。
+- 旧逻辑没有按“最终发给 DailyRoutines 的文本”去重，因此仍会连续发送多条相同 `/pdr tts`。
+
+本次处理方案：
+
+- 文件：`DalamudACT/Features/Timeline/TimelineService.cs`
+- 新增固定窗口：
+
+```csharp
+private const double TimelineTtsDuplicateSuppressSeconds = 2d;
+```
+
+- 新增最终文本发送记录：
+
+```csharp
+private readonly Dictionary<string, DateTime> lastTimelineTtsTextUtc = new(StringComparer.Ordinal);
+```
+
+- 新增统一发送入口：
+
+```csharp
+PrepareDailyRoutinesTtsText(...)
+TrySendDailyRoutinesTts(...)
+TrySendPreparedDailyRoutinesTts(...)
+PruneTimelineTtsTextDedupe(...)
+```
+
+- 去重发生在 `ApplyTtsCorrections(...)` 和 `SanitizeTtsText(...)` 之后，也就是按最终实际发送文本判断。
+- 同一句最终 TTS 文本在 2 秒内只发送一次。
+- 如果重复被抑制，会写 Debug 日志：
+
+```text
+抑制重复 TTS（...）：文本
+```
+
+已收口的发送来源：
+
+- 时间轴提前播报。
+- 技能应对方案 TTS。
+- 无时间轴即时 AOE / 死刑 TTS。
+
+保留不变的逻辑：
+
+- `spokenTtsKeys`
+- `spokenActionResponseKeys`
+- `lastInstantTtsByActionKey`
+- 无时间轴即时 TTS 原本的 `sourceId + actionId` 去重。
+
+本次没有做：
+
+- 没有修改 DailyRoutines。
+- 没有新增 TTS 队列。
+- 没有新增 UI 配置项。
+- 没有对不同文本做全局限流。
+
+预期效果：
+
+```text
+02:40:10.157 /pdr tts 诶欧意
+02:40:10.160 抑制重复 TTS：诶欧意
+02:40:10.161 抑制重复 TTS：诶欧意
+02:40:10.162 抑制重复 TTS：诶欧意
+```
+
+也就是 DailyRoutines 实际只收到第一条相同文本，后续 2 秒内的相同最终文本不会再触发新的 TTS 播放任务。
+
+验证：
+
+```powershell
+dotnet build DalamudACT.sln
+```
+
+结果：
+
+```text
+已成功生成。
+0 个警告
+0 个错误
+```
+
 ## 无时间轴即时 TTS
 
 当满足以下条件时，会即时播报：

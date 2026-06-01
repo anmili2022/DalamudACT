@@ -10,6 +10,10 @@ internal sealed partial class SettingsWindow
     {
         ImGui.TextUnformatted("简易设置");
         ImGui.SameLine();
+        if (ImGui.Button("战斗流水"))
+            openCombatTimelineWindow();
+
+        ImGui.SameLine();
         if (ImGui.Button("完整设置 →"))
         {
             showAdvancedSettings = true;

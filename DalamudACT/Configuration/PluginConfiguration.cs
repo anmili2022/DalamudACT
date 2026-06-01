@@ -81,6 +81,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         new TtsCorrectionRule { From = "AOE", To = "诶欧意", Enabled = true },
         new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
         new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
+        new TtsCorrectionRule { From = "对地", To = "对帝", Enabled = true },
         new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
         new TtsCorrectionRule { From = "--north--", To = "去北侧", Enabled = true },
         new TtsCorrectionRule { From = "--south--", To = "去南侧", Enabled = true },
@@ -633,6 +634,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         AddDefaultTtsCorrection("AOE", "诶欧意");
         AddDefaultTtsCorrection("地火", "帝火");
         AddDefaultTtsCorrection("地动", "帝动");
+        AddDefaultTtsCorrection("对地", "对帝");
         AddDefaultTtsCorrection("--middle--", "回到中间");
         AddDefaultTtsCorrection("--north--", "去北侧");
         AddDefaultTtsCorrection("--south--", "去南侧");

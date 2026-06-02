@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Dalamud.Game.Command;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
@@ -27,6 +29,7 @@ public sealed partial class ACT : IDalamudPlugin
 {
     private const uint InvalidActorId = 0xE0000000;
     private const string CommandName = "/dps";
+    private static bool EnableFrameworkPerformanceLog => false;
     private static readonly string PluginVersion = typeof(ACT).Assembly.GetName().Version?.ToString() ?? "未知版本";
 
     private readonly IDalamudPluginInterface pluginInterface;
@@ -39,6 +42,13 @@ public sealed partial class ACT : IDalamudPlugin
     private bool frameworkUpdateFaulted;
     private bool abilityEffectFaulted;
     private DateTime lastUntrackedCombatDebugAtUtc;
+    private DateTime lastBattleCharaPollUtc;
+    private DateTime lastStatsUpdateUtc;
+    private DateTime lastTimelineUpdateUtc;
+    private DateTime lastRawPacketHookStateUpdateUtc;
+    private DateTime lastFrameworkPerfLogUtc;
+    private uint cachedTerritoryId;
+    private string cachedZoneName = "未知区域";
     private int suppressedUntrackedCombatDebugCount;
     private string lastRawPacketCorrelationText = string.Empty;
     private DateTime lastRawPacketCorrelationAtUtc = DateTime.MinValue;
@@ -103,16 +113,70 @@ public sealed partial class ACT : IDalamudPlugin
     {
         try
         {
+            var perfStart = Stopwatch.GetTimestamp();
+            var perfLast = perfStart;
+            var perfParts = new List<string>(8);
             _ = framework;
-            statsService.WarmOwnerCacheFromObjectTable();
-            var zoneName = GetPlaceName();
+            var territoryId = DalamudApi.GetTerritoryTypeId();
+            var zoneName = GetPlaceName(territoryId);
+            MarkFrameworkPerfSegment("zone", ref perfLast, perfParts);
             var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
-            statsService.Update(zoneName, inCombat);
-            statsService.PollCombatTimelineHostileCasts(DateTime.UtcNow, inCombat);
+            var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
+            var replayStatsActive = Configuration.ReplayStatsMode && inDutyRecorderPlayback;
+            var statsActive = inCombat || replayStatsActive;
+            var timelineActive = inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter;
+            var nowUtc = DateTime.UtcNow;
+            var forceReplayOutOfCombat = replayStatsActive && !inCombat && statsService.IsEncounterIdle(nowUtc, TimeSpan.FromSeconds(60));
+            var shouldUpdateStats = nowUtc - lastStatsUpdateUtc >= TimeSpan.FromMilliseconds(250);
+            var shouldUpdateTimeline = nowUtc - lastTimelineUpdateUtc >= TimeSpan.FromMilliseconds(100);
+            var ranHeavyWork = false;
+
+            if (shouldUpdateStats)
+            {
+                lastStatsUpdateUtc = nowUtc;
+                if (statsActive || !inDutyRecorderPlayback && statsService.HasActiveEncounter)
+                {
+                    statsService.WarmOwnerCacheFromObjectTable();
+                    statsService.Update(zoneName, statsActive, forceReplayOutOfCombat);
+                    MarkFrameworkPerfSegment("stats", ref perfLast, perfParts);
+                    ranHeavyWork = true;
+                }
+            }
+
+            var shouldPollBattleCharas = !ranHeavyWork && timelineActive && nowUtc - lastBattleCharaPollUtc >= TimeSpan.FromMilliseconds(100);
+            if (shouldPollBattleCharas)
+            {
+                var battleCharas = DalamudApi.ObjectTable.OfType<IBattleChara>().ToArray();
+                lastBattleCharaPollUtc = nowUtc;
+                statsService.PollCombatTimelineHostileCasts(nowUtc, statsActive, battleCharas);
+                timelineService.PollStartsUsingCasts(nowUtc, timelineActive, battleCharas);
+                MarkFrameworkPerfSegment("casts", ref perfLast, perfParts);
+                ranHeavyWork = true;
+            }
+            else if (!timelineActive)
+            {
+                timelineService.PollStartsUsingCasts(nowUtc, false, Array.Empty<IBattleChara>());
+            }
+
             monitorService.Update();
-            timelineService.Update(inCombat, DalamudApi.GetTerritoryTypeId(), zoneName);
-            timelineService.PollStartsUsingCasts(DateTime.UtcNow, inCombat);
-            UpdateRawGamePacketHookState();
+            MarkFrameworkPerfSegment("monitor", ref perfLast, perfParts);
+
+            if (!ranHeavyWork && shouldUpdateTimeline)
+            {
+                lastTimelineUpdateUtc = nowUtc;
+                timelineService.Update(timelineActive, territoryId, zoneName);
+                MarkFrameworkPerfSegment("timeline", ref perfLast, perfParts);
+                ranHeavyWork = true;
+            }
+
+            if (!ranHeavyWork && nowUtc - lastRawPacketHookStateUpdateUtc >= TimeSpan.FromMilliseconds(500))
+            {
+                lastRawPacketHookStateUpdateUtc = nowUtc;
+                UpdateRawGamePacketHookState();
+                MarkFrameworkPerfSegment("rawHook", ref perfLast, perfParts);
+            }
+
+            LogFrameworkPerfIfSlow(perfStart, perfParts, statsActive, timelineActive);
             frameworkUpdateFaulted = false;
         }
         catch (Exception ex)
@@ -125,33 +189,63 @@ public sealed partial class ACT : IDalamudPlugin
         }
     }
 
-
-    private string GetPlaceName()
+    private void MarkFrameworkPerfSegment(string name, ref long lastTimestamp, List<string> parts)
     {
-        var territoryId = DalamudApi.GetTerritoryTypeId();
+        var now = Stopwatch.GetTimestamp();
+        var elapsedMs = Stopwatch.GetElapsedTime(lastTimestamp, now).TotalMilliseconds;
+        lastTimestamp = now;
+        if (elapsedMs >= 1d)
+            parts.Add($"{name}={elapsedMs:0.0}ms");
+    }
+
+    private void LogFrameworkPerfIfSlow(long startTimestamp, List<string> parts, bool statsActive, bool timelineActive)
+    {
+        if (!EnableFrameworkPerformanceLog)
+            return;
+
+        var elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+        if (elapsedMs < 5d)
+            return;
+
+        var nowUtc = DateTime.UtcNow;
+        if (nowUtc - lastFrameworkPerfLogUtc < TimeSpan.FromSeconds(2))
+            return;
+
+        lastFrameworkPerfLogUtc = nowUtc;
+        var detail = parts.Count == 0 ? "无单段超过 1ms" : string.Join(", ", parts);
+        LogHelper.Info("性能", $"FrameworkUpdate 慢帧 {elapsedMs:0.0}ms：{detail}；statsActive={statsActive}，timelineActive={timelineActive}。");
+    }
+
+
+    private string GetPlaceName(uint territoryId)
+    {
+        if (territoryId == cachedTerritoryId && !string.IsNullOrWhiteSpace(cachedZoneName))
+            return cachedZoneName;
+
+        cachedTerritoryId = territoryId;
         if (territoryId == 0 || !territorySheet.TryGetRow(territoryId, out var territory))
-            return "未知区域";
+            return cachedZoneName = "未知区域";
 
         try
         {
             if (!territory.ContentFinderCondition.Value.Name.IsEmpty)
-                return territory.ContentFinderCondition.Value.Name.ExtractText();
+                return cachedZoneName = territory.ContentFinderCondition.Value.Name.ExtractText();
 
             if (!territory.PlaceName.Value.Name.IsEmpty)
-                return territory.PlaceName.Value.Name.ExtractText();
+                return cachedZoneName = territory.PlaceName.Value.Name.ExtractText();
 
             if (!territory.PlaceNameRegion.Value.Name.IsEmpty)
-                return territory.PlaceNameRegion.Value.Name.ExtractText();
+                return cachedZoneName = territory.PlaceNameRegion.Value.Name.ExtractText();
 
             if (!territory.PlaceNameZone.Value.Name.IsEmpty)
-                return territory.PlaceNameZone.Value.Name.ExtractText();
+                return cachedZoneName = territory.PlaceNameZone.Value.Name.ExtractText();
         }
         catch
         {
             // Fall through to the generic zone label if runtime data shape changes.
         }
 
-        return "未知区域";
+        return cachedZoneName = "未知区域";
     }
 
     private string GetActionName(uint actionId)

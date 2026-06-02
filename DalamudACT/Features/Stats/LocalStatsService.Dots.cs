@@ -23,6 +23,11 @@ internal sealed partial class LocalStatsService
     private readonly Dictionary<string, DateTime> playerDotDiagnosticLogTimestamps = new(StringComparer.Ordinal);
     private DateTime lastPlayerDotStatusPollUtc;
     private DateTime lastPlayerDotDebugLogUtc;
+    private int nextPlayerDotTargetPollIndex;
+    private int nextPlayerDotFriendlyPollIndex;
+    private int nextPlayerDotSimulationIndex;
+    private int nextPlayerDotTrimIndex;
+    private int nextPlayerDotDecayIndex;
 
     public bool ObservePotentialPlayerDotApplication(
         uint sourceId,
@@ -254,6 +259,9 @@ internal sealed partial class LocalStatsService
     {
         try
         {
+            var perfStart = System.Diagnostics.Stopwatch.GetTimestamp();
+            var perfLast = perfStart;
+            var perfParts = new List<string>(8);
             TrimRecentHostilePlayerActionsLocked(nowUtc);
 
             if (!inCombat && !currentEncounter.Started)
@@ -268,15 +276,16 @@ internal sealed partial class LocalStatsService
 
             lastPlayerDotStatusPollUtc = nowUtc;
             DecayActivePlayerDotStatesLocked(nowUtc);
-            var targetActorIds = activePlayerDots.Keys
-                .Select(static key => key.TargetActorId)
-                .Concat(activeWildfires.Keys.Select(static key => key.TargetActorId))
-                .Concat(recentHostilePlayerActions.Select(static action => action.TargetActorId))
+            var targetActorIds = recentHostilePlayerActions
+                .Where(action => nowUtc - action.ObservedAtUtc <= PlayerDotTargetStatusRefreshWindow)
+                .Where(static action => PlayerDotCatalog.IsKnownPlayerDotAction(action.ActionId) || action.ActionId == WildfireActionId)
+                .Select(static action => action.TargetActorId)
                 .Where(static actorId => actorId is not 0 and not InvalidActorId)
                 .Distinct()
                 .ToList();
 
-            foreach (var targetActorId in targetActorIds)
+            var targetBatch = BuildRoundRobinBatch(targetActorIds, ref nextPlayerDotTargetPollIndex, PlayerDotMaxHostileTargetsPerPoll);
+            foreach (var targetActorId in targetBatch)
             {
                 try
                 {
@@ -294,13 +303,7 @@ internal sealed partial class LocalStatsService
                         continue;
                     }
 
-                    var preferredRecentActions = recentHostilePlayerActions
-                        .Where(action => AreEquivalentActorIds(action.TargetActorId, targetActorId))
-                        .Where(action => PlayerDotCatalog.IsKnownPlayerDotAction(action.ActionId))
-                        .OrderByDescending(action => action.ObservedAtUtc)
-                        .GroupBy(action => action.Source.ActorId)
-                        .Select(static group => group.First())
-                        .ToList();
+                    var preferredRecentActions = BuildPreferredRecentDotActionsForTarget(targetActorId);
                     if (preferredRecentActions.Count == 0)
                     {
                         CapturePlayerDotStatusesForHostileTargetLocked(hostileBattleNpc, nowUtc);
@@ -330,26 +333,34 @@ internal sealed partial class LocalStatsService
                         $"轮询玩家 DOT 目标失败：targetId=0x{targetActorId:X8}，异常={ex.GetType().Name}: {ex.Message}");
                 }
             }
+            MarkStatsPerfSegment("dotTargets", ref perfLast, perfParts);
 
-            foreach (var friendlyActor in EnumerateTrackedPartyBattleCharas())
+            if (ShouldPollSourceOwnedPlayerDotStatuses(nowUtc))
             {
-                try
+                var friendlyActors = EnumerateTrackedPartyBattleCharas().ToList();
+                var friendlyBatch = BuildRoundRobinBatch(friendlyActors, ref nextPlayerDotFriendlyPollIndex, PlayerDotMaxFriendlyActorsPerPoll);
+                foreach (var friendlyActor in friendlyBatch)
                 {
-                    CaptureSourceOwnedPlayerDotStatusesForFriendlyActorLocked(friendlyActor, nowUtc);
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.Debug(
-                        "统计",
-                        ex,
-                        $"轮询友方自挂 DOT 状态失败：actorId=0x{ResolveBattleCharaActorId(friendlyActor):X8}。");
+                    try
+                    {
+                        CaptureSourceOwnedPlayerDotStatusesForFriendlyActorLocked(friendlyActor, nowUtc);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.Debug(
+                            "统计",
+                            ex,
+                            $"轮询友方自挂 DOT 状态失败：actorId=0x{ResolveBattleCharaActorId(friendlyActor):X8}。");
+                    }
                 }
             }
+            MarkStatsPerfSegment("dotFriendly", ref perfLast, perfParts);
 
             try
             {
                 SimulateActivePlayerDotTicksLocked(nowUtc);
                 TryRecordPendingWildfireDetonationsLocked(nowUtc);
+                MarkStatsPerfSegment("dotSim", ref perfLast, perfParts);
             }
             catch (Exception ex)
             {
@@ -363,6 +374,7 @@ internal sealed partial class LocalStatsService
             {
                 TrimInactivePlayerDotsLocked(nowUtc);
                 TrimInactiveWildfiresLocked(nowUtc);
+                MarkStatsPerfSegment("dotTrim", ref perfLast, perfParts);
             }
             catch (Exception ex)
             {
@@ -371,6 +383,8 @@ internal sealed partial class LocalStatsService
                     ex,
                     $"清理玩家 DOT 活跃状态失败：异常={ex.GetType().Name}: {ex.Message}");
             }
+
+            LogStatsPerfIfSlow(perfStart, perfParts, inCombat);
         }
         catch (Exception ex)
         {
@@ -379,6 +393,45 @@ internal sealed partial class LocalStatsService
                 ex,
                 $"轮询玩家 DOT 状态失败，已自动跳过本轮刷新。异常={ex.GetType().Name}: {ex.Message}");
         }
+    }
+
+    private bool ShouldPollSourceOwnedPlayerDotStatuses(DateTime nowUtc)
+        => activePlayerDots.Values.Any(static state => state.SkillEntry?.StatusOwnerKind == PlayerDotStatusOwnerKind.SourceActor)
+           || recentHostilePlayerActions.Any(action => nowUtc - action.ObservedAtUtc <= PlayerDotSourceOwnedTargetResolutionWindow);
+
+    private IReadOnlyList<RecentHostilePlayerAction> BuildPreferredRecentDotActionsForTarget(uint targetActorId)
+    {
+        for (var index = recentHostilePlayerActions.Count - 1; index >= 0; index--)
+        {
+            var action = recentHostilePlayerActions[index];
+            if (!PlayerDotCatalog.IsKnownPlayerDotAction(action.ActionId))
+                continue;
+
+            if (!AreEquivalentActorIds(action.TargetActorId, targetActorId))
+                continue;
+
+            return [action];
+        }
+
+        return [];
+    }
+
+    private static IReadOnlyList<T> BuildRoundRobinBatch<T>(IReadOnlyList<T> items, ref int nextIndex, int maxCount)
+    {
+        if (items.Count == 0 || maxCount <= 0)
+        {
+            nextIndex = 0;
+            return [];
+        }
+
+        var count = Math.Min(maxCount, items.Count);
+        var start = ((nextIndex % items.Count) + items.Count) % items.Count;
+        var result = new List<T>(count);
+        for (var offset = 0; offset < count; offset++)
+            result.Add(items[(start + offset) % items.Count]);
+
+        nextIndex = (start + count) % items.Count;
+        return result;
     }
 
 
@@ -412,7 +465,8 @@ internal sealed partial class LocalStatsService
 
     private void DecayActivePlayerDotStatesLocked(DateTime nowUtc)
     {
-        foreach (var state in activePlayerDots.Values)
+        var states = BuildRoundRobinBatch(activePlayerDots.Values.ToList(), ref nextPlayerDotDecayIndex, PlayerDotMaxDecayStatesPerPoll);
+        foreach (var state in states)
             DecayActivePlayerDotStateRemainingTime(state, nowUtc);
     }
 

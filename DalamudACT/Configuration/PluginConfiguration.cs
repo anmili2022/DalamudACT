@@ -62,6 +62,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public bool CombatTimelineRecordingEnabled = false;
     public bool CombatTimelineMapEffectEnabled = false;
     public int CombatTimelineMaxEntries = 500;
+    public bool CombatTimelineShowRawTime = false;
+    public bool CombatTimelineShowEncounterTime = true;
+    public bool ReplayStatsMode = false;
     public bool ShowTimelineWindow = false;
     public bool LockTimelineWindow = false;
     public bool TimelineDebugMode = false;
@@ -73,6 +76,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int TimelineMaxVisibleEntries = 8;
     public float TimelineRowGap = 1f;
     public bool TimelineAutoDownloadOnEnter = false;
+    public string TimelineForceLoadPath = string.Empty;
     public bool EnableTimelineDailyRoutinesTts = false;
     public bool TimelineTtsMechanic = true;
     public bool TimelineTtsSkillName = true;
@@ -84,6 +88,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
         new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
         new TtsCorrectionRule { From = "对地", To = "对帝", Enabled = true },
+        new TtsCorrectionRule { From = "三重猛击", To = "三虫猛击", Enabled = true },
         new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
         new TtsCorrectionRule { From = "--north--", To = "去北侧", Enabled = true },
         new TtsCorrectionRule { From = "--south--", To = "去南侧", Enabled = true },
@@ -607,6 +612,13 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
             TimelineTtsLeadSeconds = 5;
         }
 
+        if (Version < 67)
+        {
+            CombatTimelineShowRawTime = false;
+            CombatTimelineShowEncounterTime = true;
+            ReplayStatsMode = false;
+        }
+
         if (!Enum.IsDefined(typeof(PluginLogChannel), LogChannel))
             LogChannel = PluginLogChannel.Info;
 
@@ -621,7 +633,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         LogHelper.Channel = LogChannel;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 66);
+        Version = Math.Max(Version, 67);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();
@@ -637,6 +649,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         AddDefaultTtsCorrection("地火", "帝火");
         AddDefaultTtsCorrection("地动", "帝动");
         AddDefaultTtsCorrection("对地", "对帝");
+        AddDefaultTtsCorrection("三重猛击", "三虫猛击");
         AddDefaultTtsCorrection("--middle--", "回到中间");
         AddDefaultTtsCorrection("--north--", "去北侧");
         AddDefaultTtsCorrection("--south--", "去南侧");

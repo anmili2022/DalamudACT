@@ -36,16 +36,18 @@ internal sealed class TimelineWindow : Window
     {
         var maxRows = Math.Clamp(config.TimelineMaxVisibleEntries, 1, 30);
         var rowGap = Math.Clamp(config.TimelineRowGap, 0f, 8f);
-        var panelHeight = Padding * 2f + maxRows * RowHeight + Math.Max(0, maxRows - 1) * rowGap;
+        var debugFooterRows = config.TimelineDebugMode ? 1 : 0;
+        var panelHeight = Padding * 2f + (maxRows + debugFooterRows) * RowHeight + Math.Max(0, maxRows + debugFooterRows - 1) * rowGap;
+        var windowHeight = panelHeight + ImGui.GetStyle().WindowPadding.Y * 2f;
         var panelWidth = Math.Max(MinPanelWidth, ImGui.GetWindowWidth());
         if (config.LockTimelineWindow)
         {
-            Size = new Vector2(panelWidth, panelHeight);
+            Size = new Vector2(panelWidth, windowHeight);
             SizeCondition = ImGuiCond.Always;
         }
         else
         {
-            ImGui.SetWindowSize(new Vector2(panelWidth, panelHeight), ImGuiCond.Once);
+            ImGui.SetWindowSize(new Vector2(panelWidth, windowHeight), ImGuiCond.Always);
         }
 
         Flags = config.LockTimelineWindow
@@ -80,6 +82,13 @@ internal sealed class TimelineWindow : Window
             var rowMin = origin + new Vector2(Padding, Padding + i * (RowHeight + rowGap));
             var rowMax = rowMin + new Vector2(panelWidth - Padding * 2f, RowHeight);
             DrawRow(drawList, rowMin, rowMax, row, opacity);
+        }
+
+        if (config.TimelineDebugMode)
+        {
+            var footerMin = origin + new Vector2(Padding, Padding + maxRows * (RowHeight + rowGap));
+            var footerMax = footerMin + new Vector2(panelWidth - Padding * 2f, RowHeight);
+            DrawRow(drawList, footerMin, footerMax, TimelineRow.Status(timelineService.CurrentTimelineLineDebugText), opacity);
         }
 
         ImGui.Dummy(new Vector2(panelWidth, panelHeight));

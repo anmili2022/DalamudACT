@@ -75,15 +75,15 @@ internal sealed partial class LocalStatsService
         }
     }
 
-    public void PollCombatTimelineHostileCasts(DateTime nowUtc, bool inCombat)
+    public void PollCombatTimelineHostileCasts(DateTime nowUtc, bool inCombat, IEnumerable<IBattleChara>? battleCharas = null)
     {
         lock (gate)
         {
-            PollCombatTimelineHostileCastsLocked(nowUtc, inCombat);
+            PollCombatTimelineHostileCastsLocked(nowUtc, inCombat, battleCharas);
         }
     }
 
-    private void PollCombatTimelineHostileCastsLocked(DateTime nowUtc, bool inCombat)
+    private void PollCombatTimelineHostileCastsLocked(DateTime nowUtc, bool inCombat, IEnumerable<IBattleChara>? battleCharas)
     {
         if (!config.CombatTimelineRecordingEnabled || !inCombat || !currentEncounter.Started)
         {
@@ -96,7 +96,7 @@ internal sealed partial class LocalStatsService
             return;
 
         lastCombatTimelineCastPollUtc = nowUtc;
-        foreach (var battleChara in DalamudApi.ObjectTable.OfType<IBattleChara>())
+        foreach (var battleChara in battleCharas ?? DalamudApi.ObjectTable.OfType<IBattleChara>())
             CaptureCombatTimelineHostileCastLocked(battleChara, nowUtc);
     }
 
@@ -218,6 +218,7 @@ internal sealed partial class LocalStatsService
 
         combatTimelineEntries.Add(new CombatTimelineEntry(
             timeUtc.ToLocalTime(),
+            currentEncounter.Started ? Math.Max(0, (int)Math.Floor((timeUtc - currentEncounter.StartUtc).TotalSeconds)) : null,
             kind,
             message,
             actorName,

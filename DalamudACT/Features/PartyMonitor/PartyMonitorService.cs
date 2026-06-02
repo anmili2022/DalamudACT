@@ -60,6 +60,7 @@ internal sealed class PartyMonitorService
 
     private readonly Dictionary<long, DateTime> lastSkillUseUtc = new();
     private DateTime lastFoodPollUtc;
+    private DateTime lastUpdateUtc;
     private DateTime lastRebuildUtc = DateTime.MinValue;
     private List<PartyMemberState> cachedMemberStates = new();
     private readonly object gate = new();
@@ -87,7 +88,14 @@ internal sealed class PartyMonitorService
 
     public void Update()
     {
+        if (!config.PartyMonitor.MonitorFood && !config.PartyMonitor.MonitorSkills)
+            return;
+
         var nowUtc = DateTime.UtcNow;
+        if ((nowUtc - lastUpdateUtc).TotalMilliseconds < 250)
+            return;
+
+        lastUpdateUtc = nowUtc;
         PollFoodBuffs(nowUtc);
         if ((nowUtc - lastRebuildUtc).TotalMilliseconds >= 200)
         {

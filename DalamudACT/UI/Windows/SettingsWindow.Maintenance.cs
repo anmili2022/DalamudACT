@@ -107,6 +107,16 @@ internal sealed partial class SettingsWindow
         ImGui.SameLine(0f, 12f);
         DrawDebugLogModuleCheckbox(DebugLogModule.Dot);
 
+        ImGui.Dummy(new Vector2(0f, 4f));
+        var replayStatsMode = config.ReplayStatsMode;
+        if (ImGui.Checkbox("回顾模式", ref replayStatsMode))
+        {
+            config.ReplayStatsMode = replayStatsMode;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后，战斗回顾播放会按真实战斗进入统计、战斗流水和时间轴；关闭后回顾只用于时间轴辅助同步，不计入真实统计。 ");
+
         DrawCompactHelp("日志写入规则", "启用调试日志只控制 Debug/Verbose 是否写入 /xllog。分组开关只在启用调试日志后生效；伤害统计和 DoT 属于战斗高频日志，默认关闭。日志频道控制插件聊天通知输出位置；Info(/xllog) 表示只写入 Dalamud 日志，不往游戏聊天框输出。 ");
         ImGui.TextDisabled($"当前状态：{(config.EnableDebugLog ? "已开启" : "已关闭")}");
     }

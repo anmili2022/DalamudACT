@@ -13,23 +13,28 @@ namespace DalamudACT;
 internal sealed class TimelineService
 {
     private const float AbilitySyncMaxDriftSeconds = 12f;
+    private const float AbilitySyncMinCorrectionSeconds = 1.0f;
+    private const float InCombatSyncCompensationSeconds = 0.3f;
+    private static readonly TimeSpan OutOfCombatResetGrace = TimeSpan.FromSeconds(1.5);
     private const double InitialAbilitySyncConfirmWindowSeconds = 20d;
     private const double InitialAbilitySyncPairToleranceSeconds = 3d;
     private const double TimelineTtsDuplicateSuppressSeconds = 2d;
     private const string HardcodedSourceTimelineDataDirectory = @"E:\git\DalamudACT\DalamudACT\Features\Timeline\Data";
     private readonly PluginConfiguration config;
-    private readonly TimelineMechanicHintProvider mechanicHints = new();
     private readonly AeAssistResourceDownloader aeAssistResources = new();
     private readonly TimelineRemoteResourceDownloader remoteResources = new();
     private TimelineDefinition? definition;
     private IReadOnlyList<TimelineIndexEntry>? timelineIndex;
     private DateTime? startedAtUtc;
+    private DateTime? outOfCombatSinceUtc;
+    private bool startedFromInCombatSync;
     private float displayOffsetSeconds;
     private string statusText = "尚未加载时间轴。";
     private string sourcePath = string.Empty;
     private uint loadedZoneId;
     private string loadedZoneName = string.Empty;
     private float lastSystemLogSyncTimeSeconds;
+    private float lastNpcYellSyncTimeSeconds;
     private float lastMapEffectSyncTimeSeconds;
     private readonly HashSet<string> spokenTtsKeys = new(StringComparer.Ordinal);
     private readonly HashSet<string> spokenActionResponseKeys = new(StringComparer.Ordinal);
@@ -38,6 +43,7 @@ internal sealed class TimelineService
     private readonly Dictionary<string, DateTime> observedStartsUsingCasts = new(StringComparer.Ordinal);
     private readonly List<ObservedTimelineAbility> pendingInitialAbilitySyncs = [];
     private string? forcedTimelinePath;
+    private string? suppressedSavedForcedTimelinePath;
     private string autoDownloadStatusText = string.Empty;
     private readonly Dictionary<uint, DateTime> autoDownloadTimestamps = new();
     private DateTime? lastAutoDownloadCheckUtc;
@@ -50,6 +56,8 @@ internal sealed class TimelineService
     public string StatusText => statusText;
 
     public string DefinitionName => definition?.Name ?? "时间轴";
+
+    public string SourcePath => sourcePath;
 
     public bool HasTimeline => definition != null;
 
@@ -123,6 +131,25 @@ internal sealed class TimelineService
 
     public bool IsRunning => startedAtUtc.HasValue;
 
+    public string CurrentTimelineLineDebugText
+    {
+        get
+        {
+            if (definition == null || !startedAtUtc.HasValue)
+                return string.Empty;
+
+            var current = DisplayTimeSeconds;
+            var entry = definition.Entries
+                .Where(entry => entry.TimeSeconds <= current)
+                .OrderByDescending(entry => entry.TimeSeconds)
+                .FirstOrDefault();
+            if (entry == null || entry.SourceLineNumber <= 0)
+                return $"[{Math.Max(0f, current):0.00}]当前运行第-行";
+
+            return $"[{Math.Max(0f, current):0.00}]当前运行第{entry.SourceLineNumber}行";
+        }
+    }
+
     public Task<string> RefreshCurrentZoneTimelineAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
         => remoteResources.RefreshCurrentZoneAsync(loadedZoneId, loadedZoneName, progress, cancellationToken);
 
@@ -138,6 +165,7 @@ internal sealed class TimelineService
         if (!File.Exists(path))
             return $"时间轴文件不存在：{path}";
 
+        suppressedSavedForcedTimelinePath = null;
         forcedTimelinePath = path;
         LoadForcedTimeline(Path.GetFileNameWithoutExtension(path), path);
         return statusText;
@@ -145,6 +173,7 @@ internal sealed class TimelineService
 
     public string ClearForcedTimeline()
     {
+        suppressedSavedForcedTimelinePath = forcedTimelinePath ?? config.TimelineForceLoadPath;
         forcedTimelinePath = null;
         ReloadCurrentTimeline();
         return "已取消强制加载时间轴。";
@@ -169,18 +198,40 @@ internal sealed class TimelineService
 
         if (inCombat)
         {
+            outOfCombatSinceUtc = null;
             if (!startedAtUtc.HasValue && RequiresSyncBeforeStart())
             {
+                if (TryStartFromInCombatSync(DateTime.UtcNow))
+                {
+                    ProcessTimelineTts();
+                    return;
+                }
+
                 statusText = $"已加载 {definition.Entries.Count} 条：{definition.Name}，等待首个 Boss 技能同步。";
                 return;
             }
 
-            startedAtUtc ??= DateTime.UtcNow;
+            if (!startedAtUtc.HasValue)
+            {
+                startedAtUtc = DateTime.UtcNow;
+                outOfCombatSinceUtc = null;
+                startedFromInCombatSync = false;
+            }
             ProcessTimelineTts();
             return;
         }
 
+        if (startedAtUtc.HasValue)
+        {
+            var nowUtc = DateTime.UtcNow;
+            outOfCombatSinceUtc ??= nowUtc;
+            if (nowUtc - outOfCombatSinceUtc.Value < OutOfCombatResetGrace)
+                return;
+        }
+
+        outOfCombatSinceUtc = null;
         startedAtUtc = null;
+        outOfCombatSinceUtc = null;
         displayOffsetSeconds = 0f;
         spokenTtsKeys.Clear();
         spokenActionResponseKeys.Clear();
@@ -190,7 +241,33 @@ internal sealed class TimelineService
         observedStartsUsingCasts.Clear();
     }
 
-    public void PollStartsUsingCasts(DateTime nowUtc, bool inCombat)
+    private bool TryStartFromInCombatSync(DateTime nowUtc)
+    {
+        if (definition == null)
+            return false;
+
+        var syncEntry = definition.Entries
+            .Where(entry => entry.EventType == "InCombat")
+            .OrderBy(static entry => entry.TimeSeconds)
+            .FirstOrDefault();
+        if (syncEntry == null)
+            return false;
+
+        var targetTime = (ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds) + InCombatSyncCompensationSeconds;
+        startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
+        outOfCombatSinceUtc = null;
+        startedFromInCombatSync = true;
+        displayOffsetSeconds = 0f;
+        spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        lastTimelineTtsTextUtc.Clear();
+        pendingInitialAbilitySyncs.Clear();
+        statusText = $"已同步：{definition.Name} / 进入战斗";
+        LogHelper.Debug("时间轴", $"InCombat 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}");
+        return true;
+    }
+
+    public void PollStartsUsingCasts(DateTime nowUtc, bool inCombat, IEnumerable<Dalamud.Game.ClientState.Objects.Types.IBattleChara>? battleCharas = null)
     {
         if (definition == null || !inCombat)
         {
@@ -198,7 +275,7 @@ internal sealed class TimelineService
             return;
         }
 
-        foreach (var battleChara in DalamudApi.ObjectTable.OfType<Dalamud.Game.ClientState.Objects.Types.IBattleChara>())
+        foreach (var battleChara in battleCharas ?? DalamudApi.ObjectTable.OfType<Dalamud.Game.ClientState.Objects.Types.IBattleChara>())
         {
             if (!BattleCharaReflectionAccessor.IsLikelyHostileBattleNpc(battleChara))
                 continue;
@@ -242,13 +319,23 @@ internal sealed class TimelineService
             .First();
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
-        if (wasRunning && Math.Abs(targetTime - current) > AbilitySyncMaxDriftSeconds)
+        if (wasRunning)
         {
-            LogHelper.Debug(
-                "时间轴",
-                $"忽略读条同步大幅回跳：actionId={actionId:X}, source={sourceName}, current={current:0.0}, target={targetTime:0.0}, entry={syncEntry.DisplayText}");
-            ProcessStartsUsingResponseTts(actionId, nowUtc, current, wasRunning, sourceName);
-            return;
+            var drift = Math.Abs(targetTime - current);
+            if (drift > AbilitySyncMaxDriftSeconds)
+            {
+                LogHelper.Debug(
+                    "时间轴",
+                    $"忽略读条同步大幅回跳：actionId={actionId:X}, source={sourceName}, current={current:0.0}, target={targetTime:0.0}, entry={syncEntry.DisplayText}");
+                ProcessStartsUsingResponseTts(actionId, nowUtc, current, wasRunning, sourceName);
+                return;
+            }
+
+            if (!startedFromInCombatSync && drift < AbilitySyncMinCorrectionSeconds)
+            {
+                ProcessStartsUsingResponseTts(actionId, nowUtc, current, wasRunning, sourceName);
+                return;
+            }
         }
 
         ApplyAbilitySync(syncEntry, nowUtc, wasRunning
@@ -319,6 +406,7 @@ internal sealed class TimelineService
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
+        outOfCombatSinceUtc = null;
         displayOffsetSeconds = 0f;
         lastMapEffectSyncTimeSeconds = Math.Max(syncEntry.TimeSeconds, targetTime);
         spokenTtsKeys.Clear();
@@ -381,6 +469,7 @@ internal sealed class TimelineService
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
+        outOfCombatSinceUtc = null;
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = Math.Max(syncEntry.TimeSeconds, targetTime);
         spokenTtsKeys.Clear();
@@ -395,6 +484,68 @@ internal sealed class TimelineService
 
     private static string NormalizeSystemLogMessage(string message)
         => Regex.Replace(message.Trim(), @"^\[\d{1,2}:\d{2}(?::\d{2})?\]\s*", string.Empty);
+
+    public void ObserveNpcYell(string message, DateTime nowUtc)
+    {
+        message = NormalizeChatMessage(message);
+        if (definition == null || string.IsNullOrWhiteSpace(message))
+            return;
+
+        var syncEntry = ResolveNpcYellSyncEntry(message);
+        if (syncEntry == null)
+            return;
+
+        var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
+        startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
+        outOfCombatSinceUtc = null;
+        displayOffsetSeconds = 0f;
+        lastNpcYellSyncTimeSeconds = Math.Max(syncEntry.TimeSeconds, targetTime);
+        spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        lastTimelineTtsTextUtc.Clear();
+        pendingInitialAbilitySyncs.Clear();
+        LogHelper.Debug("时间轴", $"NpcYell 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, text={syncEntry.NpcYellText ?? syncEntry.Text}, message={message}");
+        statusText = $"已同步：{definition.Name} / Boss 台词";
+    }
+
+    private static string NormalizeChatMessage(string message)
+        => Regex.Replace(message.Trim(), @"^\[\d{1,2}:\d{2}(?::\d{2})?\]\s*", string.Empty);
+
+    private TimelineEntry? ResolveNpcYellSyncEntry(string message)
+    {
+        if (definition == null)
+            return null;
+
+        return definition.Entries
+            .Where(entry => entry.EventType == "NpcYell" && IsWithinNpcYellWindow(entry))
+            .OrderBy(entry => entry.TimeSeconds)
+            .FirstOrDefault(entry => IsNpcYellMatch(entry, message));
+    }
+
+    private bool IsWithinNpcYellWindow(TimelineEntry entry)
+    {
+        if (startedAtUtc == null)
+            return entry.TimeSeconds > Math.Max(0f, lastNpcYellSyncTimeSeconds) + 1f;
+
+        var currentTime = (float)(DateTime.UtcNow - startedAtUtc.Value).TotalSeconds;
+        var windowMin = entry.TimeSeconds - entry.WindowFirst;
+        var windowMax = entry.TimeSeconds + entry.WindowLast;
+        if (currentTime < windowMin || currentTime > windowMax)
+            return false;
+
+        return entry.TimeSeconds > lastNpcYellSyncTimeSeconds + 1f;
+    }
+
+    private static bool IsNpcYellMatch(TimelineEntry entry, string message)
+    {
+        var expected = string.IsNullOrWhiteSpace(entry.NpcYellText)
+            ? entry.Text
+            : entry.NpcYellText;
+        if (string.IsNullOrWhiteSpace(expected))
+            return false;
+
+        return message.Contains(expected.Trim(), StringComparison.OrdinalIgnoreCase);
+    }
 
     private static readonly ConcurrentDictionary<string, Regex?> LogMessageRegexCache = new();
     private DateTime? timelineLoadedAtUtc;
@@ -540,12 +691,19 @@ internal sealed class TimelineService
             .First();
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
-        if (wasRunning && Math.Abs(targetTime - current) > AbilitySyncMaxDriftSeconds)
+        if (wasRunning)
         {
-            LogHelper.Debug(
-                "时间轴",
-                $"忽略技能同步大幅回跳：actionId={actionId:X}, current={current:0.0}, target={targetTime:0.0}, entry={syncEntry.DisplayText}");
-            return;
+            var drift = Math.Abs(targetTime - current);
+            if (drift > AbilitySyncMaxDriftSeconds)
+            {
+                LogHelper.Debug(
+                    "时间轴",
+                    $"忽略技能同步大幅回跳：actionId={actionId:X}, current={current:0.0}, target={targetTime:0.0}, entry={syncEntry.DisplayText}");
+                return;
+            }
+
+            if (!startedFromInCombatSync && drift < AbilitySyncMinCorrectionSeconds)
+                return;
         }
 
         ApplyAbilitySync(syncEntry, nowUtc, wasRunning
@@ -613,6 +771,8 @@ internal sealed class TimelineService
     {
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         startedAtUtc = nowUtc - TimeSpan.FromSeconds(targetTime);
+        outOfCombatSinceUtc = null;
+        startedFromInCombatSync = false;
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = Math.Max(lastSystemLogSyncTimeSeconds, targetTime);
         spokenTtsKeys.Clear();
@@ -756,6 +916,7 @@ internal sealed class TimelineService
         sourcePath = string.Empty;
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
+        lastNpcYellSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
@@ -768,6 +929,8 @@ internal sealed class TimelineService
 
     private void EnsureTimelineForZone(uint zoneId, string zoneName)
     {
+        TryApplySavedForcedTimelineForZone(zoneId);
+
         if (!string.IsNullOrWhiteSpace(forcedTimelinePath))
         {
             loadedZoneId = zoneId;
@@ -783,10 +946,12 @@ internal sealed class TimelineService
         loadedZoneId = zoneId;
         loadedZoneName = zoneName;
         startedAtUtc = null;
+        outOfCombatSinceUtc = null;
         definition = null;
         sourcePath = string.Empty;
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
+        lastNpcYellSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
@@ -824,11 +989,54 @@ internal sealed class TimelineService
         statusText = $"未找到时间轴文件：{candidate.FileName}";
     }
 
+    private void TryApplySavedForcedTimelineForZone(uint zoneId)
+    {
+        if (zoneId == 0 || !string.IsNullOrWhiteSpace(forcedTimelinePath))
+            return;
+
+        var path = config.TimelineForceLoadPath?.Trim().Trim('"');
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            return;
+
+        if (string.Equals(path, suppressedSavedForcedTimelinePath, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var matched = TryReadTimelineFileZoneId(path, out var fileZoneId) && fileZoneId == zoneId
+                      || GetTimelineIndex().Any(entry => entry.ZoneId == zoneId);
+        if (!matched)
+            return;
+
+        forcedTimelinePath = path;
+    }
+
+    private static bool TryReadTimelineFileZoneId(string path, out uint zoneId)
+    {
+        zoneId = 0;
+        try
+        {
+            foreach (var line in File.ReadLines(path).Take(40))
+            {
+                var match = Regex.Match(line, @"^\s*#\s*ZoneId\s*:\s*(?<zoneId>\d+)\s*$", RegexOptions.IgnoreCase);
+                if (!match.Success)
+                    continue;
+
+                return uint.TryParse(match.Groups["zoneId"].Value, out zoneId);
+            }
+        }
+        catch
+        {
+        }
+
+        return false;
+    }
+
     private void LoadForcedTimeline(string name, string path)
     {
         startedAtUtc = null;
+        outOfCombatSinceUtc = null;
         displayOffsetSeconds = 0f;
         lastSystemLogSyncTimeSeconds = 0f;
+        lastNpcYellSyncTimeSeconds = 0f;
         spokenTtsKeys.Clear();
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
@@ -950,9 +1158,7 @@ internal sealed class TimelineService
     }
 
     private string? GetMechanicHint(TimelineEntry entry)
-        => string.IsNullOrWhiteSpace(entry.MechanicHint)
-            ? mechanicHints.GetHint(entry)
-            : entry.MechanicHint;
+        => string.IsNullOrWhiteSpace(entry.MechanicHint) ? null : entry.MechanicHint;
 
     private static string? GetActionResponseTimelineHint(TimelineEntry entry)
     {
@@ -974,6 +1180,9 @@ internal sealed class TimelineService
     {
         if (definition == null)
             return false;
+
+        if (!string.IsNullOrWhiteSpace(forcedTimelinePath))
+            return true;
 
         var firstVisible = definition.Entries
             .Where(static entry => !entry.Hidden)

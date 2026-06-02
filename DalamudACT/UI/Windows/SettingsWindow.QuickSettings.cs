@@ -1,5 +1,8 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Numerics;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Bindings.ImGui;
 
 namespace DalamudACT;
@@ -430,6 +433,7 @@ internal sealed partial class SettingsWindow
         {
             DrawQuickBoolRow("启用时间轴 TTS", "需要 DailyRoutines 文本转语音", config.EnableTimelineDailyRoutinesTts, value => config.EnableTimelineDailyRoutinesTts = value);
             DrawQuickBoolRow("播报机制", "AOE / 死刑等分类提示", config.TimelineTtsMechanic, value => config.TimelineTtsMechanic = value);
+            DrawQuickBoolRow("播报技能名", "机制名之外额外播报技能名称", config.TimelineTtsSkillName, value => config.TimelineTtsSkillName = value);
             DrawQuickBoolRow("播报应对方案", "读条ID 即时播，结算ID 到达时播", config.TimelineTtsResponse, value => config.TimelineTtsResponse = value);
             DrawQuickIntRow("TTS 提前秒数", null, config.TimelineTtsLeadSeconds, 0, 10, value => config.TimelineTtsLeadSeconds = value);
         });
@@ -443,10 +447,36 @@ internal sealed partial class SettingsWindow
             ImGui.TextUnformatted($"时间轴: {(timelineService?.HasTimeline == true ? "已加载" : "未加载")}");
             ImGui.TextUnformatted($"定义: {timelineService?.DefinitionName ?? "-"}");
             ImGui.TextUnformatted($"运行: {(timelineService?.IsRunning == true ? $"是 ({timelineService.CurrentTimeSeconds:F1}s)" : "否")}");
+            DrawQuickRuntimeModeControls();
             ImGui.TextUnformatted($"自动下载: {timelineService?.AutoDownloadStatusText ?? "-"}");
             ImGui.Dummy(new Vector2(0f, 8f));
-            ImGui.TextDisabled(@"E:\git\DalamudACT\DalamudACT\Features\Timeline\Data");
+            DrawTimelinePathButton(showFullPath: true);
         });
+    }
+
+    private void DrawQuickRuntimeModeControls()
+    {
+        var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
+        if (inDutyRecorderPlayback)
+        {
+            var replayStatsMode = config.ReplayStatsMode;
+            if (ImGui.Checkbox("回顾模式", ref replayStatsMode))
+            {
+                config.ReplayStatsMode = replayStatsMode;
+                config.Save();
+            }
+            if (ImGui.IsItemHovered())
+                ImGui.SetTooltip("开启后，战斗回顾播放会按真实战斗进入统计、战斗流水和时间轴。与完整设置里的回顾模式相同。");
+        }
+
+        var enableDebugLog = config.EnableDebugLog;
+        if (ImGui.Checkbox("启用调试日志", ref enableDebugLog))
+        {
+            config.EnableDebugLog = enableDebugLog;
+            LogHelper.EnableDebugLog = enableDebugLog;
+            config.Save();
+            LogHelper.Info("设置", enableDebugLog ? "已从简易设置中启用调试日志。" : "已从简易设置中关闭调试日志。");
+        }
     }
 
     private void DrawQuickStatusPanel(Vector4 ok, Vector4 accent)
@@ -459,12 +489,11 @@ internal sealed partial class SettingsWindow
         DrawThemeSwitcher();
         ImGui.Dummy(new Vector2(0f, 6f));
         ImGui.TextUnformatted("快捷入口");
-        if (ImGui.Button("打开主界面", new Vector2(-1f, 0f)))
-            openMainWindow();
         if (ImGui.Button("打开战斗流水", new Vector2(-1f, 0f)))
             openCombatTimelineWindow();
         if (ImGui.Button("已有时间轴", new Vector2(-1f, 0f)))
             openTimelineListWindow();
+        DrawTimelinePathButton(showFullPath: false);
         ImGui.Dummy(new Vector2(0f, 6f));
         if (ImGui.Button("还原默认UI", new Vector2(-1f, 0f)))
         {
@@ -475,6 +504,59 @@ internal sealed partial class SettingsWindow
         {
             config.SaveCurrentUiAsDefault();
             config.Save();
+        }
+    }
+
+    private void DrawTimelinePathButton(bool showFullPath)
+    {
+        var path = timelineService?.SourcePath ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            ImGui.TextDisabled("时间轴文件: 未加载");
+            return;
+        }
+
+        ImGui.TextDisabled("时间轴文件");
+        var fileName = Path.GetFileName(path);
+        var buttonLabel = string.IsNullOrWhiteSpace(fileName)
+            ? "当前时间轴"
+            : fileName;
+        if (ImGui.Button(buttonLabel, new Vector2(-1f, 0f)))
+            OpenTimelineFolder(path);
+
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            ImGui.SetClipboardText(path);
+            timelineRemoteStatusText = "已复制时间轴文件路径。";
+        }
+
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip($"左键打开时间轴文件的文件夹\n右键复制时间轴文件路径\n{path}");
+
+        if (showFullPath)
+            ImGui.TextWrapped(path);
+    }
+
+    private static void OpenTimelineFolder(string path)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+                return;
+
+            var directory = Path.GetDirectoryName(path);
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+                return;
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = directory,
+                UseShellExecute = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Warning("时间轴", ex, $"打开时间轴文件夹失败：{path}");
         }
     }
 

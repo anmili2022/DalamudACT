@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Enums;
@@ -10,12 +11,15 @@ namespace DalamudACT;
 // 当前战斗模块：负责实时战斗记录、战斗流水、结算、状态文本和 ACTX 快照构造。
 internal sealed partial class LocalStatsService
 {
+    private static bool EnableStatsPerformanceLog => false;
     private readonly List<CombatTimelineEntry> combatTimelineEntries = new();
 
     private EncounterSession currentEncounter = new();
     private DateTime partyOutOfCombatSinceUtc;
     private DateTime enteredCombatWithoutDataSinceUtc;
     private DateTime lastNoDataCombatDiagnosticUtc;
+    private DateTime lastActiveSnapshotBuildUtc;
+    private DateTime lastStatsPerfLogUtc;
     private DateTime lastCombatTimelineStatusPollUtc;
     private DateTime lastCombatTimelineCastPollUtc;
     private int encounterFinalizedVersion;
@@ -45,6 +49,21 @@ internal sealed partial class LocalStatsService
             lock (gate)
                 return encounterFinalizedVersion;
         }
+    }
+
+    public bool HasActiveEncounter
+    {
+        get
+        {
+            lock (gate)
+                return currentEncounter.Started;
+        }
+    }
+
+    public bool IsEncounterIdle(DateTime nowUtc, TimeSpan timeout)
+    {
+        lock (gate)
+            return currentEncounter.Started && currentEncounter.LastEventUtc != default && nowUtc - currentEncounter.LastEventUtc >= timeout;
     }
 
     public string DataSourceText => "本地事件采集 / ACTX 统计口径";
@@ -261,40 +280,85 @@ internal sealed partial class LocalStatsService
     }
 
 
-    public void Update(string zoneName, bool inCombat)
+    public void Update(string zoneName, bool inCombat, bool forceOutOfCombat = false)
     {
         var nowUtc = DateTime.UtcNow;
+        var perfStart = Stopwatch.GetTimestamp();
+        var perfLast = perfStart;
+        var perfParts = new List<string>(8);
 
         lock (gate)
         {
-            latestInCombatHint = inCombat;
+            var effectiveInCombat = forceOutOfCombat ? false : inCombat;
+            latestInCombatHint = effectiveInCombat;
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
-            PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, inCombat);
-            PollCombatTimelineFriendlyStatusesLocked(nowUtc, inCombat);
-            PollActivePlayerDots(nowUtc, inCombat);
-            var allPartyMembersOutOfCombat = AreAllPartyMembersOutOfCombat(inCombat);
+            PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, effectiveInCombat);
+            MarkStatsPerfSegment("deaths", ref perfLast, perfParts);
+            PollCombatTimelineFriendlyStatusesLocked(nowUtc, effectiveInCombat);
+            MarkStatsPerfSegment("statuses", ref perfLast, perfParts);
+            PollActivePlayerDots(nowUtc, effectiveInCombat);
+            MarkStatsPerfSegment("dots", ref perfLast, perfParts);
+            var allPartyMembersOutOfCombat = forceOutOfCombat || AreAllPartyMembersOutOfCombat(effectiveInCombat);
+            MarkStatsPerfSegment("combatEndScan", ref perfLast, perfParts);
             UpdatePartyOutOfCombatTimer(nowUtc, allPartyMembersOutOfCombat);
             UpdateNoDataCombatDiagnostics(nowUtc, inCombat);
 
             if (ShouldFinalizeEncounter(nowUtc, allPartyMembersOutOfCombat))
             {
                 FinalizeEncounter(nowUtc);
+                MarkStatsPerfSegment("finalize", ref perfLast, perfParts);
             }
             else if (currentEncounter.Started)
             {
-                CurrentCombatData = ActxSnapshotFormatter.Build(currentEncounter, isActive: true);
+                if (nowUtc - lastActiveSnapshotBuildUtc >= TimeSpan.FromMilliseconds(1000))
+                {
+                    lastActiveSnapshotBuildUtc = nowUtc;
+                    CurrentCombatData = ActxSnapshotFormatter.Build(currentEncounter, isActive: true);
+                    MarkStatsPerfSegment("snapshot", ref perfLast, perfParts);
+                }
+
                 suppressStaleDisplayUntilNextCombatStart = false;
             }
 
             EnsureHistoricalPreviewCountdownStartedLocked(nowUtc);
             var shouldSuppressStaleDisplay = suppressStaleDisplayUntilNextCombatStart
-                && inCombat
+                && effectiveInCombat
                 && !currentEncounter.Started
                 && !HasSelectedHistoricalPreviewLocked();
 
             RefreshDisplayCombatDataLocked(nowUtc, shouldSuppressStaleDisplay);
             UpdateStatusText(nowUtc);
+            MarkStatsPerfSegment("display", ref perfLast, perfParts);
         }
+
+        LogStatsPerfIfSlow(perfStart, perfParts, inCombat && !forceOutOfCombat);
+    }
+
+    private static void MarkStatsPerfSegment(string name, ref long lastTimestamp, List<string> parts)
+    {
+        var now = Stopwatch.GetTimestamp();
+        var elapsedMs = Stopwatch.GetElapsedTime(lastTimestamp, now).TotalMilliseconds;
+        lastTimestamp = now;
+        if (elapsedMs >= 1d)
+            parts.Add($"{name}={elapsedMs:0.0}ms");
+    }
+
+    private void LogStatsPerfIfSlow(long startTimestamp, List<string> parts, bool inCombat)
+    {
+        if (!EnableStatsPerformanceLog)
+            return;
+
+        var elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+        if (elapsedMs < 5d)
+            return;
+
+        var nowUtc = DateTime.UtcNow;
+        if (nowUtc - lastStatsPerfLogUtc < TimeSpan.FromSeconds(2))
+            return;
+
+        lastStatsPerfLogUtc = nowUtc;
+        var detail = parts.Count == 0 ? "无单段超过 1ms" : string.Join(", ", parts);
+        LogHelper.Info("性能", $"StatsUpdate 慢帧 {elapsedMs:0.0}ms：{detail}；inCombat={inCombat}，started={currentEncounter.Started}。");
     }
 
     private void UpdateNoDataCombatDiagnostics(DateTime nowUtc, bool inCombat)
@@ -435,6 +499,7 @@ internal sealed partial class LocalStatsService
             activePlayerDots.Clear();
             activeWildfires.Clear();
             partyOutOfCombatSinceUtc = default;
+            lastActiveSnapshotBuildUtc = default;
             lastPlayerDotStatusPollUtc = default;
             encounterFinalizedVersion++;
             suppressStaleDisplayUntilNextCombatStart = true;
@@ -477,6 +542,7 @@ internal sealed partial class LocalStatsService
         activePlayerDots.Clear();
         activeWildfires.Clear();
         partyOutOfCombatSinceUtc = default;
+        lastActiveSnapshotBuildUtc = default;
         lastPlayerDotStatusPollUtc = default;
         encounterFinalizedVersion++;
         suppressStaleDisplayUntilNextCombatStart = true;

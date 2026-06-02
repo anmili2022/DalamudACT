@@ -18,7 +18,7 @@ namespace DalamudACT;
 internal sealed partial class LocalStatsService
 {
     private static readonly TimeSpan OwnerCacheTtl = TimeSpan.FromMilliseconds(2500);
-    private static readonly TimeSpan OwnerCacheWarmupInterval = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan OwnerCacheWarmupInterval = TimeSpan.FromMilliseconds(1000);
     private const int PartyPlaceholderCount = 8;
 
     private readonly Dictionary<uint, OwnerCacheEntry> ownerCache = new();

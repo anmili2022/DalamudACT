@@ -49,11 +49,19 @@ public sealed partial class ACT
         nint sourceCharacterAddress)
     {
         var nowUtc = DateTime.UtcNow;
-        var zoneName = GetPlaceName();
         var actionId = header->SpellId != 0 ? (uint)header->SpellId : header->ActionId;
+        var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
+        var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
+        var statsEventActive = inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback;
+        if (!statsEventActive)
+        {
+            timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+            return;
+        }
+
+        var zoneName = GetPlaceName(DalamudApi.GetTerritoryTypeId());
         var actionName = GetActionName(actionId);
         var isLimitBreakAction = IsLimitBreakAction(actionId);
-        var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
         var sourceActorId = ResolveTrackedSourceActorId(sourceId, sourceCharacterAddress, nowUtc, out var sourceCanResolveToTrackedActor);
         var sourceObject = sourceCanResolveToTrackedActor
             ? null

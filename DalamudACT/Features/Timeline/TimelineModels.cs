@@ -15,6 +15,7 @@ internal sealed record TimelineEntry(
     string? SystemLogId,
     string? SystemLogParam1,
     string? SystemLogTextHint,
+    string? NpcYellText,
     string? MapEffectFlags,
     string? MapEffectLocation,
     bool Hidden,
@@ -23,7 +24,8 @@ internal sealed record TimelineEntry(
     float? JumpTimeSeconds,
     IReadOnlyDictionary<uint, TimelineActionResponse> ActionResponses,
     float WindowFirst = -2.5f,
-    float WindowLast = 2.5f);
+    float WindowLast = 2.5f,
+    int SourceLineNumber = 0);
 
 internal sealed record TimelineActionResponse(string Text, TimelineActionResponseTiming Timing);
 

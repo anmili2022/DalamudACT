@@ -74,6 +74,9 @@ internal sealed partial class CombatTimelineWindow
         DrawRetentionControls();
 
         ImGui.Spacing();
+        DrawTimeDisplayControls();
+
+        ImGui.Spacing();
         DrawFilterControls(characterOptions);
     }
 
@@ -113,7 +116,7 @@ internal sealed partial class CombatTimelineWindow
                 ImGui.PushID(index);
                 try
                 {
-                    var line = $"[{entry.TimestampLocal:HH:mm:ss}] {entry.Message}";
+                    var line = $"{FormatTimelineLine(entry, includeMilliseconds: false)}";
                     if (ImGui.Selectable(line, isSelected))
                     {
                         if (shiftHeld && lastSelectedTimelineIndex >= 0)
@@ -165,7 +168,7 @@ internal sealed partial class CombatTimelineWindow
             if (index < 0 || index >= entries.Count)
                 continue;
             var entry = entries[index];
-            builder.AppendLine($"{entry.TimestampLocal:yyyy-MM-dd HH:mm:ss.fff} {entry.Message}");
+            builder.AppendLine(FormatTimelineLine(entry, includeMilliseconds: true));
         }
         return builder.ToString().TrimEnd();
     }
@@ -204,16 +207,60 @@ internal sealed partial class CombatTimelineWindow
         };
     }
 
-    private static string BuildTimelineText(IReadOnlyList<LocalStatsService.CombatTimelineEntry> entries)
+    private string BuildTimelineText(IReadOnlyList<LocalStatsService.CombatTimelineEntry> entries)
     {
         if (entries.Count == 0)
             return "暂无战斗流水。";
 
         var builder = new StringBuilder(entries.Count * 48);
         foreach (var entry in entries)
-            builder.AppendLine($"{entry.TimestampLocal:yyyy-MM-dd HH:mm:ss.fff} {entry.Message}");
+            builder.AppendLine(FormatTimelineLine(entry, includeMilliseconds: true));
 
         return builder.ToString().TrimEnd();
+    }
+
+    private string FormatTimelineLine(LocalStatsService.CombatTimelineEntry entry, bool includeMilliseconds)
+    {
+        var prefix = BuildTimePrefix(entry, includeMilliseconds);
+        return string.IsNullOrWhiteSpace(prefix)
+            ? entry.Message
+            : $"{prefix}{entry.Message}";
+    }
+
+    private string BuildTimePrefix(LocalStatsService.CombatTimelineEntry entry, bool includeMilliseconds)
+    {
+        var parts = new List<string>(2);
+        if (config.CombatTimelineShowRawTime)
+        {
+            var format = includeMilliseconds ? "yyyy-MM-dd HH:mm:ss.fff" : "HH:mm:ss";
+            parts.Add($"[{entry.TimestampLocal.ToString(format)}]");
+        }
+
+        if (config.CombatTimelineShowEncounterTime && entry.EncounterSeconds.HasValue)
+            parts.Add($"[{entry.EncounterSeconds.Value}]");
+
+        return parts.Count == 0 ? string.Empty : string.Concat(parts);
+    }
+
+    private void DrawTimeDisplayControls()
+    {
+        ImGui.TextDisabled("时间显示：");
+        ImGui.SameLine();
+
+        var showEncounterTime = config.CombatTimelineShowEncounterTime;
+        if (ImGui.Checkbox("战斗时间", ref showEncounterTime))
+        {
+            config.CombatTimelineShowEncounterTime = showEncounterTime;
+            config.Save();
+        }
+
+        ImGui.SameLine(0f, 12f);
+        var showRawTime = config.CombatTimelineShowRawTime;
+        if (ImGui.Checkbox("原始时间", ref showRawTime))
+        {
+            config.CombatTimelineShowRawTime = showRawTime;
+            config.Save();
+        }
     }
 
     private void DrawRetentionControls()

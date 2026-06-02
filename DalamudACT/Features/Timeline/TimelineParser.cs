@@ -12,13 +12,14 @@ internal static partial class TimelineParser
     private static readonly Regex TimelineBlockRegex = new(@"timeline\s*:\s*`(?<body>[\s\S]*?)`", RegexOptions.Compiled);
     private static readonly Regex TimelineLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+\""(?<text>[^\""\\]*(?:\\.[^\""\\]*)*)\""(?<rest>.*)$", RegexOptions.Compiled);
     private static readonly Regex LabelLineRegex = new(@"^\s*(?<time>\d+(?:\.\d+)?)\s+label\s+\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
-    private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect|Timer)\b", RegexOptions.Compiled);
+    private static readonly Regex EventTypeRegex = new(@"(?<!#)\b(?<type>StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|NpcYell|AddedCombatant|MapEffect|Timer)\b", RegexOptions.Compiled);
     private static readonly Regex IdListRegex = new(@"id\s*:\s*\[(?<ids>[^\]]+)\]", RegexOptions.Compiled);
     private static readonly Regex IdRegex = new(@"id\s*:\s*['\""`]*(?<id>[0-9A-Fa-f]+)['\""`]*", RegexOptions.Compiled);
     private static readonly Regex Param1Regex = new(@"param1\s*:\s*['\""`]*(?<param1>[0-9A-Fa-f]+)['\""`]*", RegexOptions.Compiled);
     private static readonly Regex DurationRegex = new(@"duration\s+(?<duration>\d+(?:\.\d+)?)", RegexOptions.Compiled);
     private static readonly Regex SourceListRegex = new(@"source\s*:\s*\[(?<sources>[^\]]+)\]", RegexOptions.Compiled);
     private static readonly Regex SourceRegex = new(@"source\s*:\s*['\""`](?<source>[^'\""`\\]*(?:\\.[^'\""`\\]*)*)['\""`]", RegexOptions.Compiled);
+    private static readonly Regex TextRegex = new(@"text\s*:\s*['\""`](?<text>[^'\""`\\]*(?:\\.[^'\""`\\]*)*)['\""`]", RegexOptions.Compiled);
     private static readonly Regex MapEffectFlagsRegex = new(@"flags\s*:\s*\""(?<flags>[0-9A-Fa-f]+)\""", RegexOptions.Compiled);
     private static readonly Regex MapEffectLocationRegex = new(@"location\s*:\s*\""(?<location>[^\""\\]*(?:\\.[^\""\\]*)*)\""", RegexOptions.Compiled);
     private static readonly Regex JumpRegex = new(@"(?:forcejump|jump)\s+(?:\""(?<label>[^\""\\]*(?:\\.[^\""\\]*)*)\""|'(?<label>[^'\\]*(?:\\.[^'\\]*)*)'|(?<label>\S+))", RegexOptions.Compiled);
@@ -38,14 +39,16 @@ internal static partial class TimelineParser
         var entries = new List<TimelineEntry>();
         var labels = new Dictionary<string, float>(StringComparer.Ordinal);
         string? pendingComment = null;
+        var lineNumber = 0;
         using var reader = new StringReader(timelineMatch.Groups["body"].Value.Replace("\r\n", "\n"));
         while (reader.ReadLine() is { } line)
         {
+            lineNumber++;
             if (TryCaptureComment(line, ref pendingComment))
                 continue;
 
             ParseLabelLine(line, labels);
-            var entry = ParseTimelineLine(line, replacements, pendingComment);
+            var entry = ParseTimelineLine(line, replacements, pendingComment, lineNumber);
             if (entry != null)
             {
                 entries.Add(entry);
@@ -62,14 +65,16 @@ internal static partial class TimelineParser
         var entries = new List<TimelineEntry>();
         var labels = new Dictionary<string, float>(StringComparer.Ordinal);
         string? pendingComment = null;
+        var lineNumber = 0;
         using var reader = new StringReader(File.ReadAllText(path).Replace("\r\n", "\n"));
         while (reader.ReadLine() is { } line)
         {
+            lineNumber++;
             if (TryCaptureComment(line, ref pendingComment))
                 continue;
 
             ParseLabelLine(line, labels);
-            var entry = ParseTimelineLine(line, new Dictionary<string, string>(), pendingComment);
+            var entry = ParseTimelineLine(line, new Dictionary<string, string>(), pendingComment, lineNumber);
             if (entry != null)
             {
                 entries.Add(entry);
@@ -81,7 +86,7 @@ internal static partial class TimelineParser
         return new TimelineDefinition(id, name, entries, labels);
     }
 
-    private static TimelineEntry? ParseTimelineLine(string line, IReadOnlyDictionary<string, string> replacements, string? pendingComment)
+    private static TimelineEntry? ParseTimelineLine(string line, IReadOnlyDictionary<string, string> replacements, string? pendingComment, int sourceLineNumber)
     {
         var trimmed = line.Trim();
         if (trimmed.Length == 0 || trimmed.StartsWith('#') || trimmed.StartsWith("hideall", StringComparison.Ordinal))
@@ -108,6 +113,7 @@ internal static partial class TimelineParser
         var systemLogId = ParseSystemLogId(rest);
         var systemLogParam1 = ParseSystemLogParam1(rest);
         var systemLogTextHint = eventType == "SystemLogMessage" ? pendingComment : null;
+        var npcYellText = eventType == "NpcYell" ? ParseText(rest) : null;
         var mapEffectFlags = eventType == "MapEffect" ? ParseMapEffectFlags(rest) : null;
         var mapEffectLocation = eventType == "MapEffect" ? ParseMapEffectLocation(rest) : null;
         var isInternal = text.StartsWith("--", StringComparison.Ordinal);
@@ -126,7 +132,7 @@ internal static partial class TimelineParser
             ? float.TryParse(windowMatch.Groups["last"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var wl) ? wl : 2.5f
             : 2.5f;
 
-        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, sources, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses, windowFirst, windowLast);
+        return new TimelineEntry(timeSeconds, text, displayText, eventType, actionIds, source, sources, duration, mechanicHint, systemLogId, systemLogParam1, systemLogTextHint, npcYellText, mapEffectFlags, mapEffectLocation, hidden, isSync, jumpLabel, jumpTimeSeconds, actionResponses, windowFirst, windowLast, sourceLineNumber);
     }
 
     private static float? TryParseJumpTime(string? rawJump)
@@ -216,6 +222,12 @@ internal static partial class TimelineParser
         return match.Success ? match.Groups["param1"].Value.ToUpperInvariant() : null;
     }
 
+    private static string? ParseText(string rest)
+    {
+        var match = TextRegex.Match(rest);
+        return match.Success ? Unescape(match.Groups["text"].Value).Trim() : null;
+    }
+
     private static string? ParseMapEffectFlags(string rest)
     {
         var match = MapEffectFlagsRegex.Match(rest);
@@ -251,11 +263,14 @@ internal static partial class TimelineParser
             return null;
 
         var hint = RemoveTaggedResponseSegments(rest[(commentIndex + 1)..]).Trim();
-        if (string.IsNullOrWhiteSpace(hint) || ContainsTaggedResponseMarker(hint) || !LooksLikeMechanicHint(hint))
+        if (string.IsNullOrWhiteSpace(hint) || IsToolMetadataHint(hint) || ContainsTaggedResponseMarker(hint) || !LooksLikeMechanicHint(hint))
             return null;
 
         return hint.Equals("范围", StringComparison.OrdinalIgnoreCase) ? "AOE" : hint;
     }
+
+    private static bool IsToolMetadataHint(string hint)
+        => string.Equals(hint.Trim(), "附属判定候选", StringComparison.Ordinal);
 
     private static bool LooksLikeMechanicHint(string hint)
     {

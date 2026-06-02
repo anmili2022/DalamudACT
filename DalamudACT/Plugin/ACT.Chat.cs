@@ -160,6 +160,12 @@ public sealed partial class ACT
                 return;
 
             var logKind = ChatReflectionAccessor.GetLogKind(message);
+            if (IsNpcYellLikeChatKind(logKind))
+            {
+                timelineService.ObserveNpcYell(text, DateTime.UtcNow);
+                return;
+            }
+
             if (!IsSystemLikeChatKind(logKind))
                 return;
 
@@ -197,7 +203,16 @@ public sealed partial class ACT
         try
         {
             var text = message.TextValue ?? message.ToString();
-            if (type != XivChatType.SystemMessage || string.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            if (IsNpcYellLikeChatKind(type.ToString()))
+            {
+                timelineService.ObserveNpcYell(text, DateTime.UtcNow);
+                return;
+            }
+
+            if (type != XivChatType.SystemMessage)
                 return;
 
             LogRawPacketsNearSystemMessage("system-chat", text);
@@ -213,5 +228,11 @@ public sealed partial class ACT
         => logKind.Contains("System", StringComparison.OrdinalIgnoreCase)
            || logKind.Contains("Notice", StringComparison.OrdinalIgnoreCase)
            || logKind.Contains("Progress", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsNpcYellLikeChatKind(string logKind)
+        => logKind.Contains("Npc", StringComparison.OrdinalIgnoreCase)
+           || logKind.Contains("Yell", StringComparison.OrdinalIgnoreCase)
+           || logKind.Contains("Dialogue", StringComparison.OrdinalIgnoreCase)
+           || logKind.Contains("Talk", StringComparison.OrdinalIgnoreCase);
 
 }

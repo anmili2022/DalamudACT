@@ -6,7 +6,13 @@ namespace DalamudACT;
 
 internal sealed partial class LocalStatsService
 {
-    private static readonly TimeSpan PlayerDotStatusPollInterval = TimeSpan.FromMilliseconds(100);
+    private static readonly TimeSpan PlayerDotStatusPollInterval = TimeSpan.FromMilliseconds(500);
+    private const int PlayerDotMaxHostileTargetsPerPoll = 1;
+    private const int PlayerDotMaxFriendlyActorsPerPoll = 1;
+    private const int PlayerDotMaxSimulatedStatesPerPoll = 4;
+    private const int PlayerDotMaxSimulatedTicksPerPoll = 4;
+    private const int PlayerDotMaxTrimStatesPerPoll = 12;
+    private const int PlayerDotMaxDecayStatesPerPoll = 16;
     // DoT 只在对应状态存续且上一次结算满 3 秒后才进入下一次归因。
     private static readonly TimeSpan PlayerDotTickInterval = TimeSpan.FromSeconds(3);
     private static readonly TimeSpan PlayerDotTickJitterAllowance = TimeSpan.FromMilliseconds(250);
@@ -15,6 +21,7 @@ internal sealed partial class LocalStatsService
     // 避免白魔 / 贤者这类长 DoT 在后续状态刷新时拿不到同技能样本。
     private static readonly TimeSpan PlayerDotRecentActionTtl = TimeSpan.FromSeconds(35);
     private static readonly TimeSpan PlayerDotSourceOwnedTargetResolutionWindow = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan PlayerDotTargetStatusRefreshWindow = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan PlayerDotStatusGracePeriod = TimeSpan.FromSeconds(1.0);
     private static readonly TimeSpan PlayerDotDebugLogThrottle = TimeSpan.FromSeconds(1.0);
     private static readonly TimeSpan PlayerDotFocusedDiagnosticLogThrottle = TimeSpan.FromSeconds(2.0);

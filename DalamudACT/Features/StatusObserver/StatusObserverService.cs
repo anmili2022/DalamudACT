@@ -16,12 +16,18 @@ internal sealed class StatusObserverService
 
     public IReadOnlyList<StatusObserverEntry> GetSelfStatuses()
     {
+        if (!config.StatusObserver.ShowWindow)
+            return [];
+
         var actor = DalamudApi.GetLocalPlayerBattleChara();
         return GetStatuses(actor, Math.Clamp(config.StatusObserver.SelfMaxStatuses, 1, 200));
     }
 
     public IReadOnlyList<StatusObserverEntry> GetTargetStatuses()
     {
+        if (!config.StatusObserver.ShowWindow)
+            return [];
+
         var target = DalamudApi.GetLocalPlayerBattleChara()?.TargetObject as IBattleChara;
         return GetStatuses(target, Math.Clamp(config.StatusObserver.TargetMaxStatuses, 1, 200));
     }

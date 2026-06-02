@@ -9,6 +9,7 @@ internal sealed partial class LocalStatsService
 {
     public sealed record CombatTimelineEntry(
         DateTime TimestampLocal,
+        int? EncounterSeconds,
         CombatTimelineEntryKind Kind,
         string Message,
         string? ActorName,

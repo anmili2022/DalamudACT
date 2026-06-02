@@ -58,10 +58,18 @@ internal sealed partial class SettingsWindow
                     config.Save();
                 }
 
+                ImGui.SameLine(0f, 12f);
+                var autoStatsHeight = config.FloatingStatsMinimalAutoWindowHeight;
+                if (ImGui.Checkbox("高度自适应条目数", ref autoStatsHeight))
+                {
+                    config.FloatingStatsMinimalAutoWindowHeight = autoStatsHeight;
+                    config.Save();
+                }
+
                 DrawCompactHelp("锁定后不可拖动或缩放。", "启用后，悬浮窗口的位置和大小将无法手动修改。");
 
                 var enableParty = config.PartyMonitor.EnablePartyMonitor && config.PartyMonitor.ShowPartyMonitorWindow;
-                if (ImGui.Checkbox("显示监控窗口", ref enableParty))
+                if (ImGui.Checkbox("显示队友监控", ref enableParty))
                 {
                     config.PartyMonitor.EnablePartyMonitor = enableParty;
                     config.PartyMonitor.ShowPartyMonitorWindow = enableParty;
@@ -70,7 +78,7 @@ internal sealed partial class SettingsWindow
 
                 ImGui.SameLine(0f, 12f);
                 var lockPartyWindow = config.PartyMonitor.LockPartyMonitorWindow;
-                if (ImGui.Checkbox("锁定监控窗口", ref lockPartyWindow))
+                if (ImGui.Checkbox("锁定队友监控", ref lockPartyWindow))
                 {
                     config.PartyMonitor.LockPartyMonitorWindow = lockPartyWindow;
                     config.Save();
@@ -85,9 +93,32 @@ internal sealed partial class SettingsWindow
                 }
 
                 var partyOpacity = config.PartyMonitor.PartyMonitorOpacity;
-                if (ImGui.SliderFloat("技能监控窗口透明度", ref partyOpacity, 0f, 1f))
+                if (ImGui.SliderFloat("队友监控窗口透明度", ref partyOpacity, 0f, 1f))
                 {
                     config.PartyMonitor.PartyMonitorOpacity = partyOpacity;
+                    config.Save();
+                }
+
+                ImGui.Separator();
+                var showStatusMonitor = config.StatusObserver.ShowWindow;
+                if (ImGui.Checkbox("显示状态监控", ref showStatusMonitor))
+                {
+                    config.StatusObserver.ShowWindow = showStatusMonitor;
+                    config.Save();
+                }
+
+                ImGui.SameLine(0f, 12f);
+                var lockStatusMonitor = config.StatusObserver.LockWindow;
+                if (ImGui.Checkbox("锁定状态监控", ref lockStatusMonitor))
+                {
+                    config.StatusObserver.LockWindow = lockStatusMonitor;
+                    config.Save();
+                }
+
+                var statusMonitorOpacity = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
+                if (ImGui.SliderFloat("状态监控窗口透明度", ref statusMonitorOpacity, 0f, 1f))
+                {
+                    config.StatusObserver.WindowOpacity = statusMonitorOpacity;
                     config.Save();
                 }
 
@@ -129,13 +160,6 @@ internal sealed partial class SettingsWindow
                 if (ImGui.SliderFloat("时间轴窗口透明度", ref timelineOpacity, 0f, 1f))
                 {
                     config.TimelineWindowOpacity = timelineOpacity;
-                    config.Save();
-                }
-
-                var statusMonitorOpacity = Math.Clamp(config.StatusObserver.WindowOpacity, 0f, 1f);
-                if (ImGui.SliderFloat("状态监控悬浮窗透明度", ref statusMonitorOpacity, 0f, 1f))
-                {
-                    config.StatusObserver.WindowOpacity = statusMonitorOpacity;
                     config.Save();
                 }
 

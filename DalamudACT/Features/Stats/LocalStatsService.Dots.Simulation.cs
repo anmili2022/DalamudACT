@@ -11,9 +11,13 @@ internal sealed partial class LocalStatsService
         if (activePlayerDots.Count == 0)
             return;
 
-        var activeDots = activePlayerDots.Values.ToList();
+        var activeDots = BuildRoundRobinBatch(activePlayerDots.Values.ToList(), ref nextPlayerDotSimulationIndex, PlayerDotMaxSimulatedStatesPerPoll);
+        var remainingTickBudget = PlayerDotMaxSimulatedTicksPerPoll;
         foreach (var dotState in activeDots)
         {
+            if (remainingTickBudget <= 0)
+                break;
+
             if (dotState.RemainingTimeSeconds <= 0f)
                 continue;
 
@@ -24,6 +28,8 @@ internal sealed partial class LocalStatsService
             if (ticksDue <= 0)
                 continue;
 
+            ticksDue = Math.Min(ticksDue, remainingTickBudget);
+
             var tickTimeUtc = dotState.LastAttributedTickUtc;
             for (var index = 0; index < ticksDue; index++)
             {
@@ -32,6 +38,10 @@ internal sealed partial class LocalStatsService
                     : tickTimeUtc + PlayerDotTickInterval;
 
                 if (!TryRecordSimulatedPlayerDotTickLocked(dotState, source, tickTimeUtc))
+                    break;
+
+                remainingTickBudget--;
+                if (remainingTickBudget <= 0)
                     break;
             }
         }
@@ -215,7 +225,8 @@ internal sealed partial class LocalStatsService
             return;
 
         var staleKeys = new List<PlayerDotKey>();
-        foreach (var pair in activePlayerDots)
+        var activePairs = BuildRoundRobinBatch(activePlayerDots.ToList(), ref nextPlayerDotTrimIndex, PlayerDotMaxTrimStatesPerPoll);
+        foreach (var pair in activePairs)
         {
             try
             {

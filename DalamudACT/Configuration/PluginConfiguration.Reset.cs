@@ -358,6 +358,7 @@ public sealed partial class PluginConfiguration
         TimelineMaxVisibleEntries = 8;
         TimelineRowGap = 1f;
         EnableTimelineDailyRoutinesTts = false;
+        TimelineForceLoadPath = string.Empty;
         TimelineTtsMechanic = true;
         TimelineTtsSkillName = true;
         TimelineTtsResponse = true;
@@ -368,6 +369,7 @@ public sealed partial class PluginConfiguration
             new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
             new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
             new TtsCorrectionRule { From = "对地", To = "对帝", Enabled = true },
+            new TtsCorrectionRule { From = "三重猛击", To = "三虫猛击", Enabled = true },
             new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
             new TtsCorrectionRule { From = "--north--", To = "去北侧", Enabled = true },
             new TtsCorrectionRule { From = "--south--", To = "去南侧", Enabled = true },
@@ -506,6 +508,9 @@ public sealed partial class PluginConfiguration
         CombatTimelineRecordingEnabled = false;
         CombatTimelineMapEffectEnabled = false;
         CombatTimelineMaxEntries = 500;
+        CombatTimelineShowRawTime = false;
+        CombatTimelineShowEncounterTime = true;
+        ReplayStatsMode = false;
         ShowTimelineWindow = false;
         LockTimelineWindow = false;
         TimelineDebugMode = false;
@@ -527,6 +532,7 @@ public sealed partial class PluginConfiguration
             new TtsCorrectionRule { From = "地火", To = "帝火", Enabled = true },
             new TtsCorrectionRule { From = "地动", To = "帝动", Enabled = true },
             new TtsCorrectionRule { From = "对地", To = "对帝", Enabled = true },
+            new TtsCorrectionRule { From = "三重猛击", To = "三虫猛击", Enabled = true },
             new TtsCorrectionRule { From = "--middle--", To = "回到中间", Enabled = true },
             new TtsCorrectionRule { From = "--north--", To = "去北侧", Enabled = true },
             new TtsCorrectionRule { From = "--south--", To = "去南侧", Enabled = true },

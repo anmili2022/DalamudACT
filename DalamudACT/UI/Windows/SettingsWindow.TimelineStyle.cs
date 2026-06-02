@@ -23,6 +23,9 @@ internal sealed partial class SettingsWindow
                 DrawTimelineRemoteControls();
                 ImGui.Separator();
 
+                DrawTimelinePathButton(showFullPath: true);
+                ImGui.Separator();
+
                 DrawForceLoadTimelineControls();
                 ImGui.Separator();
 
@@ -234,10 +237,18 @@ internal sealed partial class SettingsWindow
         }
 
         ImGui.SetNextItemWidth(-1f);
-        ImGui.InputText("##force_load_timeline_path", ref timelineForceLoadPath, 512);
+        if (ImGui.InputText("##force_load_timeline_path", ref timelineForceLoadPath, 512))
+        {
+            config.TimelineForceLoadPath = timelineForceLoadPath;
+            config.Save();
+        }
 
         if (ImGui.Button("强制加载时间轴"))
+        {
+            config.TimelineForceLoadPath = timelineForceLoadPath;
+            config.Save();
             timelineRemoteStatusText = timelineService.ForceLoadTimelineFile(timelineForceLoadPath);
+        }
 
         ImGui.SameLine();
         if (ImGui.Button("显示已有时间轴"))

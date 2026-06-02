@@ -75,6 +75,7 @@ internal sealed partial class SettingsWindow : Window
         this.toggleFloatingStatsPanel = toggleFloatingStatsPanel;
         this.openCombatTimelineWindow = openCombatTimelineWindow;
         this.openTimelineListWindow = openTimelineListWindow;
+        timelineForceLoadPath = config.TimelineForceLoadPath ?? string.Empty;
         Size = new Vector2(480f, 520f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }
@@ -316,8 +317,6 @@ internal sealed partial class SettingsWindow : Window
         ImGui.TextDisabled("release version");
         ImGui.Dummy(new Vector2(0f, 6f));
         ImGui.TextUnformatted("快捷入口");
-        if (ImGui.Button("打开主界面", new Vector2(-1f, 0f)))
-            openMainWindow();
         if (ImGui.Button(GetFloatingStatsButtonLabel(), new Vector2(-1f, 0f)))
             toggleFloatingStatsPanel();
         if (ImGui.Button("打开战斗流水", new Vector2(-1f, 0f)))

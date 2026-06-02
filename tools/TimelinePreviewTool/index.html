@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DalamudACT Timeline Preview Tool</title>
+  <style>
+    :root {
+      --bg: #11151c;
+      --panel: #1b222d;
+      --panel2: #232c3a;
+      --text: #eef3f7;
+      --muted: #93a0ad;
+      --line: #344254;
+      --accent: #7fb0ff;
+      --urgent: #f48fb1;
+      --normal: #7fa8e8;
+      --ok: #50d38a;
+      --bad: #ff7373;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, rgba(127,176,255,.16), transparent 32rem), var(--bg);
+      color: var(--text);
+      font: 14px/1.45 "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      border-right: 1px solid var(--line);
+      background: rgba(27,34,45,.96);
+      padding: 16px;
+      overflow: auto;
+    }
+
+    main {
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    h1 { margin: 0 0 4px; font-size: 20px; }
+    h2 { margin: 18px 0 8px; font-size: 14px; color: var(--accent); }
+    p { color: var(--muted); margin: 0 0 12px; }
+    label { display: block; color: var(--muted); margin: 10px 0 4px; }
+    input[type="file"], input[type="number"], input[type="range"], select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 8px;
+      font: inherit;
+    }
+
+    input[type="range"] { padding: 0; }
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .status { color: var(--muted); word-break: break-all; }
+    .status strong { color: var(--text); }
+    .error { color: var(--bad); }
+
+    .timeline-stage {
+      display: grid;
+      place-items: start center;
+      min-height: 420px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        rgba(0,0,0,.22);
+      background-size: 24px 24px;
+    }
+
+    .timeline-window {
+      width: 220px;
+      padding: 3px;
+      background: rgba(0,0,0,.86);
+      box-shadow: 0 10px 32px rgba(0,0,0,.45);
+    }
+
+    .timeline-row {
+      position: relative;
+      height: 18px;
+      margin-bottom: var(--row-gap, 1px);
+      background: rgba(0,0,0,.86);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .timeline-row:last-child { margin-bottom: 0; }
+    .fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      background: rgba(127,168,232,.86);
+    }
+    .timeline-row.urgent .fill { background: rgba(244,143,177,.94); }
+    .name, .time {
+      position: absolute;
+      top: 1px;
+      z-index: 2;
+      color: white;
+      font: 13px/16px "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000;
+    }
+    .name { left: 5px; right: 58px; overflow: hidden; text-overflow: ellipsis; }
+    .time { right: 12px; }
+    .empty .name { opacity: .45; }
+
+    .scrubber {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      padding: 14px;
+    }
+    .scrubber-top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .current-time { font: 24px Consolas, "Cascadia Mono", monospace; color: var(--accent); }
+    .entry-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .entry-table th, .entry-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 4px 6px;
+      text-align: left;
+    }
+    .entry-table th { color: var(--muted); font-weight: 600; }
+    .pill { color: var(--ok); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <h1>Timeline Preview Tool</h1>
+      <p>加载 DalamudACT/cactbot 时间轴，拖动时间条模拟插件屏幕上的时间轴窗口。</p>
+
+      <label>时间轴文件</label>
+      <input id="file" type="file" accept=".txt,.cn.txt,.js,.ts,text/plain">
+
+      <h2>显示参数</h2>
+      <div class="row">
+        <div>
+          <label>未来秒数</label>
+          <input id="visibleSeconds" type="number" min="10" max="600" value="90">
+        </div>
+        <div>
+          <label>最大条数</label>
+          <input id="maxRows" type="number" min="1" max="30" value="8">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>行间距(px)</label>
+          <input id="rowGap" type="number" min="0" max="8" value="1">
+        </div>
+        <div>
+          <label>窗口宽度(px)</label>
+          <input id="panelWidth" type="number" min="180" max="640" value="220">
+        </div>
+      </div>
+
+      <h2>筛选</h2>
+      <label><input id="showHidden" type="checkbox"> 显示 sync / internal / 注释隐藏行</label>
+      <label><input id="showDuration" type="checkbox" checked> 显示 duration 条目</label>
+      <label><input id="showTimers" type="checkbox" checked> 显示 Timer 条目</label>
+
+      <h2>状态</h2>
+      <div id="status" class="status">尚未加载文件。</div>
+    </aside>
+
+    <main>
+      <section class="scrubber">
+        <div class="scrubber-top">
+          <div>
+            <div class="current-time"><span id="timeText">0.0</span>s</div>
+            <div class="status">拖动下方滑块，或用方向键微调。</div>
+          </div>
+          <div>
+            <button id="jumpPrev">上一条</button>
+            <button id="jumpNext">下一条</button>
+          </div>
+        </div>
+        <input id="time" type="range" min="0" max="0" step="0.1" value="0">
+      </section>
+
+      <section class="timeline-stage">
+        <div id="timelineWindow" class="timeline-window"></div>
+        <table class="entry-table">
+          <thead><tr><th>时间</th><th>剩余</th><th>类型</th><th>显示文本</th><th>提示</th></tr></thead>
+          <tbody id="visibleTable"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const els = {
+      file: document.getElementById('file'), status: document.getElementById('status'),
+      time: document.getElementById('time'), timeText: document.getElementById('timeText'),
+      visibleSeconds: document.getElementById('visibleSeconds'), maxRows: document.getElementById('maxRows'),
+      rowGap: document.getElementById('rowGap'), panelWidth: document.getElementById('panelWidth'),
+      showHidden: document.getElementById('showHidden'), showDuration: document.getElementById('showDuration'), showTimers: document.getElementById('showTimers'),
+      timelineWindow: document.getElementById('timelineWindow'), visibleTable: document.getElementById('visibleTable'),
+      jumpPrev: document.getElementById('jumpPrev'), jumpNext: document.getElementById('jumpNext'),
+    };
+
+    let entries = [];
+
+    els.file.addEventListener('change', async () => {
+      const file = els.file.files?.[0];
+      if (!file) return;
+      const text = await file.text();
+      entries = parseTimeline(text);
+      const maxTime = entries.length ? Math.ceil(Math.max(...entries.map(e => e.time))) : 0;
+      els.time.max = String(maxTime);
+      els.time.value = '0';
+      els.status.innerHTML = `<strong>${file.name}</strong><br>${entries.length} 条可解析条目，最大时间 ${maxTime}s`;
+      render();
+    });
+
+    for (const el of [els.time, els.visibleSeconds, els.maxRows, els.rowGap, els.panelWidth, els.showHidden, els.showDuration, els.showTimers])
+      el.addEventListener('input', render);
+    els.jumpPrev.addEventListener('click', () => jumpEntry(-1));
+    els.jumpNext.addEventListener('click', () => jumpEntry(1));
+
+    function parseTimeline(text) {
+      const block = text.match(/timeline\s*:\s*`([\s\S]*?)`/);
+      const body = (block ? block[1] : text).replace(/\r\n/g, '\n');
+      const result = [];
+      let pendingComment = '';
+      for (const raw of body.split('\n')) {
+        const line = raw.trim();
+        if (!line) continue;
+        if (line.startsWith('#')) {
+          pendingComment = line.replace(/^#+\s*/, '');
+          continue;
+        }
+        if (line.startsWith('hideall')) continue;
+        const m = raw.match(/^\s*(\d+(?:\.\d+)?)\s+"((?:\\.|[^"\\])*)"(.*)$/);
+        if (!m) continue;
+        const time = Number.parseFloat(m[1]);
+        const text = unescapeTimelineText(m[2]);
+        const rest = m[3] || '';
+        const event = (rest.match(/(?<!#)\b(StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|AddedCombatant|MapEffect|Timer)\b/) || [,''])[1];
+        const duration = Number.parseFloat((rest.match(/duration\s+(\d+(?:\.\d+)?)/) || [,''])[1]);
+        const mechanicHint = parseMechanicHint(rest, pendingComment);
+        const internal = text.startsWith('--');
+        const sync = /sync/i.test(text);
+        const hidden = internal || sync || rest.trimStart().startsWith('#');
+        result.push({ time, text, displayText: applyDisplayText(text), rest, event, duration: Number.isFinite(duration) ? duration : null, mechanicHint, hidden, sync });
+        pendingComment = '';
+      }
+      return result.sort((a, b) => a.time - b.time);
+    }
+
+    function parseMechanicHint(rest, pendingComment) {
+      const idx = rest.indexOf('#');
+      const raw = idx >= 0 ? rest.slice(idx + 1) : pendingComment;
+      if (!raw) return '';
+      const cleaned = raw
+        .replace(/(?:读条ID|结算ID)\s*[0-9A-Fa-f]+\s*.*?(?=\s*(?:[#;；]\s*)?(?:读条ID|结算ID)\s*[0-9A-Fa-f]+\b|$)/gi, '')
+        .trim();
+      if (cleaned === '附属判定候选') return '';
+      if (!cleaned || /读条ID|结算ID/i.test(cleaned)) return '';
+      if (/^[A-Za-z0-9_\-\s.,:()]+$/.test(cleaned) && !/AOE|stack|spread|tank|buster|knock|bait|move|middle|north|south|east|west/i.test(cleaned))
+        return '';
+      return cleaned === '范围' ? 'AOE' : cleaned;
+    }
+
+    function applyDisplayText(text) {
+      return text.replace(/--middle--/g, '回到中间')
+        .replace(/--north--/g, '去北侧')
+        .replace(/--south--/g, '去南侧')
+        .replace(/--east--/g, '去东侧')
+        .replace(/--west--/g, '去西侧')
+        .replace(/--untargetable--/g, '无法选中')
+        .replace(/--targetable--/g, '可选中');
+    }
+
+    function unescapeTimelineText(text) {
+      return text.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
+    }
+
+    function getVisibleEntries(now) {
+      const visibleSeconds = clamp(Number(els.visibleSeconds.value) || 90, 10, 600);
+      const showHidden = els.showHidden.checked;
+      const showDuration = els.showDuration.checked;
+      const showTimers = els.showTimers.checked;
+      return entries
+        .filter(e => showHidden || !e.hidden)
+        .filter(e => showDuration || !e.duration)
+        .filter(e => showTimers || e.event !== 'Timer')
+        .map(e => ({ entry: e, relative: e.time - now }))
+        .filter(v => v.relative >= 0 && v.relative <= visibleSeconds)
+        .sort((a, b) => a.relative - b.relative)
+        .slice(0, clamp(Number(els.maxRows.value) || 8, 1, 30));
+    }
+
+    function render() {
+      const now = Number(els.time.value) || 0;
+      const visibleSeconds = clamp(Number(els.visibleSeconds.value) || 90, 10, 600);
+      const maxRows = clamp(Number(els.maxRows.value) || 8, 1, 30);
+      const rowGap = clamp(Number(els.rowGap.value) || 0, 0, 8);
+      const panelWidth = clamp(Number(els.panelWidth.value) || 220, 180, 640);
+      els.timeText.textContent = now.toFixed(1);
+      els.timelineWindow.style.width = `${panelWidth}px`;
+      els.timelineWindow.style.setProperty('--row-gap', `${rowGap}px`);
+      els.timelineWindow.innerHTML = '';
+      els.visibleTable.innerHTML = '';
+      const visible = getVisibleEntries(now);
+      for (let i = 0; i < maxRows; i++) {
+        const v = visible[i];
+        const row = document.createElement('div');
+        row.className = 'timeline-row';
+        if (!v) row.classList.add('empty');
+        const fill = document.createElement('div');
+        fill.className = 'fill';
+        const name = document.createElement('div');
+        name.className = 'name';
+        const time = document.createElement('div');
+        time.className = 'time';
+        if (v) {
+          const seconds = Math.max(0, v.relative);
+          const ratio = 1 - Math.sqrt(clamp(seconds / visibleSeconds, 0, 1));
+          fill.style.width = `${ratio * 100}%`;
+          if (seconds <= 5) row.classList.add('urgent');
+          name.textContent = displayName(v.entry);
+          time.textContent = seconds.toFixed(1);
+          addTableRow(v);
+        }
+        row.append(fill, name, time);
+        els.timelineWindow.appendChild(row);
+      }
+    }
+
+    function displayName(entry) {
+      return entry.mechanicHint ? `[${entry.mechanicHint}] ${entry.displayText}` : entry.displayText;
+    }
+
+    function addTableRow(v) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${v.entry.time.toFixed(1)}</td><td>${v.relative.toFixed(1)}</td><td>${escapeHtml(v.entry.event || '-')}</td><td>${escapeHtml(displayName(v.entry))}</td><td>${escapeHtml(v.entry.mechanicHint || '')}</td>`;
+      els.visibleTable.appendChild(tr);
+    }
+
+    function jumpEntry(direction) {
+      if (!entries.length) return;
+      const now = Number(els.time.value) || 0;
+      const candidates = direction > 0 ? entries.filter(e => e.time > now + 0.05) : entries.filter(e => e.time < now - 0.05);
+      if (!candidates.length) return;
+      const target = direction > 0 ? candidates[0] : candidates[candidates.length - 1];
+      els.time.value = String(target.time);
+      render();
+    }
+
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function escapeHtml(v) { return String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    render();
+  </script>
+</body>
+</html>

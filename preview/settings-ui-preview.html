@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DalamudACT 配色方案预览</title>
+  <style>
+    :root {
+      --bg: #f8e9ec;
+      --frame: #fff7f8;
+      --panel: #fffafa;
+      --panel2: #f3dfe3;
+      --text: #2b1d22;
+      --muted: #846b74;
+      --line: #e6c8cf;
+      --accent: #d96f86;
+      --accentSoft: #f3d6dd;
+      --ok: #2fa66d;
+      --bad: #c94d5f;
+      --blue: #5f8fd8;
+      --headerBg: rgba(217,111,134,.35);
+      --headerHover: rgba(217,111,134,.50);
+      --cardBg: rgba(255,250,250,1);
+      --cardBorder: rgba(230,200,207,1);
+      --sliderGrab: #d96f86;
+      --btnBg: #fff7f8;
+      --btnHover: #f3d6dd;
+      --btnActive: #e8c4cc;
+      --frameBg: #f3d6dd;
+      --frameBgHover: #f8e0e5;
+      --frameBgActive: #e8c4cc;
+      --checkmark: #5f8fd8;
+      --consoleBg: #fdf1f4;
+      --consoleText: #4a2c35;
+    }
+
+    [data-theme="sakura-night"] {
+      --bg: #2a1d22;
+      --frame: #3a2830;
+      --panel: #443038;
+      --panel2: #33232a;
+      --text: #f6ecee;
+      --muted: #b69ca3;
+      --line: #553d45;
+      --accent: #e9948a;
+      --accentSoft: #5a3740;
+      --ok: #7ddf9b;
+      --bad: #ff7777;
+      --blue: #a8c4ff;
+      --headerBg: rgba(233,148,138,.30);
+      --headerHover: rgba(233,148,138,.45);
+      --cardBg: rgba(68,48,56,1);
+      --cardBorder: rgba(85,61,69,1);
+      --sliderGrab: #e9948a;
+      --btnBg: #443038;
+      --btnHover: #5a3740;
+      --btnActive: #6a3f4a;
+      --frameBg: #4d3540;
+      --frameBgHover: #5a3740;
+      --frameBgActive: #6a3f4a;
+      --checkmark: #a8c4ff;
+      --consoleBg: #33232a;
+      --consoleText: #d4c0c6;
+    }
+
+    [data-theme="ocean"] {
+      --bg: #e8f0f8;
+      --frame: #f5fafc;
+      --panel: #fafdff;
+      --panel2: #dce8f2;
+      --text: #1a2835;
+      --muted: #5f7a8f;
+      --line: #c2d4e0;
+      --accent: #3d8fc9;
+      --accentSoft: #c8dcea;
+      --ok: #2e9a6e;
+      --bad: #c94d4d;
+      --blue: #3d8fc9;
+      --headerBg: rgba(61,143,201,.30);
+      --headerHover: rgba(61,143,201,.45);
+      --cardBg: rgba(250,253,255,1);
+      --cardBorder: rgba(194,212,224,1);
+      --sliderGrab: #3d8fc9;
+      --btnBg: #f5fafc;
+      --btnHover: #c8dcea;
+      --btnActive: #b0ccdd;
+      --frameBg: #c8dcea;
+      --frameBgHover: #d6e6f0;
+      --frameBgActive: #b0ccdd;
+      --checkmark: #3d8fc9;
+      --consoleBg: #eef5f9;
+      --consoleText: #2a4050;
+    }
+
+    [data-theme="ocean-night"] {
+      --bg: #17222b;
+      --frame: #1f2e3a;
+      --panel: #263847;
+      --panel2: #1b2833;
+      --text: #e8f0f6;
+      --muted: #8fa8b8;
+      --line: #364c5c;
+      --accent: #5db0e0;
+      --accentSoft: #2a4050;
+      --ok: #6dcc9a;
+      --bad: #ff7070;
+      --blue: #5db0e0;
+      --headerBg: rgba(93,176,224,.30);
+      --headerHover: rgba(93,176,224,.45);
+      --cardBg: rgba(38,56,71,1);
+      --cardBorder: rgba(54,76,92,1);
+      --sliderGrab: #5db0e0;
+      --btnBg: #263847;
+      --btnHover: #2a4050;
+      --btnActive: #345568;
+      --frameBg: #2d4558;
+      --frameBgHover: #345568;
+      --frameBgActive: #3a5f72;
+      --checkmark: #5db0e0;
+      --consoleBg: #1b2833;
+      --consoleText: #c0d4e0;
+    }
+
+    [data-theme="forest"] {
+      --bg: #eaf3e8;
+      --frame: #f5faf4;
+      --panel: #fafff9;
+      --panel2: #dcead8;
+      --text: #1e2d1a;
+      --muted: #5c7a54;
+      --line: #c5d8bf;
+      --accent: #4a9e5a;
+      --accentSoft: #c8e0c4;
+      --ok: #3a8a4a;
+      --bad: #c9553a;
+      --blue: #4a9e5a;
+      --headerBg: rgba(74,158,90,.30);
+      --headerHover: rgba(74,158,90,.45);
+      --cardBg: rgba(250,255,249,1);
+      --cardBorder: rgba(197,216,191,1);
+      --sliderGrab: #4a9e5a;
+      --btnBg: #f5faf4;
+      --btnHover: #c8e0c4;
+      --btnActive: #b0d4aa;
+      --frameBg: #c8e0c4;
+      --frameBgHover: #d6ead2;
+      --frameBgActive: #b0d4aa;
+      --checkmark: #4a9e5a;
+      --consoleBg: #edf5ea;
+      --consoleText: #2a4025;
+    }
+
+    [data-theme="purple"] {
+      --bg: #f0eaf5;
+      --frame: #f8f5fa;
+      --panel: #fcfaff;
+      --panel2: #e6daf0;
+      --text: #241d30;
+      --muted: #6f5c82;
+      --line: #d2c4e0;
+      --accent: #7a4fa8;
+      --accentSoft: #d4c4e6;
+      --ok: #3a9a6a;
+      --bad: #c94d7a;
+      --blue: #7a4fa8;
+      --headerBg: rgba(122,79,168,.30);
+      --headerHover: rgba(122,79,168,.45);
+      --cardBg: rgba(252,250,255,1);
+      --cardBorder: rgba(210,196,224,1);
+      --sliderGrab: #7a4fa8;
+      --btnBg: #f8f5fa;
+      --btnHover: #d4c4e6;
+      --btnActive: #c0aad9;
+      --frameBg: #d4c4e6;
+      --frameBgHover: #decce8;
+      --frameBgActive: #c0aad9;
+      --checkmark: #7a4fa8;
+      --consoleBg: #f0eaf5;
+      --consoleText: #352848;
+    }
+
+    [data-theme="sunset"] {
+      --bg: #f8efe8;
+      --frame: #fef7f2;
+      --panel: #fffbf7;
+      --panel2: #f0e0d4;
+      --text: #332218;
+      --muted: #8a6b5a;
+      --line: #e0cabc;
+      --accent: #d4763a;
+      --accentSoft: #e8d0c0;
+      --ok: #3a9a6a;
+      --bad: #cc5540;
+      --blue: #d4763a;
+      --headerBg: rgba(212,118,58,.30);
+      --headerHover: rgba(212,118,58,.45);
+      --cardBg: rgba(255,251,247,1);
+      --cardBorder: rgba(224,202,188,1);
+      --sliderGrab: #d4763a;
+      --btnBg: #fef7f2;
+      --btnHover: #e8d0c0;
+      --btnActive: #dabaaa;
+      --frameBg: #e8d0c0;
+      --frameBgHover: #f0dccc;
+      --frameBgActive: #dabaaa;
+      --checkmark: #d4763a;
+      --consoleBg: #f5e8dc;
+      --consoleText: #4a3020;
+    }
+
+    [data-theme="mono"] {
+      --bg: #f0f0f0;
+      --frame: #fafafa;
+      --panel: #ffffff;
+      --panel2: #e8e8e8;
+      --text: #1a1a1a;
+      --muted: #6a6a6a;
+      --line: #d0d0d0;
+      --accent: #555555;
+      --accentSoft: #ddd;
+      --ok: #3a8a4a;
+      --bad: #cc4444;
+      --blue: #555555;
+      --headerBg: rgba(85,85,85,.25);
+      --headerHover: rgba(85,85,85,.40);
+      --cardBg: rgba(255,255,255,1);
+      --cardBorder: rgba(208,208,208,1);
+      --sliderGrab: #555555;
+      --btnBg: #fafafa;
+      --btnHover: #ddd;
+      --btnActive: #ccc;
+      --frameBg: #ddd;
+      --frameBgHover: #e6e6e6;
+      --frameBgActive: #ccc;
+      --checkmark: #555555;
+      --consoleBg: #f5f5f5;
+      --consoleText: #333;
+    }
+
+    [data-theme="cyber"] {
+      --bg: #0d1117;
+      --frame: #161b22;
+      --panel: #1c2333;
+      --panel2: #11161e;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --line: #30363d;
+      --accent: #58a6ff;
+      --accentSoft: #1c2a42;
+      --ok: #3fb950;
+      --bad: #f85149;
+      --blue: #58a6ff;
+      --headerBg: rgba(88,166,255,.25);
+      --headerHover: rgba(88,166,255,.40);
+      --cardBg: rgba(28,35,51,1);
+      --cardBorder: rgba(48,54,61,1);
+      --sliderGrab: #58a6ff;
+      --btnBg: #1c2333;
+      --btnHover: #1c2a42;
+      --btnActive: #2a3a55;
+      --frameBg: #1c2a42;
+      --frameBgHover: #223352;
+      --frameBgActive: #2a3a55;
+      --checkmark: #58a6ff;
+      --consoleBg: #0d1117;
+      --consoleText: #8b949e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, var(--bg), color-mix(in srgb, var(--accent) 8%, var(--bg)));
+      color: var(--text);
+      font: 14px/1.45 "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+      padding: 20px;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .page-title h1 { margin: 0; font-size: 20px; }
+    .page-title p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--frame);
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--panel2);
+      border-bottom: 1px solid var(--line);
+      font-weight: 800;
+    }
+    .card-header .tag { color: var(--accent); }
+    .card-header .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accentSoft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .card-body { padding: 12px; }
+
+    .mock-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .mock-title .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .mock-title span { font-weight: 700; font-size: 13px; }
+
+    .mock-header {
+      padding: 6px 10px;
+      background: var(--headerBg);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 8px;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mock-header::before {
+      content: "▶";
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    .mock-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+    }
+    .mock-row:last-child { border-bottom: none; }
+    .mock-row .label { font-size: 13px; }
+    .mock-row .label small { display: block; color: var(--muted); font-size: 11px; }
+
+    .mock-switch {
+      width: 34px; height: 15px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 999px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .mock-switch.on { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 20%, transparent); }
+    .mock-switch::after {
+      content: "";
+      position: absolute;
+      width: 11px; height: 11px;
+      left: 1px; top: 1px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: left .15s;
+    }
+    .mock-switch.on::after { left: 20px; background: var(--ok); }
+
+    .mock-slider {
+      width: 72px; height: 6px;
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 999px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .mock-slider i { display: block; height: 100%; background: var(--sliderGrab); border-radius: 999px; }
+
+    .mock-value {
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .mock-value.ok { color: var(--ok); }
+    .mock-value.off { color: var(--muted); }
+
+    .mock-btn-row {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+    .mock-btn {
+      height: 26px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      background: var(--btnBg);
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: default;
+    }
+    .mock-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .mock-btn:hover { background: var(--btnHover); }
+
+    .mock-console {
+      background: var(--consoleBg);
+      color: var(--consoleText);
+      padding: 8px 10px;
+      font: 11px/1.5 Consolas, monospace;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      margin-top: 6px;
+    }
+
+    .color-dots {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .color-dots i {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+    }
+
+    .footer-legend {
+      max-width: 1200px;
+      margin: 24px auto 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body data-theme="sakura">
+  <div class="page-title">
+    <h1>DalamudACT 配色方案</h1>
+    <p>点击色卡切换预览 · 推荐从上到下排序</p>
+  </div>
+
+  <div class="palette-grid" id="grid"></div>
+
+  <div class="footer-legend">
+    色卡从左到右：全局背景 · 窗口背景 · 面板背景 · 强调色 · OK 色 · 凸起色
+  </div>
+
+  <script>
+    const schemes = [
+      { id:'sakura', name:'桜 Sakura', badge:'当前', colors:['#f8e9ec','#fff7f8','#f3dfe3','#d96f86','#2fa66d','#5f8fd8'] },
+      { id:'sakura-night', name:'夜樱 Sakura Night', badge:'推荐', colors:['#2a1d22','#3a2830','#33232a','#e9948a','#7ddf9b','#a8c4ff'] },
+      { id:'ocean', name:'海 Ocean Breeze', badge:'', colors:['#e8f0f8','#f5fafc','#dce8f2','#3d8fc9','#2e9a6e','#3d8fc9'] },
+      { id:'ocean-night', name:'深海 Ocean Night', badge:'推荐', colors:['#17222b','#1f2e3a','#1b2833','#5db0e0','#6dcc9a','#5db0e0'] },
+      { id:'forest', name:'森 Forest Canopy', badge:'', colors:['#eaf3e8','#f5faf4','#dcead8','#4a9e5a','#3a8a4a','#4a9e5a'] },
+      { id:'purple', name:'紫 Royal Purple', badge:'', colors:['#f0eaf5','#f8f5fa','#e6daf0','#7a4fa8','#3a9a6a','#7a4fa8'] },
+      { id:'sunset', name:'暮 Sunset Glow', badge:'', colors:['#f8efe8','#fef7f2','#f0e0d4','#d4763a','#3a9a6a','#d4763a'] },
+      { id:'mono', name:'极简 Monochrome', badge:'', colors:['#f0f0f0','#fafafa','#e8e8e8','#555','#3a8a4a','#555'] },
+      { id:'cyber', name:'赛博 Cyberpunk', badge:'', colors:['#0d1117','#161b22','#11161e','#58a6ff','#3fb950','#58a6ff'] },
+    ];
+
+    const previews = [
+      { type:'header', label:'窗口控制' },
+      { type:'row', label:'统计面板', desc:'DPS / HPS / 承伤', control:'switch-on' },
+      { type:'row', label:'时间轴', desc:'副本机制倒计时', control:'switch-on' },
+      { type:'row', label:'技能监控', desc:'团辅、减伤、食物', control:'switch' },
+      { type:'row', label:'锁定面板位置', control:'switch' },
+      { type:'header', label:'显示参数' },
+      { type:'row', label:'主界面透明度', control:'slider-70' },
+      { type:'row', label:'时间轴透明度', control:'slider-85' },
+      { type:'row', label:'未来秒数', control:'value-90s' },
+      { type:'row', label:'最大条数', control:'value-8' },
+      { type:'header', label:'时间轴 / TTS' },
+      { type:'row', label:'TTS 播报', control:'switch-on' },
+      { type:'row', label:'读条应对即时播', control:'value-ON' },
+      { type:'row', label:'结算应对播报', control:'value-ON' },
+      { type:'buttons' },
+      { type:'console' },
+    ];
+
+    function renderCard(scheme) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        document.body.dataset.theme = scheme.id;
+        document.querySelectorAll('.badge').forEach(b => b.textContent = '');
+        card.querySelector('.badge').textContent = '预览中';
+      });
+
+      let headerHtml = `<div class="card-header"><span class="tag">${scheme.name}</span><span class="badge">${scheme.badge||''}</span></div>`;
+      headerHtml += `<div class="card-body">`;
+      headerHtml += `<div class="color-dots">${scheme.colors.map(c => `<i style="background:${c}"></i>`).join('')}</div>`;
+
+      headerHtml += `<div class="mock-title"><div class="dot"></div><span>DalamudACT</span> <span style="font-weight:400;font-size:12px;color:var(--muted)">/ Settings</span></div>`;
+
+      for (const item of previews) {
+        if (item.type === 'header') {
+          headerHtml += `<div class="mock-header">${item.label}</div>`;
+        } else if (item.type === 'row') {
+          let ctrl = '';
+          if (item.control === 'switch-on') ctrl = '<span class="mock-switch on"></span>';
+          else if (item.control === 'switch') ctrl = '<span class="mock-switch"></span>';
+          else if (item.control === 'slider-70') ctrl = '<span class="mock-slider"><i style="width:70%"></i></span>';
+          else if (item.control === 'slider-85') ctrl = '<span class="mock-slider"><i style="width:85%"></i></span>';
+          else if (item.control === 'value-90s') ctrl = '<span class="mock-value">90s</span>';
+          else if (item.control === 'value-8') ctrl = '<span class="mock-value">8</span>';
+          else if (item.control === 'value-ON') ctrl = '<span class="mock-value ok">ON</span>';
+          let desc = '';
+          if (item.desc) desc = `<small>${item.desc}</small>`;
+          headerHtml += `<div class="mock-row"><div class="label">${item.label}${desc}</div>${ctrl}</div>`;
+        } else if (item.type === 'buttons') {
+          headerHtml += `<div class="mock-btn-row"><span class="mock-btn primary">打开战斗流水</span><span class="mock-btn">打开主界面</span><span class="mock-btn">已有时间轴</span></div>`;
+        } else if (item.type === 'console') {
+          headerHtml += `<div class="mock-console">[timeline] loaded klythios.cn.txt<br>[tts] 对地 → 对帝<br>[sync] SystemLogMessage 7DC / 1585<br>[response] 读条ID 8EEE → 去正面</div>`;
+        }
+      }
+
+      headerHtml += `</div>`;
+      card.innerHTML = headerHtml;
+      return card;
+    }
+
+    const grid = document.getElementById('grid');
+    for (const s of schemes) {
+      grid.appendChild(renderCard(s));
+    }
+  </script>
+</body>
+</html>

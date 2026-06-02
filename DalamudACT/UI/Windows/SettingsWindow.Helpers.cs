@@ -22,10 +22,11 @@ internal sealed partial class SettingsWindow
 
         ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(style.WindowPadding.X, cardVerticalPadding));
         ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(style.ItemSpacing.X, 4f));
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 6f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 14f);
         ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 1f);
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(1f, 1f, 1f, 0.035f));
-        ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(1f, 1f, 1f, 0.12f));
+        var theme = UiThemeColors.Get(config.SelectedUiTheme);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, theme.Panel);
+        ImGui.PushStyleColor(ImGuiCol.Border, theme.Border);
         try
         {
             ImGui.BeginChild(id, new Vector2(0f, height), true);
@@ -175,11 +176,12 @@ internal sealed partial class SettingsWindow
         adaptiveChildHeights[key] = clampedHeight;
     }
 
-    private static bool DrawFirstLevelHeader(string label, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
+    private bool DrawFirstLevelHeader(string label, ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.None)
     {
-        ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0.25f, 0.45f, 0.75f, 0.45f));
-        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(0.25f, 0.45f, 0.75f, 0.55f));
-        ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(0.25f, 0.45f, 0.75f, 0.65f));
+        var theme = UiThemeColors.Get(config.SelectedUiTheme);
+        ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(theme.Accent.X, theme.Accent.Y, theme.Accent.Z, 0.35f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(theme.Accent.X, theme.Accent.Y, theme.Accent.Z, 0.50f));
+        ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(theme.Accent.X, theme.Accent.Y, theme.Accent.Z, 0.60f));
         try
         {
             return ImGui.CollapsingHeader(label, flags);
@@ -272,4 +274,40 @@ internal sealed partial class SettingsWindow
 
     private static string FormatStoredWidth(float width)
         => width > 0f ? $"{width:0}px" : "自动";
+
+    private void PushThemeStyle(UiThemeColors t)
+    {
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10f, 10f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 14f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 10f);
+        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, 10f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(8f, 7f));
+        ImGui.PushStyleColor(ImGuiCol.Text, t.Text);
+        ImGui.PushStyleColor(ImGuiCol.TextDisabled, t.TextDisabled);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, t.Panel);
+        ImGui.PushStyleColor(ImGuiCol.Border, t.Border);
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.CheckMark, t.CheckMark);
+        ImGui.PushStyleColor(ImGuiCol.SliderGrab, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.Button, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.PopupBg, t.WindowBg);
+        ImGui.PushStyleColor(ImGuiCol.Header, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.HeaderActive, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarBg, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrab, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrabHovered, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrabActive, t.Accent);
+    }
+
+    private static void PopThemeStyle()
+    {
+        ImGui.PopStyleColor(21);
+        ImGui.PopStyleVar(5);
+    }
 }

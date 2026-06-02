@@ -251,6 +251,17 @@ internal sealed partial class SettingsWindow
                 ImGui.SameLine();
                 DrawHelpMarker("按职能写入高对比主题色：坦克蓝、治疗绿、输出红。近战、远敏、法系统一使用输出色。");
 
+                ImGui.Dummy(new Vector2(0f, 4f));
+                var highlightSelfBar = config.HighlightSelfBar;
+                if (ImGui.Checkbox("高亮自身", ref highlightSelfBar))
+                {
+                    config.HighlightSelfBar = highlightSelfBar;
+                    config.Save();
+                }
+
+                ImGui.SameLine(0f, 6f);
+                DrawHelpMarker("开启后，统计面板里的本地玩家占比条会使用下方选择的高亮色。");
+
                 ImGui.BeginDisabled(!config.HighlightSelfBar);
                 var selfHighlightColor = config.SelfHighlightColor;
                 if (ImGui.RadioButton("日光黄", selfHighlightColor == SelfHighlightColorMode.SunlightYellow))

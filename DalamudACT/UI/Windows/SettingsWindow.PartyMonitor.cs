@@ -88,7 +88,7 @@ internal sealed partial class SettingsWindow
             ImGuiTableFlags.SizingStretchSame
             | ImGuiTableFlags.NoSavedSettings;
 
-        var sectionHeaderColor = new Vector4(0.72f, 0.86f, 1f, 0.92f);
+        var sectionHeaderColor = UiThemeColors.Get(config.SelectedUiTheme).Accent;
 
         ImGui.TextColored(sectionHeaderColor, "尺寸与 CD 数字");
         ImGui.Separator();
@@ -375,7 +375,7 @@ internal sealed partial class SettingsWindow
         var cdStr = customSkillCdInputs.TryGetValue(globalCustomKey, out var cStr) ? cStr : string.Empty;
 
         ImGui.Separator();
-        ImGui.TextColored(new Vector4(0.6f, 0.8f, 1f, 1f), "添加自定义技能（当目录中缺少某个技能时使用）");
+        ImGui.TextColored(UiThemeColors.Get(config.SelectedUiTheme).Accent, "添加自定义技能（当目录中缺少某个技能时使用）");
 
         ImGui.TextDisabled("目标职业");
         ImGui.SameLine();

@@ -145,7 +145,7 @@ internal sealed partial class SettingsWindow
 
         DrawCompactHelp("自动下载时间轴", "开启后，进入副本时自动检测该区域是否缺少时间轴，远程有匹配条目则下载缓存。同一区域每小时至多自动下载一次。");
 
-        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.7f, 0.2f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.Text, UiThemeColors.Get(config.SelectedUiTheme).Accent);
         ImGui.TextUnformatted("注：目前时间轴仅涵盖 7.x 版本内容。6.x 及更早版本暂不支持。");
         ImGui.PopStyleColor();
 

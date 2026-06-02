@@ -6,27 +6,515 @@ namespace DalamudACT;
 
 internal sealed partial class SettingsWindow
 {
+    private enum QuickSettingsPage
+    {
+        Basic,
+        Appearance,
+        Timeline,
+        Tts,
+        Status,
+    }
+
+    private QuickSettingsPage quickSettingsPage = QuickSettingsPage.Basic;
+
     private void DrawQuickSettings()
     {
-        ImGui.TextUnformatted("简易设置");
-        ImGui.SameLine();
-        if (ImGui.Button("战斗流水"))
-            openCombatTimelineWindow();
+        var currentSize = Size ?? new Vector2(790f, 600f);
+        Size = new Vector2(Math.Max(currentSize.X, 790f), Math.Max(currentSize.Y, 600f));
+        DrawQuickSettingsShell();
+    }
 
-        ImGui.SameLine();
-        if (ImGui.Button("完整设置 →"))
+    private void DrawQuickSettingsShell()
+    {
+        var t = UiThemeColors.Get(config.SelectedUiTheme);
+
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(10f, 10f));
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 14f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 10f);
+        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, 10f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(8f, 7f));
+        ImGui.PushStyleColor(ImGuiCol.Text, t.Text);
+        ImGui.PushStyleColor(ImGuiCol.TextDisabled, t.TextDisabled);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, t.Panel);
+        ImGui.PushStyleColor(ImGuiCol.Border, t.Border);
+        ImGui.PushStyleColor(ImGuiCol.FrameBg, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.FrameBgActive, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.CheckMark, t.CheckMark);
+        ImGui.PushStyleColor(ImGuiCol.SliderGrab, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.SliderGrabActive, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.Button, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.ButtonHovered, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.ButtonActive, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.PopupBg, t.WindowBg);
+        ImGui.PushStyleColor(ImGuiCol.Header, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.HeaderHovered, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.HeaderActive, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarBg, t.PanelDark);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrab, t.AccentSoft);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrabHovered, t.Accent);
+        ImGui.PushStyleColor(ImGuiCol.ScrollbarGrabActive, t.Accent);
+        try
         {
-            showAdvancedSettings = true;
-            Size = new Vector2(620f, 760f);
+            DrawQuickConsoleHeader(t);
+
+            var fullWidth = ImGui.GetContentRegionAvail().X;
+            var fullHeight = ImGui.GetContentRegionAvail().Y;
+            var navWidth = 154f;
+            var sideWidth = 196f;
+            var contentWidth = Math.Max(260f, fullWidth - navWidth - sideWidth - 16f);
+            const ImGuiWindowFlags childFlags = ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
+
+            ImGui.PushStyleColor(ImGuiCol.ChildBg, t.PanelDark);
+            ImGui.BeginChild("##quick_nav", new Vector2(navWidth, fullHeight), true, childFlags);
+            ImGui.PopStyleColor();
+            try
+            {
+                DrawQuickNavItem("基础", QuickSettingsPage.Basic);
+                DrawQuickNavItem("外观", QuickSettingsPage.Appearance);
+                DrawQuickNavItem("时间轴", QuickSettingsPage.Timeline);
+                DrawQuickNavItem("TTS", QuickSettingsPage.Tts);
+                DrawQuickNavItem("状态", QuickSettingsPage.Status);
+            }
+            finally
+            {
+                ImGui.EndChild();
+            }
+
+            ImGui.SameLine(0f, 8f);
+            ImGui.BeginChild("##quick_content", new Vector2(contentWidth, fullHeight), true, childFlags);
+            try
+            {
+                DrawQuickPageContent();
+            }
+            finally
+            {
+                ImGui.EndChild();
+            }
+
+            ImGui.SameLine(0f, 8f);
+            ImGui.BeginChild("##quick_status", new Vector2(sideWidth, fullHeight), true, childFlags);
+            try
+            {
+                DrawQuickStatusPanel(t.Ok, t.Accent);
+            }
+            finally
+            {
+                ImGui.EndChild();
+            }
+
+        }
+        finally
+        {
+            ImGui.PopStyleColor(21);
+            ImGui.PopStyleVar(5);
+        }
+    }
+
+    private void DrawQuickConsoleHeader(UiThemeColors theme)
+    {
+        const float headerHeight = 50f;
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, theme.PanelDark);
+        ImGui.BeginChild("##quick_header", new Vector2(0f, headerHeight), true, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
+        ImGui.PopStyleColor();
+        try
+        {
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(theme.Accent, "DalamudACT");
+            ImGui.SameLine(0f, 6f);
+            ImGui.TextUnformatted($"设置 / v{PluginVersion}");
+            ImGui.SameLine();
+            ImGui.TextColored(theme.Ok, "已启用");
+
+            const float advancedButtonWidth = 92f;
+            const float closeButtonWidth = 76f;
+            var right = ImGui.GetWindowContentRegionMax().X;
+            var buttonY = MathF.Max(0f, (headerHeight - ImGui.GetFrameHeight()) * 0.5f);
+            ImGui.SetCursorPos(new Vector2(MathF.Max(0f, right - advancedButtonWidth - closeButtonWidth - 16f), buttonY));
+            if (ImGui.Button("完整设置", new Vector2(advancedButtonWidth, 0f)))
+            {
+                showAdvancedSettings = true;
+                pendingWindowSize = new Vector2(1044f, 600f);
+            }
+
+            ImGui.SameLine(0f, 8f);
+            if (ImGui.Button("关闭窗口", new Vector2(closeButtonWidth, 0f)))
+                IsOpen = false;
+        }
+        finally
+        {
+            ImGui.EndChild();
+        }
+    }
+
+    private void DrawQuickNavItem(string label, QuickSettingsPage page)
+    {
+        var t = UiThemeColors.Get(config.SelectedUiTheme);
+        var selected = quickSettingsPage == page;
+        if (selected)
+            ImGui.PushStyleColor(ImGuiCol.Button, t.WindowBg);
+        else
+            ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0f, 0f, 0f, 0f));
+
+        try
+        {
+            if (ImGui.Button($"      {label}##quick_nav_{page}", new Vector2(-1f, 34f)))
+                quickSettingsPage = page;
+
+            DrawQuickNavIcon(page, selected);
+        }
+        finally
+        {
+            ImGui.PopStyleColor();
+        }
+    }
+
+    private void DrawQuickNavIcon(QuickSettingsPage page, bool selected)
+    {
+        var t = UiThemeColors.Get(config.SelectedUiTheme);
+        var min = ImGui.GetItemRectMin();
+        var center = min + new Vector2(18f, 17f);
+        var drawList = ImGui.GetWindowDrawList();
+        var color = ImGui.ColorConvertFloat4ToU32(selected ? t.Accent : t.TextDisabled);
+        var fill = ImGui.ColorConvertFloat4ToU32(selected ? t.AccentSoft : new Vector4(t.WindowBg.X, t.WindowBg.Y, t.WindowBg.Z, 0.65f));
+
+        switch (page)
+        {
+            case QuickSettingsPage.Basic:
+                drawList.AddRectFilled(center - new Vector2(8f, 8f), center + new Vector2(8f, 8f), fill, 4f);
+                drawList.AddRect(center - new Vector2(8f, 8f), center + new Vector2(8f, 8f), color, 4f, ImDrawFlags.None, 1.5f);
+                break;
+            case QuickSettingsPage.Appearance:
+                drawList.AddCircleFilled(center, 8f, fill, 24);
+                drawList.AddCircle(center, 8f, color, 24, 1.5f);
+                drawList.AddCircleFilled(center + new Vector2(3f, -3f), 2.2f, color, 12);
+                break;
+            case QuickSettingsPage.Timeline:
+                drawList.AddLine(center + new Vector2(-8f, 5f), center + new Vector2(8f, 5f), color, 1.6f);
+                drawList.AddLine(center + new Vector2(-6f, 1f), center + new Vector2(5f, -5f), color, 1.6f);
+                drawList.AddCircleFilled(center + new Vector2(-7f, 5f), 2f, color, 10);
+                drawList.AddCircleFilled(center + new Vector2(8f, 5f), 2f, color, 10);
+                break;
+            case QuickSettingsPage.Tts:
+                drawList.AddCircleFilled(center + new Vector2(-5f, 0f), 5f, fill, 18);
+                drawList.AddCircle(center + new Vector2(-5f, 0f), 5f, color, 18, 1.5f);
+                drawList.AddLine(center + new Vector2(2f, -5f), center + new Vector2(8f, -8f), color, 1.5f);
+                drawList.AddLine(center + new Vector2(2f, 5f), center + new Vector2(8f, 8f), color, 1.5f);
+                drawList.AddLine(center + new Vector2(4f, 0f), center + new Vector2(10f, 0f), color, 1.5f);
+                break;
+            case QuickSettingsPage.Status:
+                drawList.AddCircleFilled(center, 8f, fill, 16);
+                drawList.AddCircle(center, 8f, color, 16, 1.5f);
+                drawList.AddCircleFilled(center, 3f, color, 12);
+                break;
+        }
+    }
+
+    private void DrawQuickPageContent()
+    {
+        switch (quickSettingsPage)
+        {
+            case QuickSettingsPage.Basic:
+                DrawQuickBasicPage();
+                break;
+            case QuickSettingsPage.Appearance:
+                DrawQuickAppearancePage();
+                break;
+            case QuickSettingsPage.Timeline:
+                DrawQuickTimelinePage();
+                break;
+            case QuickSettingsPage.Tts:
+                DrawQuickTtsPage();
+                break;
+            case QuickSettingsPage.Status:
+                DrawQuickStatusPage();
+                break;
+        }
+    }
+
+    private void DrawQuickPanel(string title, Action draw)
+    {
+        var t = UiThemeColors.Get(config.SelectedUiTheme);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(t.WindowBg.X, t.WindowBg.Y, t.WindowBg.Z, 1f));
+        ImGui.BeginChild($"##quick_panel_{title}", new Vector2(0f, 0f), true, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
+        ImGui.PopStyleColor();
+        try
+        {
+            ImGui.TextUnformatted(title);
+            ImGui.Separator();
+            draw();
+        }
+        finally
+        {
+            ImGui.EndChild();
+        }
+    }
+
+    private void DrawQuickSettingRow(string label, string? description, Action drawControl)
+    {
+        const ImGuiTableFlags flags = ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings;
+        if (!ImGui.BeginTable($"##row_{label}", 2, flags))
+            return;
+
+        try
+        {
+            ImGui.TableSetupColumn("label", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.TableSetupColumn("control", ImGuiTableColumnFlags.WidthFixed, 132f);
+            ImGui.TableNextRow();
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted(label);
+            if (!string.IsNullOrWhiteSpace(description))
+                ImGui.TextDisabled(description);
+            ImGui.TableSetColumnIndex(1);
+            ImGui.SetNextItemWidth(-1f);
+            drawControl();
+        }
+        finally
+        {
+            ImGui.EndTable();
         }
 
         ImGui.Separator();
+    }
 
-        DrawQuickWindowSection();
-        DrawQuickOpacitySection();
-        DrawQuickStyleSection();
-        DrawQuickTtsSection();
-        DrawQuickTimelineSection();
+    private void DrawQuickBasicPage()
+    {
+        DrawQuickPanel("窗口控制", () =>
+        {
+            DrawQuickWindowControlRow(
+                "统计面板",
+                "DPS / HPS / 承伤统计",
+                config.ShowStatsPanel,
+                value =>
+                {
+                    config.ShowStatsPanel = value;
+                    config.ShowDemoPanel = value;
+                },
+                config.LockFloatingStatsWindow,
+                value => config.LockFloatingStatsWindow = value);
+            DrawQuickWindowControlRow(
+                "技能监控",
+                "团辅、减伤、食物、自定义技能",
+                config.PartyMonitor.EnablePartyMonitor && config.PartyMonitor.ShowPartyMonitorWindow,
+                value =>
+                {
+                    config.PartyMonitor.EnablePartyMonitor = value;
+                    config.PartyMonitor.ShowPartyMonitorWindow = value;
+                },
+                config.PartyMonitor.LockPartyMonitorWindow,
+                value => config.PartyMonitor.LockPartyMonitorWindow = value);
+            DrawQuickWindowControlRow(
+                "时间轴",
+                "当前副本机制倒计时",
+                config.ShowTimelineWindow,
+                value => config.ShowTimelineWindow = value,
+                config.LockTimelineWindow,
+                value => config.LockTimelineWindow = value);
+            DrawQuickWindowControlRow(
+                "状态监控",
+                "目标、自身、触发状态排查",
+                config.StatusObserver.ShowWindow,
+                value => config.StatusObserver.ShowWindow = value,
+                config.StatusObserver.LockWindow,
+                value => config.StatusObserver.LockWindow = value);
+        });
+    }
+
+    private void DrawQuickWindowControlRow(
+        string label,
+        string description,
+        bool showValue,
+        Action<bool> applyShow,
+        bool lockValue,
+        Action<bool> applyLock)
+    {
+        const ImGuiTableFlags flags = ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings;
+        if (!ImGui.BeginTable($"##window_control_{label}", 3, flags))
+            return;
+
+        try
+        {
+            ImGui.TableSetupColumn("label", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.TableSetupColumn("show", ImGuiTableColumnFlags.WidthFixed, 72f);
+            ImGui.TableSetupColumn("lock", ImGuiTableColumnFlags.WidthFixed, 72f);
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted(label);
+            ImGui.TextDisabled(description);
+
+            ImGui.TableSetColumnIndex(1);
+            var show = showValue;
+            if (ImGui.Checkbox($"显示##show_{label}", ref show))
+            {
+                applyShow(show);
+                config.Save();
+            }
+
+            ImGui.TableSetColumnIndex(2);
+            var locked = lockValue;
+            if (ImGui.Checkbox($"锁定##lock_{label}", ref locked))
+            {
+                applyLock(locked);
+                config.Save();
+            }
+        }
+        finally
+        {
+            ImGui.EndTable();
+        }
+
+        ImGui.Separator();
+    }
+
+    private void DrawQuickAppearancePage()
+    {
+        DrawQuickPanel("透明度与样式", () =>
+        {
+            DrawThemeSwitcher();
+            ImGui.Separator();
+            DrawQuickFloatRow("主界面透明度", null, config.WindowOpacity, 0.2f, 1f, "%.2f", value => config.WindowOpacity = value);
+            DrawQuickFloatRow("DPS统计面板透明度", null, config.FloatingStatsOpacity, 0f, 1f, "%.2f", value => config.FloatingStatsOpacity = value);
+            DrawQuickFloatRow("技能监控窗口透明度", null, config.PartyMonitor.PartyMonitorOpacity, 0f, 1f, "%.2f", value => config.PartyMonitor.PartyMonitorOpacity = value);
+            DrawQuickFloatRow("时间轴窗口透明度", null, config.TimelineWindowOpacity, 0.2f, 1f, "%.2f", value => config.TimelineWindowOpacity = value);
+            DrawQuickFloatRow("状态监控透明度", null, config.StatusObserver.WindowOpacity, 0f, 1f, "%.2f", value => config.StatusObserver.WindowOpacity = value);
+
+            ImGui.Dummy(new Vector2(0f, 4f));
+            var currentStyle = config.FloatingStatsDisplayStyle;
+            var styleLabel = currentStyle switch
+            {
+                FloatingStatsDisplayStyle.Classic => "Classic",
+                FloatingStatsDisplayStyle.Ikegami => "Ikegami",
+                FloatingStatsDisplayStyle.Minimal => "Minimal",
+                _ => "Classic",
+            };
+
+            if (ImGui.BeginCombo("展示模式", styleLabel))
+            {
+                foreach (FloatingStatsDisplayStyle style in Enum.GetValues(typeof(FloatingStatsDisplayStyle)))
+                {
+                    var label = style switch
+                    {
+                        FloatingStatsDisplayStyle.Classic => "Classic",
+                        FloatingStatsDisplayStyle.Ikegami => "Ikegami",
+                        FloatingStatsDisplayStyle.Minimal => "Minimal",
+                        _ => style.ToString(),
+                    };
+
+                    if (ImGui.Selectable(label, currentStyle == style))
+                        config.SwitchFloatingStatsDisplayStyle(style);
+                }
+
+                ImGui.EndCombo();
+            }
+
+            DrawQuickStyleParams(config.FloatingStatsDisplayStyle);
+        });
+    }
+
+    private void DrawQuickTimelinePage()
+    {
+        DrawQuickPanel("时间轴", () =>
+        {
+            DrawQuickBoolRow("进入副本时自动下载时间轴", "同一区域每小时最多下载一次", config.TimelineAutoDownloadOnEnter, value => config.TimelineAutoDownloadOnEnter = value);
+            DrawQuickIntRow("显示未来秒数", null, config.TimelineVisibleSeconds, 10, 120, value => config.TimelineVisibleSeconds = value);
+            DrawQuickIntRow("最大显示条数", null, config.TimelineMaxVisibleEntries, 5, 50, value => config.TimelineMaxVisibleEntries = value);
+            DrawQuickFloatRow("时间条间隔", null, config.TimelineRowGap, 0f, 20f, "%.1f", value => config.TimelineRowGap = value);
+            ImGui.TextDisabled("目前时间轴仅涵盖 7.x 版本内容。");
+        });
+    }
+
+    private void DrawQuickTtsPage()
+    {
+        DrawQuickPanel("TTS 播报", () =>
+        {
+            DrawQuickBoolRow("启用时间轴 TTS", "需要 DailyRoutines 文本转语音", config.EnableTimelineDailyRoutinesTts, value => config.EnableTimelineDailyRoutinesTts = value);
+            DrawQuickBoolRow("播报机制", "AOE / 死刑等分类提示", config.TimelineTtsMechanic, value => config.TimelineTtsMechanic = value);
+            DrawQuickBoolRow("播报应对方案", "读条ID 即时播，结算ID 到达时播", config.TimelineTtsResponse, value => config.TimelineTtsResponse = value);
+            DrawQuickIntRow("TTS 提前秒数", null, config.TimelineTtsLeadSeconds, 0, 10, value => config.TimelineTtsLeadSeconds = value);
+        });
+    }
+
+    private void DrawQuickStatusPage()
+    {
+        DrawQuickPanel("当前状态", () =>
+        {
+            ImGui.TextUnformatted($"版本: {PluginVersion}");
+            ImGui.TextUnformatted($"时间轴: {(timelineService?.HasTimeline == true ? "已加载" : "未加载")}");
+            ImGui.TextUnformatted($"定义: {timelineService?.DefinitionName ?? "-"}");
+            ImGui.TextUnformatted($"运行: {(timelineService?.IsRunning == true ? $"是 ({timelineService.CurrentTimeSeconds:F1}s)" : "否")}");
+            ImGui.TextUnformatted($"自动下载: {timelineService?.AutoDownloadStatusText ?? "-"}");
+            ImGui.Dummy(new Vector2(0f, 8f));
+            ImGui.TextDisabled(@"E:\git\DalamudACT\DalamudACT\Features\Timeline\Data");
+        });
+    }
+
+    private void DrawQuickStatusPanel(Vector4 ok, Vector4 accent)
+    {
+        ImGui.TextUnformatted("当前状态");
+        ImGui.Separator();
+        ImGui.TextColored(accent, PluginVersion);
+        ImGui.TextDisabled("release version");
+        ImGui.Dummy(new Vector2(0f, 6f));
+        DrawThemeSwitcher();
+        ImGui.Dummy(new Vector2(0f, 6f));
+        ImGui.TextUnformatted("快捷入口");
+        if (ImGui.Button("打开主界面", new Vector2(-1f, 0f)))
+            openMainWindow();
+        if (ImGui.Button("打开战斗流水", new Vector2(-1f, 0f)))
+            openCombatTimelineWindow();
+        if (ImGui.Button("已有时间轴", new Vector2(-1f, 0f)))
+            openTimelineListWindow();
+        ImGui.Dummy(new Vector2(0f, 6f));
+        if (ImGui.Button("还原默认UI", new Vector2(-1f, 0f)))
+        {
+            config.ResetUiSettings();
+            config.Save();
+        }
+        if (ImGui.Button("保存当前UI为默认", new Vector2(-1f, 0f)))
+        {
+            config.SaveCurrentUiAsDefault();
+            config.Save();
+        }
+    }
+
+    private void DrawQuickBoolRow(string label, string? description, bool value, Action<bool> apply)
+    {
+        DrawQuickSettingRow(label, description, () =>
+        {
+            var current = value;
+            if (ImGui.Checkbox($"##{label}", ref current))
+            {
+                apply(current);
+                config.Save();
+            }
+        });
+    }
+
+    private void DrawQuickFloatRow(string label, string? description, float value, float min, float max, string format, Action<float> apply)
+    {
+        DrawQuickSettingRow(label, description, () =>
+        {
+            var current = value;
+            if (ImGui.SliderFloat($"##{label}", ref current, min, max, format))
+            {
+                apply(current);
+                config.Save();
+            }
+        });
+    }
+
+    private void DrawQuickIntRow(string label, string? description, int value, int min, int max, Action<int> apply)
+    {
+        DrawQuickSettingRow(label, description, () =>
+        {
+            var current = value;
+            if (ImGui.SliderInt($"##{label}", ref current, min, max))
+            {
+                apply(current);
+                config.Save();
+            }
+        });
     }
 
     private void DrawQuickWindowSection()
@@ -293,7 +781,7 @@ internal sealed partial class SettingsWindow
             config.Save();
         }
 
-        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1f, 0.7f, 0.2f, 1f));
+        ImGui.PushStyleColor(ImGuiCol.Text, UiThemeColors.Get(config.SelectedUiTheme).Accent);
         ImGui.TextUnformatted("注：目前时间轴仅涵盖 7.x 版本内容。6.x 及更早版本暂不支持。");
         ImGui.PopStyleColor();
 

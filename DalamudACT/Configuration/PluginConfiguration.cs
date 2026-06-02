@@ -46,6 +46,8 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
     public int Version { get; set; } = 57;
 
+    public UiThemeId SelectedUiTheme = UiThemeId.Sakura;
+
     public float WindowOpacity = 1f;
     public float FloatingStatsOpacity = 0.72f;
     public bool ShowStatsPanel = true;

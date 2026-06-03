@@ -83,7 +83,7 @@ hideall "--sync--"
 
 ### PHASE 2: Adds, explosions, dramatic tail climbing
 ###
-500.0 "--Phase 2--" StartsUsing { id: "C443", source: "Shinryu" } window 500,500
+500.0 "--Phase 2--"
 503.0 "Dark Matter" Ability { id: "C443", source: "Shinryu" }
 513.0 "TAP BUTTON OR ELSE" duration 5
 540.7 "Touchdown" Ability { id: "C46F", source: "Shinryu" }
@@ -98,7 +98,7 @@ hideall "--sync--"
 
 ### PHASE 3: Anticlimax
 ###
-800.0 "--Phase 3--" StartsUsing { id: "C440", source: "Shinryu" } window 500,500
+800.0 "--Phase 3--" StartsUsing { id: "C440", source: "Shinryu" } window 20,20
 806.0 "Protostar" Ability { id: "C440", source: "Shinryu" }
 813.1 "Tail Spit" Ability { id: "C471", source: "Shinryu" }
 837.4 "Shatter" Ability { id: "C473", source: "Shinryu" } window 50,50
@@ -125,7 +125,7 @@ hideall "--sync--"
 
 ### PHASE 4: Race to the finish!
 ###
-1046.0 "--sync--" StartsUsing { id: "C47B", source: "Shinryu" } window 300,300
+1046.0 "--sync--" StartsUsing { id: "C47B", source: "Shinryu" } window 20,20
 1085.0 "First Wing" # 35 second cast, starts 4 seconds later, C47D/C47E
 1090.0 "Second Wing" # 35 second cast, starts 9 seconds later, C47E/C47D
 1116.0 "Tidal Wave" Ability { id: "C47B", source: "Shinryu" } # 70 second cast

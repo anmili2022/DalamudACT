@@ -246,6 +246,7 @@
       <p>例如：</p>
       <pre><code>100.0 "--sync--" Ability { id: "8ABC" } window 20,5</code></pre>
       <p>表示当前时间在 <code>80.0</code> 到 <code>105.0</code> 秒之间时，才允许这条同步命中。</p>
+      <div class="warn">不要把阶段标题写成大窗口同步点，例如 <code>"--Phase 3--" StartsUsing { ... } window 500,500</code>。阶段文字只适合做标记，真正的同步应放在更贴近实际事件的唯一技能上，否则中途加载或异常观察顺序时很容易回跳到旧阶段。</div>
     </section>
 
     <section id="hint">

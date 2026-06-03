@@ -84,7 +84,7 @@ hideall "--sync--"
 
 ### PHASE 2: Adds, explosions, dramatic tail climbing
 ###
-500.0 "--阶段 2--" StartsUsing { id: "C443", source: "神龙" } window 500,500
+500.0 "--阶段 2--"
 503.0 "暗物质" Ability { id: "C443", source: "神龙" }
 513.0 "XJB按" duration 5
 540.7 "空降" Ability { id: "C46F", source: "神龙" }
@@ -99,7 +99,7 @@ hideall "--sync--"
 
 ### PHASE 3: Anticlimax
 ###
-800.0 "--阶段 3--" StartsUsing { id: "C440", source: "神龙" } window 500,500
+800.0 "--阶段 3--" StartsUsing { id: "C440", source: "神龙" } window 20,20
 806.0 "原恒星" Ability { id: "C440", source: "神龙" }
 813.1 "尾部重击" Ability { id: "C471", source: "神龙" }
 837.4 "破碎" Ability { id: "C473", source: "神龙" } window 50,50
@@ -126,7 +126,7 @@ hideall "--sync--"
 
 ### PHASE 4: Race to the finish!
 ###
-1046.0 "--sync--" StartsUsing { id: "C47B", source: "神龙" } window 300,300 # 读条ID C47B 狂暴读条，不用奶了
+1046.0 "--sync--" StartsUsing { id: "C47B", source: "神龙" } window 20,20
 1085.0 "第一只翅膀" # 35 second cast, starts 4 seconds later, C47D/C47E
 1090.0 "第二只翅膀" # 35 second cast, starts 9 seconds later, C47E/C47D
-1116.0 "巨浪" Ability { id: "C47B", source: "神龙" } # 70 second cast
+1116.0 "巨浪" Ability { id: "C47B", source: "神龙" } # 70 second cast 读条ID C47B 狂暴读条，不用奶了

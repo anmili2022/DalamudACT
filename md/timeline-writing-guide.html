@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DalamudACT 时间轴撰写指南</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --panel-soft: #eef3f8;
+      --ink: #1f2a37;
+      --muted: #687587;
+      --line: #d8e1ec;
+      --accent: #2f7abf;
+      --accent-soft: #dcecff;
+      --warn: #9a5b00;
+      --warn-bg: #fff4d8;
+      --ok: #16724a;
+      --code-bg: #16202d;
+      --code-ink: #f0f5fb;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+    header {
+      background: linear-gradient(135deg, #143a5d, #2f7abf);
+      color: #fff;
+      padding: 42px 24px 36px;
+    }
+    header .inner, main {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      letter-spacing: 0;
+    }
+    header p {
+      margin: 0;
+      max-width: 820px;
+      color: rgba(255, 255, 255, 0.88);
+    }
+    main { padding: 24px; }
+    nav, section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(22, 32, 45, 0.05);
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      color: #16324f;
+    }
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 18px;
+      color: #23445f;
+    }
+    p { margin: 8px 0; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 5px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      background: var(--accent-soft);
+      color: #12385a;
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 0.94em;
+    }
+    pre {
+      margin: 10px 0 14px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: 8px;
+      border: 1px solid #26384c;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 16px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--panel-soft);
+      color: #1d3e5d;
+      font-weight: 700;
+    }
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px 18px;
+      margin: 0;
+      padding-left: 18px;
+    }
+    .note, .warn, .ok {
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0;
+    }
+    .note { background: var(--accent-soft); border: 1px solid #b9d8f7; }
+    .warn { background: var(--warn-bg); border: 1px solid #f0d38b; color: var(--warn); }
+    .ok { background: #e6f6ef; border: 1px solid #b7e3cf; color: var(--ok); }
+    .tag {
+      display: inline-block;
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin: 2px 4px 2px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 10px 24px 36px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="inner">
+      <h1>DalamudACT 时间轴撰写指南</h1>
+      <p>面向玩家和时间轴维护者：如何生成、修改、添加同步点、机制提示与应对方案，并在游戏内验证。</p>
+    </div>
+  </header>
+
+  <main>
+    <nav>
+      <h2>目录</h2>
+      <ol class="toc">
+        <li><a href="#file">文件位置与命名</a></li>
+        <li><a href="#basic">基础语法</a></li>
+        <li><a href="#sync">同步事件</a></li>
+        <li><a href="#hint">机制提示与 TTS</a></li>
+        <li><a href="#response">应对方案</a></li>
+        <li><a href="#examples">完整示例</a></li>
+        <li><a href="#debug">游戏内验证</a></li>
+        <li><a href="#checklist">提交前检查</a></li>
+      </ol>
+    </nav>
+
+    <section id="file">
+      <h2>1. 文件位置与命名</h2>
+      <p>DalamudACT 会优先加载当前语言对应的时间轴文件。中文时间轴建议使用 <code>.cn.txt</code> 后缀。</p>
+      <table>
+        <thead><tr><th>类型</th><th>示例</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>普通时间轴</td><td><code>klythios.txt</code></td><td>通用文件。</td></tr>
+          <tr><td>中文时间轴</td><td><code>klythios.cn.txt</code></td><td>中文客户端优先使用，推荐维护这个文件。</td></tr>
+          <tr><td>索引文件</td><td><code>timeline-index.json</code></td><td>用于把副本区域 ID 或区域名映射到时间轴文件。</td></tr>
+        </tbody>
+      </table>
+      <p>开发环境内置时间轴目录通常是：</p>
+      <pre><code>DalamudACT/Features/Timeline/Data</code></pre>
+      <p>发布包中会包含：</p>
+      <pre><code>Timeline/Data</code></pre>
+      <div class="note">如果你只是自己测试，可以在游戏内使用“强制加载时间轴”选择本地文件。文件头写了 <code># ZoneId: 1234</code> 后，插件重载时可按当前区域自动恢复强制加载。</div>
+    </section>
+
+    <section id="basic">
+      <h2>2. 基础语法</h2>
+      <p>一行时间轴通常由“时间 + 显示文本 + 可选事件 + 可选注释”组成。</p>
+      <pre><code>12.5 "技能名"
+18.0 "大范围AOE" duration 5
+24.0 "分摊" # 分摊
+</code></pre>
+      <table>
+        <thead><tr><th>部分</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>12.5</code></td><td>战斗时间，单位秒。</td></tr>
+          <tr><td><code>"技能名"</code></td><td>显示在时间轴窗口里的文本，也可用于 TTS 技能名。</td></tr>
+          <tr><td><code>duration 5</code></td><td>持续时间，可用于显示长条。</td></tr>
+          <tr><td><code># 分摊</code></td><td>中文机制提示。插件会把明确的中文提示作为机制/TTS 来源。</td></tr>
+        </tbody>
+      </table>
+      <div class="warn">普通英文备注不要随便写在 <code>#</code> 后面。插件会尽量过滤工具元数据，但建议只把真正希望显示/播报的中文机制写成注释。</div>
+    </section>
+
+    <section id="sync">
+      <h2>3. 同步事件</h2>
+      <p>同步事件用于把插件的时间轴时间校准到真实战斗事件。推荐至少提供一个可靠的开场同步点。</p>
+
+      <h3>InCombat：进入战斗同步</h3>
+      <pre><code>0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1</code></pre>
+      <p>进入战斗时启动时间轴。适合强制加载后等待同步，不想点加载后直接从 0 秒跑。</p>
+
+      <h3>StartsUsing：Boss 开始读条同步</h3>
+      <pre><code>8.2 "重击" StartsUsing { id: "8ABC", source: "Boss名字" } window 5,5</code></pre>
+      <p>当指定 Boss 开始读条指定 action id 时同步。<code>source</code> 可写 Boss 名字或正则。</p>
+
+      <h3>Ability：技能结算同步</h3>
+      <pre><code>12.5 "重击命中" Ability { id: "8ABD" } window 5,5</code></pre>
+      <p>当技能结算事件到达时同步。适合没有读条或需要按伤害结算校准的机制。</p>
+
+      <h3>SystemLogMessage：系统日志同步</h3>
+      <pre><code>30.0 "--sync--" SystemLogMessage { id: "7DC", param1: "123" } window 20,5</code></pre>
+      <p>用于封锁倒计时等系统提示。<code>param1</code> 会按客户端当前语言解析地点名，不建议按中文/英文硬编码整句日志。</p>
+
+      <h3>NpcYell：Boss 台词同步</h3>
+      <pre><code>45.0 "--sync--" NpcYell { text: "台词内容" } window 10,10</code></pre>
+      <p>用于 Boss 台词、喊话、对话类同步。</p>
+
+      <h3>MapEffect：地图特效同步</h3>
+      <pre><code>60.0 "--sync--" MapEffect { flags: "00020001", location: "^04" } window 10,10</code></pre>
+      <p>用于部分场地变化、机关、封锁等 MapEffect 事件。通常需要从调试日志中抓取。</p>
+
+      <h3>window 语义</h3>
+      <p><code>window first,last</code> 表示允许同步命中的时间窗口：</p>
+      <pre><code>[时间点 - first, 时间点 + last]</code></pre>
+      <p>例如：</p>
+      <pre><code>100.0 "--sync--" Ability { id: "8ABC" } window 20,5</code></pre>
+      <p>表示当前时间在 <code>80.0</code> 到 <code>105.0</code> 秒之间时，才允许这条同步命中。</p>
+    </section>
+
+    <section id="hint">
+      <h2>4. 机制提示与 TTS</h2>
+      <p>时间轴显示和 TTS 由三个开关控制：</p>
+      <p><span class="tag">播报机制</span><span class="tag">播报技能名</span><span class="tag">播报应对方案</span></p>
+      <table>
+        <thead><tr><th>内容来源</th><th>示例</th><th>受哪个开关控制</th></tr></thead>
+        <tbody>
+          <tr><td>机制提示</td><td><code># 分摊</code></td><td>播报机制</td></tr>
+          <tr><td>技能名</td><td><code>"重击"</code></td><td>播报技能名</td></tr>
+          <tr><td>应对方案</td><td><code>读条ID 8ABC 开减伤</code></td><td>播报应对方案</td></tr>
+          <tr><td>Timer 文本</td><td><code>10.0 "踩塔" Timer</code></td><td>播报应对方案</td></tr>
+        </tbody>
+      </table>
+      <p>推荐机制提示写短词：</p>
+      <pre><code>18.0 "Boss技能" StartsUsing { id: "8ABC" } # 分摊
+28.0 "Boss技能" StartsUsing { id: "8ABD" } # 钢铁
+38.0 "Boss技能" StartsUsing { id: "8ABE" } # 月环</code></pre>
+    </section>
+
+    <section id="response">
+      <h2>5. 添加应对方案</h2>
+      <p>应对方案用于在真实事件发生时即时播报，不依赖时间轴提前窗口猜分支。</p>
+
+      <h3>读条ID：Boss 开始读条时播</h3>
+      <pre><code>20.0 "分摊读条" StartsUsing { id: "8ABC", source: "Boss名字" } # 读条ID 8ABC 靠近分摊</code></pre>
+      <p>当 Boss 开始读条 <code>8ABC</code> 时，立即播报“靠近分摊”。</p>
+
+      <h3>结算ID：Ability 到达时播</h3>
+      <pre><code>25.0 "点名结算" Ability { id: "8ABD" } # 结算ID 8ABD 分散远离</code></pre>
+      <p>当结算事件 <code>8ABD</code> 到达时，立即播报“分散远离”。</p>
+
+      <h3>一行写多个应对方案</h3>
+      <pre><code>40.0 "二连机制" StartsUsing { id: ["8AC0", "8AC1"] } # 读条ID 8AC0 去左 读条ID 8AC1 去右</code></pre>
+
+      <h3>与技能名开关的关系</h3>
+      <p>如果勾选“播报技能名”，应对方案播报格式类似：</p>
+      <pre><code>分摊读条，靠近分摊</code></pre>
+      <p>如果没有勾选“播报技能名”，只播应对方案：</p>
+      <pre><code>靠近分摊</code></pre>
+
+      <div class="ok">推荐：应对方案写玩家要做什么，例如“靠近分摊”“去左”“面向外”“开减伤”，不要只写机制学名。</div>
+    </section>
+
+    <section id="examples">
+      <h2>6. 完整示例</h2>
+      <pre><code># ZoneId: 1234
+
+0.0 "--sync--" InCombat { inGameCombat: "1" } window 0,1
+
+8.0 "开场AOE" StartsUsing { id: "8A00", source: "Boss名字" } window 5,5 # AOE
+8.0 "开场AOE" # 读条ID 8A00 全体减伤
+
+18.5 "分摊" StartsUsing { id: "8A01", source: "Boss名字" } window 6,6 # 分摊
+18.5 "分摊" # 读条ID 8A01 靠近集合
+
+30.0 "分散点名" Ability { id: "8A02" } window 8,8 # 分散
+30.0 "分散点名" # 结算ID 8A02 分散远离
+
+45.0 "--sync--" NpcYell { text: "Boss台词内容" } window 10,10
+
+60.0 "踩塔" Timer # 踩塔
+</code></pre>
+      <p>上面示例包含：</p>
+      <ul>
+        <li>文件头 <code># ZoneId</code>，用于强制加载自动恢复。</li>
+        <li><code>InCombat</code> 开场同步。</li>
+        <li><code>StartsUsing</code> 和 <code>Ability</code> 同步。</li>
+        <li><code>读条ID</code> 和 <code>结算ID</code> 即时应对方案。</li>
+        <li><code>NpcYell</code> 台词同步。</li>
+        <li><code>Timer</code> 纯计时提醒。</li>
+      </ul>
+    </section>
+
+    <section id="debug">
+      <h2>7. 游戏内验证</h2>
+      <ol>
+        <li>打开 <code>/dps settings</code>。</li>
+        <li>进入时间轴设置，选择或强制加载时间轴文件。</li>
+        <li>打开时间轴 Debug 模式。</li>
+        <li>进入副本，观察时间轴是否显示“已加载”。</li>
+        <li>进入战斗，观察是否从 <code>InCombat</code>、读条、结算、系统日志或台词同步。</li>
+        <li>看时间轴窗口底部，例如 <code>[20.35]当前运行第2行</code>，确认对应源文件行号。</li>
+        <li>开启强化日志后，可在日志里查看同步命中与慢帧信息。</li>
+      </ol>
+      <p>常见日志含义：</p>
+      <table>
+        <thead><tr><th>日志</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>加载时间轴文件</code></td><td>已找到并解析对应文件。</td></tr>
+          <tr><td><code>InCombat 同步命中</code></td><td>进入战斗同步成功。</td></tr>
+          <tr><td><code>StartsUsing 同步命中</code></td><td>读条同步成功。</td></tr>
+          <tr><td><code>Ability 同步命中</code></td><td>结算同步成功。</td></tr>
+          <tr><td><code>SystemLogMessage 匹配</code></td><td>系统日志同步成功。</td></tr>
+          <tr><td><code>NpcYell 同步命中</code></td><td>Boss 台词同步成功。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="checklist">
+      <h2>8. 提交前检查清单</h2>
+      <ul>
+        <li>中文时间轴优先写 <code>.cn.txt</code>。</li>
+        <li>文件头尽量写 <code># ZoneId: xxxx</code>。</li>
+        <li>至少有一个可靠同步点：<code>InCombat</code>、<code>StartsUsing</code>、<code>Ability</code>、<code>SystemLogMessage</code> 或 <code>NpcYell</code>。</li>
+        <li><code>window</code> 不要过宽，避免旧机制误同步。</li>
+        <li><code>#</code> 注释只写真正想显示/播报的机制提示。</li>
+        <li><code>读条ID</code> 用于开始读条即时播，<code>结算ID</code> 用于 Ability 到达时即时播。</li>
+        <li>动态变量如 <code>${dir}</code>、<code>${first}</code> 不要原样放进 TTS 文本，应改成明确中文或过滤掉。</li>
+        <li>在游戏内强制加载测试，确认倒计时、同步、应对方案和 TTS 开关都符合预期。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    DalamudACT 时间轴撰写指南。建议随插件版本更新持续维护。
+  </footer>
+</body>
+</html>

@@ -374,7 +374,7 @@ internal sealed class TimelineService
         if (!spokenActionResponseKeys.Add(key))
             return;
 
-        TrySendDailyRoutinesTts($"{entry.DisplayText}，{response.Text}", nowUtc, $"读条应对方案 actionId={actionId:X}");
+        TrySendDailyRoutinesTts(BuildActionResponseTtsText(entry, response.Text), nowUtc, $"读条应对方案 actionId={actionId:X}");
     }
 
     private static bool IsSourceMatch(TimelineEntry entry, string sourceName)
@@ -804,8 +804,13 @@ internal sealed class TimelineService
         if (!spokenActionResponseKeys.Add(key))
             return;
 
-        TrySendDailyRoutinesTts($"{entry.DisplayText}，{response.Text}", nowUtc, $"技能应对方案 actionId={actionId:X}");
+        TrySendDailyRoutinesTts(BuildActionResponseTtsText(entry, response.Text), nowUtc, $"技能应对方案 actionId={actionId:X}");
     }
+
+    private string BuildActionResponseTtsText(TimelineEntry entry, string responseText)
+        => config.TimelineTtsSkillName
+            ? $"{entry.DisplayText}，{responseText}"
+            : responseText;
 
     private void ProcessInstantTtsWithoutTimeline(uint actionId, uint sourceId, DateTime nowUtc)
     {

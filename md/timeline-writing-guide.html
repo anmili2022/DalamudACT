@@ -205,6 +205,10 @@
           <tr><td><code># 分摊</code></td><td>中文机制提示。插件会把明确的中文提示作为机制/TTS 来源。</td></tr>
         </tbody>
       </table>
+      <h3>持续条 duration</h3>
+      <p><code>duration</code> 表示这条机制会持续多久，单位是秒。适合连续攻击、场地效果、阶段窗口或一组多连击。</p>
+      <pre><code>3101.5 "跃动的大地 (弧线)" duration 3.7</code></pre>
+      <p>这表示从 <code>3101.5s</code> 开始显示“跃动的大地 (弧线)”，持续 <code>3.7s</code>，也就是大约到 <code>3105.2s</code> 结束。</p>
       <div class="warn">普通英文备注不要随便写在 <code>#</code> 后面。插件会尽量过滤工具元数据，但建议只把真正希望显示/播报的中文机制写成注释。</div>
     </section>
 

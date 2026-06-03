@@ -263,7 +263,7 @@ internal static partial class TimelineParser
             return null;
 
         var hint = RemoveTaggedResponseSegments(rest[(commentIndex + 1)..]).Trim();
-        if (string.IsNullOrWhiteSpace(hint) || IsToolMetadataHint(hint) || ContainsTaggedResponseMarker(hint) || !LooksLikeMechanicHint(hint))
+        if (string.IsNullOrWhiteSpace(hint) || IsToolMetadataHint(hint) || IsCommentedEventMetadata(hint) || ContainsTaggedResponseMarker(hint) || !LooksLikeMechanicHint(hint))
             return null;
 
         return hint.Equals("范围", StringComparison.OrdinalIgnoreCase) ? "AOE" : hint;
@@ -271,6 +271,9 @@ internal static partial class TimelineParser
 
     private static bool IsToolMetadataHint(string hint)
         => string.Equals(hint.Trim(), "附属判定候选", StringComparison.Ordinal);
+
+    private static bool IsCommentedEventMetadata(string hint)
+        => Regex.IsMatch(hint.TrimStart(), @"^(StartsUsing|Ability|InCombat|ActorControl|SystemLogMessage|NpcYell|AddedCombatant|MapEffect|Timer)\b", RegexOptions.IgnoreCase);
 
     private static bool LooksLikeMechanicHint(string hint)
     {

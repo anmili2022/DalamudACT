@@ -73,7 +73,7 @@ internal static partial class StatsPanel
             && config.SelfHighlightColor == SelfHighlightColorMode.WhiteBlack
             && IsLocalPlayerCombatant(combatant))
         {
-            color = new Vector4(0.02f, 0.02f, 0.02f, 1f);
+            color = new Vector4(1.00f, 0.86f, 0.18f, 1f);
             return true;
         }
 

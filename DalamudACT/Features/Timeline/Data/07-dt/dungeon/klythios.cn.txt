@@ -13,7 +13,7 @@ hideall "--sync--"
 #~~~~~~~~~~~~#
 
 # 距花冠广场被封锁还有15秒。
-1000.0 "--sync--" InCombat { inGameCombat: "1" } window 1000,1
+1000.0 "--sync--" SystemLogMessage { id: "7DC", param1: "1583" } window 1000,0
 1010.5 "凶眼注目" Ability { id: "BF00", source: "装甲之眼" } # AOE
 1026.8 "石化光束" Ability { id: "C400", source: "装甲之眼" }
 1037.0 "石化光束" Ability { id: "C3FF", source: "装甲之眼" }

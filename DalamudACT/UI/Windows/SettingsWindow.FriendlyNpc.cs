@@ -41,7 +41,11 @@ internal sealed partial class SettingsWindow
         ImGui.TableSetupColumn("类型", ImGuiTableColumnFlags.WidthFixed, 78f);
         ImGui.TableSetupColumn("生命", ImGuiTableColumnFlags.WidthFixed, 96f);
         ImGui.TableSetupColumn("操作", ImGuiTableColumnFlags.WidthFixed, 64f);
+        var theme = UiThemeColors.Get(config.SelectedUiTheme);
+        ImGui.PushStyleColor(ImGuiCol.Text, theme.Text);
+        ImGui.PushStyleColor(ImGuiCol.TableHeaderBg, theme.AccentSoft);
         ImGui.TableHeadersRow();
+        ImGui.PopStyleColor(2);
 
         for (var index = 0; index < members.Count; index++)
         {

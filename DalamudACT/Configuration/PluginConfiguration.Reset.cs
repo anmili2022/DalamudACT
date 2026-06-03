@@ -488,7 +488,7 @@ public sealed partial class PluginConfiguration
         SelectedUiTheme = UiThemeId.Sakura;
         LogHelper.EnableDebugLog = EnableDebugLog;
         LogHelper.EnabledDebugLogModules = EnabledDebugLogModules;
-        LogHelper.Channel = LogChannel;
+        LogHelper.Channel = PluginLogChannel.Debug;
     }
 
     public void Reset()
@@ -544,7 +544,13 @@ public sealed partial class PluginConfiguration
         };
         EnableDebugLog = LogHelper.DefaultEnableDebugLog;
         EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;
-        LogChannel = PluginLogChannel.Info;
+        EnableEnhancedLog = false;
+        LogChannel = PluginLogChannel.Debug;
+        StatsUpdateIntervalMs = 250;
+        PartyMonitorUpdateIntervalMs = 500;
+        StatusObserverUpdateIntervalMs = 500;
+        TimelineUpdateIntervalMs = 100;
+        AutoRefreshIntervalByArea = true;
         StatusObserver = new StatusObserverConfig();
         ShowDpsTab = true;
         ShowHpsTab = true;
@@ -651,7 +657,7 @@ public sealed partial class PluginConfiguration
         SelectedUiTheme = UiThemeId.Sakura;
         LogHelper.EnableDebugLog = EnableDebugLog;
         LogHelper.EnabledDebugLogModules = EnabledDebugLogModules;
-        LogHelper.Channel = LogChannel;
+        LogHelper.Channel = PluginLogChannel.Debug;
     }
 }
 

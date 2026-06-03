@@ -64,6 +64,9 @@ internal sealed class StatusObserverWindow : Window
         if (collapsed)
             return;
 
+        if (service.IsPausedOutOfCombat)
+            ImGui.TextDisabled("非战斗中，已暂停刷新。显示最后一次缓存。");
+
         if (config.StatusObserver.ShowSelfStatuses)
             DrawStatusSection("自身状态", service.GetSelfStatuses(), "self");
 

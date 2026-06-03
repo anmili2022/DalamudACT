@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Buddy;
 using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Client.UI.Misc;
@@ -48,7 +49,7 @@ internal sealed partial class LocalStatsService
             AddAllyToLocalPartyHelper(helper, battleChara, seen);
         }
 
-        if (!ShouldIgnoreFriendlyNpcStatistics())
+        if (ShouldScanFriendlyNpcObjectTable())
         {
             foreach (var obj in DalamudApi.ObjectTable)
             {
@@ -64,6 +65,17 @@ internal sealed partial class LocalStatsService
 
         LastSnapshot = helper;
         return helper;
+    }
+
+    private bool ShouldScanFriendlyNpcObjectTable()
+    {
+        if (ShouldIgnoreFriendlyNpcStatistics())
+            return false;
+
+        return latestInCombatHint
+               || currentEncounter.Started
+               || DalamudApi.Conditions.Any(ConditionFlag.InCombat)
+               || DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
     }
 
     private void AddPronounPartyMembersToLocalPartyHelper(LocalPartyHelperSnapshot helper, ISet<ulong> seen)

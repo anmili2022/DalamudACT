@@ -82,6 +82,8 @@ internal sealed class PartyMonitorWindow : Window
         }
 
         var members = monitorService.GetMemberStates();
+        if (monitorService.IsPausedOutOfCombat)
+            ImGui.TextDisabled("非战斗中，已暂停刷新。显示最后一次缓存。");
 
         if (members.Count == 0)
         {

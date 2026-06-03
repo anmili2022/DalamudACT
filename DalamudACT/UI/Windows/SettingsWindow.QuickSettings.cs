@@ -477,6 +477,17 @@ internal sealed partial class SettingsWindow
             config.Save();
             LogHelper.Info("设置", enableDebugLog ? "已从简易设置中启用调试日志。" : "已从简易设置中关闭调试日志。");
         }
+
+        ImGui.SameLine(0f, 16f);
+        var enableEnhancedLog = config.EnableEnhancedLog;
+        if (ImGui.Checkbox("强化日志", ref enableEnhancedLog))
+        {
+            config.EnableEnhancedLog = enableEnhancedLog;
+            config.Save();
+            LogHelper.Info("设置", enableEnhancedLog ? "已从简易设置中启用强化日志。" : "已从简易设置中关闭强化日志。");
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后输出慢帧性能日志，用于定位卡顿来源。日志频道固定为 Debug。 ");
     }
 
     private void DrawQuickStatusPanel(Vector4 ok, Vector4 accent)

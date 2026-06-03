@@ -79,17 +79,15 @@ internal sealed partial class SettingsWindow
         }
 
         ImGui.SameLine(0f, 16f);
-        ImGui.TextDisabled("日志频道");
-        ImGui.SameLine(0f, 6f);
-        var logChannel = (int)config.LogChannel;
-        ImGui.SetNextItemWidth(130f);
-        if (ImGui.Combo("##plugin_log_channel", ref logChannel, "关闭\0Info(/xllog)\0Debug\0Echo\0ErrorMessage\0SystemMessage\0"))
+        var enableEnhancedLog = config.EnableEnhancedLog;
+        if (ImGui.Checkbox("强化日志", ref enableEnhancedLog))
         {
-            config.LogChannel = (PluginLogChannel)logChannel;
-            LogHelper.Channel = config.LogChannel;
+            config.EnableEnhancedLog = enableEnhancedLog;
             config.Save();
-            LogHelper.Info("设置", $"日志频道已切换为 {GetLogChannelLabel(config.LogChannel)}。");
+            LogHelper.Info("设置", enableEnhancedLog ? "已启用强化日志，慢帧性能日志会写入 Debug。" : "已关闭强化日志。");
         }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后输出 FrameworkUpdate / StatsUpdate 慢帧性能日志，用于定位卡顿来源。日志频道固定为 Debug。 ");
 
         ImGui.Dummy(new Vector2(0f, 4f));
         ImGui.TextDisabled("调试日志分组");
@@ -108,6 +106,9 @@ internal sealed partial class SettingsWindow
         DrawDebugLogModuleCheckbox(DebugLogModule.Dot);
 
         ImGui.Dummy(new Vector2(0f, 4f));
+        DrawRefreshIntervalControls();
+
+        ImGui.Dummy(new Vector2(0f, 4f));
         var replayStatsMode = config.ReplayStatsMode;
         if (ImGui.Checkbox("回顾模式", ref replayStatsMode))
         {
@@ -117,9 +118,91 @@ internal sealed partial class SettingsWindow
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("开启后，战斗回顾播放会按真实战斗进入统计、战斗流水和时间轴；关闭后回顾只用于时间轴辅助同步，不计入真实统计。 ");
 
-        DrawCompactHelp("日志写入规则", "启用调试日志只控制 Debug/Verbose 是否写入 /xllog。分组开关只在启用调试日志后生效；伤害统计和 DoT 属于战斗高频日志，默认关闭。日志频道控制插件聊天通知输出位置；Info(/xllog) 表示只写入 Dalamud 日志，不往游戏聊天框输出。 ");
-        ImGui.TextDisabled($"当前状态：{(config.EnableDebugLog ? "已开启" : "已关闭")}");
+        DrawCompactHelp("日志写入规则", "启用调试日志只控制 Debug/Verbose 是否写入；强化日志用于输出慢帧性能日志。分组开关只在启用调试日志后生效；伤害统计和 DoT 属于战斗高频日志，默认关闭。插件聊天通知频道固定为 Debug。 ");
+        ImGui.TextDisabled($"当前状态：调试日志{(config.EnableDebugLog ? "已开启" : "已关闭")}，强化日志{(config.EnableEnhancedLog ? "已开启" : "已关闭")}");
     }
+
+    private void DrawRefreshIntervalControls()
+    {
+        var autoRefresh = config.AutoRefreshIntervalByArea;
+        if (ImGui.Checkbox("按区域自动刷新频率", ref autoRefresh))
+        {
+            config.AutoRefreshIntervalByArea = autoRefresh;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后按当前区域自动套用预设：主城/住宅=低负载，副本=低延迟，野外=标准。关闭后使用下方手动间隔。 ");
+        ImGui.SameLine(0f, 12f);
+        ImGui.TextDisabled($"当前区域：{FormatRuntimeAreaKind(config.CurrentAreaKind)}");
+
+        ImGui.TextDisabled("刷新频率预设");
+        if (ImGui.Button("低负载##refresh_preset_low"))
+            ApplyRefreshIntervalPreset(PluginConfiguration.PresetLowLoadStatsMs, PluginConfiguration.PresetLowLoadPartyMs, PluginConfiguration.PresetLowLoadStatusMs, PluginConfiguration.PresetLowLoadTimelineMs);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("适合主城、人多区域或低配置机器。降低后台刷新压力，显示会稍慢一点。DPS统计 500ms，队友监控 1000ms，状态监控 1000ms，时间轴 1000ms。 ");
+        ImGui.SameLine(0f, 8f);
+        if (ImGui.Button("标准##refresh_preset_balanced"))
+            ApplyRefreshIntervalPreset(PluginConfiguration.PresetStandardStatsMs, PluginConfiguration.PresetStandardPartyMs, PluginConfiguration.PresetStandardStatusMs, PluginConfiguration.PresetStandardTimelineMs);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("推荐默认值。兼顾实时性和性能，适合大多数副本和日常使用。DPS统计 250ms，队友监控 500ms，状态监控 500ms，时间轴 500ms。 ");
+        ImGui.SameLine(0f, 8f);
+        if (ImGui.Button("低延迟##refresh_preset_fast"))
+            ApplyRefreshIntervalPreset(PluginConfiguration.PresetLowLatencyStatsMs, PluginConfiguration.PresetLowLatencyPartyMs, PluginConfiguration.PresetLowLatencyStatusMs, PluginConfiguration.PresetLowLatencyTimelineMs);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("适合需要更即时反馈的战斗排查。刷新更快，但 CPU/主线程压力更高。DPS统计 100ms，队友监控 250ms，状态监控 250ms，时间轴 100ms。 ");
+
+        ImGui.Dummy(new Vector2(0f, 2f));
+        var statsInterval = config.StatsUpdateIntervalMs;
+        if (DrawLabeledSliderInt("DPS统计刷新间隔", "##stats_update_interval_ms", ref statsInterval, 100, 2000, "%d ms"))
+        {
+            config.StatsUpdateIntervalMs = statsInterval;
+            config.Save();
+        }
+
+        var partyInterval = config.PartyMonitorUpdateIntervalMs;
+        if (DrawLabeledSliderInt("队友监控刷新间隔", "##party_monitor_update_interval_ms", ref partyInterval, 100, 2000, "%d ms"))
+        {
+            config.PartyMonitorUpdateIntervalMs = partyInterval;
+            config.Save();
+        }
+
+        var statusInterval = config.StatusObserverUpdateIntervalMs;
+        if (DrawLabeledSliderInt("状态监控刷新间隔", "##status_observer_update_interval_ms", ref statusInterval, 100, 2000, "%d ms"))
+        {
+            config.StatusObserverUpdateIntervalMs = statusInterval;
+            config.Save();
+        }
+
+        var timelineInterval = config.TimelineUpdateIntervalMs;
+        if (DrawLabeledSliderInt("时间轴刷新间隔", "##timeline_update_interval_ms", ref timelineInterval, 100, 2000, "%d ms"))
+        {
+            config.TimelineUpdateIntervalMs = timelineInterval;
+            config.Save();
+        }
+
+        DrawCompactHelp("刷新频率说明", "数值越小越实时，但 CPU/主线程压力越高。队友监控和状态监控仍然只在战斗中刷新；DPS统计与时间轴会按当前区域和运行状态使用有效间隔。自动模式不会改写下方手动数值，只在运行时选择有效间隔。 ");
+    }
+
+    private void ApplyRefreshIntervalPreset(int statsMs, int partyMs, int statusMs, int timelineMs)
+    {
+        config.StatsUpdateIntervalMs = statsMs;
+        config.PartyMonitorUpdateIntervalMs = partyMs;
+        config.StatusObserverUpdateIntervalMs = statusMs;
+        config.TimelineUpdateIntervalMs = timelineMs;
+        config.Save();
+        LogHelper.Info("设置", $"刷新频率预设已应用：DPS={statsMs}ms，队友监控={partyMs}ms，状态监控={statusMs}ms，时间轴={timelineMs}ms。");
+    }
+
+    private static string FormatRuntimeAreaKind(RuntimeAreaKind kind)
+        => kind switch
+        {
+            RuntimeAreaKind.Duty => "副本",
+            RuntimeAreaKind.City => "主城",
+            RuntimeAreaKind.Field => "野外",
+            RuntimeAreaKind.Housing => "住宅区",
+            RuntimeAreaKind.Special => "特殊区域",
+            _ => "未知",
+        };
 
     private void DrawDebugLogModuleCheckbox(DebugLogModule module)
     {
@@ -169,18 +252,6 @@ internal sealed partial class SettingsWindow
         DebugLogModule.CommandChat,
         DebugLogModule.Configuration,
     };
-
-    private static string GetLogChannelLabel(PluginLogChannel channel)
-        => channel switch
-        {
-            PluginLogChannel.None => "关闭",
-            PluginLogChannel.Info => "Info(/xllog)",
-            PluginLogChannel.Debug => "Debug",
-            PluginLogChannel.Echo => "Echo",
-            PluginLogChannel.ErrorMessage => "ErrorMessage",
-            PluginLogChannel.SystemMessage => "SystemMessage",
-            _ => channel.ToString(),
-        };
 
     private void DrawMaintenanceActionGrid()
     {

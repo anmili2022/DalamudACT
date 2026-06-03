@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Statuses;
 
@@ -65,6 +66,7 @@ internal sealed class PartyMonitorService
     private List<PartyMemberState> cachedMemberStates = new();
     private readonly object gate = new();
     private readonly Dictionary<uint, List<PartySkillEntry>> skillsCache = new();
+    public bool IsPausedOutOfCombat { get; private set; }
 
     public PartyMonitorService(PluginConfiguration config, LocalStatsService statsService)
     {
@@ -88,16 +90,28 @@ internal sealed class PartyMonitorService
 
     public void Update()
     {
+        if (!config.PartyMonitor.EnablePartyMonitor || !config.PartyMonitor.ShowPartyMonitorWindow)
+            return;
+
+        if (!DalamudApi.Conditions.Any(ConditionFlag.InCombat))
+        {
+            IsPausedOutOfCombat = true;
+            return;
+        }
+
+        IsPausedOutOfCombat = false;
+
         if (!config.PartyMonitor.MonitorFood && !config.PartyMonitor.MonitorSkills)
             return;
 
         var nowUtc = DateTime.UtcNow;
-        if ((nowUtc - lastUpdateUtc).TotalMilliseconds < 250)
+        var updateIntervalMs = config.GetEffectivePartyMonitorUpdateIntervalMs();
+        if ((nowUtc - lastUpdateUtc).TotalMilliseconds < updateIntervalMs)
             return;
 
         lastUpdateUtc = nowUtc;
         PollFoodBuffs(nowUtc);
-        if ((nowUtc - lastRebuildUtc).TotalMilliseconds >= 200)
+        if ((nowUtc - lastRebuildUtc).TotalMilliseconds >= updateIntervalMs)
         {
             lastRebuildUtc = nowUtc;
             RebuildMemberStates(nowUtc);

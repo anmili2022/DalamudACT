@@ -26,7 +26,7 @@ internal static class LogHelper
 
     public static bool EnableDebugLog { get; set; } = DefaultEnableDebugLog;
     public static DebugLogModule EnabledDebugLogModules { get; set; } = DefaultDebugLogModules;
-    public static PluginLogChannel Channel { get; set; } = PluginLogChannel.Info;
+    public static PluginLogChannel Channel { get; set; } = PluginLogChannel.Debug;
 
     public const DebugLogModule DefaultDebugLogModules =
         DebugLogModule.PluginHook | DebugLogModule.Timeline | DebugLogModule.StatusObserver | DebugLogModule.CommandChat | DebugLogModule.Configuration;

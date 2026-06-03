@@ -29,7 +29,6 @@ public sealed partial class ACT : IDalamudPlugin
 {
     private const uint InvalidActorId = 0xE0000000;
     private const string CommandName = "/dps";
-    private static bool EnableFrameworkPerformanceLog => false;
     private static readonly string PluginVersion = typeof(ACT).Assembly.GetName().Version?.ToString() ?? "未知版本";
 
     private readonly IDalamudPluginInterface pluginInterface;
@@ -119,6 +118,7 @@ public sealed partial class ACT : IDalamudPlugin
             _ = framework;
             var territoryId = DalamudApi.GetTerritoryTypeId();
             var zoneName = GetPlaceName(territoryId);
+            Configuration.CurrentAreaKind = ResolveRuntimeAreaKind(territoryId);
             MarkFrameworkPerfSegment("zone", ref perfLast, perfParts);
             var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
             var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
@@ -127,8 +127,11 @@ public sealed partial class ACT : IDalamudPlugin
             var timelineActive = inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter;
             var nowUtc = DateTime.UtcNow;
             var forceReplayOutOfCombat = replayStatsActive && !inCombat && statsService.IsEncounterIdle(nowUtc, TimeSpan.FromSeconds(60));
-            var shouldUpdateStats = nowUtc - lastStatsUpdateUtc >= TimeSpan.FromMilliseconds(250);
-            var shouldUpdateTimeline = nowUtc - lastTimelineUpdateUtc >= TimeSpan.FromMilliseconds(100);
+            var statsUpdateIntervalMs = Configuration.GetEffectiveStatsUpdateIntervalMs();
+            var shouldUpdateStats = nowUtc - lastStatsUpdateUtc >= TimeSpan.FromMilliseconds(statsUpdateIntervalMs);
+            var timelineUpdateIntervalMs = Configuration.GetEffectiveTimelineUpdateIntervalMs(timelineActive);
+            var timelineUpdateInterval = TimeSpan.FromMilliseconds(timelineUpdateIntervalMs);
+            var shouldUpdateTimeline = nowUtc - lastTimelineUpdateUtc >= timelineUpdateInterval;
             var ranHeavyWork = false;
 
             if (shouldUpdateStats)
@@ -200,7 +203,7 @@ public sealed partial class ACT : IDalamudPlugin
 
     private void LogFrameworkPerfIfSlow(long startTimestamp, List<string> parts, bool statsActive, bool timelineActive)
     {
-        if (!EnableFrameworkPerformanceLog)
+        if (!Configuration.EnableEnhancedLog)
             return;
 
         var elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
@@ -247,6 +250,46 @@ public sealed partial class ACT : IDalamudPlugin
 
         return cachedZoneName = "未知区域";
     }
+
+    private RuntimeAreaKind ResolveRuntimeAreaKind(uint territoryId)
+    {
+        if (DalamudApi.Conditions.Any(ConditionFlag.BoundByDuty)
+            || DalamudApi.Conditions.Any(ConditionFlag.BoundByDuty56)
+            || DalamudApi.Conditions.Any(ConditionFlag.BoundByDuty95)
+            || DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback))
+        {
+            return RuntimeAreaKind.Duty;
+        }
+
+        if (IsKnownCityTerritory(territoryId))
+            return RuntimeAreaKind.City;
+
+        if (IsKnownHousingTerritory(territoryId))
+            return RuntimeAreaKind.Housing;
+
+        if (territoryId == 0)
+            return RuntimeAreaKind.Unknown;
+
+        try
+        {
+            if (territorySheet.TryGetRow(territoryId, out var territory)
+                && !territory.ContentFinderCondition.Value.Name.IsEmpty)
+            {
+                return RuntimeAreaKind.Duty;
+            }
+        }
+        catch
+        {
+        }
+
+        return RuntimeAreaKind.Field;
+    }
+
+    private static bool IsKnownCityTerritory(uint territoryId)
+        => territoryId is 128 or 129 or 130 or 131 or 132 or 133 or 418 or 419 or 478 or 628 or 819 or 962 or 1185 or 1186;
+
+    private static bool IsKnownHousingTerritory(uint territoryId)
+        => territoryId is 339 or 340 or 341 or 342 or 343 or 344 or 345 or 346 or 347 or 384 or 385 or 386 or 423 or 424 or 425 or 573 or 574 or 575 or 608 or 609 or 610 or 641 or 649 or 650 or 651 or 979 or 980 or 981;
 
     private string GetActionName(uint actionId)
     {

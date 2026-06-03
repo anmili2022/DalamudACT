@@ -20,6 +20,7 @@ internal sealed class TimelineService
     private const double InitialAbilitySyncPairToleranceSeconds = 3d;
     private const double TimelineTtsDuplicateSuppressSeconds = 2d;
     private const string HardcodedSourceTimelineDataDirectory = @"E:\git\DalamudACT\DalamudACT\Features\Timeline\Data";
+    private static readonly ConcurrentDictionary<string, TimelineLoadResult> TimelineDefinitionCache = new(StringComparer.OrdinalIgnoreCase);
     private readonly PluginConfiguration config;
     private readonly AeAssistResourceDownloader aeAssistResources = new();
     private readonly TimelineRemoteResourceDownloader remoteResources = new();
@@ -44,6 +45,11 @@ internal sealed class TimelineService
     private readonly List<ObservedTimelineAbility> pendingInitialAbilitySyncs = [];
     private string? forcedTimelinePath;
     private string? suppressedSavedForcedTimelinePath;
+    private uint lastSavedForcedTimelineCheckZoneId;
+    private string lastSavedForcedTimelineCheckPath = string.Empty;
+    private Task<TimelineLoadResult>? pendingTimelineLoad;
+    private string pendingTimelineLoadKey = string.Empty;
+    private bool pendingTimelineLoadForced;
     private string autoDownloadStatusText = string.Empty;
     private readonly Dictionary<uint, DateTime> autoDownloadTimestamps = new();
     private DateTime? lastAutoDownloadCheckUtc;
@@ -181,7 +187,7 @@ internal sealed class TimelineService
 
     public void Update(bool inCombat, uint zoneId, string zoneName)
     {
-        EnsureTimelineForZone(zoneId, zoneName);
+        EnsureTimelineForZone(zoneId, zoneName, inCombat);
         TriggerAutoDownloadForZone();
 
         if (definition == null)
@@ -924,11 +930,29 @@ internal sealed class TimelineService
         timelineIndex = null;
         loadedZoneId = 0;
         loadedZoneName = string.Empty;
-        EnsureTimelineForZone(zoneId, zoneName);
+        EnsureTimelineForZone(zoneId, zoneName, inCombat: true);
     }
 
-    private void EnsureTimelineForZone(uint zoneId, string zoneName)
+    private void EnsureTimelineForZone(uint zoneId, string zoneName, bool inCombat)
     {
+        if (loadedZoneId == zoneId
+            && string.Equals(loadedZoneName, zoneName, StringComparison.Ordinal)
+            && string.IsNullOrWhiteSpace(forcedTimelinePath)
+            && definition != null
+            && pendingTimelineLoad == null)
+        {
+            return;
+        }
+
+        if (loadedZoneId == zoneId
+            && string.Equals(loadedZoneName, zoneName, StringComparison.Ordinal)
+            && pendingTimelineLoad != null)
+        {
+            var pendingName = definition?.Name ?? "时间轴";
+            StartOrFinishPendingTimelineLoad(pendingName);
+            return;
+        }
+
         TryApplySavedForcedTimelineForZone(zoneId);
 
         if (!string.IsNullOrWhiteSpace(forcedTimelinePath))
@@ -936,12 +960,17 @@ internal sealed class TimelineService
             loadedZoneId = zoneId;
             loadedZoneName = zoneName;
             if (definition == null)
-                LoadForcedTimeline(Path.GetFileNameWithoutExtension(forcedTimelinePath), forcedTimelinePath);
+                StartOrFinishTimelineLoad("forced", Path.GetFileNameWithoutExtension(forcedTimelinePath), forcedTimelinePath, forced: true);
             return;
         }
 
-        if (loadedZoneId == zoneId && string.Equals(loadedZoneName, zoneName, StringComparison.Ordinal))
+        if (loadedZoneId == zoneId
+            && string.Equals(loadedZoneName, zoneName, StringComparison.Ordinal)
+            && definition != null
+            && pendingTimelineLoad == null)
+        {
             return;
+        }
 
         loadedZoneId = zoneId;
         loadedZoneName = zoneName;
@@ -968,22 +997,11 @@ internal sealed class TimelineService
 
         foreach (var path in GetTimelineTextCandidatePaths(candidate.FileName))
         {
-            try
-            {
-                if (!File.Exists(path))
-                    continue;
+            if (!File.Exists(path))
+                continue;
 
-                definition = TimelineParser.ParseTimelineTextFile(candidate.Id, candidate.Name, path);
-                sourcePath = path;
-                timelineLoadedAtUtc = DateTime.UtcNow;
-                LogHelper.Debug("时间轴", $"加载时间轴文件：{path}");
-                statusText = $"已加载 {definition.Entries.Count} 条：{candidate.Name}";
-                return;
-            }
-            catch (Exception ex)
-            {
-                statusText = $"加载 {candidate.Name} 失败：{ex.Message}";
-            }
+            StartOrFinishTimelineLoad(candidate.Id, candidate.Name, path, forced: false);
+            return;
         }
 
         statusText = $"未找到时间轴文件：{candidate.FileName}";
@@ -1000,6 +1018,15 @@ internal sealed class TimelineService
 
         if (string.Equals(path, suppressedSavedForcedTimelinePath, StringComparison.OrdinalIgnoreCase))
             return;
+
+        if (lastSavedForcedTimelineCheckZoneId == zoneId
+            && string.Equals(lastSavedForcedTimelineCheckPath, path, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        lastSavedForcedTimelineCheckZoneId = zoneId;
+        lastSavedForcedTimelineCheckPath = path;
 
         var matched = TryReadTimelineFileZoneId(path, out var fileZoneId) && fileZoneId == zoneId
                       || GetTimelineIndex().Any(entry => entry.ZoneId == zoneId);
@@ -1042,11 +1069,87 @@ internal sealed class TimelineService
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
         observedStartsUsingCasts.Clear();
-        definition = TimelineParser.ParseTimelineTextFile("forced", name, path);
-        sourcePath = path;
+        StartOrFinishTimelineLoad("forced", name, path, forced: true);
+    }
+
+    private void StartOrFinishTimelineLoad(string id, string name, string path, bool forced)
+    {
+        var cacheKey = BuildTimelineLoadCacheKey(id, name, path);
+        if (TimelineDefinitionCache.TryGetValue(cacheKey, out var cached))
+        {
+            ApplyTimelineLoadResult(cached, forced);
+            return;
+        }
+
+        if (pendingTimelineLoad != null)
+        {
+            if (!string.Equals(pendingTimelineLoadKey, cacheKey, StringComparison.OrdinalIgnoreCase))
+            {
+                statusText = forced ? $"正在加载强制时间轴：{name}" : $"正在加载时间轴：{name}";
+                return;
+            }
+
+            StartOrFinishPendingTimelineLoad(name);
+            return;
+        }
+
+        pendingTimelineLoadKey = cacheKey;
+        pendingTimelineLoadForced = forced;
+        pendingTimelineLoad = Task.Run(() => LoadTimelineDefinition(id, name, path));
+        statusText = forced ? $"正在加载强制时间轴：{name}" : $"正在加载时间轴：{name}";
+    }
+
+    private void StartOrFinishPendingTimelineLoad(string name)
+    {
+        if (pendingTimelineLoad == null)
+            return;
+
+        if (!pendingTimelineLoad.IsCompleted)
+        {
+            statusText = pendingTimelineLoadForced ? $"正在加载强制时间轴：{name}" : $"正在加载时间轴：{name}";
+            return;
+        }
+
+        try
+        {
+            var result = pendingTimelineLoad.GetAwaiter().GetResult();
+            TimelineDefinitionCache[pendingTimelineLoadKey] = result;
+            ApplyTimelineLoadResult(result, pendingTimelineLoadForced);
+        }
+        catch (Exception ex)
+        {
+            statusText = $"加载 {name} 失败：{ex.Message}";
+            LogHelper.Warning("时间轴", ex, $"后台加载时间轴失败：{name}");
+        }
+        finally
+        {
+            pendingTimelineLoad = null;
+            pendingTimelineLoadKey = string.Empty;
+            pendingTimelineLoadForced = false;
+        }
+    }
+
+    private void ApplyTimelineLoadResult(TimelineLoadResult result, bool forced)
+    {
+        definition = result.Definition;
+        sourcePath = result.Path;
         timelineLoadedAtUtc = DateTime.UtcNow;
-        LogHelper.Debug("时间轴", $"加载时间轴文件：{path}");
-        statusText = $"已强制加载 {definition.Entries.Count} 条：{name}";
+        pendingTimelineLoad = null;
+        pendingTimelineLoadKey = string.Empty;
+        pendingTimelineLoadForced = false;
+        LogHelper.Debug("时间轴", $"加载时间轴文件：{result.Path}");
+        statusText = forced
+            ? $"已强制加载 {definition.Entries.Count} 条：{definition.Name}"
+            : $"已加载 {definition.Entries.Count} 条：{definition.Name}";
+    }
+
+    private static TimelineLoadResult LoadTimelineDefinition(string id, string name, string path)
+        => new(TimelineParser.ParseTimelineTextFile(id, name, path), path);
+
+    private static string BuildTimelineLoadCacheKey(string id, string name, string path)
+    {
+        var lastWriteTicks = File.GetLastWriteTimeUtc(path).Ticks;
+        return $"{Path.GetFullPath(path)}|{lastWriteTicks}|{id}|{name}";
     }
 
     private float? ResolveJumpTargetTime(TimelineEntry entry)
@@ -1308,6 +1411,8 @@ internal sealed class TimelineService
     }
 
     private sealed record ObservedTimelineAbility(uint ActionId, DateTime ObservedAtUtc);
+
+    private sealed record TimelineLoadResult(TimelineDefinition Definition, string Path);
 
     public sealed record TimelineAvailableEntry(string Id, string Name, uint? ZoneId, string FileName, string ResolvedPath);
 

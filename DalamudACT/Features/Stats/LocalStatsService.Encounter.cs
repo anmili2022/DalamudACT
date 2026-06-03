@@ -11,7 +11,6 @@ namespace DalamudACT;
 // 当前战斗模块：负责实时战斗记录、战斗流水、结算、状态文本和 ACTX 快照构造。
 internal sealed partial class LocalStatsService
 {
-    private static bool EnableStatsPerformanceLog => false;
     private readonly List<CombatTimelineEntry> combatTimelineEntries = new();
 
     private EncounterSession currentEncounter = new();
@@ -345,7 +344,7 @@ internal sealed partial class LocalStatsService
 
     private void LogStatsPerfIfSlow(long startTimestamp, List<string> parts, bool inCombat)
     {
-        if (!EnableStatsPerformanceLog)
+        if (!config.EnableEnhancedLog)
             return;
 
         var elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;

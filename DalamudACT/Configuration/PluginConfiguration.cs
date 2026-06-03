@@ -100,7 +100,13 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     };
     public bool EnableDebugLog = LogHelper.DefaultEnableDebugLog;
     public DebugLogModule EnabledDebugLogModules = LogHelper.DefaultDebugLogModules;
-    public PluginLogChannel LogChannel = PluginLogChannel.Info;
+    public bool EnableEnhancedLog = false;
+    public PluginLogChannel LogChannel = PluginLogChannel.Debug;
+    public int StatsUpdateIntervalMs = 250;
+    public int PartyMonitorUpdateIntervalMs = 500;
+    public int StatusObserverUpdateIntervalMs = 500;
+    public int TimelineUpdateIntervalMs = 100;
+    public bool AutoRefreshIntervalByArea = true;
 
     public PartyMonitorConfig PartyMonitor = new();
     public StatusObserverConfig StatusObserver = new();
@@ -220,6 +226,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
     [NonSerialized]
     private bool suppressFloatingStyleSettingsSync;
+
+    [NonSerialized]
+    public RuntimeAreaKind CurrentAreaKind = RuntimeAreaKind.Unknown;
 
     [NonSerialized]
     private DateTime lastSaveFailureLogUtc;
@@ -620,7 +629,15 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         }
 
         if (!Enum.IsDefined(typeof(PluginLogChannel), LogChannel))
-            LogChannel = PluginLogChannel.Info;
+            LogChannel = PluginLogChannel.Debug;
+
+        if (Version < 68)
+            LogChannel = PluginLogChannel.Debug;
+
+        StatsUpdateIntervalMs = Math.Clamp(StatsUpdateIntervalMs <= 0 ? 250 : StatsUpdateIntervalMs, 100, 2000);
+        PartyMonitorUpdateIntervalMs = Math.Clamp(PartyMonitorUpdateIntervalMs <= 0 ? 500 : PartyMonitorUpdateIntervalMs, 100, 2000);
+        StatusObserverUpdateIntervalMs = Math.Clamp(StatusObserverUpdateIntervalMs <= 0 ? 500 : StatusObserverUpdateIntervalMs, 100, 2000);
+        TimelineUpdateIntervalMs = Math.Clamp(TimelineUpdateIntervalMs <= 0 ? 100 : TimelineUpdateIntervalMs, 100, 2000);
 
         EnabledDebugLogModules &= DebugLogModule.All;
         if (EnabledDebugLogModules == DebugLogModule.None)
@@ -630,10 +647,10 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         EnsureThemeBarColors();
         LogHelper.EnableDebugLog = EnableDebugLog;
         LogHelper.EnabledDebugLogModules = EnabledDebugLogModules;
-        LogHelper.Channel = LogChannel;
+        LogHelper.Channel = PluginLogChannel.Debug;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 67);
+        Version = Math.Max(Version, 68);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();
@@ -641,6 +658,56 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
     public bool HasAnyVisibleStatsTab()
         => ShowDpsTab || ShowHpsTab || ShowTakenTab || ShowOverviewTab || ShowHistoryTab;
+
+    public int GetEffectiveStatsUpdateIntervalMs()
+        => GetEffectiveRefreshIntervalMs(StatsUpdateIntervalMs, PresetLowLoadStatsMs, PresetStandardStatsMs, PresetLowLatencyStatsMs);
+
+    public int GetEffectivePartyMonitorUpdateIntervalMs()
+        => GetEffectiveRefreshIntervalMs(PartyMonitorUpdateIntervalMs, PresetLowLoadPartyMs, PresetStandardPartyMs, PresetLowLatencyPartyMs);
+
+    public int GetEffectiveStatusObserverUpdateIntervalMs()
+        => GetEffectiveRefreshIntervalMs(StatusObserverUpdateIntervalMs, PresetLowLoadStatusMs, PresetStandardStatusMs, PresetLowLatencyStatusMs);
+
+    public int GetEffectiveTimelineUpdateIntervalMs(bool active)
+    {
+        if (!AutoRefreshIntervalByArea)
+            return Math.Clamp(TimelineUpdateIntervalMs, 100, 2000);
+
+        return CurrentAreaKind switch
+        {
+            RuntimeAreaKind.City or RuntimeAreaKind.Housing => PresetLowLoadTimelineMs,
+            RuntimeAreaKind.Duty => active ? PresetLowLatencyTimelineMs : PresetStandardTimelineMs,
+            RuntimeAreaKind.Field => PresetStandardTimelineMs,
+            _ => Math.Clamp(TimelineUpdateIntervalMs, 100, 2000),
+        };
+    }
+
+    private int GetEffectiveRefreshIntervalMs(int manualValue, int lowLoadValue, int standardValue, int lowLatencyValue)
+    {
+        if (!AutoRefreshIntervalByArea)
+            return Math.Clamp(manualValue, 100, 2000);
+
+        return CurrentAreaKind switch
+        {
+            RuntimeAreaKind.City or RuntimeAreaKind.Housing => lowLoadValue,
+            RuntimeAreaKind.Duty => lowLatencyValue,
+            RuntimeAreaKind.Field => standardValue,
+            _ => Math.Clamp(manualValue, 100, 2000),
+        };
+    }
+
+    public const int PresetLowLoadStatsMs = 500;
+    public const int PresetLowLoadPartyMs = 1000;
+    public const int PresetLowLoadStatusMs = 1000;
+    public const int PresetLowLoadTimelineMs = 1000;
+    public const int PresetStandardStatsMs = 250;
+    public const int PresetStandardPartyMs = 500;
+    public const int PresetStandardStatusMs = 500;
+    public const int PresetStandardTimelineMs = 500;
+    public const int PresetLowLatencyStatsMs = 100;
+    public const int PresetLowLatencyPartyMs = 250;
+    public const int PresetLowLatencyStatusMs = 250;
+    public const int PresetLowLatencyTimelineMs = 100;
 
     public void EnsureTimelineTtsCorrections()
     {

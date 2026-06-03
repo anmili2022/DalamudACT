@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Types;
 
 namespace DalamudACT;
@@ -8,6 +9,11 @@ namespace DalamudACT;
 internal sealed class StatusObserverService
 {
     private readonly PluginConfiguration config;
+    private IReadOnlyList<StatusObserverEntry> cachedSelfStatuses = [];
+    private IReadOnlyList<StatusObserverEntry> cachedTargetStatuses = [];
+    private DateTime lastSelfStatusRefreshUtc;
+    private DateTime lastTargetStatusRefreshUtc;
+    public bool IsPausedOutOfCombat { get; private set; }
 
     public StatusObserverService(PluginConfiguration config)
     {
@@ -16,21 +22,49 @@ internal sealed class StatusObserverService
 
     public IReadOnlyList<StatusObserverEntry> GetSelfStatuses()
     {
-        if (!config.StatusObserver.ShowWindow)
-            return [];
+        if (!ShouldRefreshStatuses())
+        {
+            IsPausedOutOfCombat = config.StatusObserver.ShowWindow;
+            return cachedSelfStatuses;
+        }
+
+        IsPausedOutOfCombat = false;
+
+        var nowUtc = DateTime.UtcNow;
+        if (nowUtc - lastSelfStatusRefreshUtc < RefreshInterval)
+            return cachedSelfStatuses;
 
         var actor = DalamudApi.GetLocalPlayerBattleChara();
-        return GetStatuses(actor, Math.Clamp(config.StatusObserver.SelfMaxStatuses, 1, 200));
+        cachedSelfStatuses = GetStatuses(actor, Math.Clamp(config.StatusObserver.SelfMaxStatuses, 1, 200));
+        lastSelfStatusRefreshUtc = nowUtc;
+        return cachedSelfStatuses;
     }
 
     public IReadOnlyList<StatusObserverEntry> GetTargetStatuses()
     {
-        if (!config.StatusObserver.ShowWindow)
-            return [];
+        if (!ShouldRefreshStatuses())
+        {
+            IsPausedOutOfCombat = config.StatusObserver.ShowWindow;
+            return cachedTargetStatuses;
+        }
+
+        IsPausedOutOfCombat = false;
+
+        var nowUtc = DateTime.UtcNow;
+        if (nowUtc - lastTargetStatusRefreshUtc < RefreshInterval)
+            return cachedTargetStatuses;
 
         var target = DalamudApi.GetLocalPlayerBattleChara()?.TargetObject as IBattleChara;
-        return GetStatuses(target, Math.Clamp(config.StatusObserver.TargetMaxStatuses, 1, 200));
+        cachedTargetStatuses = GetStatuses(target, Math.Clamp(config.StatusObserver.TargetMaxStatuses, 1, 200));
+        lastTargetStatusRefreshUtc = nowUtc;
+        return cachedTargetStatuses;
     }
+
+    private TimeSpan RefreshInterval => TimeSpan.FromMilliseconds(config.GetEffectiveStatusObserverUpdateIntervalMs());
+
+    private bool ShouldRefreshStatuses()
+        => config.StatusObserver.ShowWindow
+           && DalamudApi.Conditions.Any(ConditionFlag.InCombat);
 
     private IReadOnlyList<StatusObserverEntry> GetStatuses(IBattleChara? actor, int maxCount)
     {

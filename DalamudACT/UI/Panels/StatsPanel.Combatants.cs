@@ -14,9 +14,6 @@ internal static partial class StatsPanel
 {
     private static Vector4 ResolveBarColor(Combatant combatant, PluginConfiguration config)
     {
-        if (config.HighlightSelfBar && IsLocalPlayerCombatant(combatant))
-            return config.GetSelfHighlightBarColor();
-
         if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
         {
             if (kind == FloatingCombatantKind.HostileNpc)
@@ -46,6 +43,14 @@ internal static partial class StatsPanel
                && string.Equals(combatant.Name?.Trim(), localPlayerName, StringComparison.Ordinal);
     }
 
+    private static string ResolveCombatantDisplayName(Combatant combatant, PluginConfiguration config)
+    {
+        var name = combatant.Name ?? string.Empty;
+        return config.HighlightSelfBar && IsLocalPlayerCombatant(combatant)
+            ? $"★ {name}"
+            : name;
+    }
+
     private static bool TryResolveCombatantTextColor(Combatant combatant, PluginConfiguration config, out Vector4 color)
     {
         if (config.HighlightNpcRows && TryParseFloatingCombatantKind(combatant.ParticipantKind, out var kind))
@@ -69,14 +74,6 @@ internal static partial class StatsPanel
 
     private static bool TryResolveCombatantBarTextColor(Combatant combatant, PluginConfiguration config, out Vector4 color)
     {
-        if (config.HighlightSelfBar
-            && config.SelfHighlightColor == SelfHighlightColorMode.WhiteBlack
-            && IsLocalPlayerCombatant(combatant))
-        {
-            color = new Vector4(1.00f, 0.86f, 0.18f, 1f);
-            return true;
-        }
-
         color = default;
         return false;
     }

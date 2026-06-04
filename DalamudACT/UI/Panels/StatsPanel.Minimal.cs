@@ -95,8 +95,11 @@ internal static partial class StatsPanel
     {
         var segments = new List<string>(6);
 
+        var highlightSelf = config.HighlightSelfBar && IsLocalPlayerCombatant(combatant);
         if (config.FloatingStatsMinimalShowPlayerNameInShareBar)
-            segments.Add(FormatEmptyAsFallback(combatant.Name, "-"));
+            segments.Add(ResolveCombatantDisplayName(combatant, config));
+        else if (highlightSelf)
+            segments.Add("★");
 
         if (config.FloatingStatsMinimalShowJobInShareBar)
         {
@@ -334,7 +337,7 @@ internal static partial class StatsPanel
                 {
                     ImGui.TableSetColumnIndex(playerColumnIndex!.Value);
                     AlignMinimalCellContentY(rowHeight);
-                    ImGui.TextUnformatted(combatant.Name ?? string.Empty);
+                    ImGui.TextUnformatted(ResolveCombatantDisplayName(combatant, config));
                 }
 
                 if (showDamageColumn)

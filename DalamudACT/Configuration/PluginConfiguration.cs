@@ -59,11 +59,15 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public CombatEndRule CombatEndRule = CombatEndRule.PartyList;
     public int EncounterTimeoutSeconds = 30;
     public int HistoryPreviewSeconds = 8;
-    public bool CombatTimelineRecordingEnabled = false;
+    public bool CombatTimelineRecordingEnabled = true;
     public bool CombatTimelineMapEffectEnabled = false;
     public int CombatTimelineMaxEntries = 500;
     public bool CombatTimelineShowRawTime = false;
     public bool CombatTimelineShowEncounterTime = true;
+    public bool CombatTimelineAutoScroll = true;
+    public string CombatTimelineCharacterFilter = string.Empty;
+    public string CombatTimelineTextSearchFilter = string.Empty;
+    public int CombatTimelineContentFilterMask = 0;
     public bool ReplayStatsMode = false;
     public bool ShowTimelineWindow = false;
     public bool LockTimelineWindow = false;
@@ -244,6 +248,8 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         CombatTimelineMaxEntries = CombatTimelineMaxEntries < 0
             ? 500
             : Math.Clamp(CombatTimelineMaxEntries, 0, 50000);
+        CombatTimelineCharacterFilter ??= string.Empty;
+        CombatTimelineTextSearchFilter ??= string.Empty;
         TimelineWindowOpacity = Math.Clamp(TimelineWindowOpacity, 0f, 1f);
         TimelineVisibleSeconds = Math.Clamp(TimelineVisibleSeconds <= 0 ? 90 : TimelineVisibleSeconds, 10, 600);
         TimelineMaxVisibleEntries = Math.Clamp(TimelineMaxVisibleEntries <= 0 ? 8 : TimelineMaxVisibleEntries, 1, 30);

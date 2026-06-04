@@ -320,7 +320,7 @@ internal static partial class StatsPanel
                     if (showPlayerColumn)
                     {
                         ImGui.TableSetColumnIndex(playerColumnIndex!.Value);
-                        ImGui.TextUnformatted(combatant.Name ?? string.Empty);
+                        ImGui.TextUnformatted(ResolveCombatantDisplayName(combatant, config));
                     }
 
                     if (showJobColumn)

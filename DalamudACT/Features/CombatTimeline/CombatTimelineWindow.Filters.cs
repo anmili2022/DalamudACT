@@ -142,6 +142,10 @@ internal sealed partial class CombatTimelineWindow
         characterFilter = string.Empty;
         textSearchFilter = string.Empty;
         contentFilters = DefaultContentFilters;
+        config.CombatTimelineCharacterFilter = string.Empty;
+        config.CombatTimelineTextSearchFilter = string.Empty;
+        config.CombatTimelineContentFilterMask = (int)DefaultContentFilters;
+        config.Save();
     }
 
     private bool HasAnyActiveFilter()

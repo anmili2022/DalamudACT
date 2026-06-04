@@ -376,7 +376,6 @@ internal sealed partial class SettingsWindow
         {
             DrawThemeSwitcher();
             ImGui.Separator();
-            DrawQuickFloatRow("主界面透明度", null, config.WindowOpacity, 0.2f, 1f, "%.2f", value => config.WindowOpacity = value);
             DrawQuickFloatRow("DPS统计面板透明度", null, config.FloatingStatsOpacity, 0f, 1f, "%.2f", value => config.FloatingStatsOpacity = value);
             DrawQuickFloatRow("技能监控窗口透明度", null, config.PartyMonitor.PartyMonitorOpacity, 0f, 1f, "%.2f", value => config.PartyMonitor.PartyMonitorOpacity = value);
             DrawQuickFloatRow("时间轴窗口透明度", null, config.TimelineWindowOpacity, 0.2f, 1f, "%.2f", value => config.TimelineWindowOpacity = value);

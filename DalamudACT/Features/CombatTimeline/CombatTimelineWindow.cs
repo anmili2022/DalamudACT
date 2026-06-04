@@ -54,6 +54,12 @@ internal sealed partial class CombatTimelineWindow : Window
     {
         this.config = config;
         this.statsService = statsService;
+        characterFilter = config.CombatTimelineCharacterFilter ?? string.Empty;
+        textSearchFilter = config.CombatTimelineTextSearchFilter ?? string.Empty;
+        contentFilters = config.CombatTimelineContentFilterMask == 0
+            ? DefaultContentFilters
+            : (TimelineContentFilter)config.CombatTimelineContentFilterMask;
+        autoScroll = config.CombatTimelineAutoScroll;
         Size = new Vector2(860f, 560f);
         SizeCondition = ImGuiCond.FirstUseEver;
     }

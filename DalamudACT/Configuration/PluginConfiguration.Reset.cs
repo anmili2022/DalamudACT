@@ -505,11 +505,15 @@ public sealed partial class PluginConfiguration
         CombatEndRule = CombatEndRule.PartyList;
         EncounterTimeoutSeconds = 30;
         HistoryPreviewSeconds = 8;
-        CombatTimelineRecordingEnabled = false;
+        CombatTimelineRecordingEnabled = true;
         CombatTimelineMapEffectEnabled = false;
         CombatTimelineMaxEntries = 500;
         CombatTimelineShowRawTime = false;
         CombatTimelineShowEncounterTime = true;
+        CombatTimelineAutoScroll = true;
+        CombatTimelineCharacterFilter = string.Empty;
+        CombatTimelineTextSearchFilter = string.Empty;
+        CombatTimelineContentFilterMask = 0;
         ReplayStatsMode = false;
         ShowTimelineWindow = false;
         LockTimelineWindow = false;

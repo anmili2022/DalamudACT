@@ -13,17 +13,11 @@ internal sealed partial class SettingsWindow
         DrawSettingCard(
             "##window_settings_card",
             "窗口与悬浮面板",
-            "统一控制主窗口透明度、悬浮统计面板透明度、队友监控窗口透明度与锁定状态。",
+            "分别控制 DPS统计、队友监控、状态监控与时间轴悬浮窗的显示、锁定和透明度。",
             14f,
             () =>
             {
-                var opacity = config.WindowOpacity;
-                if (ImGui.SliderFloat("主界面透明度", ref opacity, 0.2f, 1f))
-                {
-                    config.WindowOpacity = opacity;
-                    config.Save();
-                }
-
+                ImGui.TextUnformatted("DPS统计");
                 var statsPanelOpacity = config.FloatingStatsOpacity;
                 if (ImGui.SliderFloat("DPS统计面板透明度", ref statsPanelOpacity, 0f, 1f))
                 {
@@ -48,7 +42,7 @@ internal sealed partial class SettingsWindow
                 }
 
                 ImGui.SameLine(0f, 2f);
-                DrawHelpMarker("开启后，统计面板里的本地玩家占比条会使用高亮色。高亮方式可在“主题色调色板”中修改。");
+                DrawHelpMarker("开启后，统计面板里的本地玩家名字前会显示 ★ 标记，占比条颜色保持原职业颜色。");
 
                 ImGui.SameLine(0f, 12f);
                 var lockFloatingStatsWindow = config.LockFloatingStatsWindow;
@@ -68,6 +62,8 @@ internal sealed partial class SettingsWindow
 
                 DrawCompactHelp("锁定后不可拖动或缩放。", "启用后，悬浮窗口的位置和大小将无法手动修改。");
 
+                ImGui.Separator();
+                ImGui.TextUnformatted("队友监控");
                 var enableParty = config.PartyMonitor.EnablePartyMonitor && config.PartyMonitor.ShowPartyMonitorWindow;
                 if (ImGui.Checkbox("显示队友监控", ref enableParty))
                 {
@@ -100,6 +96,7 @@ internal sealed partial class SettingsWindow
                 }
 
                 ImGui.Separator();
+                ImGui.TextUnformatted("状态监控");
                 var showStatusMonitor = config.StatusObserver.ShowWindow;
                 if (ImGui.Checkbox("显示状态监控", ref showStatusMonitor))
                 {
@@ -123,6 +120,7 @@ internal sealed partial class SettingsWindow
                 }
 
                 ImGui.Separator();
+                ImGui.TextUnformatted("时间轴");
                 var showTimeline = config.ShowTimelineWindow;
                 if (ImGui.Checkbox("显示时间轴窗口", ref showTimeline))
                 {

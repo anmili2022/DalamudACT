@@ -260,37 +260,7 @@ internal sealed partial class SettingsWindow
                 }
 
                 ImGui.SameLine(0f, 6f);
-                DrawHelpMarker("开启后，统计面板里的本地玩家占比条会使用下方选择的高亮色。");
-
-                ImGui.BeginDisabled(!config.HighlightSelfBar);
-                var selfHighlightColor = config.SelfHighlightColor;
-                if (ImGui.RadioButton("日光黄", selfHighlightColor == SelfHighlightColorMode.SunlightYellow))
-                {
-                    config.SelfHighlightColor = SelfHighlightColorMode.SunlightYellow;
-                    config.Save();
-                }
-
-                ImGui.SameLine();
-                if (ImGui.RadioButton("暖金", selfHighlightColor == SelfHighlightColorMode.WarmGold))
-                {
-                    config.SelfHighlightColor = SelfHighlightColorMode.WarmGold;
-                    config.Save();
-                }
-
-                ImGui.SameLine();
-                if (ImGui.RadioButton("玫红", selfHighlightColor == SelfHighlightColorMode.RosePink))
-                {
-                    config.SelfHighlightColor = SelfHighlightColorMode.RosePink;
-                    config.Save();
-                }
-
-                ImGui.SameLine();
-                if (ImGui.RadioButton("白底黑字", selfHighlightColor == SelfHighlightColorMode.WhiteBlack))
-                {
-                    config.SelfHighlightColor = SelfHighlightColorMode.WhiteBlack;
-                    config.Save();
-                }
-                ImGui.EndDisabled();
+                DrawHelpMarker("开启后，统计面板里的本地玩家名字前会显示 ★ 标记，占比条颜色保持原职业颜色。");
 
                 if (!ImGui.CollapsingHeader("职业颜色列表"))
                 {

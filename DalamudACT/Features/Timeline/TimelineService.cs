@@ -99,6 +99,7 @@ internal sealed class TimelineService
         if (result.Contains("已下载") || result.Contains("已更新"))
         {
             autoDownloadTimestamps[zoneId] = DateTime.UtcNow;
+            InvalidateTimelineIndex();
             ReloadCurrentTimeline();
         }
     }
@@ -156,11 +157,21 @@ internal sealed class TimelineService
         }
     }
 
-    public Task<string> RefreshCurrentZoneTimelineAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
-        => remoteResources.RefreshCurrentZoneAsync(loadedZoneId, loadedZoneName, progress, cancellationToken);
+    public async Task<string> RefreshCurrentZoneTimelineAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteResources.RefreshCurrentZoneAsync(loadedZoneId, loadedZoneName, progress, cancellationToken).ConfigureAwait(true);
+        InvalidateTimelineIndex();
+        ReloadCurrentTimeline();
+        return result;
+    }
 
-    public Task<string> DownloadAllTimelinesAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
-        => remoteResources.DownloadAllAsync(progress, cancellationToken);
+    public async Task<string> DownloadAllTimelinesAsync(IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteResources.DownloadAllAsync(progress, cancellationToken).ConfigureAwait(true);
+        InvalidateTimelineIndex();
+        ReloadCurrentTimeline();
+        return result;
+    }
 
     public string ForceLoadTimelineFile(string path)
     {
@@ -1311,6 +1322,7 @@ internal sealed class TimelineService
             return timelineIndex;
 
         var entriesById = new Dictionary<string, TimelineIndexEntry>(StringComparer.OrdinalIgnoreCase);
+        AddDiscoveredUserTimelineFiles(entriesById);
         foreach (var path in GetTimelineIndexCandidatePaths())
         {
             try
@@ -1339,28 +1351,63 @@ internal sealed class TimelineService
         return timelineIndex;
     }
 
+    private void InvalidateTimelineIndex()
+        => timelineIndex = null;
+
+    private static void AddDiscoveredUserTimelineFiles(Dictionary<string, TimelineIndexEntry> entriesById)
+    {
+        var root = GetUserTimelineDataDirectory();
+        if (!Directory.Exists(root))
+            return;
+
+        try
+        {
+            foreach (var path in Directory.EnumerateFiles(root, "*.txt", SearchOption.AllDirectories))
+            {
+                if (!TryReadTimelineFileZoneId(path, out var zoneId))
+                    continue;
+
+                var relativePath = Path.GetRelativePath(root, path);
+                var normalizedPath = relativePath.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/');
+                var id = $"user:{normalizedPath}";
+                if (entriesById.ContainsKey(id))
+                    continue;
+
+                var name = Path.GetFileNameWithoutExtension(path);
+                entriesById[id] = new TimelineIndexEntry(id, name, zoneId, null, normalizedPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Debug("时间轴", ex, $"扫描用户时间轴目录失败：{root}");
+        }
+    }
+
     private static IEnumerable<string> GetTimelineIndexCandidatePaths()
     {
-        yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", "timeline-index.json");
+        yield return Path.Combine(GetUserTimelineDataDirectory(), "timeline-index.json");
         foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
             yield return Path.Combine(sourceDirectory, "timeline-index.json");
         yield return Path.Combine(HardcodedSourceTimelineDataDirectory, "timeline-index.json");
         yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", "timeline-index.json");
-        yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), "timeline-index.json");
+        yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), "timeline-index.json");
     }
 
     private static IEnumerable<string> GetTimelineTextCandidatePaths(string fileName)
     {
         foreach (var candidateFileName in GetLocalizedFileNameCandidates(fileName))
         {
-            yield return Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data", candidateFileName);
+            yield return Path.Combine(GetUserTimelineDataDirectory(), candidateFileName);
             foreach (var sourceDirectory in GetSourceTimelineDataDirectories())
                 yield return Path.Combine(sourceDirectory, candidateFileName);
             yield return Path.Combine(HardcodedSourceTimelineDataDirectory, candidateFileName);
             yield return Path.Combine(AppContext.BaseDirectory, "Timeline", "Data", candidateFileName);
-            yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheRootDirectory(), candidateFileName);
+            yield return Path.Combine(TimelineRemoteResourceDownloader.GetCacheDataDirectory(), candidateFileName);
         }
     }
+
+    private static string GetUserTimelineDataDirectory()
+        => Path.Combine(DalamudApi.PluginInterface.ConfigDirectory.FullName, "Timeline", "Data");
 
     private static IEnumerable<string> GetLocalizedFileNameCandidates(string fileName)
     {

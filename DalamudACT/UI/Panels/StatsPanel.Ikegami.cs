@@ -146,9 +146,19 @@ internal static partial class StatsPanel
                         var barColor = ResolveBarColor(combatant, config);
                         var hasCustomTextColor = TryResolveCombatantTextColor(combatant, config, out var rowTextColor);
                         var hasBarTextColor = TryResolveCombatantBarTextColor(combatant, config, out var barTextColor);
-                        var primaryLabel = combatant.Name ?? string.Empty;
+                        var highlightSelf = config.HighlightSelfBar && IsLocalPlayerCombatant(combatant);
+                        var primaryLabel = ResolveCombatantDisplayName(combatant, config);
                         var secondaryLabel = string.IsNullOrWhiteSpace(combatant.Job) ? null : combatant.Job;
                         var jobBadgeText = ResolveIkegamiJobBadgeText(combatant);
+                        var title = ResolveIkegamiTitle(primaryLabel, secondaryLabel, showPlayerColumn, showJobColumn);
+                        if (highlightSelf && !title.StartsWith("★", StringComparison.Ordinal))
+                            title = $"★ {title}";
+                        var headerMetricText = ResolveIkegamiHeaderMetricText(
+                            jobBadgeText,
+                            textSelector(combatant),
+                            ResolveIkegamiPrimaryMetricSuffix(id, valueColumnLabel));
+                        if (highlightSelf && !ikegamiShowNameLine)
+                            headerMetricText = $"★ {headerMetricText}";
                         var detailText = ResolveIkegamiDetailText(
                             id,
                             combatant,
@@ -163,12 +173,9 @@ internal static partial class StatsPanel
                         DrawIkegamiMetricCard(
                             $"{id}_{rowIndex}",
                             showJobColumn ? jobBadgeText : string.Empty,
-                            ResolveIkegamiTitle(primaryLabel, secondaryLabel, showPlayerColumn, showJobColumn),
+                            title,
                             detailText,
-                            ResolveIkegamiHeaderMetricText(
-                                jobBadgeText,
-                                textSelector(combatant),
-                                ResolveIkegamiPrimaryMetricSuffix(id, valueColumnLabel)),
+                            headerMetricText,
                             ikegamiBoxWidth,
                             ikegamiCardHeight,
                             ikegamiShowNameLine,

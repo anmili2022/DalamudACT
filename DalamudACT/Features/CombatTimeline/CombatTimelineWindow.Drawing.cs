@@ -17,13 +17,17 @@ internal sealed partial class CombatTimelineWindow
         if (ImGui.Checkbox("开始记录", ref recordingEnabled))
             statsService.SetCombatTimelineRecordingEnabled(recordingEnabled);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("开启后才会写入新的战斗流水；关闭后保留已有流水，方便复制或排查。插件每次加载时默认关闭。");
+            ImGui.SetTooltip("开启后会写入新的战斗流水；关闭后保留已有流水，方便复制或排查。开关状态会保存到配置。");
 
         ImGui.SameLine();
         ImGui.TextDisabled(recordingEnabled ? "记录中" : "已停止");
 
         ImGui.SameLine();
-        ImGui.Checkbox("自动滚动到最新事件", ref autoScroll);
+        if (ImGui.Checkbox("自动滚动到最新事件", ref autoScroll))
+        {
+            config.CombatTimelineAutoScroll = autoScroll;
+            config.Save();
+        }
 
         DrawInlineFeedback();
 
@@ -310,9 +314,17 @@ internal sealed partial class CombatTimelineWindow
 
     private void DrawFilterControls(IReadOnlyList<string> characterOptions)
     {
-        DrawFilterCombo("角色：", "timeline_character_filter", ref characterFilter, characterOptions, "全部");
+        if (DrawFilterCombo("角色：", "timeline_character_filter", ref characterFilter, characterOptions, "全部"))
+        {
+            config.CombatTimelineCharacterFilter = characterFilter;
+            config.Save();
+        }
         ImGui.SameLine();
-        DrawSearchInput("技能/全文搜索：", "timeline_text_search", ref textSearchFilter);
+        if (DrawSearchInput("技能/全文搜索：", "timeline_text_search", ref textSearchFilter))
+        {
+            config.CombatTimelineTextSearchFilter = textSearchFilter;
+            config.Save();
+        }
 
         ImGui.Spacing();
         DrawContentFilterCheckbox("输出", TimelineContentFilter.Output);
@@ -349,9 +361,11 @@ internal sealed partial class CombatTimelineWindow
         contentFilters = enabled
             ? contentFilters | flag
             : contentFilters & ~flag;
+        config.CombatTimelineContentFilterMask = (int)contentFilters;
+        config.Save();
     }
 
-    private static void DrawFilterCombo(
+    private static bool DrawFilterCombo(
         string label,
         string id,
         ref string currentValue,
@@ -366,8 +380,9 @@ internal sealed partial class CombatTimelineWindow
         ImGui.SameLine();
         ImGui.SetNextItemWidth(160f);
         if (!ImGui.BeginCombo($"##{id}", previewValue))
-            return;
+            return false;
 
+        var changed = false;
         try
         {
             foreach (var value in values)
@@ -378,7 +393,10 @@ internal sealed partial class CombatTimelineWindow
                                  || (isEmptyOption && string.IsNullOrWhiteSpace(currentValue));
 
                 if (ImGui.Selectable(optionLabel, isSelected))
+                {
                     currentValue = isEmptyOption ? string.Empty : value;
+                    changed = true;
+                }
 
                 if (isSelected)
                     ImGui.SetItemDefaultFocus();
@@ -388,22 +406,29 @@ internal sealed partial class CombatTimelineWindow
         {
             ImGui.EndCombo();
         }
+
+        return changed;
     }
 
-    private static void DrawSearchInput(string label, string id, ref string currentValue)
+    private static bool DrawSearchInput(string label, string id, ref string currentValue)
     {
         ImGui.AlignTextToFramePadding();
         ImGui.TextDisabled(label);
         ImGui.SameLine();
         ImGui.SetNextItemWidth(180f);
-        ImGui.InputText($"##{id}", ref currentValue, 128);
+        var changed = ImGui.InputText($"##{id}", ref currentValue, 128);
 
         if (string.IsNullOrWhiteSpace(currentValue))
-            return;
+            return changed;
 
         ImGui.SameLine();
         if (ImGui.SmallButton($"清空##{id}"))
+        {
             currentValue = string.Empty;
+            changed = true;
+        }
+
+        return changed;
     }
 
     private static IReadOnlyList<string> BuildFilterComboOptions(IReadOnlyList<string> options, string currentValue)

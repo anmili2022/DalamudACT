@@ -316,7 +316,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         StatusObserver ??= new StatusObserverConfig();
         StatusObserver.WindowOpacity = Math.Clamp(StatusObserver.WindowOpacity <= 0f ? 0.9f : StatusObserver.WindowOpacity, 0f, 1f);
         if (!Enum.IsDefined(typeof(StatusObserverDisplayMode), StatusObserver.DisplayMode))
-            StatusObserver.DisplayMode = StatusObserverDisplayMode.Text;
+            StatusObserver.DisplayMode = StatusObserverDisplayMode.Icon;
         if (!Enum.IsDefined(typeof(CombatEndRule), CombatEndRule))
             CombatEndRule = CombatEndRule.PartyList;
 

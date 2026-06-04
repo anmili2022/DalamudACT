@@ -88,8 +88,8 @@ public sealed partial class ACT : IDalamudPlugin
         RegisterCommands();
         RegisterChatHandlers();
         pluginInterface.UiBuilder.Draw += ui.Draw;
-        pluginInterface.UiBuilder.OpenMainUi += ui.OpenMainWindow;
-        pluginInterface.UiBuilder.OpenConfigUi += ui.ToggleSettingsWindow;
+        pluginInterface.UiBuilder.OpenMainUi += ui.OpenSettingsWindow;
+        pluginInterface.UiBuilder.OpenConfigUi += ui.OpenSettingsWindow;
         DalamudApi.Framework.Update += OnFrameworkUpdate;
         LogHelper.PrintWithModule("插件", "加载", $"已加载 DPS统计 v{PluginVersion}。");
     }
@@ -98,8 +98,8 @@ public sealed partial class ACT : IDalamudPlugin
     {
         DalamudApi.Framework.Update -= OnFrameworkUpdate;
         pluginInterface.UiBuilder.Draw -= ui.Draw;
-        pluginInterface.UiBuilder.OpenMainUi -= ui.OpenMainWindow;
-        pluginInterface.UiBuilder.OpenConfigUi -= ui.ToggleSettingsWindow;
+        pluginInterface.UiBuilder.OpenMainUi -= ui.OpenSettingsWindow;
+        pluginInterface.UiBuilder.OpenConfigUi -= ui.OpenSettingsWindow;
         UnregisterChatHandlers();
         UnregisterCommands();
         ui.Dispose();

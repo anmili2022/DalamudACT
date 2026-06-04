@@ -110,6 +110,8 @@ internal sealed class PluginUI : IDisposable
 
     public void OpenMainWindow() => mainWindow.IsOpen = true;
 
+    public void OpenSettingsWindow() => settingsWindow.IsOpen = true;
+
     public void TogglePartyMonitorWindow()
     {
         var nextState = !partyMonitorWindow.IsOpen;
@@ -134,8 +136,6 @@ internal sealed class PluginUI : IDisposable
     }
 
     public void Dispose() => windowSystem.RemoveAllWindows();
-
-    private void OpenSettingsWindow() => settingsWindow.IsOpen = true;
 
     private void OpenCombatTimelineWindow() => combatTimelineWindow.IsOpen = true;
 

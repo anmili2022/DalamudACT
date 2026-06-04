@@ -13,7 +13,7 @@ public sealed class StatusObserverConfig
     public bool ShowWindow = false;
     public bool LockWindow = false;
     public float WindowOpacity = 0.9f;
-    public StatusObserverDisplayMode DisplayMode = StatusObserverDisplayMode.Text;
+    public StatusObserverDisplayMode DisplayMode = StatusObserverDisplayMode.Icon;
     public bool ShowSelfStatuses = true;
     public bool ShowTargetStatuses = true;
     public bool HidePermanentStatuses = true;

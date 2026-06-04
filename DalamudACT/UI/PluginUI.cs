@@ -26,13 +26,13 @@ internal sealed class PluginUI : IDisposable
         this.timelineService = timelineService;
 
         mainWindow = new MainWindow(config, statsService, OpenSettingsWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow);
-        settingsWindow = new SettingsWindow(config, statsService, monitorService, timelineService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenTimelineListWindow);
         floatingStatsWindow = new FloatingStatsWindow(config, statsService, ToggleSettingsWindow);
         combatTimelineWindow = new CombatTimelineWindow(config, statsService);
         partyMonitorWindow = new PartyMonitorWindow(config, monitorService, ToggleSettingsWindow);
         statusObserverService = new StatusObserverService(config);
         statusObserverWindow = new StatusObserverWindow(config, statusObserverService, ToggleSettingsWindow);
         timelineWindow = new TimelineWindow(config, timelineService, ToggleSettingsWindow);
+        settingsWindow = new SettingsWindow(config, statsService, monitorService, timelineService, OpenMainWindow, ToggleFloatingStatsWindow, OpenCombatTimelineWindow, OpenTimelineListWindow, timelineWindow.RequestResetSize);
         timelineListWindow = new TimelineListWindow(timelineService);
 
         AddWindow(windowSystem, mainWindow);

@@ -508,6 +508,7 @@ internal sealed partial class SettingsWindow
         if (ImGui.Button("还原默认UI", new Vector2(-1f, 0f)))
         {
             config.ResetUiSettings();
+            resetTimelineWindowSize();
             config.Save();
         }
         if (ImGui.Button("保存当前UI为默认", new Vector2(-1f, 0f)))

@@ -10,7 +10,6 @@ namespace DalamudACT;
 internal sealed class TimelineWindow : Window
 {
     private const float DefaultPanelWidth = 220f;
-    private const float MinPanelWidth = 180f;
     private const float RowHeight = 18f;
     private const float Padding = 3f;
     private const float TimeColumnWidth = 54f;
@@ -21,6 +20,9 @@ internal sealed class TimelineWindow : Window
     private readonly PluginConfiguration config;
     private readonly TimelineService timelineService;
     private readonly Action openSettings;
+    private bool resetSizeRequested;
+    private bool observedLockTimelineWindow;
+    private float? lockedPanelWidth;
 
     public TimelineWindow(PluginConfiguration config, TimelineService timelineService, Action openSettings)
         : base("时间轴###TimelineWindow", BaseFlags | ImGuiWindowFlags.NoTitleBar)
@@ -28,8 +30,14 @@ internal sealed class TimelineWindow : Window
         this.config = config;
         this.timelineService = timelineService;
         this.openSettings = openSettings;
+        observedLockTimelineWindow = config.LockTimelineWindow;
         Size = new Vector2(DefaultPanelWidth, 80f);
         SizeCondition = ImGuiCond.FirstUseEver;
+    }
+
+    public void RequestResetSize()
+    {
+        resetSizeRequested = true;
     }
 
     public override void Draw()
@@ -38,16 +46,43 @@ internal sealed class TimelineWindow : Window
         var rowGap = Math.Clamp(config.TimelineRowGap, 0f, 8f);
         var debugFooterRows = config.TimelineDebugMode ? 1 : 0;
         var panelHeight = Padding * 2f + (maxRows + debugFooterRows) * RowHeight + Math.Max(0, maxRows + debugFooterRows - 1) * rowGap;
-        var windowHeight = panelHeight + ImGui.GetStyle().WindowPadding.Y * 2f;
-        var panelWidth = Math.Max(MinPanelWidth, ImGui.GetWindowWidth());
+        var style = ImGui.GetStyle();
+        var windowHeight = panelHeight + style.WindowPadding.Y * 2f;
+        var contentWidth = Math.Max(1f, ImGui.GetContentRegionAvail().X);
+
+        if (observedLockTimelineWindow != config.LockTimelineWindow)
+        {
+            observedLockTimelineWindow = config.LockTimelineWindow;
+            if (config.LockTimelineWindow)
+                lockedPanelWidth = resetSizeRequested
+                    ? Math.Max(1f, DefaultPanelWidth - style.WindowPadding.X * 2f)
+                    : contentWidth;
+            else
+                lockedPanelWidth = null;
+        }
+
+        if (resetSizeRequested)
+        {
+            ImGui.SetWindowSize(new Vector2(DefaultPanelWidth, windowHeight), ImGuiCond.Always);
+            contentWidth = Math.Max(1f, DefaultPanelWidth - style.WindowPadding.X * 2f);
+            if (config.LockTimelineWindow)
+                lockedPanelWidth = contentWidth;
+            resetSizeRequested = false;
+        }
+
+        var panelWidth = config.LockTimelineWindow
+            ? lockedPanelWidth ?? contentWidth
+            : contentWidth;
+
         if (config.LockTimelineWindow)
         {
-            Size = new Vector2(panelWidth, windowHeight);
+            Size = new Vector2(panelWidth + style.WindowPadding.X * 2f, windowHeight);
             SizeCondition = ImGuiCond.Always;
         }
         else
         {
-            ImGui.SetWindowSize(new Vector2(panelWidth, windowHeight), ImGuiCond.Always);
+            Size = null;
+            SizeCondition = ImGuiCond.FirstUseEver;
         }
 
         Flags = config.LockTimelineWindow

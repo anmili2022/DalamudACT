@@ -345,7 +345,7 @@ public sealed partial class PluginConfiguration
     public void ResetUiSettings()
     {
         WindowOpacity = 1f;
-        FloatingStatsOpacity = 0.72f;
+        FloatingStatsOpacity = 0.4f;
         ShowStatsPanel = true;
         LockFloatingStatsWindow = false;
         FloatingStatsDisplayStyle = FloatingStatsDisplayStyle.Minimal;
@@ -353,7 +353,7 @@ public sealed partial class PluginConfiguration
         ShowDemoPanel = true;
         ShowTimelineWindow = false;
         LockTimelineWindow = false;
-        TimelineWindowOpacity = 0.9f;
+        TimelineWindowOpacity = 0.4f;
         TimelineVisibleSeconds = 90;
         TimelineMaxVisibleEntries = 8;
         TimelineRowGap = 1f;
@@ -379,7 +379,11 @@ public sealed partial class PluginConfiguration
             new TtsCorrectionRule { From = "--targetable--", To = "可选中", Enabled = true },
             new TtsCorrectionRule { From = "--adds targetable--", To = "小怪可选中", Enabled = true },
         };
-        StatusObserver = new StatusObserverConfig();
+        StatusObserver = new StatusObserverConfig
+        {
+            WindowOpacity = 0.4f,
+            DisplayMode = StatusObserverDisplayMode.Icon,
+        };
         ShowDpsTab = true;
         ShowHpsTab = true;
         ShowTakenTab = true;
@@ -460,7 +464,7 @@ public sealed partial class PluginConfiguration
         FloatingStatsMinimalShowDpsInSummaryBar = true;
         FloatingStatsMinimalShowDamageInSummaryBar = false;
         FloatingStatsMinimalShowDeathsInSummaryBar = false;
-        FloatingStatsMinimalAutoWindowHeight = false;
+        FloatingStatsMinimalAutoWindowHeight = true;
         FloatingStatsMinimalRowHeight = 20f;
         FloatingStatsMinimalFontScale = 1f;
         FloatingStatsMinimalPlayerColumnWidth = 51f;
@@ -479,10 +483,14 @@ public sealed partial class PluginConfiguration
         SingleBarColorA = 0.9f;
         ThemeBarOpacity = DefaultThemeBarOpacity;
         ResetThemeBarColors();
-        HighlightSelfBar = false;
+        HighlightSelfBar = true;
         SelfHighlightColor = SelfHighlightColorMode.SunlightYellow;
         CustomFriendlyNpcNames = new List<string>();
-        PartyMonitor = new PartyMonitorConfig();
+        PartyMonitor = new PartyMonitorConfig
+        {
+            PartyMonitorOpacity = 0.4f,
+            AutoResizePartyMonitorWindow = true,
+        };
         TimelineAutoDownloadOnEnter = false;
         HighlightNpcRows = true;
         SelectedUiTheme = UiThemeId.Sakura;

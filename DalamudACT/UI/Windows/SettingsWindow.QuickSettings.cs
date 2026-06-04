@@ -796,6 +796,8 @@ internal sealed partial class SettingsWindow
                     config.FloatingStatsIkegamiMinimalMode = minimal;
                     config.Save();
                 }
+                ImGui.SameLine(0f, 6f);
+                DrawHelpMarker("开启后隐藏页签，只显示当前内容。关闭后恢复 DPS / HPS / 承伤 / 概览 / 历史记录页签。");
 
                 break;
             }

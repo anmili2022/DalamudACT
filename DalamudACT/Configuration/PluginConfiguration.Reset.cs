@@ -415,9 +415,9 @@ public sealed partial class PluginConfiguration
         HistoryDurationColumnWidth = 100f;
         FloatingStatsRowHeight = 0f;
         FloatingStatsIkegamiMinimalMode = false;
-        FloatingStatsIkegamiPanelRaise = 7f;
-        FloatingStatsIkegamiDetailRaise = 5f;
-        FloatingStatsIkegamiFooterRaise = 24f;
+        FloatingStatsIkegamiPanelRaise = 3f;
+        FloatingStatsIkegamiDetailRaise = 3f;
+        FloatingStatsIkegamiFooterRaise = 3f;
         FloatingStatsIkegamiShowScrollbar = false;
         FloatingStatsIkegamiBoxWidth = 132f;
         FloatingStatsIkegamiBoxHeight = 40f;
@@ -595,9 +595,9 @@ public sealed partial class PluginConfiguration
         HistoryDurationColumnWidth = 100f;
         FloatingStatsRowHeight = 0f;
         FloatingStatsIkegamiMinimalMode = false;
-        FloatingStatsIkegamiPanelRaise = 7f;
-        FloatingStatsIkegamiDetailRaise = 5f;
-        FloatingStatsIkegamiFooterRaise = 24f;
+        FloatingStatsIkegamiPanelRaise = 3f;
+        FloatingStatsIkegamiDetailRaise = 3f;
+        FloatingStatsIkegamiFooterRaise = 3f;
         FloatingStatsIkegamiShowScrollbar = false;
         FloatingStatsIkegamiBoxWidth = 132f;
         FloatingStatsIkegamiBoxHeight = 40f;
@@ -729,9 +729,9 @@ public sealed class UiSettingsSnapshot
     public float HistoryDurationColumnWidth = 100f;
     public float FloatingStatsRowHeight;
     public bool FloatingStatsIkegamiMinimalMode;
-    public float FloatingStatsIkegamiPanelRaise = 7f;
-    public float FloatingStatsIkegamiDetailRaise = 5f;
-    public float FloatingStatsIkegamiFooterRaise = 24f;
+    public float FloatingStatsIkegamiPanelRaise = 3f;
+    public float FloatingStatsIkegamiDetailRaise = 3f;
+    public float FloatingStatsIkegamiFooterRaise = 3f;
     public bool FloatingStatsIkegamiShowScrollbar;
     public float FloatingStatsIkegamiBoxWidth = 132f;
     public float FloatingStatsIkegamiBoxHeight = 40f;

@@ -146,9 +146,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public float HistoryDurationColumnWidth = 100f;
     public float FloatingStatsRowHeight = 0f;
     public bool FloatingStatsIkegamiMinimalMode = false;
-    public float FloatingStatsIkegamiPanelRaise = 7f;
-    public float FloatingStatsIkegamiDetailRaise = 5f;
-    public float FloatingStatsIkegamiFooterRaise = 24f;
+    public float FloatingStatsIkegamiPanelRaise = 3f;
+    public float FloatingStatsIkegamiDetailRaise = 3f;
+    public float FloatingStatsIkegamiFooterRaise = 3f;
     public bool FloatingStatsIkegamiShowScrollbar = false;
     public float FloatingStatsIkegamiBoxWidth = 132f;
     public float FloatingStatsIkegamiBoxHeight = 40f;

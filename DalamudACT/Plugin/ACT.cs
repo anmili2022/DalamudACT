@@ -47,11 +47,13 @@ public sealed partial class ACT : IDalamudPlugin
     private DateTime lastTimelineUpdateUtc;
     private DateTime lastRawPacketHookStateUpdateUtc;
     private DateTime lastFrameworkPerfLogUtc;
+    private int observedPartyWipeFinalizedVersion;
     private uint cachedTerritoryId;
     private string cachedZoneName = "未知区域";
     private int suppressedUntrackedCombatDebugCount;
     private string lastRawPacketCorrelationText = string.Empty;
     private DateTime lastRawPacketCorrelationAtUtc = DateTime.MinValue;
+    private DateTime lastBattleCountdownFiveSecondsUtc = DateTime.MinValue;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
     private Hook<ActorControlDelegate>? actorControlEventHook;
@@ -138,6 +140,7 @@ public sealed partial class ACT : IDalamudPlugin
                 {
                     statsService.WarmOwnerCacheFromObjectTable();
                     statsService.Update(zoneName, statsActive, forceReplayOutOfCombat);
+                    ResetPartyMonitorCooldownsAfterPartyWipe(nowUtc);
                     MarkFrameworkPerfSegment("stats", ref perfLast, perfParts);
                     ranHeavyWork = true;
                 }
@@ -187,6 +190,20 @@ public sealed partial class ACT : IDalamudPlugin
                 LogHelper.Error("插件", ex, "在 Framework 更新期间刷新本地 DPS 统计失败。");
             }
         }
+    }
+
+    private void ResetPartyMonitorCooldownsAfterPartyWipe(DateTime nowUtc)
+    {
+        var partyWipeVersion = statsService.PartyWipeFinalizedVersion;
+        if (partyWipeVersion == observedPartyWipeFinalizedVersion)
+            return;
+
+        observedPartyWipeFinalizedVersion = partyWipeVersion;
+        if (DalamudApi.ClientState.IsPvP)
+            return;
+
+        monitorService.ResetSkillCooldowns(nowUtc);
+        LogHelper.Info("队友监控", "检测到团灭战斗结算，已重置队友技能冷却。");
     }
 
     private void MarkFrameworkPerfSegment(string name, ref long lastTimestamp, List<string> parts)

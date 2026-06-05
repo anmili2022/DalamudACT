@@ -22,6 +22,7 @@ internal sealed partial class LocalStatsService
     private DateTime lastCombatTimelineStatusPollUtc;
     private DateTime lastCombatTimelineCastPollUtc;
     private int encounterFinalizedVersion;
+    private int partyWipeFinalizedVersion;
     private bool latestInCombatHint;
     private bool suppressStaleDisplayUntilNextCombatStart;
     private bool combatTimelineStatusRecorderPrimed;
@@ -47,6 +48,15 @@ internal sealed partial class LocalStatsService
         {
             lock (gate)
                 return encounterFinalizedVersion;
+        }
+    }
+
+    public int PartyWipeFinalizedVersion
+    {
+        get
+        {
+            lock (gate)
+                return partyWipeFinalizedVersion;
         }
     }
 
@@ -485,6 +495,7 @@ internal sealed partial class LocalStatsService
 
     private void FinalizeEncounter(DateTime finalizedAtUtc)
     {
+        var endedWithPartyWipe = IsCurrentPartyWipeLocked();
         if (!currentEncounter.HasMeaningfulData)
         {
             LogHelper.Debug("统计", $"已丢弃区域 {currentEncounter.ZoneName} 的战斗结算：未记录到有效战斗数据。");
@@ -501,6 +512,8 @@ internal sealed partial class LocalStatsService
             lastActiveSnapshotBuildUtc = default;
             lastPlayerDotStatusPollUtc = default;
             encounterFinalizedVersion++;
+            if (endedWithPartyWipe)
+                partyWipeFinalizedVersion++;
             suppressStaleDisplayUntilNextCombatStart = true;
             return;
         }
@@ -544,7 +557,22 @@ internal sealed partial class LocalStatsService
         lastActiveSnapshotBuildUtc = default;
         lastPlayerDotStatusPollUtc = default;
         encounterFinalizedVersion++;
+        if (endedWithPartyWipe)
+            partyWipeFinalizedVersion++;
         suppressStaleDisplayUntilNextCombatStart = true;
+    }
+
+    private bool IsCurrentPartyWipeLocked()
+    {
+        var trackedCount = 0;
+        foreach (var hp in partyMemberHpCache.Values)
+        {
+            trackedCount++;
+            if (hp > 0)
+                return false;
+        }
+
+        return trackedCount > 0;
     }
 
     private bool AreAllPartyMembersOutOfCombat(bool fallbackInCombat)

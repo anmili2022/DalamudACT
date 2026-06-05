@@ -169,8 +169,10 @@ public sealed partial class ACT
             if (!IsSystemLikeChatKind(logKind))
                 return;
 
+            var nowUtc = DateTime.UtcNow;
+            ObserveBattleCountdownMessage(text, nowUtc);
             LogRawPacketsNearSystemMessage("handleable-chat", text);
-            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
+            timelineService.ObserveSystemLogMessage(text, nowUtc);
         }
         catch (Exception ex)
         {
@@ -186,8 +188,10 @@ public sealed partial class ACT
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
+            var nowUtc = DateTime.UtcNow;
+            ObserveBattleCountdownMessage(text, nowUtc);
             LogRawPacketsNearSystemMessage("log-message", text);
-            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
+            timelineService.ObserveSystemLogMessage(text, nowUtc);
         }
         catch (Exception ex)
         {
@@ -215,13 +219,42 @@ public sealed partial class ACT
             if (type != XivChatType.SystemMessage)
                 return;
 
+            var nowUtc = DateTime.UtcNow;
+            ObserveBattleCountdownMessage(text, nowUtc);
             LogRawPacketsNearSystemMessage("system-chat", text);
-            timelineService.ObserveSystemLogMessage(text, DateTime.UtcNow);
+            timelineService.ObserveSystemLogMessage(text, nowUtc);
         }
         catch (Exception ex)
         {
             LogHelper.Debug("时间轴", ex, "处理系统日志时间轴同步失败。");
         }
+    }
+
+    private void ObserveBattleCountdownMessage(string text, DateTime nowUtc)
+    {
+        var normalized = text.Trim();
+        if (normalized.Contains("距离战斗开始还有5秒", StringComparison.Ordinal))
+        {
+            lastBattleCountdownFiveSecondsUtc = nowUtc;
+            LogHelper.Debug("队友监控", "检测到战斗倒计时 5 秒，等待战斗开始消息以重置技能冷却。");
+            return;
+        }
+
+        if (!normalized.Contains("战斗开始", StringComparison.Ordinal))
+            return;
+
+        if (lastBattleCountdownFiveSecondsUtc == DateTime.MinValue
+            || nowUtc - lastBattleCountdownFiveSecondsUtc > TimeSpan.FromSeconds(10))
+        {
+            return;
+        }
+
+        lastBattleCountdownFiveSecondsUtc = DateTime.MinValue;
+        if (DalamudApi.ClientState.IsPvP)
+            return;
+
+        monitorService.ResetSkillCooldowns(nowUtc);
+        LogHelper.Info("队友监控", "检测到战斗倒计时 5 秒后战斗开始，已重置队友技能冷却。");
     }
 
     private static bool IsSystemLikeChatKind(string logKind)

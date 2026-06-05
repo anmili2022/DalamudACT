@@ -26,6 +26,8 @@ internal sealed partial class CombatTimelineWindow : Window
         Status = 1 << 6,
         MapEffect = 1 << 7,
         CombatBoundary = 1 << 8,
+        TargetIcon = 1 << 9,
+        Tether = 1 << 10,
     }
 
     private const TimelineContentFilter DefaultContentFilters = TimelineContentFilter.Output

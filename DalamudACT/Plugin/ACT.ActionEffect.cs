@@ -204,7 +204,13 @@ public sealed partial class ACT
             DebugLogUntrackedCombatEvent(sourceId, sourceCharacterAddress, firstTargetId, sourceCanResolveToTrackedActor, anyTargetTracked, actionName);
 
         if (sourceCanResolveToTrackedActor)
+        {
             monitorService.RecordSkillUse(sourceActorId, actionId, nowUtc);
+            tankInvulnerabilityTtsService.ObserveAction(
+                actionId,
+                nowUtc,
+                statsService.IsTrackedPlayerSource(sourceActorId, nowUtc, includeLocalPlayer: false));
+        }
 
         timelineService.ObserveAbility(actionId, nowUtc, sourceId);
 

@@ -29,6 +29,8 @@ internal sealed partial class LocalStatsService
         Status,
         CombatEnd,
         MapEffect,
+        TargetIcon,
+        Tether,
     }
 
     private readonly record struct CombatTimelineStatusKey(

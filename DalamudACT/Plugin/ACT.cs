@@ -35,6 +35,7 @@ public sealed partial class ACT : IDalamudPlugin
     private readonly LocalStatsService statsService;
     private readonly PartyMonitorService monitorService;
     private readonly TimelineService timelineService;
+    private readonly TankInvulnerabilityTtsService tankInvulnerabilityTtsService;
     private readonly PluginUI ui;
     private readonly ExcelSheet<TerritoryType> territorySheet;
     private readonly ExcelSheet<Action> actionSheet;
@@ -53,15 +54,10 @@ public sealed partial class ACT : IDalamudPlugin
     private DateTime lastRawPacketCorrelationAtUtc = DateTime.MinValue;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
-    private Hook<ActorControlDelegate>? mapEffectHook;
-    private Hook<ActorControlDelegate>? actorControlHook;
+    private Hook<ActorControlDelegate>? actorControlEventHook;
     private RawGamePacketHook? rawGamePacketHook;
+    private DateTime lastActorControlWipeResetUtc;
     private bool rawGamePacketHookInstallFailed;
-
-    // 2026-05-23：ActorControl Hook 在部分 Dalamud / 客户端组合下会在 HookFromAddress 的
-    // FollowJmp 阶段触发原生 AccessViolation，并直接导致游戏进程崩溃。
-    // 在补上目标地址范围校验、页保护校验和显式配置开关前，默认不再安装该 Hook。
-    private static bool ShouldInstallActorControlHook => false;
 
     public string Name => "DPS统计";
 
@@ -82,6 +78,7 @@ public sealed partial class ACT : IDalamudPlugin
         statsService = new LocalStatsService(Configuration);
         monitorService = new PartyMonitorService(Configuration, statsService);
         timelineService = new TimelineService(Configuration);
+        tankInvulnerabilityTtsService = new TankInvulnerabilityTtsService(Configuration);
         InstallHooks();
 
         ui = new PluginUI(Configuration, statsService, monitorService, timelineService);

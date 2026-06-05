@@ -206,6 +206,8 @@ internal sealed partial class CombatTimelineWindow
             LocalStatsService.CombatTimelineEntryKind.Failure => new Vector4(1f, 0.84f, 0.42f, 1f),
             LocalStatsService.CombatTimelineEntryKind.Death => new Vector4(1f, 0.52f, 0.52f, 1f),
             LocalStatsService.CombatTimelineEntryKind.MapEffect => new Vector4(0.96f, 0.56f, 0.96f, 1f),
+            LocalStatsService.CombatTimelineEntryKind.TargetIcon => new Vector4(1f, 0.72f, 0.48f, 1f),
+            LocalStatsService.CombatTimelineEntryKind.Tether => new Vector4(0.72f, 0.64f, 1f, 1f),
             LocalStatsService.CombatTimelineEntryKind.CombatEnd => new Vector4(0.98f, 0.76f, 0.45f, 1f),
             _ => new Vector4(0.88f, 0.92f, 1f, 1f),
         };
@@ -310,6 +312,26 @@ internal sealed partial class CombatTimelineWindow
         }
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("开启后会把 MapEffect 场地特效写入新的战斗流水；关闭不会移除已有记录。 ");
+
+        ImGui.SameLine();
+        var targetIconEnabled = config.CombatTimelineTargetIconEnabled;
+        if (ImGui.Checkbox("显示头顶标记", ref targetIconEnabled))
+        {
+            config.CombatTimelineTargetIconEnabled = targetIconEnabled;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后会把 ActorControl 头顶标记写入新的战斗流水；关闭不会移除已有记录。 ");
+
+        ImGui.SameLine();
+        var tetherEnabled = config.CombatTimelineTetherEnabled;
+        if (ImGui.Checkbox("显示连线", ref tetherEnabled))
+        {
+            config.CombatTimelineTetherEnabled = tetherEnabled;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("开启后会把 ActorControl 连线和连线取消写入新的战斗流水；关闭不会移除已有记录。 ");
     }
 
     private void DrawFilterControls(IReadOnlyList<string> characterOptions)
@@ -342,6 +364,10 @@ internal sealed partial class CombatTimelineWindow
         DrawContentFilterCheckbox("状态", TimelineContentFilter.Status);
         ImGui.SameLine();
         DrawContentFilterCheckbox("场地特效", TimelineContentFilter.MapEffect);
+        ImGui.SameLine();
+        DrawContentFilterCheckbox("头顶标记", TimelineContentFilter.TargetIcon);
+        ImGui.SameLine();
+        DrawContentFilterCheckbox("连线", TimelineContentFilter.Tether);
         ImGui.SameLine();
         DrawContentFilterCheckbox("进出战", TimelineContentFilter.CombatBoundary);
 

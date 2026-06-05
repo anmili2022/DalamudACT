@@ -60,7 +60,7 @@ internal sealed partial class LocalStatsService
     {
         lock (gate)
         {
-            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineMapEffectEnabled || !currentEncounter.Started)
+            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineTargetIconEnabled || !currentEncounter.Started)
                 return;
 
             AppendCombatTimelineEntryLocked(
@@ -72,6 +72,51 @@ internal sealed partial class LocalStatsService
                 false,
                 false,
                 $"MapEffect {flags:X8}/{location:X2}");
+        }
+    }
+
+    public void RecordCombatTimelineTargetIcon(uint sourceActorId, uint targetActorId, uint iconId, string candidateText, DateTime nowUtc)
+    {
+        lock (gate)
+        {
+            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineMapEffectEnabled || !currentEncounter.Started)
+                return;
+
+            var sourceName = ResolveCombatTimelineSourceName(sourceActorId, nowUtc);
+            var hasTarget = targetActorId is not 0 and not InvalidActorId;
+            var targetName = hasTarget ? ResolveCombatTimelineSourceName(targetActorId, nowUtc) : "目标未解析";
+            var targetText = hasTarget ? $"{targetName}({targetActorId:X8})" : $"目标未解析，候选={candidateText}";
+            AppendCombatTimelineEntryLocked(
+                nowUtc,
+                CombatTimelineEntryKind.TargetIcon,
+                $"头顶标记：来源={sourceName}({sourceActorId:X8})，目标={targetText}，头标ID={iconId:X}。",
+                sourceName,
+                hasTarget ? targetName : null,
+                false,
+                false,
+                $"头标 {iconId:X}");
+        }
+    }
+
+    public void RecordCombatTimelineTether(uint sourceActorId, uint targetActorId, uint tetherId, bool cancelled, DateTime nowUtc)
+    {
+        lock (gate)
+        {
+            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineTetherEnabled || !currentEncounter.Started)
+                return;
+
+            var sourceName = ResolveCombatTimelineSourceName(sourceActorId, nowUtc);
+            var targetName = ResolveCombatTimelineSourceName(targetActorId, nowUtc);
+            var label = cancelled ? "连线取消" : "连线";
+            AppendCombatTimelineEntryLocked(
+                nowUtc,
+                CombatTimelineEntryKind.Tether,
+                $"{label}：source={sourceName}({sourceActorId:X8}), target={targetName}({targetActorId:X8}), id={tetherId:X}。",
+                sourceName,
+                targetName,
+                false,
+                false,
+                $"Tether {tetherId:X}");
         }
     }
 

@@ -89,6 +89,15 @@ internal sealed partial class SettingsWindow
                     config.Save();
                 }
 
+                var tankInvulnerabilityTts = config.TankInvulnerabilityTts;
+                if (ImGui.Checkbox("播报队友无敌技能", ref tankInvulnerabilityTts))
+                {
+                    config.TankInvulnerabilityTts = tankInvulnerabilityTts;
+                    config.Save();
+                }
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip("队友使用死斗、神圣领域、死而不僵、超火流星时播报技能名；PvP 区域不播报。需要先开启 DailyRoutines TTS。");
+
                 var ttsLeadSeconds = config.TimelineTtsLeadSeconds;
                 if (ImGui.SliderInt("TTS提前秒数", ref ttsLeadSeconds, 1, 30))
                 {

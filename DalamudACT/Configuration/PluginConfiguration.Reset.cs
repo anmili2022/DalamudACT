@@ -28,6 +28,7 @@ public sealed partial class PluginConfiguration
             TimelineTtsMechanic = TimelineTtsMechanic,
             TimelineTtsSkillName = TimelineTtsSkillName,
             TimelineTtsResponse = TimelineTtsResponse,
+            TankInvulnerabilityTts = TankInvulnerabilityTts,
             TimelineTtsLeadSeconds = TimelineTtsLeadSeconds,
             TimelineTtsCorrections = new List<TtsCorrectionRule>(TimelineTtsCorrections),
             TimelineAutoDownloadOnEnter = TimelineAutoDownloadOnEnter,
@@ -195,6 +196,7 @@ public sealed partial class PluginConfiguration
         TimelineTtsMechanic = snap.TimelineTtsMechanic;
         TimelineTtsSkillName = snap.TimelineTtsSkillName;
         TimelineTtsResponse = snap.TimelineTtsResponse;
+        TankInvulnerabilityTts = snap.TankInvulnerabilityTts;
         TimelineTtsLeadSeconds = snap.TimelineTtsLeadSeconds;
         TimelineTtsCorrections = new List<TtsCorrectionRule>(snap.TimelineTtsCorrections);
         TimelineAutoDownloadOnEnter = snap.TimelineAutoDownloadOnEnter;
@@ -362,6 +364,7 @@ public sealed partial class PluginConfiguration
         TimelineTtsMechanic = true;
         TimelineTtsSkillName = true;
         TimelineTtsResponse = true;
+        TankInvulnerabilityTts = true;
         TimelineTtsLeadSeconds = 5;
         TimelineTtsCorrections = new List<TtsCorrectionRule>
         {
@@ -515,6 +518,8 @@ public sealed partial class PluginConfiguration
         HistoryPreviewSeconds = 8;
         CombatTimelineRecordingEnabled = true;
         CombatTimelineMapEffectEnabled = false;
+        CombatTimelineTargetIconEnabled = false;
+        CombatTimelineTetherEnabled = false;
         CombatTimelineMaxEntries = 500;
         CombatTimelineShowRawTime = false;
         CombatTimelineShowEncounterTime = true;
@@ -537,6 +542,7 @@ public sealed partial class PluginConfiguration
         TimelineTtsMechanic = true;
         TimelineTtsSkillName = true;
         TimelineTtsResponse = true;
+        TankInvulnerabilityTts = true;
         TimelineTtsLeadSeconds = 5;
         TimelineTtsCorrections = new List<TtsCorrectionRule>
         {
@@ -693,6 +699,7 @@ public sealed class UiSettingsSnapshot
     public bool TimelineTtsMechanic = true;
     public bool TimelineTtsSkillName = true;
     public bool TimelineTtsResponse = true;
+    public bool TankInvulnerabilityTts = true;
     public int TimelineTtsLeadSeconds = 5;
     public List<TtsCorrectionRule> TimelineTtsCorrections = new();
     public bool TimelineAutoDownloadOnEnter;

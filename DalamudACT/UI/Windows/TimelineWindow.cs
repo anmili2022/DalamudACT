@@ -50,6 +50,9 @@ internal sealed class TimelineWindow : Window
         var windowHeight = panelHeight + style.WindowPadding.Y * 2f;
         var contentWidth = Math.Max(1f, ImGui.GetContentRegionAvail().X);
 
+        if (config.LockTimelineWindow && !lockedPanelWidth.HasValue)
+            lockedPanelWidth = contentWidth;
+
         if (observedLockTimelineWindow != config.LockTimelineWindow)
         {
             observedLockTimelineWindow = config.LockTimelineWindow;

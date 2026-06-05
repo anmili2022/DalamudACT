@@ -46,6 +46,12 @@ internal sealed partial class CombatTimelineWindow
         if (contentFilter.HasFlag(TimelineContentFilter.MapEffect) && entry.Kind == LocalStatsService.CombatTimelineEntryKind.MapEffect)
             return true;
 
+        if (contentFilter.HasFlag(TimelineContentFilter.TargetIcon) && entry.Kind == LocalStatsService.CombatTimelineEntryKind.TargetIcon)
+            return true;
+
+        if (contentFilter.HasFlag(TimelineContentFilter.Tether) && entry.Kind == LocalStatsService.CombatTimelineEntryKind.Tether)
+            return true;
+
         if (contentFilter.HasFlag(TimelineContentFilter.CombatBoundary)
             && entry.Kind is LocalStatsService.CombatTimelineEntryKind.CombatStart or LocalStatsService.CombatTimelineEntryKind.CombatEnd)
         {

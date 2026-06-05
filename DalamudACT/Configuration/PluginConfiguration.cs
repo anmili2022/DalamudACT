@@ -61,6 +61,8 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int HistoryPreviewSeconds = 8;
     public bool CombatTimelineRecordingEnabled = true;
     public bool CombatTimelineMapEffectEnabled = false;
+    public bool CombatTimelineTargetIconEnabled = false;
+    public bool CombatTimelineTetherEnabled = false;
     public int CombatTimelineMaxEntries = 500;
     public bool CombatTimelineShowRawTime = false;
     public bool CombatTimelineShowEncounterTime = true;
@@ -85,6 +87,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public bool TimelineTtsMechanic = true;
     public bool TimelineTtsSkillName = true;
     public bool TimelineTtsResponse = true;
+    public bool TankInvulnerabilityTts = true;
     public int TimelineTtsLeadSeconds = 5;
     public List<TtsCorrectionRule> TimelineTtsCorrections = new()
     {
@@ -640,6 +643,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         if (Version < 68)
             LogChannel = PluginLogChannel.Debug;
 
+        if (Version < 69)
+            TankInvulnerabilityTts = true;
+
         StatsUpdateIntervalMs = Math.Clamp(StatsUpdateIntervalMs <= 0 ? 250 : StatsUpdateIntervalMs, 100, 2000);
         PartyMonitorUpdateIntervalMs = Math.Clamp(PartyMonitorUpdateIntervalMs <= 0 ? 500 : PartyMonitorUpdateIntervalMs, 100, 2000);
         StatusObserverUpdateIntervalMs = Math.Clamp(StatusObserverUpdateIntervalMs <= 0 ? 500 : StatusObserverUpdateIntervalMs, 100, 2000);
@@ -656,7 +662,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         LogHelper.Channel = PluginLogChannel.Debug;
 
         ShowDemoPanel = ShowStatsPanel;
-        Version = Math.Max(Version, 68);
+        Version = Math.Max(Version, 69);
 
         if (!suppressFloatingStyleSettingsSync)
             EnsureFloatingStyleSettingFilesInitialized();

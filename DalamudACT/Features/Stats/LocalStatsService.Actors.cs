@@ -72,6 +72,30 @@ internal sealed partial class LocalStatsService
             return TryResolveTrackedSource(actorId, nowUtc, out _);
     }
 
+    public bool IsTrackedPlayerSource(uint actorId, DateTime nowUtc, bool includeLocalPlayer = true)
+    {
+        lock (gate)
+        {
+            if (!TryResolveTrackedSource(actorId, nowUtc, out var actor) || actor.Kind != TrackedActorKind.Player)
+                return false;
+
+            return includeLocalPlayer || !GetLocalPlayerIdentity().MatchesActorId(actor.ActorId);
+        }
+    }
+
+    public bool TryResolveTrackedFriendlyActorId(uint actorId, DateTime nowUtc, out uint resolvedActorId)
+    {
+        lock (gate)
+        {
+            resolvedActorId = 0;
+            if (!TryResolveTrackedSource(actorId, nowUtc, out var actor) || actor.Kind == TrackedActorKind.HostileNpc)
+                return false;
+
+            resolvedActorId = actor.ActorId;
+            return true;
+        }
+    }
+
     private bool TryResolveCombatantSource(uint actorId, DateTime nowUtc, out TrackedActor actor, out bool isFriendly)
     {
         if (TryResolveTrackedSource(actorId, nowUtc, out actor))

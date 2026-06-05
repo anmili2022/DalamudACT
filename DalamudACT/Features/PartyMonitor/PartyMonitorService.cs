@@ -141,6 +141,19 @@ internal sealed class PartyMonitorService
             lastSkillUseUtc[CombineKey(sourceActorId, skill.ActionId)] = nowUtc;
     }
 
+    public void ResetSkillCooldowns(DateTime nowUtc)
+    {
+        lock (gate)
+        {
+            foreach (var key in lastSkillUseUtc.Keys.Where(static key => unchecked((uint)key) != 0).ToArray())
+                lastSkillUseUtc.Remove(key);
+
+            lastRebuildUtc = DateTime.MinValue;
+        }
+
+        RebuildMemberStates(nowUtc);
+    }
+
     private void PollFoodBuffs(DateTime nowUtc)
     {
         if (!config.PartyMonitor.MonitorFood)

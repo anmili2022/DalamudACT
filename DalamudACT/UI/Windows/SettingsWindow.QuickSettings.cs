@@ -434,6 +434,7 @@ internal sealed partial class SettingsWindow
             DrawQuickBoolRow("播报机制", "AOE / 死刑等分类提示", config.TimelineTtsMechanic, value => config.TimelineTtsMechanic = value);
             DrawQuickBoolRow("播报技能名", "机制名之外额外播报技能名称", config.TimelineTtsSkillName, value => config.TimelineTtsSkillName = value);
             DrawQuickBoolRow("播报应对方案", "读条ID 即时播，结算ID 到达时播", config.TimelineTtsResponse, value => config.TimelineTtsResponse = value);
+            DrawQuickBoolRow("播报队友无敌技能", "队友使用死斗、神圣领域、死而不僵、超火流星时播报技能名；PvP 区域不播报", config.TankInvulnerabilityTts, value => config.TankInvulnerabilityTts = value);
             DrawQuickIntRow("TTS 提前秒数", null, config.TimelineTtsLeadSeconds, 0, 10, value => config.TimelineTtsLeadSeconds = value);
         });
     }
@@ -855,6 +856,15 @@ internal sealed partial class SettingsWindow
             config.TimelineTtsResponse = ttsResponse;
             config.Save();
         }
+
+        var tankInvulnerabilityTts = config.TankInvulnerabilityTts;
+        if (ImGui.Checkbox("播报队友无敌技能", ref tankInvulnerabilityTts))
+        {
+            config.TankInvulnerabilityTts = tankInvulnerabilityTts;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("队友使用死斗、神圣领域、死而不僵、超火流星时播报技能名；PvP 区域不播报。需要先开启时间轴 TTS。");
 
         var leadSeconds = config.TimelineTtsLeadSeconds;
         if (ImGui.SliderInt("TTS 提前秒数", ref leadSeconds, 0, 10))

@@ -52,10 +52,23 @@ public sealed partial class ACT
         var actionId = header->SpellId != 0 ? (uint)header->SpellId : header->ActionId;
         var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
         var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
-        var statsEventActive = inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback;
+        var statsModuleEnabled = IsStatsModuleEnabled;
+        var partyMonitorModuleEnabled = IsPartyMonitorModuleEnabled;
+        var timelineModuleEnabled = IsTimelineModuleEnabled;
+        var statsEventActive = statsModuleEnabled && (inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback);
+        var shouldInspectAbility = statsEventActive || partyMonitorModuleEnabled;
+        if (!shouldInspectAbility)
+        {
+            if (timelineModuleEnabled)
+                timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+            return;
+        }
+
         if (!statsEventActive)
         {
-            timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+            HandlePartyMonitorAbilityOnly(header, actionId, sourceId, sourceCharacterAddress, nowUtc);
+            if (timelineModuleEnabled)
+                timelineService.ObserveAbility(actionId, nowUtc, sourceId);
             return;
         }
 
@@ -205,15 +218,40 @@ public sealed partial class ACT
 
         if (sourceCanResolveToTrackedActor)
         {
-            monitorService.RecordSkillUse(sourceActorId, actionId, nowUtc);
-            tankInvulnerabilityTtsService.ObserveAction(
-                actionId,
-                nowUtc,
-                statsService.IsTrackedPlayerSource(sourceActorId, nowUtc, includeLocalPlayer: false));
+            if (partyMonitorModuleEnabled)
+            {
+                monitorService.RecordSkillUse(sourceActorId, actionId, nowUtc);
+                tankInvulnerabilityTtsService.ObserveAction(
+                    actionId,
+                    nowUtc,
+                    statsService.IsTrackedPlayerSource(sourceActorId, nowUtc, includeLocalPlayer: false));
+            }
         }
 
-        timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+        if (timelineModuleEnabled)
+            timelineService.ObserveAbility(actionId, nowUtc, sourceId);
 
+    }
+
+    private unsafe void HandlePartyMonitorAbilityOnly(
+        ActionEffectHandler.Header* header,
+        uint actionId,
+        uint sourceId,
+        nint sourceCharacterAddress,
+        DateTime nowUtc)
+    {
+        if (!IsPartyMonitorModuleEnabled)
+            return;
+
+        var sourceActorId = ResolveTrackedSourceActorId(sourceId, sourceCharacterAddress, nowUtc, out var sourceCanResolveToTrackedActor);
+        if (!sourceCanResolveToTrackedActor)
+            return;
+
+        monitorService.RecordSkillUse(sourceActorId, actionId, nowUtc);
+        tankInvulnerabilityTtsService.ObserveAction(
+            actionId,
+            nowUtc,
+            statsService.IsTrackedPlayerSource(sourceActorId, nowUtc, includeLocalPlayer: false));
     }
 
     private unsafe delegate void ReceiveAbilityDelegate(

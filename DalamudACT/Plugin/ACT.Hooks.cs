@@ -59,24 +59,29 @@ public sealed partial class ACT
                 case 0x1F9:
                 {
                     var utcNow = DateTime.UtcNow;
-                    timelineService.ObserveMapEffect(entityId, param1, param2, utcNow);
-                    statsService.RecordCombatTimelineMapEffect(param1, param2, utcNow);
+                    if (IsTimelineModuleEnabled)
+                        timelineService.ObserveMapEffect(entityId, param1, param2, utcNow);
+                    if (IsStatsModuleEnabled)
+                        statsService.RecordCombatTimelineMapEffect(param1, param2, utcNow);
                     break;
                 }
 
                 // 34 = TargetIcon. targetId is the marked actor, param1 is the marker id.
                 case 34:
-                    HandleActorControlTargetIcon(entityId, targetId, param1, param2, param3, param4, param5, param6, param7, param8);
+                    if (IsStatsModuleEnabled)
+                        HandleActorControlTargetIcon(entityId, targetId, param1, param2, param3, param4, param5, param6, param7, param8);
                     break;
 
                 // 35 = Tether. entityId is source actor, param2 is tether id, param3 is target actor.
                 case 35:
-                    HandleActorControlTether(entityId, param3, param2, cancelled: false);
+                    if (IsStatsModuleEnabled)
+                        HandleActorControlTether(entityId, param3, param2, cancelled: false);
                     break;
 
                 // 47 = TetherCancel. Parameters match Tether on current references.
                 case 47:
-                    HandleActorControlTether(entityId, param3, param2, cancelled: true);
+                    if (IsStatsModuleEnabled)
+                        HandleActorControlTether(entityId, param3, param2, cancelled: true);
                     break;
 
                 // DelvUI uses 0x4000000F as a wipe fadeout signal for party cooldown reset.

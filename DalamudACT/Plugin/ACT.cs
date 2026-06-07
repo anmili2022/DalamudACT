@@ -65,6 +65,14 @@ public sealed partial class ACT : IDalamudPlugin
 
     public PluginConfiguration Configuration { get; }
 
+    private bool IsStatsModuleEnabled => Configuration.ShowStatsPanel;
+
+    private bool IsPartyMonitorModuleEnabled => Configuration.PartyMonitor.EnablePartyMonitor && Configuration.PartyMonitor.ShowPartyMonitorWindow;
+
+    private bool IsTimelineModuleEnabled => Configuration.ShowTimelineWindow;
+
+    private bool IsStatusObserverModuleEnabled => Configuration.StatusObserver.ShowWindow;
+
     public ACT(IDalamudPluginInterface pluginInterface)
     {
         this.pluginInterface = pluginInterface;
@@ -122,8 +130,8 @@ public sealed partial class ACT : IDalamudPlugin
             var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
             var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
             var replayStatsActive = Configuration.ReplayStatsMode && inDutyRecorderPlayback;
-            var statsActive = inCombat || replayStatsActive;
-            var timelineActive = inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter;
+            var statsActive = IsStatsModuleEnabled && (inCombat || replayStatsActive);
+            var timelineActive = IsTimelineModuleEnabled && (inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter);
             var nowUtc = DateTime.UtcNow;
             var forceReplayOutOfCombat = replayStatsActive && !inCombat && statsService.IsEncounterIdle(nowUtc, TimeSpan.FromSeconds(60));
             var statsUpdateIntervalMs = Configuration.GetEffectiveStatsUpdateIntervalMs();
@@ -136,7 +144,7 @@ public sealed partial class ACT : IDalamudPlugin
             if (shouldUpdateStats)
             {
                 lastStatsUpdateUtc = nowUtc;
-                if (statsActive || !inDutyRecorderPlayback && statsService.HasActiveEncounter)
+                if (statsActive || IsStatsModuleEnabled && !inDutyRecorderPlayback && statsService.HasActiveEncounter)
                 {
                     statsService.WarmOwnerCacheFromObjectTable();
                     statsService.Update(zoneName, statsActive, forceReplayOutOfCombat);
@@ -161,8 +169,11 @@ public sealed partial class ACT : IDalamudPlugin
                 timelineService.PollStartsUsingCasts(nowUtc, false, Array.Empty<IBattleChara>());
             }
 
-            monitorService.Update();
-            MarkFrameworkPerfSegment("monitor", ref perfLast, perfParts);
+            if (IsPartyMonitorModuleEnabled)
+            {
+                monitorService.Update();
+                MarkFrameworkPerfSegment("monitor", ref perfLast, perfParts);
+            }
 
             if (!ranHeavyWork && shouldUpdateTimeline)
             {

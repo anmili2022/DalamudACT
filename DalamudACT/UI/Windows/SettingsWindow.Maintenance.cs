@@ -90,6 +90,9 @@ internal sealed partial class SettingsWindow
             ImGui.SetTooltip("开启后输出 FrameworkUpdate / StatsUpdate 慢帧性能日志，用于定位卡顿来源。日志频道固定为 Debug。 ");
 
         ImGui.Dummy(new Vector2(0f, 4f));
+        DrawHighPerformanceModeControl();
+
+        ImGui.Dummy(new Vector2(0f, 4f));
         ImGui.TextDisabled("调试日志分组");
         DrawDebugLogModuleCheckbox(DebugLogModule.PluginHook);
         ImGui.SameLine(0f, 12f);
@@ -120,6 +123,41 @@ internal sealed partial class SettingsWindow
 
         DrawCompactHelp("日志写入规则", "启用调试日志只控制 Debug/Verbose 是否写入；强化日志用于输出慢帧性能日志。分组开关只在启用调试日志后生效；伤害统计和 DoT 属于战斗高频日志，默认关闭。插件聊天通知频道固定为 Debug。 ");
         ImGui.TextDisabled($"当前状态：调试日志{(config.EnableDebugLog ? "已开启" : "已关闭")}，强化日志{(config.EnableEnhancedLog ? "已开启" : "已关闭")}");
+    }
+
+    private void DrawHighPerformanceModeControl()
+    {
+        var highPerformanceMode = config.HighPerformanceMode;
+        if (ImGui.Checkbox("高性能模式", ref highPerformanceMode))
+        {
+            config.HighPerformanceMode = highPerformanceMode;
+            config.Save();
+            LogHelper.Info("设置", highPerformanceMode ? "已启用高性能模式。" : "已关闭高性能模式。");
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("适合绝境、战场和高特效场景。保留主要 DPS/HPS 和技能监控，但会降低 DoT、友方 NPC、战斗流水和部分特殊归属精度。 ");
+
+        DrawCompactHelp(
+            "高性能模式说明",
+            "开启后会跳过友方 NPC 自动观察、DoT 轮询模拟、战斗流水详细采集，以及非队伍来源/目标的 ActionEffect 深解析。直伤 DPS/HPS 基本保留，精确复盘时建议关闭。 ");
+
+        var lightweightTimeline = config.CombatTimelineLightweightMode;
+        if (ImGui.Checkbox("轻量战斗流水", ref lightweightTimeline))
+        {
+            config.CombatTimelineLightweightMode = lightweightTimeline;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("只记录战斗开始/结束、死亡、头标、连线和场地特效，跳过伤害/治疗/状态等高频流水。 ");
+
+        var enableDotAttribution = config.EnableDotAndWildfireAttribution;
+        if (ImGui.Checkbox("统计 DoT/野火归属", ref enableDotAttribution))
+        {
+            config.EnableDotAndWildfireAttribution = enableDotAttribution;
+            config.Save();
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("关闭后降低高特效战斗压力，但 DoT、野火等持续/延迟伤害会更不准。高性能模式会临时停用。 ");
     }
 
     private void DrawRefreshIntervalControls()

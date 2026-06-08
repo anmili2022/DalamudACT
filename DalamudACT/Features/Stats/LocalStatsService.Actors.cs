@@ -23,7 +23,9 @@ internal sealed partial class LocalStatsService
 
     private readonly Dictionary<uint, OwnerCacheEntry> ownerCache = new();
     private readonly Dictionary<uint, TrackedActor> observedFriendlyActorCache = new();
+    private readonly Dictionary<uint, TrackedActor> trackedActorLookupCache = new();
     private readonly Dictionary<uint, uint> partyMemberHpCache = new();
+    private DateTime lastTrackedActorLookupCacheUtc;
     private DateTime lastOwnerWarmupUtc;
     private bool pronounPartyLookupUnavailableLogged;
 
@@ -281,6 +283,9 @@ internal sealed partial class LocalStatsService
         if (actorId is 0 or InvalidActorId)
             return false;
 
+        if (TryGetCachedTrackedActor(actorId, out actor))
+            return true;
+
         if (TryGetTrackedPartyBattleCharaActor(actorId, out actor))
             return true;
 
@@ -298,6 +303,65 @@ internal sealed partial class LocalStatsService
 
 
         return TryGetLocalPlayerTrackedActor(actorId, out actor);
+    }
+
+    private bool TryGetCachedTrackedActor(uint actorId, out TrackedActor actor)
+    {
+        RefreshTrackedActorLookupCache(DateTime.UtcNow);
+        return trackedActorLookupCache.TryGetValue(actorId, out actor);
+    }
+
+    private void RefreshTrackedActorLookupCache(DateTime nowUtc)
+    {
+        if (nowUtc - lastTrackedActorLookupCacheUtc < TimeSpan.FromMilliseconds(250))
+            return;
+
+        lastTrackedActorLookupCacheUtc = nowUtc;
+        trackedActorLookupCache.Clear();
+
+        foreach (var member in DalamudApi.PartyList)
+        {
+            var name = member.Name.TextValue ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+
+            var gameObject = member.GameObject;
+            var identity = GetPartyMemberIdentity(member, gameObject);
+            var canonicalActorId = identity.ResolveActorId();
+            if (canonicalActorId is 0 or InvalidActorId)
+                continue;
+
+            var jobId = member.ClassJob.RowId;
+            var actor = new TrackedActor(
+                canonicalActorId,
+                name.Trim(),
+                jobId,
+                ResolveJobName(jobId),
+                ResolvePartyMemberTrackedActorKind(member, gameObject));
+            AddTrackedActorLookup(identity, actor);
+        }
+
+        var localIdentity = GetLocalPlayerIdentity();
+        var localActorId = localIdentity.ResolveActorId();
+        if (localActorId is not 0 and not InvalidActorId && TryGetLocalPlayerTrackedActor(localActorId, out var localActor))
+        {
+            AddTrackedActorLookup(localIdentity, localActor);
+        }
+    }
+
+    private void AddTrackedActorLookup(ActorIdentity identity, TrackedActor actor)
+    {
+        AddTrackedActorLookup(identity.ActorId, actor);
+        AddTrackedActorLookup(identity.ObjectId, actor);
+        AddTrackedActorLookup(identity.EntityId, actor);
+    }
+
+    private void AddTrackedActorLookup(uint actorId, TrackedActor actor)
+    {
+        if (actorId is 0 or InvalidActorId)
+            return;
+
+        trackedActorLookupCache[actorId] = actor;
     }
 
     private bool TryGetTrackedActor(IGameObject? gameObject, out TrackedActor actor)

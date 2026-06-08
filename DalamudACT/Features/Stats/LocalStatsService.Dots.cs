@@ -36,6 +36,9 @@ internal sealed partial class LocalStatsService
         string actionName,
         DateTime timeUtc)
     {
+        if (!ShouldRunDotAndWildfireAttribution())
+            return false;
+
         if (!PlayerDotCatalog.IsKnownPlayerDotAction(actionId))
             return false;
 
@@ -111,6 +114,9 @@ internal sealed partial class LocalStatsService
         bool directHit,
         DateTime timeUtc)
     {
+        if (!ShouldRunDotAndWildfireAttribution())
+            return;
+
         if (amount <= 0)
             return;
 
@@ -264,6 +270,14 @@ internal sealed partial class LocalStatsService
             var perfParts = new List<string>(8);
             TrimRecentHostilePlayerActionsLocked(nowUtc);
 
+            if (!ShouldRunDotAndWildfireAttribution())
+            {
+                recentHostilePlayerActions.Clear();
+                activePlayerDots.Clear();
+                activeWildfires.Clear();
+                return;
+            }
+
             if (!inCombat && !currentEncounter.Started)
             {
                 activePlayerDots.Clear();
@@ -394,6 +408,9 @@ internal sealed partial class LocalStatsService
                 $"轮询玩家 DOT 状态失败，已自动跳过本轮刷新。异常={ex.GetType().Name}: {ex.Message}");
         }
     }
+
+    private bool ShouldRunDotAndWildfireAttribution()
+        => config.EnableDotAndWildfireAttribution && !config.HighPerformanceMode;
 
     private bool ShouldPollSourceOwnedPlayerDotStatuses(DateTime nowUtc)
         => activePlayerDots.Values.Any(static state => state.SkillEntry?.StatusOwnerKind == PlayerDotStatusOwnerKind.SourceActor)

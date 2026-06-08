@@ -258,7 +258,7 @@ internal sealed partial class LocalStatsService
         bool targetIsFriendly = false,
         string? actionText = null)
     {
-        if (!config.CombatTimelineRecordingEnabled)
+        if (!ShouldRecordCombatTimelineKind(kind))
             return;
 
         combatTimelineEntries.Add(new CombatTimelineEntry(
@@ -272,6 +272,22 @@ internal sealed partial class LocalStatsService
             targetIsFriendly,
             actionText));
         TrimCombatTimelineEntriesLocked();
+    }
+
+    private bool ShouldRecordCombatTimelineKind(CombatTimelineEntryKind kind)
+    {
+        if (!config.CombatTimelineRecordingEnabled)
+            return false;
+
+        if (!config.HighPerformanceMode && !config.CombatTimelineLightweightMode)
+            return true;
+
+        return kind is CombatTimelineEntryKind.CombatStart
+            or CombatTimelineEntryKind.CombatEnd
+            or CombatTimelineEntryKind.Death
+            or CombatTimelineEntryKind.MapEffect
+            or CombatTimelineEntryKind.TargetIcon
+            or CombatTimelineEntryKind.Tether;
     }
 
     private void TrimCombatTimelineEntriesLocked()

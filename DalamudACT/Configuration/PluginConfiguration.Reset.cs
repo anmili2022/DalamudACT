@@ -517,6 +517,9 @@ public sealed partial class PluginConfiguration
         EncounterTimeoutSeconds = 30;
         HistoryPreviewSeconds = 8;
         CombatTimelineRecordingEnabled = true;
+        HighPerformanceMode = false;
+        CombatTimelineLightweightMode = false;
+        EnableDotAndWildfireAttribution = true;
         CombatTimelineMapEffectEnabled = false;
         CombatTimelineTargetIconEnabled = false;
         CombatTimelineTetherEnabled = false;

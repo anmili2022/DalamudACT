@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using FFXIVClientStructs.FFXIV.Client.Game.Object;
 
@@ -48,7 +50,11 @@ public sealed partial class ACT
         uint sourceId,
         nint sourceCharacterAddress)
     {
+        var perfStart = Stopwatch.GetTimestamp();
         var nowUtc = DateTime.UtcNow;
+        if (ShouldSuppressCombatModuleWork)
+            return;
+
         var actionId = header->SpellId != 0 ? (uint)header->SpellId : header->ActionId;
         var inCombatNow = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
         var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
@@ -56,10 +62,12 @@ public sealed partial class ACT
         var partyMonitorModuleEnabled = IsPartyMonitorModuleEnabled;
         var timelineModuleEnabled = IsTimelineModuleEnabled;
         var statsEventActive = statsModuleEnabled && (inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback);
-        var shouldInspectAbility = statsEventActive || partyMonitorModuleEnabled;
+        var partyMonitorEventActive = partyMonitorModuleEnabled && inCombatNow;
+        var highPerformanceMode = Configuration.HighPerformanceMode;
+        var shouldInspectAbility = statsEventActive || partyMonitorEventActive;
         if (!shouldInspectAbility)
         {
-            if (timelineModuleEnabled)
+            if (timelineModuleEnabled && !highPerformanceMode)
                 timelineService.ObserveAbility(actionId, nowUtc, sourceId);
             return;
         }
@@ -67,25 +75,28 @@ public sealed partial class ACT
         if (!statsEventActive)
         {
             HandlePartyMonitorAbilityOnly(header, actionId, sourceId, sourceCharacterAddress, nowUtc);
-            if (timelineModuleEnabled)
+            if (timelineModuleEnabled && !highPerformanceMode)
                 timelineService.ObserveAbility(actionId, nowUtc, sourceId);
             return;
         }
 
         var zoneName = GetPlaceName(DalamudApi.GetTerritoryTypeId());
-        var actionName = GetActionName(actionId);
+        string? actionName = null;
         var isLimitBreakAction = IsLimitBreakAction(actionId);
         var sourceActorId = ResolveTrackedSourceActorId(sourceId, sourceCharacterAddress, nowUtc, out var sourceCanResolveToTrackedActor);
         var sourceObject = sourceCanResolveToTrackedActor
             ? null
             : ResolveEventActorObject(sourceId, sourceCharacterAddress);
-        var isKnownPlayerDotAction = PlayerDotCatalog.IsKnownPlayerDotAction(actionId);
+        var triedResolveFriendlySource = false;
+        var shouldRunDotAndWildfireAttribution = Configuration.EnableDotAndWildfireAttribution && !highPerformanceMode;
+        var isKnownPlayerDotAction = shouldRunDotAndWildfireAttribution && PlayerDotCatalog.IsKnownPlayerDotAction(actionId);
 
         var hasTrackedParticipant = sourceCanResolveToTrackedActor;
         var hasCombatStartingTrackedEffect = false;
         var anyTargetTracked = false;
         uint firstTargetId = 0;
-        var debugTargetIds = new List<uint>(header->NumTargets);
+        var debugEnabled = LogHelper.IsDebugEnabled(DebugLogModule.DamageStats);
+        List<uint>? debugTargetIds = debugEnabled ? new List<uint>(header->NumTargets) : null;
         long debugTotalDamageToTrackedTargets = 0;
 
         for (var targetIndex = 0; targetIndex < header->NumTargets; targetIndex++)
@@ -94,31 +105,27 @@ public sealed partial class ACT
             if (targetId == 0)
                 continue;
 
-            debugTargetIds.Add(targetId);
+            debugTargetIds?.Add(targetId);
 
             var resolvedTargetActorId = targetId;
             if (firstTargetId == 0)
                 firstTargetId = targetId;
 
             var targetIsTrackedActor = statsService.IsTrackedActor(resolvedTargetActorId);
-            if (!targetIsTrackedActor)
-            {
-                var targetObject = DalamudApi.ObjectTable.SearchByEntityId(targetId);
-                if (TryObserveFriendlyCombatant(targetId, targetObject, out var observedTargetActorId))
-                {
-                    resolvedTargetActorId = observedTargetActorId != 0 ? observedTargetActorId : targetId;
-                    targetIsTrackedActor = statsService.IsTrackedActor(resolvedTargetActorId);
-                }
-            }
+            var triedResolveTargetObject = false;
+            IGameObject? targetObject = null;
 
             anyTargetTracked |= targetIsTrackedActor;
             hasTrackedParticipant |= targetIsTrackedActor;
+
+            if (highPerformanceMode && !sourceCanResolveToTrackedActor && !targetIsTrackedActor)
+                continue;
 
             if (isLimitBreakAction)
                 continue;
 
             if (isKnownPlayerDotAction && sourceCanResolveToTrackedActor && !targetIsTrackedActor)
-                statsService.ObservePotentialPlayerDotApplication(sourceActorId, resolvedTargetActorId, actionId, actionName, nowUtc);
+                statsService.ObservePotentialPlayerDotApplication(sourceActorId, resolvedTargetActorId, actionId, GetCurrentActionName(), nowUtc);
 
             for (var effectIndex = 0; effectIndex < 8; effectIndex++)
             {
@@ -135,21 +142,18 @@ public sealed partial class ACT
                         if (amount <= 0)
                             break;
 
-                        if (!sourceCanResolveToTrackedActor
-                            && TryObserveFriendlyCombatantSource(
-                                sourceActorId != 0 ? sourceActorId : NormalizeEventActorId(sourceId),
-                                sourceObject,
-                                out var observedSourceActorId))
+                        if (!sourceCanResolveToTrackedActor && targetIsTrackedActor && TryResolveFriendlySourceOnce(out var observedSourceActorId))
                         {
                             sourceActorId = observedSourceActorId;
                             sourceCanResolveToTrackedActor = true;
                             hasTrackedParticipant = true;
                         }
 
-                        if (sourceCanResolveToTrackedActor
+                        if (shouldRunDotAndWildfireAttribution
+                            && sourceCanResolveToTrackedActor
                             && !targetIsTrackedActor)
                         {
-                            statsService.ObservePotentialPlayerHostileActionSample(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), IsDirectHit(effect), nowUtc);
+                            statsService.ObservePotentialPlayerHostileActionSample(sourceActorId, resolvedTargetActorId, actionId, GetCurrentActionName(), amount, IsCritical(effect), IsDirectHit(effect), nowUtc);
                         }
 
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
@@ -157,7 +161,7 @@ public sealed partial class ACT
                             hasCombatStartingTrackedEffect = true;
                             if (targetIsTrackedActor)
                                 debugTotalDamageToTrackedTargets += amount;
-                            statsService.RecordDamage(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), IsDirectHit(effect), nowUtc, zoneName);
+                            statsService.RecordDamage(sourceActorId, resolvedTargetActorId, actionId, GetCurrentActionName(), amount, IsCritical(effect), IsDirectHit(effect), nowUtc, zoneName);
                             break;
                         }
 
@@ -173,14 +177,10 @@ public sealed partial class ACT
                         // 这类效果不是我方治疗，不能写进 HPS/治疗流水，否则会出现
                         // “玩家 使用攻击技能 治疗 Boss” 这类错误记录。
                         // 当前 HPS 口径只统计目标是已追踪我方对象的治疗。
-                        if (!targetIsTrackedActor)
+                        if (!targetIsTrackedActor && !TryResolveFriendlyTargetOnce(out targetIsTrackedActor))
                             break;
 
-                        if (!sourceCanResolveToTrackedActor
-                            && TryObserveFriendlyCombatantSource(
-                                sourceActorId != 0 ? sourceActorId : NormalizeEventActorId(sourceId),
-                                sourceObject,
-                                out var observedSourceActorId))
+                        if (!sourceCanResolveToTrackedActor && targetIsTrackedActor && TryResolveFriendlySourceOnce(out var observedSourceActorId))
                         {
                             sourceActorId = observedSourceActorId;
                             sourceCanResolveToTrackedActor = true;
@@ -189,14 +189,14 @@ public sealed partial class ACT
 
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            statsService.RecordHeal(sourceActorId, resolvedTargetActorId, actionId, actionName, amount, IsCritical(effect), nowUtc, zoneName);
+                            statsService.RecordHeal(sourceActorId, resolvedTargetActorId, actionId, GetCurrentActionName(), amount, IsCritical(effect), nowUtc, zoneName);
                         }
                         break;
                     }
                     case LocalActionEffectType.Miss:
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, actionName, isMiss: true, nowUtc, zoneName);
+                            statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, GetCurrentActionName(), isMiss: true, nowUtc, zoneName);
                         }
                         break;
                     case LocalActionEffectType.FullResist:
@@ -204,17 +204,37 @@ public sealed partial class ACT
                     case LocalActionEffectType.PartialInvulnerable:
                         if (sourceCanResolveToTrackedActor || targetIsTrackedActor)
                         {
-                            statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, actionName, isMiss: false, nowUtc, zoneName);
+                            statsService.RecordFailure(sourceActorId, resolvedTargetActorId, actionId, GetCurrentActionName(), isMiss: false, nowUtc, zoneName);
                         }
                         break;
                 }
+            }
+
+            bool TryResolveFriendlyTargetOnce(out bool isTracked)
+            {
+                isTracked = targetIsTrackedActor;
+                if (isTracked)
+                    return true;
+
+                if (triedResolveTargetObject)
+                    return false;
+
+                triedResolveTargetObject = true;
+                targetObject = DalamudApi.ObjectTable.SearchByEntityId(targetId);
+                if (!TryObserveFriendlyCombatant(targetId, targetObject, out var observedTargetActorId))
+                    return false;
+
+                resolvedTargetActorId = observedTargetActorId != 0 ? observedTargetActorId : targetId;
+                isTracked = statsService.IsTrackedActor(resolvedTargetActorId);
+                targetIsTrackedActor = isTracked;
+                return isTracked;
             }
         }
 
         if (hasTrackedParticipant && (hasCombatStartingTrackedEffect || inCombatNow))
             statsService.RecordEncounterActivity(zoneName, nowUtc);
-        else if (inCombatNow)
-            DebugLogUntrackedCombatEvent(sourceId, sourceCharacterAddress, firstTargetId, sourceCanResolveToTrackedActor, anyTargetTracked, actionName);
+        else if (inCombatNow && debugEnabled)
+            DebugLogUntrackedCombatEvent(sourceId, sourceCharacterAddress, firstTargetId, sourceCanResolveToTrackedActor, anyTargetTracked, GetCurrentActionName());
 
         if (sourceCanResolveToTrackedActor)
         {
@@ -228,9 +248,64 @@ public sealed partial class ACT
             }
         }
 
-        if (timelineModuleEnabled)
+        if (timelineModuleEnabled && !highPerformanceMode)
             timelineService.ObserveAbility(actionId, nowUtc, sourceId);
 
+        bool TryResolveFriendlySourceOnce(out uint observedSourceActorId)
+        {
+            observedSourceActorId = 0;
+            if (triedResolveFriendlySource)
+                return false;
+
+            triedResolveFriendlySource = true;
+            return TryObserveFriendlyCombatantSource(
+                sourceActorId != 0 ? sourceActorId : NormalizeEventActorId(sourceId),
+                sourceObject,
+                out observedSourceActorId);
+        }
+
+        string GetCurrentActionName()
+            => actionName ??= GetActionName(actionId);
+
+        LogActionEffectPerfIfSlow(
+            perfStart,
+            actionId,
+            header->NumTargets,
+            sourceCanResolveToTrackedActor,
+            anyTargetTracked,
+            statsEventActive,
+            partyMonitorEventActive,
+            timelineModuleEnabled,
+            highPerformanceMode);
+
+    }
+
+    private void LogActionEffectPerfIfSlow(
+        long startTimestamp,
+        uint actionId,
+        uint targetCount,
+        bool sourceTracked,
+        bool anyTargetTracked,
+        bool statsEventActive,
+        bool partyMonitorEventActive,
+        bool timelineModuleEnabled,
+        bool highPerformanceMode)
+    {
+        if (!Configuration.EnableEnhancedLog)
+            return;
+
+        var elapsedMs = Stopwatch.GetElapsedTime(startTimestamp).TotalMilliseconds;
+        if (elapsedMs < 1d)
+            return;
+
+        var nowUtc = DateTime.UtcNow;
+        if (nowUtc - lastActionEffectPerfLogUtc < TimeSpan.FromSeconds(2))
+            return;
+
+        lastActionEffectPerfLogUtc = nowUtc;
+        LogHelper.Info(
+            "性能",
+            $"ActionEffect 慢包 {elapsedMs:0.0}ms：action=0x{actionId:X}，targets={targetCount}，sourceTracked={sourceTracked}，anyTargetTracked={anyTargetTracked}，stats={statsEventActive}，monitor={partyMonitorEventActive}，timeline={timelineModuleEnabled}，highPerf={highPerformanceMode}。");
     }
 
     private unsafe void HandlePartyMonitorAbilityOnly(

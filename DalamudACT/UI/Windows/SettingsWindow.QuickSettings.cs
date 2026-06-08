@@ -284,6 +284,17 @@ internal sealed partial class SettingsWindow
     {
         DrawQuickPanel("窗口控制", () =>
         {
+            DrawQuickHighPerformanceModeCard();
+            DrawQuickBoolRow(
+                "轻量战斗流水",
+                "只记录战斗开始/结束、死亡、头标、连线和场地特效，跳过伤害/治疗/状态等高频流水。",
+                config.CombatTimelineLightweightMode,
+                value => config.CombatTimelineLightweightMode = value);
+            DrawQuickBoolRow(
+                "统计 DoT/野火归属",
+                "关闭后可降低高特效战斗压力，但 DoT、野火等持续/延迟伤害会更不准。高性能模式会临时停用。",
+                config.EnableDotAndWildfireAttribution,
+                value => config.EnableDotAndWildfireAttribution = value);
             DrawQuickWindowControlRow(
                 "统计面板",
                 "DPS / HPS / 承伤统计",
@@ -321,6 +332,7 @@ internal sealed partial class SettingsWindow
                 config.StatusObserver.LockWindow,
                 value => config.StatusObserver.LockWindow = value);
         });
+
     }
 
     private void DrawQuickWindowControlRow(
@@ -360,6 +372,40 @@ internal sealed partial class SettingsWindow
             {
                 applyLock(locked);
                 config.Save();
+            }
+        }
+        finally
+        {
+            ImGui.EndTable();
+        }
+
+        ImGui.Separator();
+    }
+
+    private void DrawQuickHighPerformanceModeCard()
+    {
+        const ImGuiTableFlags flags = ImGuiTableFlags.SizingStretchProp | ImGuiTableFlags.NoSavedSettings;
+        if (!ImGui.BeginTable("##quick_high_performance_mode", 2, flags))
+            return;
+
+        try
+        {
+            ImGui.TableSetupColumn("text", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.TableSetupColumn("toggle", ImGuiTableColumnFlags.WidthFixed, 72f);
+            ImGui.TableNextRow();
+
+            ImGui.TableSetColumnIndex(0);
+            ImGui.TextUnformatted("高性能模式");
+            ImGui.TextDisabled("适合绝境、战场和高特效场景");
+            ImGui.TextDisabled("保留主要 DPS/HPS，可能漏记 DoT、友方 NPC 与流水细节");
+
+            ImGui.TableSetColumnIndex(1);
+            var highPerformanceMode = config.HighPerformanceMode;
+            if (ImGui.Checkbox("##quick_high_performance_mode_toggle", ref highPerformanceMode))
+            {
+                config.HighPerformanceMode = highPerformanceMode;
+                config.Save();
+                LogHelper.Info("设置", highPerformanceMode ? "已从简易设置启用高性能模式。" : "已从简易设置关闭高性能模式。");
             }
         }
         finally

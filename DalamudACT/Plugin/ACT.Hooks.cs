@@ -53,6 +53,9 @@ public sealed partial class ACT
         {
             actorControlEventHook!.Original(entityId, category, param1, param2, param3, param4, param5, param6, param7, param8, targetId, replaying);
 
+            if (ShouldSuppressCombatModuleWork || Configuration.HighPerformanceMode)
+                return;
+
             switch (category)
             {
                 // 0x1F9 = 505 = MapEffect category.

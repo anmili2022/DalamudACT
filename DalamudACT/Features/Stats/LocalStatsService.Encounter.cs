@@ -112,8 +112,9 @@ internal sealed partial class LocalStatsService
 
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
 
-            var loggedSourceName = ResolveCombatTimelineSourceName(sourceId, timeUtc);
-            var loggedTargetName = ResolveCombatTimelineTargetName(targetId, timeUtc);
+            var shouldRecordTimeline = ShouldRecordCombatTimelineKind(CombatTimelineEntryKind.Damage);
+            var loggedSourceName = shouldRecordTimeline ? ResolveCombatTimelineSourceName(sourceId, timeUtc) : string.Empty;
+            var loggedTargetName = shouldRecordTimeline ? ResolveCombatTimelineTargetName(targetId, timeUtc) : string.Empty;
             var shouldAppendTimelineEntry = false;
             var sourceIsFriendly = false;
             var targetIsFriendly = false;
@@ -121,16 +122,18 @@ internal sealed partial class LocalStatsService
             if (TryResolveCombatantSource(sourceId, timeUtc, out var source, out var resolvedSourceIsFriendly))
             {
                 currentEncounter.RecordOutgoingDamage(source, actionName, amount, critical, directHit, timeUtc);
-                loggedSourceName = source.Name;
-                shouldAppendTimelineEntry = true;
+                if (shouldRecordTimeline)
+                    loggedSourceName = source.Name;
+                shouldAppendTimelineEntry = shouldRecordTimeline;
                 sourceIsFriendly = resolvedSourceIsFriendly;
             }
 
             if (TryGetTrackedActor(targetId, out var target))
             {
                 currentEncounter.RecordIncomingDamage(target, amount, timeUtc);
-                loggedTargetName = target.Name;
-                shouldAppendTimelineEntry = true;
+                if (shouldRecordTimeline)
+                    loggedTargetName = target.Name;
+                shouldAppendTimelineEntry = shouldRecordTimeline;
                 targetIsFriendly = true;
             }
 
@@ -172,8 +175,9 @@ internal sealed partial class LocalStatsService
 
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
 
-            var loggedSourceName = ResolveCombatTimelineSourceName(sourceId, timeUtc);
-            var loggedTargetName = ResolveCombatTimelineTargetName(targetId, timeUtc);
+            var shouldRecordTimeline = ShouldRecordCombatTimelineKind(CombatTimelineEntryKind.Heal);
+            var loggedSourceName = shouldRecordTimeline ? ResolveCombatTimelineSourceName(sourceId, timeUtc) : string.Empty;
+            var loggedTargetName = shouldRecordTimeline ? ResolveCombatTimelineTargetName(targetId, timeUtc) : string.Empty;
             var shouldAppendTimelineEntry = false;
             var sourceIsFriendly = false;
             var targetIsFriendly = false;
@@ -181,16 +185,18 @@ internal sealed partial class LocalStatsService
             if (TryResolveCombatantSource(sourceId, timeUtc, out var source, out var resolvedSourceIsFriendly))
             {
                 currentEncounter.RecordOutgoingHeal(source, amount, critical, timeUtc);
-                loggedSourceName = source.Name;
-                shouldAppendTimelineEntry = true;
+                if (shouldRecordTimeline)
+                    loggedSourceName = source.Name;
+                shouldAppendTimelineEntry = shouldRecordTimeline;
                 sourceIsFriendly = resolvedSourceIsFriendly;
             }
 
             if (TryGetTrackedActor(targetId, out var target))
             {
                 currentEncounter.RecordIncomingHeal(target, amount, timeUtc);
-                loggedTargetName = target.Name;
-                shouldAppendTimelineEntry = true;
+                if (shouldRecordTimeline)
+                    loggedTargetName = target.Name;
+                shouldAppendTimelineEntry = shouldRecordTimeline;
                 targetIsFriendly = true;
             }
 
@@ -227,8 +233,9 @@ internal sealed partial class LocalStatsService
 
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
 
-            var loggedSourceName = ResolveCombatTimelineSourceName(sourceId, timeUtc);
-            var loggedTargetName = ResolveCombatTimelineTargetName(targetId, timeUtc);
+            var shouldRecordTimeline = ShouldRecordCombatTimelineKind(CombatTimelineEntryKind.Failure);
+            var loggedSourceName = shouldRecordTimeline ? ResolveCombatTimelineSourceName(sourceId, timeUtc) : string.Empty;
+            var loggedTargetName = shouldRecordTimeline ? ResolveCombatTimelineTargetName(targetId, timeUtc) : string.Empty;
             var shouldAppendTimelineEntry = false;
             var sourceIsFriendly = false;
             var targetIsFriendly = false;
@@ -236,15 +243,17 @@ internal sealed partial class LocalStatsService
             if (TryResolveCombatantSource(sourceId, timeUtc, out var source, out var resolvedSourceIsFriendly))
             {
                 currentEncounter.RecordFailedSwing(source, isMiss, timeUtc);
-                loggedSourceName = source.Name;
-                shouldAppendTimelineEntry = true;
+                if (shouldRecordTimeline)
+                    loggedSourceName = source.Name;
+                shouldAppendTimelineEntry = shouldRecordTimeline;
                 sourceIsFriendly = resolvedSourceIsFriendly;
             }
 
             if (TryGetTrackedActor(targetId, out var target))
             {
-                loggedTargetName = target.Name;
-                shouldAppendTimelineEntry = true;
+                if (shouldRecordTimeline)
+                    loggedTargetName = target.Name;
+                shouldAppendTimelineEntry = shouldRecordTimeline;
                 targetIsFriendly = true;
             }
 
@@ -276,14 +285,17 @@ internal sealed partial class LocalStatsService
             {
                 currentEncounter.RecordDeath(target, timeUtc);
                 AppendEncounterStartIfNeededLocked(wasStarted, timeUtc);
-                AppendCombatTimelineEntryLocked(
-                    timeUtc,
-                    CombatTimelineEntryKind.Death,
-                    $"{target.Name} 战斗不能。",
-                    target.Name,
-                    target.Name,
-                    true,
-                    true);
+                if (ShouldRecordCombatTimelineKind(CombatTimelineEntryKind.Death))
+                {
+                    AppendCombatTimelineEntryLocked(
+                        timeUtc,
+                        CombatTimelineEntryKind.Death,
+                        $"{target.Name} 战斗不能。",
+                        target.Name,
+                        target.Name,
+                        true,
+                        true);
+                }
             }
         }
     }
@@ -303,9 +315,11 @@ internal sealed partial class LocalStatsService
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
             PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, effectiveInCombat);
             MarkStatsPerfSegment("deaths", ref perfLast, perfParts);
-            PollCombatTimelineFriendlyStatusesLocked(nowUtc, effectiveInCombat);
+            if (!config.HighPerformanceMode && !config.CombatTimelineLightweightMode)
+                PollCombatTimelineFriendlyStatusesLocked(nowUtc, effectiveInCombat);
             MarkStatsPerfSegment("statuses", ref perfLast, perfParts);
-            PollActivePlayerDots(nowUtc, effectiveInCombat);
+            if (!config.HighPerformanceMode)
+                PollActivePlayerDots(nowUtc, effectiveInCombat);
             MarkStatsPerfSegment("dots", ref perfLast, perfParts);
             var allPartyMembersOutOfCombat = forceOutOfCombat || AreAllPartyMembersOutOfCombat(effectiveInCombat);
             MarkStatsPerfSegment("combatEndScan", ref perfLast, perfParts);
@@ -447,14 +461,17 @@ internal sealed partial class LocalStatsService
         {
             currentEncounter.ZoneName = zoneName;
             currentEncounter.RecordDeath(actor, nowUtc);
-            AppendCombatTimelineEntryLocked(
-                nowUtc,
-                CombatTimelineEntryKind.Death,
-                $"{actor.Name} 战斗不能。",
-                actor.Name,
-                actor.Name,
-                true,
-                true);
+            if (ShouldRecordCombatTimelineKind(CombatTimelineEntryKind.Death))
+            {
+                AppendCombatTimelineEntryLocked(
+                    nowUtc,
+                    CombatTimelineEntryKind.Death,
+                    $"{actor.Name} 战斗不能。",
+                    actor.Name,
+                    actor.Name,
+                    true,
+                    true);
+            }
         }
 
         partyMemberHpCache[actorId] = currentHp;

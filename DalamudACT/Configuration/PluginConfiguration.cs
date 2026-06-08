@@ -60,6 +60,9 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
     public int EncounterTimeoutSeconds = 30;
     public int HistoryPreviewSeconds = 8;
     public bool CombatTimelineRecordingEnabled = true;
+    public bool HighPerformanceMode = false;
+    public bool CombatTimelineLightweightMode = false;
+    public bool EnableDotAndWildfireAttribution = true;
     public bool CombatTimelineMapEffectEnabled = false;
     public bool CombatTimelineTargetIconEnabled = false;
     public bool CombatTimelineTetherEnabled = false;

@@ -162,7 +162,7 @@ public sealed partial class ACT
             var logKind = ChatReflectionAccessor.GetLogKind(message);
             if (IsNpcYellLikeChatKind(logKind))
             {
-                if (IsTimelineModuleEnabled)
+                if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
                     timelineService.ObserveNpcYell(text, DateTime.UtcNow);
                 return;
             }
@@ -172,7 +172,7 @@ public sealed partial class ACT
 
             var nowUtc = DateTime.UtcNow;
             ObserveBattleCountdownMessage(text, nowUtc);
-            if (IsTimelineModuleEnabled)
+            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
             {
                 LogRawPacketsNearSystemMessage("handleable-chat", text);
                 timelineService.ObserveSystemLogMessage(text, nowUtc);
@@ -194,7 +194,7 @@ public sealed partial class ACT
 
             var nowUtc = DateTime.UtcNow;
             ObserveBattleCountdownMessage(text, nowUtc);
-            if (IsTimelineModuleEnabled)
+            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
             {
                 LogRawPacketsNearSystemMessage("log-message", text);
                 timelineService.ObserveSystemLogMessage(text, nowUtc);
@@ -219,7 +219,7 @@ public sealed partial class ACT
 
             if (IsNpcYellLikeChatKind(type.ToString()))
             {
-                if (IsTimelineModuleEnabled)
+                if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
                     timelineService.ObserveNpcYell(text, DateTime.UtcNow);
                 return;
             }
@@ -229,7 +229,7 @@ public sealed partial class ACT
 
             var nowUtc = DateTime.UtcNow;
             ObserveBattleCountdownMessage(text, nowUtc);
-            if (IsTimelineModuleEnabled)
+            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
             {
                 LogRawPacketsNearSystemMessage("system-chat", text);
                 timelineService.ObserveSystemLogMessage(text, nowUtc);

@@ -115,7 +115,7 @@ internal sealed partial class LocalStatsService
     }
 
     private bool ShouldIgnoreFriendlyNpcStatistics()
-        => CountCurrentPartyPlayers() >= PartyPlaceholderCount;
+        => config.HighPerformanceMode || CountCurrentPartyPlayers() >= PartyPlaceholderCount;
 
     private int CountCurrentPartyPlayers()
     {

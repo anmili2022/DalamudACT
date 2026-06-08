@@ -47,6 +47,7 @@ public sealed partial class ACT : IDalamudPlugin
     private DateTime lastTimelineUpdateUtc;
     private DateTime lastRawPacketHookStateUpdateUtc;
     private DateTime lastFrameworkPerfLogUtc;
+    private DateTime lastActionEffectPerfLogUtc;
     private int observedPartyWipeFinalizedVersion;
     private uint cachedTerritoryId;
     private string cachedZoneName = "未知区域";
@@ -72,6 +73,8 @@ public sealed partial class ACT : IDalamudPlugin
     private bool IsTimelineModuleEnabled => Configuration.ShowTimelineWindow;
 
     private bool IsStatusObserverModuleEnabled => Configuration.StatusObserver.ShowWindow;
+
+    private bool ShouldSuppressCombatModuleWork => DalamudApi.ClientState.IsPvP;
 
     public ACT(IDalamudPluginInterface pluginInterface)
     {
@@ -129,9 +132,10 @@ public sealed partial class ACT : IDalamudPlugin
             MarkFrameworkPerfSegment("zone", ref perfLast, perfParts);
             var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
             var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
+            var suppressCombatModuleWork = ShouldSuppressCombatModuleWork;
             var replayStatsActive = Configuration.ReplayStatsMode && inDutyRecorderPlayback;
-            var statsActive = IsStatsModuleEnabled && (inCombat || replayStatsActive);
-            var timelineActive = IsTimelineModuleEnabled && (inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter);
+            var statsActive = !suppressCombatModuleWork && IsStatsModuleEnabled && (inCombat || replayStatsActive);
+            var timelineActive = !suppressCombatModuleWork && IsTimelineModuleEnabled && (inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter);
             var nowUtc = DateTime.UtcNow;
             var forceReplayOutOfCombat = replayStatsActive && !inCombat && statsService.IsEncounterIdle(nowUtc, TimeSpan.FromSeconds(60));
             var statsUpdateIntervalMs = Configuration.GetEffectiveStatsUpdateIntervalMs();
@@ -144,7 +148,7 @@ public sealed partial class ACT : IDalamudPlugin
             if (shouldUpdateStats)
             {
                 lastStatsUpdateUtc = nowUtc;
-                if (statsActive || IsStatsModuleEnabled && !inDutyRecorderPlayback && statsService.HasActiveEncounter)
+                if (statsActive || !suppressCombatModuleWork && IsStatsModuleEnabled && !inDutyRecorderPlayback && statsService.HasActiveEncounter)
                 {
                     statsService.WarmOwnerCacheFromObjectTable();
                     statsService.Update(zoneName, statsActive, forceReplayOutOfCombat);
@@ -169,7 +173,7 @@ public sealed partial class ACT : IDalamudPlugin
                 timelineService.PollStartsUsingCasts(nowUtc, false, Array.Empty<IBattleChara>());
             }
 
-            if (IsPartyMonitorModuleEnabled)
+            if (!suppressCombatModuleWork && IsPartyMonitorModuleEnabled)
             {
                 monitorService.Update();
                 MarkFrameworkPerfSegment("monitor", ref perfLast, perfParts);

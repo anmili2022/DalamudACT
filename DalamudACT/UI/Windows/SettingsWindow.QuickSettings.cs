@@ -12,6 +12,7 @@ internal sealed partial class SettingsWindow
     private enum QuickSettingsPage
     {
         Basic,
+        Performance,
         Appearance,
         Timeline,
         Tts,
@@ -74,6 +75,7 @@ internal sealed partial class SettingsWindow
             try
             {
                 DrawQuickNavItem("基础", QuickSettingsPage.Basic);
+                DrawQuickNavItem("性能", QuickSettingsPage.Performance);
                 DrawQuickNavItem("外观", QuickSettingsPage.Appearance);
                 DrawQuickNavItem("时间轴", QuickSettingsPage.Timeline);
                 DrawQuickNavItem("TTS", QuickSettingsPage.Tts);
@@ -187,6 +189,12 @@ internal sealed partial class SettingsWindow
                 drawList.AddRectFilled(center - new Vector2(8f, 8f), center + new Vector2(8f, 8f), fill, 4f);
                 drawList.AddRect(center - new Vector2(8f, 8f), center + new Vector2(8f, 8f), color, 4f, ImDrawFlags.None, 1.5f);
                 break;
+            case QuickSettingsPage.Performance:
+                drawList.AddLine(center + new Vector2(-8f, 6f), center + new Vector2(0f, -6f), color, 1.6f);
+                drawList.AddLine(center + new Vector2(0f, -6f), center + new Vector2(8f, 6f), color, 1.6f);
+                drawList.AddCircleFilled(center + new Vector2(0f, -6f), 2.2f, color, 12);
+                drawList.AddRect(center - new Vector2(8f, 8f), center + new Vector2(8f, 8f), fill, 4f, ImDrawFlags.None, 1.2f);
+                break;
             case QuickSettingsPage.Appearance:
                 drawList.AddCircleFilled(center, 8f, fill, 24);
                 drawList.AddCircle(center, 8f, color, 24, 1.5f);
@@ -219,6 +227,9 @@ internal sealed partial class SettingsWindow
         {
             case QuickSettingsPage.Basic:
                 DrawQuickBasicPage();
+                break;
+            case QuickSettingsPage.Performance:
+                DrawQuickPerformancePage();
                 break;
             case QuickSettingsPage.Appearance:
                 DrawQuickAppearancePage();
@@ -284,17 +295,6 @@ internal sealed partial class SettingsWindow
     {
         DrawQuickPanel("窗口控制", () =>
         {
-            DrawQuickHighPerformanceModeCard();
-            DrawQuickBoolRow(
-                "轻量战斗流水",
-                "只记录战斗开始/结束、死亡、头标、连线和场地特效，跳过伤害/治疗/状态等高频流水。",
-                config.CombatTimelineLightweightMode,
-                value => config.CombatTimelineLightweightMode = value);
-            DrawQuickBoolRow(
-                "统计 DoT/野火归属",
-                "关闭后可降低高特效战斗压力，但 DoT、野火等持续/延迟伤害会更不准。高性能模式会临时停用。",
-                config.EnableDotAndWildfireAttribution,
-                value => config.EnableDotAndWildfireAttribution = value);
             DrawQuickWindowControlRow(
                 "统计面板",
                 "DPS / HPS / 承伤统计",
@@ -333,6 +333,25 @@ internal sealed partial class SettingsWindow
                 value => config.StatusObserver.LockWindow = value);
         });
 
+    }
+
+    private void DrawQuickPerformancePage()
+    {
+        DrawQuickPanel("性能", () =>
+        {
+            DrawQuickHighPerformanceModeCard();
+            DrawQuickBoolRow(
+                "轻量战斗流水",
+                "只记录战斗开始/结束、死亡、头标、连线和场地特效。",
+                config.CombatTimelineLightweightMode,
+                value => config.CombatTimelineLightweightMode = value);
+            DrawQuickBoolRow(
+                "统计 DoT/野火归属",
+                "关闭后降低压力，但 DoT、野火等持续/延迟伤害会更不准。",
+                config.EnableDotAndWildfireAttribution,
+                value => config.EnableDotAndWildfireAttribution = value);
+            ImGui.TextDisabled("高性能模式会临时停用 DoT/野火归属和详细战斗流水。");
+        });
     }
 
     private void DrawQuickWindowControlRow(

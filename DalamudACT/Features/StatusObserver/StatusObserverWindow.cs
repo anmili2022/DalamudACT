@@ -24,6 +24,7 @@ internal sealed class StatusObserverWindow : Window
     private static readonly Vector4 TitleColor = new(0.21f, 0.85f, 1f, 1f);
     private static readonly Vector4 SectionTitleColor = new(0.96f, 0.98f, 1f, 1f);
     private static readonly Vector4 FavoriteColor = new(1f, 0.88f, 0.25f, 1f);
+    private static readonly Vector4 PausedBadgeColor = new(0.76f, 0.84f, 0.92f, 0.78f);
     private readonly PluginConfiguration config;
     private readonly StatusObserverService service;
     private readonly Action openSettings;
@@ -63,9 +64,6 @@ internal sealed class StatusObserverWindow : Window
 
         if (collapsed)
             return;
-
-        if (service.IsPausedOutOfCombat)
-            ImGui.TextDisabled("非战斗中，已暂停刷新。显示最后一次缓存。");
 
         if (config.StatusObserver.ShowSelfStatuses)
             DrawStatusSection("自身状态", service.GetSelfStatuses(), "self");
@@ -375,6 +373,13 @@ internal sealed class StatusObserverWindow : Window
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip(collapsed ? "左键展开状态监控" : "左键折叠状态监控");
 
+        var lineCursor = ImGui.GetCursorScreenPos();
+        if (service.IsPausedOutOfCombat)
+        {
+            DrawPausedBadgeInline();
+            ImGui.SetCursorScreenPos(lineCursor);
+        }
+
         var y = ImGui.GetCursorScreenPos().Y - 2f;
         var minX = ImGui.GetCursorScreenPos().X;
         var maxX = ImGui.GetWindowPos().X + ImGui.GetWindowWidth() - PanelPaddingX;
@@ -398,5 +403,24 @@ internal sealed class StatusObserverWindow : Window
         if (bold)
             drawList.AddText(pos + new Vector2(0.6f, 0f), textColor, text);
         ImGui.Dummy(ImGui.CalcTextSize(text));
+    }
+
+    private static void DrawPausedBadgeInline()
+    {
+        var textSize = ImGui.CalcTextSize("暂停");
+        var size = textSize + new Vector2(10f, 4f);
+        var right = ImGui.GetWindowPos().X + ImGui.GetWindowWidth() - PanelPaddingX;
+        var pos = new Vector2(right - size.X, ImGui.GetItemRectMin().Y + 1f);
+        var drawList = ImGui.GetWindowDrawList();
+        var bg = ImGui.ColorConvertFloat4ToU32(new Vector4(0.18f, 0.22f, 0.27f, 0.70f));
+        var border = ImGui.ColorConvertFloat4ToU32(new Vector4(PausedBadgeColor.X, PausedBadgeColor.Y, PausedBadgeColor.Z, 0.35f));
+        var text = ImGui.ColorConvertFloat4ToU32(PausedBadgeColor);
+        drawList.AddRectFilled(pos, pos + size, bg, 4f);
+        drawList.AddRect(pos, pos + size, border, 4f);
+        drawList.AddText(pos + new Vector2(5f, 1f), text, "暂停");
+        ImGui.SetCursorScreenPos(pos);
+        ImGui.InvisibleButton("##status_observer_paused_badge", size);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("非战斗中，已暂停刷新。显示最后一次缓存。");
     }
 }

@@ -37,6 +37,7 @@ internal sealed class PartyMonitorWindow : Window
     private static readonly Vector4 ActiveBuffInnerColor = new(1f, 0.54f, 0.08f, 1f);
     private static readonly Vector4 ReadyColor = new(0.74f, 1f, 0.68f, 1f);
     private static readonly Vector4 CooldownColor = new(1f, 0.55f, 0.20f, 1f);
+    private static readonly Vector4 PausedBadgeColor = new(0.76f, 0.84f, 0.92f, 0.78f);
 
     private readonly PluginConfiguration config;
     private readonly PartyMonitorService monitorService;
@@ -81,10 +82,7 @@ internal sealed class PartyMonitorWindow : Window
             return;
         }
 
-        var members = monitorService.GetMemberStates();
-        if (monitorService.IsPausedOutOfCombat)
-            ImGui.TextDisabled("非战斗中，已暂停刷新。显示最后一次缓存。");
-
+        var members = monitorService.GetDisplayMemberStates(DateTime.UtcNow);
         if (members.Count == 0)
         {
             ImGui.TextDisabled("当前没有队伍成员。");
@@ -142,7 +140,7 @@ internal sealed class PartyMonitorWindow : Window
 
     private void DrawCollapsedHeader()
     {
-        if (DrawGroupHeader("技能监控", MitigationColor, true))
+        if (DrawGroupHeader("技能监控", MitigationColor, true, showPausedBadge: monitorService.IsPausedOutOfCombat))
             ToggleCollapsed();
     }
 
@@ -158,7 +156,7 @@ internal sealed class PartyMonitorWindow : Window
         if (config.PartyMonitor.MonitorSkills)
         {
             if (config.PartyMonitor.MergeSkillGroups)
-                DrawSkillGroup("技能监控", BuildMergedRows(members, config.PartyMonitor), MitigationColor);
+                DrawSkillGroup("技能监控", BuildMergedRows(members, config.PartyMonitor), MitigationColor, showPausedBadge: monitorService.IsPausedOutOfCombat);
             else
             {
                 DrawSkillGroup(null, raidBuffRows, RaidBuffColor);
@@ -167,6 +165,23 @@ internal sealed class PartyMonitorWindow : Window
         }
 
         DrawFoodOverlay(members);
+    }
+
+    private static void DrawPausedBadge()
+    {
+        var pos = ImGui.GetCursorScreenPos();
+        var textSize = ImGui.CalcTextSize("暂停");
+        var size = textSize + new Vector2(10f, 4f);
+        var drawList = ImGui.GetWindowDrawList();
+        var bg = ImGui.ColorConvertFloat4ToU32(new Vector4(0.18f, 0.22f, 0.27f, 0.70f));
+        var border = ImGui.ColorConvertFloat4ToU32(new Vector4(PausedBadgeColor.X, PausedBadgeColor.Y, PausedBadgeColor.Z, 0.35f));
+        var text = ImGui.ColorConvertFloat4ToU32(PausedBadgeColor);
+        drawList.AddRectFilled(pos, pos + size, bg, 4f);
+        drawList.AddRect(pos, pos + size, border, 4f);
+        drawList.AddText(pos + new Vector2(5f, 1f), text, "暂停");
+        ImGui.Dummy(size + new Vector2(0f, 3f));
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("非战斗中，已暂停刷新。显示最后一次缓存。");
     }
 
     private static List<MemberSkillRow> BuildRows(
@@ -214,7 +229,7 @@ internal sealed class PartyMonitorWindow : Window
            || state.IsActive
            || state.RemainingCooldown <= CooldownRevealSeconds;
 
-    private void DrawSkillGroup(string? title, IReadOnlyList<MemberSkillRow> rows, Vector4 color)
+    private void DrawSkillGroup(string? title, IReadOnlyList<MemberSkillRow> rows, Vector4 color, bool showPausedBadge = false)
     {
         if (rows.Count == 0)
             return;
@@ -222,7 +237,7 @@ internal sealed class PartyMonitorWindow : Window
         if (!string.IsNullOrWhiteSpace(title))
         {
             var count = rows.Sum(r => r.Skills.Count(ShouldShowSkill));
-            if (DrawGroupHeader($"{title} ({count})", color, title == "技能监控"))
+            if (DrawGroupHeader($"{title} ({count})", color, title == "技能监控", showPausedBadge))
                 ToggleCollapsed();
         }
 
@@ -231,11 +246,19 @@ internal sealed class PartyMonitorWindow : Window
         ImGui.Dummy(new Vector2(0f, 6f));
     }
 
-    private bool DrawGroupHeader(string title, Vector4 color, bool collapsible = false)
+    private bool DrawGroupHeader(string title, Vector4 color, bool collapsible = false, bool showPausedBadge = false)
     {
         DrawShadowText(title, color, true);
         var clicked = collapsible && ImGui.IsItemClicked(ImGuiMouseButton.Left);
-        if (collapsible && ImGui.IsItemHovered())
+        var titleHovered = collapsible && ImGui.IsItemHovered();
+        var afterTitleCursor = ImGui.GetCursorScreenPos();
+        if (showPausedBadge)
+        {
+            DrawPausedBadgeRightAligned("非战斗中，已暂停刷新。显示最后一次缓存。");
+            ImGui.SetCursorScreenPos(afterTitleCursor);
+        }
+
+        if (titleHovered)
             ImGui.SetTooltip(collapsed ? "左键展开技能监控" : "左键折叠技能监控");
         var y = ImGui.GetCursorScreenPos().Y - 2f;
         var minX = ImGui.GetCursorScreenPos().X;
@@ -247,6 +270,28 @@ internal sealed class PartyMonitorWindow : Window
             1f);
         ImGui.Dummy(new Vector2(0f, 3f));
         return clicked;
+    }
+
+    private static void DrawPausedBadgeRightAligned(string tooltip)
+    {
+        const string text = "暂停";
+        var textSize = ImGui.CalcTextSize(text);
+        var size = textSize + new Vector2(10f, 4f);
+        var right = ImGui.GetWindowPos().X + ImGui.GetWindowWidth() - PanelPaddingX;
+        var pos = new Vector2(right - size.X, ImGui.GetItemRectMin().Y + 1f);
+        var drawList = ImGui.GetWindowDrawList();
+        var bg = ImGui.ColorConvertFloat4ToU32(new Vector4(0.18f, 0.22f, 0.27f, 0.70f));
+        var border = ImGui.ColorConvertFloat4ToU32(new Vector4(0.76f, 0.84f, 0.92f, 0.35f));
+        var textColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.76f, 0.84f, 0.92f, 0.78f));
+        drawList.AddRectFilled(pos, pos + size, bg, 4f);
+        drawList.AddRect(pos, pos + size, border, 4f);
+        drawList.AddText(pos + new Vector2(5f, 1f), textColor, text);
+        var cursor = ImGui.GetCursorScreenPos();
+        ImGui.SetCursorScreenPos(pos);
+        ImGui.InvisibleButton("##party_monitor_paused_badge", size);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(tooltip);
+        ImGui.SetCursorScreenPos(cursor);
     }
 
     private void DrawSkillRow(

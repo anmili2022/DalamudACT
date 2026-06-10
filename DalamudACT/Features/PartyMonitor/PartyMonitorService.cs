@@ -48,14 +48,34 @@ internal sealed class PartyMonitorService
         public readonly float RemainingActiveDuration;
         public readonly bool IsReady;
         public readonly bool IsActive;
+        public readonly DateTime? LastUseUtc;
 
         public SkillCooldownState(PartySkillEntry skill, float remainingCooldown, float remainingActiveDuration, bool isReady, bool isActive)
+            : this(skill, remainingCooldown, remainingActiveDuration, isReady, isActive, null)
+        {
+        }
+
+        public SkillCooldownState(PartySkillEntry skill, float remainingCooldown, float remainingActiveDuration, bool isReady, bool isActive, DateTime? lastUseUtc)
         {
             Skill = skill;
             RemainingCooldown = remainingCooldown;
             RemainingActiveDuration = remainingActiveDuration;
             IsReady = isReady;
             IsActive = isActive;
+            LastUseUtc = lastUseUtc;
+        }
+
+        public SkillCooldownState WithDynamicTime(DateTime nowUtc)
+        {
+            if (LastUseUtc is not DateTime useTime)
+                return this;
+
+            var elapsedSeconds = (nowUtc - useTime).TotalSeconds;
+            var isActive = Skill.ActiveDurationSeconds > 0f && elapsedSeconds < Skill.ActiveDurationSeconds;
+            var isReady = elapsedSeconds >= Skill.CooldownSeconds;
+            var remainingActive = isActive ? Math.Max(0f, Skill.ActiveDurationSeconds - (float)elapsedSeconds) : 0f;
+            var remainingCooldown = isReady ? 0f : Math.Max(0f, (float)(Skill.CooldownSeconds - elapsedSeconds));
+            return new SkillCooldownState(Skill, remainingCooldown, remainingActive, isReady, isActive, LastUseUtc);
         }
     }
 
@@ -86,6 +106,28 @@ internal sealed class PartyMonitorService
 
         lock (gate)
             return cachedMemberStates;
+    }
+
+    public IReadOnlyList<PartyMemberState> GetDisplayMemberStates(DateTime nowUtc)
+    {
+        var states = GetMemberStates();
+        if (states.Count == 0)
+            return states;
+
+        var result = new List<PartyMemberState>(states.Count);
+        foreach (var state in states)
+        {
+            result.Add(new PartyMemberState(
+                state.ActorId,
+                state.Name,
+                state.JobId,
+                state.HasFood,
+                state.FoodRemainingSeconds,
+                BuildDisplaySkillStates(state.MitigationSkills, nowUtc),
+                BuildDisplaySkillStates(state.RaidBuffSkills, nowUtc)));
+        }
+
+        return result;
     }
 
     public void Update()
@@ -150,6 +192,20 @@ internal sealed class PartyMonitorService
 
             lastRebuildUtc = DateTime.MinValue;
         }
+
+        RebuildMemberStates(nowUtc);
+    }
+
+    public void RefreshOnce(DateTime nowUtc)
+    {
+        if (!config.PartyMonitor.EnablePartyMonitor || !config.PartyMonitor.ShowPartyMonitorWindow)
+            return;
+
+        if (config.PartyMonitor.MonitorFood)
+            PollFoodBuffs(nowUtc);
+
+        lock (gate)
+            lastRebuildUtc = nowUtc;
 
         RebuildMemberStates(nowUtc);
     }
@@ -437,7 +493,8 @@ internal sealed class PartyMonitorService
                 isReady ? 0f : Math.Max(0f, (float)(skill.CooldownSeconds - elapsedSeconds)),
                 remainingActive,
                 isReady,
-                isActive));
+                isActive,
+                lastUseUtc));
         }
 
         return result;
@@ -462,6 +519,17 @@ internal sealed class PartyMonitorService
 
     private static long CombineKey(uint actorId, uint actionId)
         => ((long)actorId << 32) | actionId;
+
+    private static IReadOnlyList<SkillCooldownState> BuildDisplaySkillStates(IReadOnlyList<SkillCooldownState> states, DateTime nowUtc)
+    {
+        if (states.Count == 0)
+            return states;
+
+        var result = new List<SkillCooldownState>(states.Count);
+        foreach (var state in states)
+            result.Add(state.WithDynamicTime(nowUtc));
+        return result;
+    }
 
     private PartySkillEntry? FindSkillWithCustom(uint actionId)
     {

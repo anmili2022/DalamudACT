@@ -55,6 +55,8 @@ public sealed partial class ACT : IDalamudPlugin
     private string lastRawPacketCorrelationText = string.Empty;
     private DateTime lastRawPacketCorrelationAtUtc = DateTime.MinValue;
     private DateTime lastBattleCountdownFiveSecondsUtc = DateTime.MinValue;
+    private RuntimeAreaKind lastRuntimeAreaKind = RuntimeAreaKind.Unknown;
+    private bool hasRuntimeAreaKindSnapshot;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
     private Hook<ActorControlDelegate>? actorControlEventHook;
@@ -128,7 +130,8 @@ public sealed partial class ACT : IDalamudPlugin
             _ = framework;
             var territoryId = DalamudApi.GetTerritoryTypeId();
             var zoneName = GetPlaceName(territoryId);
-            Configuration.CurrentAreaKind = ResolveRuntimeAreaKind(territoryId);
+            var runtimeAreaKind = ResolveRuntimeAreaKind(territoryId);
+            Configuration.CurrentAreaKind = runtimeAreaKind;
             MarkFrameworkPerfSegment("zone", ref perfLast, perfParts);
             var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
             var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
@@ -144,6 +147,7 @@ public sealed partial class ACT : IDalamudPlugin
             var timelineUpdateInterval = TimeSpan.FromMilliseconds(timelineUpdateIntervalMs);
             var shouldUpdateTimeline = nowUtc - lastTimelineUpdateUtc >= timelineUpdateInterval;
             var ranHeavyWork = false;
+            RefreshPartyMonitorAfterLeavingDuty(runtimeAreaKind, nowUtc);
 
             if (shouldUpdateStats)
             {
@@ -219,6 +223,23 @@ public sealed partial class ACT : IDalamudPlugin
 
         monitorService.ResetSkillCooldowns(nowUtc);
         LogHelper.Info("队友监控", "检测到团灭战斗结算，已重置队友技能冷却。");
+    }
+
+    private void RefreshPartyMonitorAfterLeavingDuty(RuntimeAreaKind runtimeAreaKind, DateTime nowUtc)
+    {
+        var previousAreaKind = lastRuntimeAreaKind;
+        var hadSnapshot = hasRuntimeAreaKindSnapshot;
+        lastRuntimeAreaKind = runtimeAreaKind;
+        hasRuntimeAreaKindSnapshot = true;
+
+        if (!hadSnapshot || previousAreaKind != RuntimeAreaKind.Duty || runtimeAreaKind == RuntimeAreaKind.Duty)
+            return;
+
+        if (!IsPartyMonitorModuleEnabled || ShouldSuppressCombatModuleWork)
+            return;
+
+        monitorService.RefreshOnce(nowUtc);
+        LogHelper.Debug("队友监控", "检测到从副本返回非副本区域，已刷新一次技能监控缓存。");
     }
 
     private void MarkFrameworkPerfSegment(string name, ref long lastTimestamp, List<string> parts)

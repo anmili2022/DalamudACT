@@ -1,5 +1,219 @@
 # SESSION HANDOFF
 
+## 2026-06-11 0.15.2.69 非副本低负载与时间轴收口发布记录
+
+### 当前基线
+
+- 工作目录：`E:\git\DalamudACT`
+- 当前分支：`main`
+- 最新正式发布：`0.15.2.69`
+- Release URL：`https://github.com/anmili2022/DalamudACT/releases/tag/0.15.2.69`
+- Release commit：`16902affe0e79e86ccd8b1b5f0df51495b5ded3d`
+- Release tag：`0.15.2.69`
+- Release tag 指向 commit：`16902affe0e79e86ccd8b1b5f0df51495b5ded3d`
+- Release asset：`DalamudACT.zip`
+- Asset size：`642548` bytes
+- Asset SHA256：`844a98b182a01cf1a632dfb78964776998bc988170bf1e651ead8c02b71e0f24`
+- GitHub Actions：
+  - `.NET Build` 成功，run id：`27352886998`
+  - `Create Release` 成功，run id：`27352897156`
+- Release 正文已通过 GitHub API 复核：
+  - `{{VERSION}}` 已渲染为 `0.15.2.69`
+  - 中文正文正常，包含“发布说明 / 非副本 / 奥克塞西亚”等关键字
+- 订阅源仓库 `E:\git\MyDalamudRepo` 已同步并推送：
+  - commit：`280292df41255aded4a56c96c7671a176e1da0d0`
+  - 远端 raw 已确认 `DalamudACT` 为 `0.15.2.69`
+  - 下载链接：`https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.69/DalamudACT.zip`
+
+### 本轮背景
+
+用户反馈群友打开插件后帧数不稳定，在 `25~40` 之间来回跳，只开了 `DPS统计` 和 `时间轴` 两个窗口。问题从 `0.15.2.67` 左右开始被注意到，后续确认群友所在地图是 `TerritoryType 1319`。
+
+排查结论：
+
+- `1319` 是 `奥克塞西亚行星 / Auxesia` 相关区域。
+- 该区域 `ContentFinderCondition = 0`，不是副本。
+- 当前运行时区域分类会落到 `RuntimeAreaKind.Field`，不是 `Duty`。
+- 用户明确要求：野外应该和主城一样是低负载状态，并且不同步时间轴；时间轴应该只在副本里使用。
+
+因此本次 `0.15.2.69` 的核心目标是：
+
+1. 让野外 / 特殊区域和主城 / 住宅区一样低负载。
+2. 时间轴只在副本区域启用。
+3. 非副本区域主动清理时间轴状态，避免旧副本时间轴残留。
+4. 继续保留 `0.15.2.68` 的副本内高压保护，避免绝本卡顿回归。
+
+### 已发布代码改动
+
+#### 区域低负载策略
+
+- 修改 `DalamudACT/Configuration/PluginConfiguration.cs`
+- `RuntimeAreaKind.Field` 和 `RuntimeAreaKind.Special` 现在使用和 `City / Housing` 相同的低负载刷新策略。
+- 时间轴刷新策略也对 `Field / Special` 使用低负载预设。
+
+#### 时间轴只在副本区域运行
+
+- 修改 `DalamudACT/Plugin/ACT.cs`
+- 新增当前区域时间轴启用判断：
+  - `IsTimelineModuleEnabledInCurrentArea`
+  - `IsTimelineRuntimeAreaEnabled(RuntimeAreaKind runtimeAreaKind)`
+- 现在只有 `RuntimeAreaKind.Duty` 允许时间轴运行。
+- 非副本区域会调用 `timelineService.DisableOutsideDuty(territoryId, zoneName)`。
+
+#### 非副本时间轴清理入口
+
+- 修改 `DalamudACT/Features/Timeline/TimelineService.cs`
+- 新增 `DisableOutsideDuty(uint zoneId, string zoneName)`。
+- 用于清理当前时间轴状态、可见条目缓存、TTS 去重状态、StartsUsing 观测状态和同步相关残留。
+- 非副本状态文本会显示类似：
+  - `非副本区域不启用时间轴：xxx (territoryId)`
+
+#### 时间轴窗口显示限制
+
+- 修改 `DalamudACT/UI/PluginUI.cs`
+- `SyncTimelineVisibility()` 现在要求当前区域必须是 `RuntimeAreaKind.Duty`。
+- 因此野外、主城、住宅区和特殊区域不会继续显示时间轴窗口。
+
+#### 时间轴同步入口收口
+
+以下文件把时间轴同步入口从 `IsTimelineModuleEnabled` 改为 `IsTimelineModuleEnabledInCurrentArea`：
+
+- `DalamudACT/Plugin/ACT.ActionEffect.cs`
+- `DalamudACT/Plugin/ACT.Chat.cs`
+- `DalamudACT/Plugin/ACT.Hooks.cs`
+
+影响入口：
+
+- Ability / ActionEffect 时间轴同步
+- SystemLogMessage 同步
+- NpcYell 同步
+- MapEffect 同步
+
+注意：本次没有重新打开 `0.15.2.68` 中关闭的副本内高频 `Ability / StartsUsing` 重型同步路径。
+
+#### 前台 UI 性能补丁
+
+本次一并发布前面已经完成的前台 UI 缓存优化：
+
+- `DalamudACT/UI/Windows/TimelineWindow.cs`
+  - 时间轴行数据短缓存。
+  - 倒计时、文本宽度和截断机制名进缓存。
+  - 减少每帧 LINQ、`ToList`、`CalcTextSize`、`TruncateText` 和描边绘制压力。
+- `DalamudACT/UI/Panels/StatsPanel.DpsCache.cs`
+  - 新增 DPS 面板战斗快照级排序 / 汇总缓存。
+- `DalamudACT/UI/Panels/StatsPanel.cs`
+- `DalamudACT/UI/Panels/StatsPanel.Minimal.cs`
+- `DalamudACT/UI/Panels/StatsPanel.MetricTable.cs`
+  - 复用 DPS 排序结果、总 DPS、总伤害、死亡数和汇总行插入位置。
+  - 减少每帧 LINQ 排序、`ParseMetric`、`ToList`、`Sum/Max` 枚举。
+
+#### 编码检查脚本
+
+- 修改 `tools/Check-TextEncoding.ps1`
+- git 命令增加 `-c core.quotepath=false`。
+- 原因：当前存在中文未跟踪文件名，旧脚本读取 git 输出时可能因为转义路径导致 `GetFullPath` 报 `Illegal characters in path`。
+
+### 已更新版本与发布元数据
+
+以下文件已更新到 `0.15.2.69`：
+
+- `DalamudACT/DalamudACT.csproj`
+- `DalamudACT/DalamudACT.json`
+- `Data/DalamudACT.json`
+- `repo.json`
+- `md/CHANGELOG.md`
+- `md/RELEASE-NOTES.md`
+
+`repo.json` 下载链接已指向：
+
+```text
+https://github.com/anmili2022/DalamudACT/releases/download/0.15.2.69/DalamudACT.zip
+```
+
+### 已验证
+
+本地验证：
+
+```powershell
+dotnet build --no-restore
+dotnet build .\DalamudACT\DalamudACT.csproj --configuration Release --no-restore -p:Version=0.15.2.69 -p:FileVersion=0.15.2.69 -p:AssemblyVersion=0.15.2.69
+powershell -ExecutionPolicy Bypass -File tools\Check-TextEncoding.ps1 -All
+git diff --check
+```
+
+结果：
+
+- 构建通过：`0` 警告，`0` 错误。
+- 编码检查通过：`Text encoding check passed: all repository text files, checked 264 files.`
+- 空白检查通过。
+- 本地 `output\DalamudACT.dll` 版本为 `0.15.2.69`。
+
+发布包验证：
+
+- Release 非 draft。
+- Release 非 prerelease。
+- `DalamudACT.zip` 已上传。
+- GitHub API digest 与本地下载 SHA256 一致。
+- 发布包中已确认包含：
+  - `DalamudACT.dll`
+  - `DalamudACT.json`
+  - `DalamudACT.deps.json`
+  - `Timeline/Data/timeline-index.json`
+- 解压后的 `DalamudACT.dll` 版本为 `0.15.2.69`。
+
+订阅源验证：
+
+- `E:\git\MyDalamudRepo\pluginmaster.json` 已更新到 `0.15.2.69`。
+- 已推送 commit `280292df41255aded4a56c96c7671a176e1da0d0`。
+- 远端 raw 已确认 `DalamudACT` 版本和下载链接均指向 `0.15.2.69`。
+
+### 发布过程中注意事项
+
+- 第一次 `git push origin main` 时本机代理 `127.0.0.1:7890` 未及时监听，报错：
+
+```text
+Failed to connect to 127.0.0.1 port 7890
+```
+
+- 后续确认 `Clash Verge / verge-mihomo` 已监听 `127.0.0.1:7890`，重新推送成功。
+- 在 Windows PowerShell 管道中直接查看 `gh release view` / `curl.exe` 输出时，中文可能显示为问号，这是本地管道编码显示问题；本次已用 Python + GitHub API 读取 Release 正文并确认远端正文中文正常。
+
+### 当前工作区状态
+
+发布完成后，`DalamudACT` 主仓库只保留以下未跟踪现场文件，未提交也未删除：
+
+```text
+1.txt
+tools/CactbotTimelineExtractor/test_output.txt
+tools/CactbotTimelineExtractor/test_output2.txt
+tools/时间轴预览工具.rar
+打工计时器.html
+```
+
+`MyDalamudRepo` 在订阅源提交并推送后为干净工作区。
+
+### 后续建议
+
+1. 让反馈用户更新到 `0.15.2.69`，优先在 `TerritoryType 1319` 复测只开 `DPS统计 + 时间轴` 两个窗口时的帧率。
+2. 复测主城、住宅区、野外、特殊区域：
+   - 应保持低负载；
+   - 不显示、不加载、不同步时间轴；
+   - 不残留上一场副本时间轴。
+3. 复测副本：
+   - 时间轴应正常加载和显示；
+   - DPS / HPS / 承伤基础统计应正常刷新；
+   - `0.15.2.68` 的高压保护不应回退。
+4. 如果某个实际副本被误判为非副本，记录 `TerritoryId`、区域名和内容类型，后续补充区域判定。
+
+### 禁止事项
+
+- 不要重打或移动 tag `0.15.2.69`。
+- 不要重打或移动 tag `0.15.2.68`。
+- 不要把副本内高频 `Ability / StartsUsing` 重型同步保护直接回退。
+- 不要把野外 / 特殊区域改回高负载或时间轴同步状态。
+- 不要提交或删除 `1.txt` 和其它未跟踪现场文件。
+- 不要执行 `git reset --hard` 或 `git checkout -- .` 清理现场。
+
 ## 2026-06-11 0.15.2.68 紧急性能发布收工记录
 
 ### 当前基线

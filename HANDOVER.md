@@ -1,5 +1,18 @@
 # DalamudACT 维护交接
 
+## 2026-06-11 收工快照
+
+最新交接详见：[`md/SESSION-HANDOFF.md`](md/SESSION-HANDOFF.md) 顶部的 `2026-06-11 0.15.2.68 紧急性能发布收工记录`。
+
+- 最新正式发布：`0.15.2.68`
+- Release：`https://github.com/anmili2022/DalamudACT/releases/tag/0.15.2.68`
+- Release commit：`2c0a5358bac940f59ef95522c2b21c0299da0561`
+- Release asset：`DalamudACT.zip`
+- SHA256：`54960733c2317f9170ce8e57f7711ca2a87a9ac58de83053c985eac9d4b998d0`
+- 订阅源 `MyDalamudRepo/pluginmaster.json` 已同步到 `DalamudACT 0.15.2.68`，同步 commit：`75ba9138455750f230921c3d193b0fd95ca737a2`
+- 当前主仓库只剩未跟踪现场文件，不要误删或误提交：`1.txt`、`tools/CactbotTimelineExtractor/test_output*.txt`、`tools/时间轴预览工具.rar`、`打工计时器.html`
+- 如果用户继续反馈绝妖星卡顿，先让其确认已更新 `0.15.2.68`，再按交接文档里的“下次优先事项”收集强化日志。
+
 ## 2026-05-24 NPC 队友识别与 UI 交接（整理版）
 
 详见：[`md/2026-05-24-npc-party-handoff.md`](md/2026-05-24-npc-party-handoff.md)

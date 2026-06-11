@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
@@ -82,14 +81,15 @@ internal sealed class PartyMonitorWindow : Window
             return;
         }
 
-        var members = monitorService.GetDisplayMemberStates(DateTime.UtcNow);
+        var nowUtc = DateTime.UtcNow;
+        var members = monitorService.GetMemberStates();
         if (members.Count == 0)
         {
             ImGui.TextDisabled("当前没有队伍成员。");
             return;
         }
 
-        DrawOverlayContent(members);
+        DrawOverlayContent(members, nowUtc);
     }
 
     private void DrawPanelBackground()
@@ -144,23 +144,18 @@ internal sealed class PartyMonitorWindow : Window
             ToggleCollapsed();
     }
 
-    private void DrawOverlayContent(IReadOnlyList<PartyMonitorService.PartyMemberState> members)
+    private void DrawOverlayContent(IReadOnlyList<PartyMonitorService.PartyMemberState> members, DateTime nowUtc)
     {
-        var raidBuffRows = config.PartyMonitor.MonitorRaidBuffs
-            ? BuildRows(members, SkillCategory.RaidBuff)
-            : [];
-        var mitigationRows = config.PartyMonitor.MonitorMitigations
-            ? BuildRows(members, SkillCategory.Mitigation)
-            : [];
-
         if (config.PartyMonitor.MonitorSkills)
         {
             if (config.PartyMonitor.MergeSkillGroups)
-                DrawSkillGroup("技能监控", BuildMergedRows(members, config.PartyMonitor), MitigationColor, showPausedBadge: monitorService.IsPausedOutOfCombat);
+                DrawMergedSkillGroup("技能监控", members, config.PartyMonitor, MitigationColor, nowUtc, showPausedBadge: monitorService.IsPausedOutOfCombat);
             else
             {
-                DrawSkillGroup(null, raidBuffRows, RaidBuffColor);
-                DrawSkillGroup(null, mitigationRows, MitigationColor);
+                if (config.PartyMonitor.MonitorRaidBuffs)
+                    DrawSkillGroup(null, members, SkillCategory.RaidBuff, RaidBuffColor, nowUtc);
+                if (config.PartyMonitor.MonitorMitigations)
+                    DrawSkillGroup(null, members, SkillCategory.Mitigation, MitigationColor, nowUtc);
             }
         }
 
@@ -184,66 +179,144 @@ internal sealed class PartyMonitorWindow : Window
             ImGui.SetTooltip("非战斗中，已暂停刷新。显示最后一次缓存。");
     }
 
-    private static List<MemberSkillRow> BuildRows(
-        IReadOnlyList<PartyMonitorService.PartyMemberState> members,
-        SkillCategory category)
-    {
-        var rows = new List<MemberSkillRow>();
-        foreach (var member in members)
-        {
-            var skills = category == SkillCategory.Mitigation
-                ? member.MitigationSkills
-                : member.RaidBuffSkills;
-            if (skills.Count == 0)
-                continue;
-
-            rows.Add(new MemberSkillRow(member, skills));
-        }
-
-        return rows;
-    }
-
-    private static List<MemberSkillRow> BuildMergedRows(IReadOnlyList<PartyMonitorService.PartyMemberState> members, PartyMonitorConfig cfg)
-    {
-        var rows = new List<MemberSkillRow>();
-        foreach (var member in members)
-        {
-            var skills = new List<PartyMonitorService.SkillCooldownState>();
-            if (cfg.MonitorRaidBuffs)
-                skills.AddRange(member.RaidBuffSkills);
-            if (cfg.MonitorMitigations)
-                skills.AddRange(member.MitigationSkills);
-
-            if (skills.Count == 0)
-                continue;
-
-            rows.Add(new MemberSkillRow(member, skills));
-        }
-
-        return rows;
-    }
-
     private bool ShouldShowSkill(PartyMonitorService.SkillCooldownState state)
         => !config.PartyMonitor.HideSkillsOnCooldown
            || state.IsReady
            || state.IsActive
            || state.RemainingCooldown <= CooldownRevealSeconds;
 
-    private void DrawSkillGroup(string? title, IReadOnlyList<MemberSkillRow> rows, Vector4 color, bool showPausedBadge = false)
+    private void DrawSkillGroup(
+        string? title,
+        IReadOnlyList<PartyMonitorService.PartyMemberState> members,
+        SkillCategory category,
+        Vector4 color,
+        DateTime nowUtc,
+        bool showPausedBadge = false)
     {
-        if (rows.Count == 0)
+        if (!HasAnySkillRows(members, category))
             return;
 
         if (!string.IsNullOrWhiteSpace(title))
         {
-            var count = rows.Sum(r => r.Skills.Count(ShouldShowSkill));
-            if (DrawGroupHeader($"{title} ({count})", color, title == "技能监控", showPausedBadge))
+            var count = CountVisibleSkills(members, category, nowUtc);
+            if (DrawGroupHeader($"{title} ({count})", color, collapsible: true, showPausedBadge))
                 ToggleCollapsed();
         }
 
-        foreach (var row in rows)
-            DrawSkillRow(row.Member, row.Skills);
+        foreach (var member in members)
+        {
+            var skills = GetSkills(member, category);
+            if (skills.Count == 0)
+                continue;
+
+            DrawSkillRow(member, skills, nowUtc);
+        }
+
         ImGui.Dummy(new Vector2(0f, 6f));
+    }
+
+    private void DrawMergedSkillGroup(
+        string title,
+        IReadOnlyList<PartyMonitorService.PartyMemberState> members,
+        PartyMonitorConfig cfg,
+        Vector4 color,
+        DateTime nowUtc,
+        bool showPausedBadge = false)
+    {
+        if (!HasAnyMergedSkillRows(members, cfg))
+            return;
+
+        var count = CountVisibleMergedSkills(members, cfg, nowUtc);
+        if (DrawGroupHeader($"{title} ({count})", color, collapsible: true, showPausedBadge))
+            ToggleCollapsed();
+
+        foreach (var member in members)
+        {
+            if (!HasMergedSkills(member, cfg))
+                continue;
+
+            DrawMergedSkillRow(member, cfg, nowUtc);
+        }
+
+        ImGui.Dummy(new Vector2(0f, 6f));
+    }
+
+    private static IReadOnlyList<PartyMonitorService.SkillCooldownState> GetSkills(
+        PartyMonitorService.PartyMemberState member,
+        SkillCategory category)
+        => category == SkillCategory.Mitigation ? member.MitigationSkills : member.RaidBuffSkills;
+
+    private static bool HasAnySkillRows(IReadOnlyList<PartyMonitorService.PartyMemberState> members, SkillCategory category)
+    {
+        foreach (var member in members)
+        {
+            if (GetSkills(member, category).Count > 0)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool HasAnyMergedSkillRows(IReadOnlyList<PartyMonitorService.PartyMemberState> members, PartyMonitorConfig cfg)
+    {
+        foreach (var member in members)
+        {
+            if (HasMergedSkills(member, cfg))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool HasMergedSkills(PartyMonitorService.PartyMemberState member, PartyMonitorConfig cfg)
+        => cfg.MonitorRaidBuffs && member.RaidBuffSkills.Count > 0
+           || cfg.MonitorMitigations && member.MitigationSkills.Count > 0;
+
+    private int CountVisibleSkills(
+        IReadOnlyList<PartyMonitorService.PartyMemberState> members,
+        SkillCategory category,
+        DateTime nowUtc)
+    {
+        var count = 0;
+        foreach (var member in members)
+        {
+            foreach (var skill in GetSkills(member, category))
+            {
+                if (ShouldShowSkill(skill.WithDynamicTime(nowUtc)))
+                    count++;
+            }
+        }
+
+        return count;
+    }
+
+    private int CountVisibleMergedSkills(
+        IReadOnlyList<PartyMonitorService.PartyMemberState> members,
+        PartyMonitorConfig cfg,
+        DateTime nowUtc)
+    {
+        var count = 0;
+        foreach (var member in members)
+        {
+            if (cfg.MonitorRaidBuffs)
+                count += CountVisibleSkills(member.RaidBuffSkills, nowUtc);
+            if (cfg.MonitorMitigations)
+                count += CountVisibleSkills(member.MitigationSkills, nowUtc);
+        }
+
+        return count;
+    }
+
+    private int CountVisibleSkills(IReadOnlyList<PartyMonitorService.SkillCooldownState> skills, DateTime nowUtc)
+    {
+        var count = 0;
+        foreach (var skill in skills)
+        {
+            if (ShouldShowSkill(skill.WithDynamicTime(nowUtc)))
+                count++;
+        }
+
+        return count;
     }
 
     private bool DrawGroupHeader(string title, Vector4 color, bool collapsible = false, bool showPausedBadge = false)
@@ -296,7 +369,8 @@ internal sealed class PartyMonitorWindow : Window
 
     private void DrawSkillRow(
         PartyMonitorService.PartyMemberState member,
-        IReadOnlyList<PartyMonitorService.SkillCooldownState> skills)
+        IReadOnlyList<PartyMonitorService.SkillCooldownState> skills,
+        DateTime nowUtc)
     {
         var rowStart = ImGui.GetCursorPos();
         var iconSize = GetIconSize();
@@ -315,15 +389,64 @@ internal sealed class PartyMonitorWindow : Window
         var drawnCount = 0;
         foreach (var skill in skills)
         {
-            if (!ShouldShowSkill(skill))
+            var displaySkill = skill.WithDynamicTime(nowUtc);
+            if (!ShouldShowSkill(displaySkill))
                 continue;
 
             ImGui.SetCursorPos(new Vector2(iconStartX + drawnCount * (iconSize + IconGap), rowStart.Y));
-            DrawSkillIcon(skill);
+            DrawSkillIcon(displaySkill);
             drawnCount++;
         }
 
         ImGui.SetCursorPos(new Vector2(rowStart.X, rowStart.Y + rowHeight));
+    }
+
+    private void DrawMergedSkillRow(
+        PartyMonitorService.PartyMemberState member,
+        PartyMonitorConfig cfg,
+        DateTime nowUtc)
+    {
+        var rowStart = ImGui.GetCursorPos();
+        var iconSize = GetIconSize();
+        var rowHeight = Math.Max(iconSize, ImGui.GetTextLineHeight() + 5f) + RowGap;
+        var iconStartX = config.PartyMonitor.HideNameColumn
+            ? rowStart.X
+            : PanelPaddingX + JobColumnWidth + 4f;
+
+        if (!config.PartyMonitor.HideNameColumn)
+        {
+            ImGui.SetCursorPos(rowStart);
+            var label = GetMemberDisplayName(member);
+            DrawNameChip(label, GetJobColor(member.JobId), GetNameChipWidth(label));
+        }
+
+        var drawnCount = 0;
+        if (cfg.MonitorRaidBuffs)
+            DrawMergedSkillRowIcons(member.RaidBuffSkills, nowUtc, iconStartX, rowStart.Y, iconSize, ref drawnCount);
+        if (cfg.MonitorMitigations)
+            DrawMergedSkillRowIcons(member.MitigationSkills, nowUtc, iconStartX, rowStart.Y, iconSize, ref drawnCount);
+
+        ImGui.SetCursorPos(new Vector2(rowStart.X, rowStart.Y + rowHeight));
+    }
+
+    private void DrawMergedSkillRowIcons(
+        IReadOnlyList<PartyMonitorService.SkillCooldownState> skills,
+        DateTime nowUtc,
+        float iconStartX,
+        float rowY,
+        float iconSize,
+        ref int drawnCount)
+    {
+        foreach (var skill in skills)
+        {
+            var displaySkill = skill.WithDynamicTime(nowUtc);
+            if (!ShouldShowSkill(displaySkill))
+                continue;
+
+            ImGui.SetCursorPos(new Vector2(iconStartX + drawnCount * (iconSize + IconGap), rowY));
+            DrawSkillIcon(displaySkill);
+            drawnCount++;
+        }
     }
 
     private void DrawSkillIcon(PartyMonitorService.SkillCooldownState state)
@@ -464,17 +587,25 @@ internal sealed class PartyMonitorWindow : Window
         if (!config.PartyMonitor.MonitorFood)
             return;
 
-        var noFoodMembers = members.Where(m => !m.HasFood).ToList();
-        if (noFoodMembers.Count == 0)
+        var noFoodCount = 0;
+        foreach (var member in members)
+        {
+            if (!member.HasFood)
+                noFoodCount++;
+        }
+
+        if (noFoodCount == 0)
             return;
 
-        DrawGroupHeader($"食物 ({noFoodMembers.Count})", OrangeColor);
+        DrawGroupHeader($"食物 ({noFoodCount})", OrangeColor);
         var availableWidth = ImGui.GetContentRegionAvail().X;
         var usedWidth = 0f;
         const float chipGap = 6f;
-        for (var i = 0; i < noFoodMembers.Count; i++)
+        foreach (var member in members)
         {
-            var member = noFoodMembers[i];
+            if (member.HasFood)
+                continue;
+
             var label = GetMemberDisplayName(member);
             var itemWidth = Math.Min(128f, ImGui.CalcTextSize(label).X + 12f);
 
@@ -576,10 +707,6 @@ internal sealed class PartyMonitorWindow : Window
         var color = config.GetThemeBarColor(GetJobName(jobId));
         return new Vector4(color.X, color.Y, color.Z, 1f);
     }
-
-    private readonly record struct MemberSkillRow(
-        PartyMonitorService.PartyMemberState Member,
-        IReadOnlyList<PartyMonitorService.SkillCooldownState> Skills);
 
     private string FormatMemberName(PartyMonitorService.PartyMemberState member)
     {

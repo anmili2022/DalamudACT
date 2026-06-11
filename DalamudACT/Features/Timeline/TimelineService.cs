@@ -43,6 +43,12 @@ internal sealed class TimelineService
     private readonly Dictionary<string, DateTime> lastInstantTtsByActionKey = new(StringComparer.Ordinal);
     private readonly Dictionary<string, DateTime> observedStartsUsingCasts = new(StringComparer.Ordinal);
     private readonly List<ObservedTimelineAbility> pendingInitialAbilitySyncs = [];
+    private TimelineDefinitionRuntimeIndex? runtimeIndex;
+    private IReadOnlyList<TimelineVisibleEntry> cachedVisibleEntries = Array.Empty<TimelineVisibleEntry>();
+    private DateTime cachedVisibleEntriesAtUtc;
+    private float cachedVisibleEntriesCurrentSeconds = float.NaN;
+    private int cachedVisibleSeconds;
+    private int cachedMaxVisibleEntries;
     private string? forcedTimelinePath;
     private string? suppressedSavedForcedTimelinePath;
     private uint lastSavedForcedTimelineCheckZoneId;
@@ -256,6 +262,7 @@ internal sealed class TimelineService
         lastInstantTtsByActionKey.Clear();
         pendingInitialAbilitySyncs.Clear();
         observedStartsUsingCasts.Clear();
+        ResetTimelineProgressCaches();
     }
 
     private bool TryStartFromInCombatSync(DateTime nowUtc)
@@ -263,10 +270,11 @@ internal sealed class TimelineService
         if (definition == null)
             return false;
 
-        var syncEntry = definition.Entries
-            .Where(entry => entry.EventType == "InCombat")
-            .OrderBy(static entry => entry.TimeSeconds)
-            .FirstOrDefault();
+        var syncEntry = runtimeIndex?.InCombatEntries.FirstOrDefault()
+                        ?? definition.Entries
+                            .Where(entry => entry.EventType == "InCombat")
+                            .OrderBy(static entry => entry.TimeSeconds)
+                            .FirstOrDefault();
         if (syncEntry == null)
             return false;
 
@@ -279,6 +287,7 @@ internal sealed class TimelineService
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
+        ResetTimelineProgressCaches();
         statusText = $"已同步：{definition.Name} / 进入战斗";
         LogHelper.Debug("时间轴", $"InCombat 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}");
         return true;
@@ -320,20 +329,18 @@ internal sealed class TimelineService
         var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
         observedStartsUsingCasts[key] = nowUtc;
 
-        var candidates = definition.Entries
-            .Where(entry => entry.EventType == "StartsUsing"
-                            && entry.ActionIds.Contains(actionId)
-                            && IsSourceMatch(entry, sourceName))
-            .ToList();
+        var entriesByAction = runtimeIndex?.StartsUsingByActionId;
+        var sourceCandidates = entriesByAction != null && entriesByAction.TryGetValue(actionId, out var indexedStartsUsingEntries)
+            ? indexedStartsUsingEntries
+            : Array.Empty<TimelineEntry>();
+        var candidates = FilterSourceMatches(sourceCandidates, sourceName);
         if (candidates.Count == 0)
         {
             ProcessStartsUsingResponseTts(actionId, nowUtc, current, wasRunning, sourceName);
             return;
         }
 
-        var syncEntry = candidates
-            .OrderBy(entry => Math.Abs(entry.TimeSeconds - current))
-            .First();
+        var syncEntry = FindNearestEntry(candidates, current);
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         if (wasRunning)
@@ -367,17 +374,17 @@ internal sealed class TimelineService
         if (!config.EnableTimelineDailyRoutinesTts || !config.TimelineTtsResponse || definition == null)
             return;
 
-        var candidates = definition.Entries
-            .Where(entry => entry.ActionResponses.TryGetValue(actionId, out var response)
-                            && response.Timing == TimelineActionResponseTiming.StartsUsing
-                            && IsSourceMatch(entry, sourceName))
-            .ToList();
+        var entriesByAction = runtimeIndex?.StartsUsingResponsesByActionId;
+        var sourceCandidates = entriesByAction != null && entriesByAction.TryGetValue(actionId, out var indexedResponseEntries)
+            ? indexedResponseEntries
+            : Array.Empty<TimelineEntry>();
+        var candidates = FilterSourceMatches(sourceCandidates, sourceName);
         if (candidates.Count == 0)
             return;
 
         var entry = wasRunning
-            ? candidates.OrderBy(entry => Math.Abs(entry.TimeSeconds - current)).First()
-            : candidates.OrderBy(static entry => entry.TimeSeconds).First();
+            ? FindNearestEntry(candidates, current)
+            : candidates[0];
         if (!entry.ActionResponses.TryGetValue(actionId, out var response) || string.IsNullOrWhiteSpace(response.Text))
             return;
 
@@ -412,6 +419,86 @@ internal sealed class TimelineService
         return false;
     }
 
+    private static IReadOnlyList<TimelineEntry> FilterSourceMatches(IReadOnlyList<TimelineEntry> entries, string sourceName)
+    {
+        if (entries.Count == 0)
+            return Array.Empty<TimelineEntry>();
+
+        List<TimelineEntry>? result = null;
+        foreach (var entry in entries)
+        {
+            if (!IsSourceMatch(entry, sourceName))
+                continue;
+
+            result ??= new List<TimelineEntry>();
+            result.Add(entry);
+        }
+
+        return result is { Count: > 0 } ? result : Array.Empty<TimelineEntry>();
+    }
+
+    private static TimelineEntry FindNearestEntry(IReadOnlyList<TimelineEntry> entries, float current)
+    {
+        var best = entries[0];
+        var bestDistance = Math.Abs(best.TimeSeconds - current);
+        for (var i = 1; i < entries.Count; i++)
+        {
+            var entry = entries[i];
+            var distance = Math.Abs(entry.TimeSeconds - current);
+            if (distance >= bestDistance)
+                continue;
+
+            best = entry;
+            bestDistance = distance;
+        }
+
+        return best;
+    }
+
+    private static TimelineEntry? FindActionResponseEntry(
+        IReadOnlyList<TimelineEntry> entries,
+        uint actionId,
+        float current,
+        bool wasRunning,
+        TimelineActionResponseTiming timing)
+    {
+        TimelineEntry? best = null;
+        var bestDistance = float.MaxValue;
+        foreach (var entry in entries)
+        {
+            if (!entry.ActionResponses.TryGetValue(actionId, out var response) || response.Timing != timing)
+                continue;
+
+            if (!wasRunning)
+                return entry;
+
+            var distance = Math.Abs(entry.TimeSeconds - current);
+            if (distance >= bestDistance)
+                continue;
+
+            best = entry;
+            bestDistance = distance;
+        }
+
+        return best;
+    }
+
+    private static int FindFirstEntryAfter(IReadOnlyList<TimelineEntry> entries, float current)
+    {
+        var low = 0;
+        var high = entries.Count;
+        while (low < high)
+        {
+            var mid = low + ((high - low) / 2);
+            if (entries[mid].TimeSeconds <= current)
+                low = mid + 1;
+            else
+                high = mid;
+        }
+
+        return low;
+    }
+
     public void ObserveMapEffect(uint entityId, uint flags, uint location, DateTime nowUtc)
     {
         if (definition == null)
@@ -430,6 +517,7 @@ internal sealed class TimelineService
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
+        ResetTimelineProgressCaches();
         LogHelper.Debug("时间轴", $"MapEffect 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, flags={flags:X}, location={location:X}, entityId={entityId:X}");
         statusText = $"已同步：{definition.Name} / 地图特效";
     }
@@ -442,18 +530,24 @@ internal sealed class TimelineService
         var flagsHex = flags.ToString("X");
         var locationHex = location.ToString("X");
 
-        return definition.Entries
-            .Where(entry => entry.EventType == "MapEffect"
-                            && entry.TimeSeconds > Math.Max(0f, lastMapEffectSyncTimeSeconds) + 1f
-                            && entry.MapEffectFlags != null
-                            && entry.MapEffectLocation != null)
-            .OrderBy(entry => entry.TimeSeconds)
-            .FirstOrDefault(entry =>
+        var entries = runtimeIndex?.MapEffectEntries ?? definition.Entries;
+        foreach (var entry in entries)
+        {
+            if (entry.EventType != "MapEffect"
+                || entry.TimeSeconds <= Math.Max(0f, lastMapEffectSyncTimeSeconds) + 1f
+                || entry.MapEffectFlags == null
+                || entry.MapEffectLocation == null)
             {
-                var flagMatch = string.Equals(entry.MapEffectFlags, flagsHex, StringComparison.OrdinalIgnoreCase);
-                var locationMatch = IsMapEffectLocationMatch(locationHex, entry.MapEffectLocation);
-                return flagMatch && locationMatch;
-            });
+                continue;
+            }
+
+            var flagMatch = string.Equals(entry.MapEffectFlags, flagsHex, StringComparison.OrdinalIgnoreCase);
+            var locationMatch = IsMapEffectLocationMatch(locationHex, entry.MapEffectLocation);
+            if (flagMatch && locationMatch)
+                return entry;
+        }
+
+        return null;
     }
 
     private static bool IsMapEffectLocationMatch(string locationHex, string? pattern)
@@ -493,6 +587,7 @@ internal sealed class TimelineService
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
+        ResetTimelineProgressCaches();
         LogHelper.Debug("时间轴", $"SystemLogMessage 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, id={syncEntry.SystemLogId ?? "-"}, param1={syncEntry.SystemLogParam1 ?? "-"}, hint={syncEntry.SystemLogTextHint ?? "-"}, message={message}");
         statusText = string.IsNullOrWhiteSpace(syncEntry.SystemLogTextHint)
             ? $"已同步：{definition.Name} / 区域封锁提示"
@@ -521,6 +616,7 @@ internal sealed class TimelineService
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
+        ResetTimelineProgressCaches();
         LogHelper.Debug("时间轴", $"NpcYell 同步命中：time={syncEntry.TimeSeconds:0.0}, target={targetTime:0.0}, text={syncEntry.NpcYellText ?? syncEntry.Text}, message={message}");
         statusText = $"已同步：{definition.Name} / Boss 台词";
     }
@@ -533,10 +629,14 @@ internal sealed class TimelineService
         if (definition == null)
             return null;
 
-        return definition.Entries
-            .Where(entry => entry.EventType == "NpcYell" && IsWithinNpcYellWindow(entry))
-            .OrderBy(entry => entry.TimeSeconds)
-            .FirstOrDefault(entry => IsNpcYellMatch(entry, message));
+        var entries = runtimeIndex?.NpcYellEntries ?? definition.Entries;
+        foreach (var entry in entries)
+        {
+            if (entry.EventType == "NpcYell" && IsWithinNpcYellWindow(entry) && IsNpcYellMatch(entry, message))
+                return entry;
+        }
+
+        return null;
     }
 
     private bool IsWithinNpcYellWindow(TimelineEntry entry)
@@ -572,19 +672,17 @@ internal sealed class TimelineService
         if (definition == null)
             return null;
 
-        var candidates = definition.Entries
-            .Where(entry => entry.EventType == "SystemLogMessage" && (IsSystemLogResetEntry(entry) || IsWithinSystemLogWindow(entry)))
-            .OrderBy(entry => entry.TimeSeconds)
-            .ToList();
-
-        if (candidates.Count == 0)
-            return null;
-
-        var matched = candidates.FirstOrDefault(entry => IsLogMessageMatch(entry, message));
-        if (matched != null)
+        var entries = runtimeIndex?.SystemLogEntries ?? definition.Entries;
+        foreach (var entry in entries)
         {
-            LogHelper.Debug("时间轴", $"SystemLogMessage 匹配：time={matched.TimeSeconds:0.0}, id={matched.SystemLogId}, message={message}");
-            return matched;
+            if (entry.EventType != "SystemLogMessage" || !IsSystemLogResetEntry(entry) && !IsWithinSystemLogWindow(entry))
+                continue;
+
+            if (!IsLogMessageMatch(entry, message))
+                continue;
+
+            LogHelper.Debug("时间轴", $"SystemLogMessage 匹配：time={entry.TimeSeconds:0.0}, id={entry.SystemLogId}, message={message}");
+            return entry;
         }
 
         return null;
@@ -688,9 +786,10 @@ internal sealed class TimelineService
 
         var wasRunning = startedAtUtc.HasValue;
         var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
-        var candidates = definition.Entries
-            .Where(entry => entry.EventType == "Ability" && entry.ActionIds.Contains(actionId))
-            .ToList();
+        var entriesByAction = runtimeIndex?.AbilityByActionId;
+        var candidates = entriesByAction != null && entriesByAction.TryGetValue(actionId, out var indexedAbilityEntries)
+            ? indexedAbilityEntries
+            : Array.Empty<TimelineEntry>();
         if (candidates.Count == 0)
             return;
 
@@ -703,9 +802,7 @@ internal sealed class TimelineService
             return;
         }
 
-        var syncEntry = candidates
-            .OrderBy(entry => Math.Abs(entry.TimeSeconds - current))
-            .First();
+        var syncEntry = FindNearestEntry(candidates, current);
 
         var targetTime = ResolveJumpTargetTime(syncEntry) ?? syncEntry.TimeSeconds;
         if (wasRunning)
@@ -734,7 +831,7 @@ internal sealed class TimelineService
     private bool TryConfirmInitialAbilitySync(uint actionId, DateTime nowUtc, out TimelineEntry confirmedEntry)
     {
         confirmedEntry = null!;
-        if (definition == null || pendingInitialAbilitySyncs.Count == 0)
+        if (definition == null || runtimeIndex == null || pendingInitialAbilitySyncs.Count == 0)
             return false;
 
         pendingInitialAbilitySyncs.RemoveAll(item => (nowUtc - item.ObservedAtUtc).TotalSeconds > InitialAbilitySyncConfirmWindowSeconds);
@@ -749,8 +846,12 @@ internal sealed class TimelineService
             if (observedDelta <= 0.25d || observed.ActionId == actionId)
                 continue;
 
-            var firstEntries = definition.Entries.Where(entry => entry.EventType == "Ability" && entry.ActionIds.Contains(observed.ActionId));
-            var secondEntries = definition.Entries.Where(entry => entry.EventType == "Ability" && entry.ActionIds.Contains(actionId));
+            if (!runtimeIndex.AbilityByActionId.TryGetValue(observed.ActionId, out var firstEntries)
+                || !runtimeIndex.AbilityByActionId.TryGetValue(actionId, out var secondEntries))
+            {
+                continue;
+            }
+
             foreach (var first in firstEntries)
             foreach (var second in secondEntries)
             {
@@ -794,6 +895,7 @@ internal sealed class TimelineService
         lastSystemLogSyncTimeSeconds = Math.Max(lastSystemLogSyncTimeSeconds, targetTime);
         spokenTtsKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
+        ResetTimelineProgressCaches();
         statusText = message;
     }
 
@@ -805,9 +907,7 @@ internal sealed class TimelineService
         if (!config.TimelineTtsResponse)
             return;
 
-        var entry = wasRunning
-            ? candidates.OrderBy(entry => Math.Abs(entry.TimeSeconds - current)).FirstOrDefault(entry => entry.ActionResponses.TryGetValue(actionId, out var response) && response.Timing == TimelineActionResponseTiming.Ability)
-            : candidates.OrderBy(static entry => entry.TimeSeconds).FirstOrDefault(entry => entry.ActionResponses.TryGetValue(actionId, out var response) && response.Timing == TimelineActionResponseTiming.Ability);
+        var entry = FindActionResponseEntry(candidates, actionId, current, wasRunning, TimelineActionResponseTiming.Ability);
         if (entry == null || !entry.ActionResponses.TryGetValue(actionId, out var response) || response.Timing != TimelineActionResponseTiming.Ability || string.IsNullOrWhiteSpace(response.Text))
             return;
 
@@ -918,16 +1018,57 @@ internal sealed class TimelineService
         if (definition == null || !startedAtUtc.HasValue && RequiresSyncBeforeStart())
             return Array.Empty<TimelineVisibleEntry>();
 
+        var visibleEntries = runtimeIndex?.VisibleEntries;
+        if (visibleEntries == null || visibleEntries.Count == 0)
+            return Array.Empty<TimelineVisibleEntry>();
+
         var current = DisplayTimeSeconds;
         var visibleSeconds = Math.Clamp(config.TimelineVisibleSeconds, 10, 600);
         var maxEntries = Math.Clamp(config.TimelineMaxVisibleEntries, 1, 30);
-        return definition.Entries
-            .Where(static entry => !entry.Hidden)
-            .Select(entry => new TimelineVisibleEntry(entry, entry.TimeSeconds - current, GetMechanicHint(entry)))
-            .Where(entry => entry.RelativeSeconds > 0f && entry.RelativeSeconds <= visibleSeconds)
-            .OrderBy(entry => entry.Entry.TimeSeconds)
-            .Take(maxEntries)
-            .ToList();
+        var nowUtc = DateTime.UtcNow;
+        if (cachedVisibleSeconds == visibleSeconds
+            && cachedMaxVisibleEntries == maxEntries
+            && nowUtc - cachedVisibleEntriesAtUtc < TimeSpan.FromMilliseconds(100)
+            && Math.Abs(current - cachedVisibleEntriesCurrentSeconds) < 0.1f)
+        {
+            return cachedVisibleEntries;
+        }
+
+        var result = new List<TimelineVisibleEntry>(maxEntries);
+        var startIndex = FindFirstEntryAfter(visibleEntries, current);
+        for (var i = startIndex; i < visibleEntries.Count && result.Count < maxEntries; i++)
+        {
+            var entry = visibleEntries[i];
+            var relative = entry.TimeSeconds - current;
+            if (relative > visibleSeconds)
+                break;
+
+            result.Add(new TimelineVisibleEntry(entry, relative, GetMechanicHint(entry)));
+        }
+
+        cachedVisibleEntries = result;
+        cachedVisibleEntriesAtUtc = nowUtc;
+        cachedVisibleEntriesCurrentSeconds = current;
+        cachedVisibleSeconds = visibleSeconds;
+        cachedMaxVisibleEntries = maxEntries;
+        return cachedVisibleEntries;
+    }
+
+    private void ResetRuntimeCaches()
+    {
+        runtimeIndex = null;
+        cachedVisibleEntries = Array.Empty<TimelineVisibleEntry>();
+        cachedVisibleEntriesAtUtc = DateTime.MinValue;
+        cachedVisibleEntriesCurrentSeconds = float.NaN;
+        cachedVisibleSeconds = 0;
+        cachedMaxVisibleEntries = 0;
+    }
+
+    private void ResetTimelineProgressCaches()
+    {
+        cachedVisibleEntries = Array.Empty<TimelineVisibleEntry>();
+        cachedVisibleEntriesAtUtc = DateTime.MinValue;
+        cachedVisibleEntriesCurrentSeconds = float.NaN;
     }
 
     public void ReloadCurrentTimeline()
@@ -944,6 +1085,7 @@ internal sealed class TimelineService
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
         timelineIndex = null;
+        ResetRuntimeCaches();
         loadedZoneId = 0;
         loadedZoneName = string.Empty;
         EnsureTimelineForZone(zoneId, zoneName, inCombat: true);
@@ -1001,6 +1143,7 @@ internal sealed class TimelineService
         spokenActionResponseKeys.Clear();
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
+        ResetRuntimeCaches();
 
         var candidate = ResolveCandidate(zoneId, zoneName);
         if (candidate == null)
@@ -1085,6 +1228,7 @@ internal sealed class TimelineService
         lastTimelineTtsTextUtc.Clear();
         pendingInitialAbilitySyncs.Clear();
         observedStartsUsingCasts.Clear();
+        ResetRuntimeCaches();
         StartOrFinishTimelineLoad("forced", name, path, forced: true);
     }
 
@@ -1153,6 +1297,8 @@ internal sealed class TimelineService
         pendingTimelineLoad = null;
         pendingTimelineLoadKey = string.Empty;
         pendingTimelineLoadForced = false;
+        runtimeIndex = TimelineDefinitionRuntimeIndex.Build(definition);
+        ResetTimelineProgressCaches();
         LogHelper.Debug("时间轴", $"加载时间轴文件：{result.Path}");
         statusText = forced
             ? $"已强制加载 {definition.Entries.Count} 条：{definition.Name}"
@@ -1186,14 +1332,20 @@ internal sealed class TimelineService
         if (!config.EnableTimelineDailyRoutinesTts || definition == null || !startedAtUtc.HasValue)
             return;
 
+        var entries = runtimeIndex?.VisibleEntries;
+        if (entries == null || entries.Count == 0)
+            return;
+
         var current = DisplayTimeSeconds;
         var nowUtc = DateTime.UtcNow;
         var leadSeconds = Math.Clamp(config.TimelineTtsLeadSeconds, 1, 30);
-        foreach (var entry in definition.Entries.Where(static entry => !entry.Hidden))
+        var startIndex = FindFirstEntryAfter(entries, current);
+        for (var i = startIndex; i < entries.Count; i++)
         {
+            var entry = entries[i];
             var relative = entry.TimeSeconds - current;
-            if (relative <= 0f || relative > leadSeconds)
-                continue;
+            if (relative > leadSeconds)
+                break;
 
             var key = $"{entry.TimeSeconds:0.0}|{entry.DisplayText}";
             if (!spokenTtsKeys.Add(key))
@@ -1303,10 +1455,11 @@ internal sealed class TimelineService
         if (!string.IsNullOrWhiteSpace(forcedTimelinePath))
             return true;
 
-        var firstVisible = definition.Entries
-            .Where(static entry => !entry.Hidden)
-            .OrderBy(static entry => entry.TimeSeconds)
-            .FirstOrDefault();
+        var firstVisible = runtimeIndex?.VisibleEntries.FirstOrDefault()
+                           ?? definition.Entries
+                               .Where(static entry => !entry.Hidden)
+                               .OrderBy(static entry => entry.TimeSeconds)
+                               .FirstOrDefault();
         return firstVisible?.TimeSeconds >= 300f;
     }
 
@@ -1463,6 +1616,101 @@ internal sealed class TimelineService
     }
 
     private sealed record ObservedTimelineAbility(uint ActionId, DateTime ObservedAtUtc);
+
+    private sealed class TimelineDefinitionRuntimeIndex
+    {
+        public IReadOnlyList<TimelineEntry> VisibleEntries { get; private init; } = Array.Empty<TimelineEntry>();
+        public IReadOnlyList<TimelineEntry> InCombatEntries { get; private init; } = Array.Empty<TimelineEntry>();
+        public IReadOnlyList<TimelineEntry> MapEffectEntries { get; private init; } = Array.Empty<TimelineEntry>();
+        public IReadOnlyList<TimelineEntry> NpcYellEntries { get; private init; } = Array.Empty<TimelineEntry>();
+        public IReadOnlyList<TimelineEntry> SystemLogEntries { get; private init; } = Array.Empty<TimelineEntry>();
+        public IReadOnlyDictionary<uint, IReadOnlyList<TimelineEntry>> AbilityByActionId { get; private init; } = new Dictionary<uint, IReadOnlyList<TimelineEntry>>();
+        public IReadOnlyDictionary<uint, IReadOnlyList<TimelineEntry>> StartsUsingByActionId { get; private init; } = new Dictionary<uint, IReadOnlyList<TimelineEntry>>();
+        public IReadOnlyDictionary<uint, IReadOnlyList<TimelineEntry>> StartsUsingResponsesByActionId { get; private init; } = new Dictionary<uint, IReadOnlyList<TimelineEntry>>();
+
+        public static TimelineDefinitionRuntimeIndex Build(TimelineDefinition definition)
+        {
+            var visibleEntries = new List<TimelineEntry>();
+            var inCombatEntries = new List<TimelineEntry>();
+            var mapEffectEntries = new List<TimelineEntry>();
+            var npcYellEntries = new List<TimelineEntry>();
+            var systemLogEntries = new List<TimelineEntry>();
+            var abilityByActionId = new Dictionary<uint, List<TimelineEntry>>();
+            var startsUsingByActionId = new Dictionary<uint, List<TimelineEntry>>();
+            var startsUsingResponsesByActionId = new Dictionary<uint, List<TimelineEntry>>();
+
+            foreach (var entry in definition.Entries)
+            {
+                if (!entry.Hidden)
+                    visibleEntries.Add(entry);
+
+                switch (entry.EventType)
+                {
+                    case "InCombat":
+                        inCombatEntries.Add(entry);
+                        break;
+                    case "MapEffect":
+                        mapEffectEntries.Add(entry);
+                        break;
+                    case "NpcYell":
+                        npcYellEntries.Add(entry);
+                        break;
+                    case "SystemLogMessage":
+                        systemLogEntries.Add(entry);
+                        break;
+                    case "Ability":
+                        AddByActionIds(abilityByActionId, entry);
+                        break;
+                    case "StartsUsing":
+                        AddByActionIds(startsUsingByActionId, entry);
+                        break;
+                }
+
+                foreach (var (actionId, response) in entry.ActionResponses)
+                {
+                    if (response.Timing == TimelineActionResponseTiming.StartsUsing)
+                        AddByActionId(startsUsingResponsesByActionId, actionId, entry);
+                }
+            }
+
+            return new TimelineDefinitionRuntimeIndex
+            {
+                VisibleEntries = visibleEntries,
+                InCombatEntries = inCombatEntries,
+                MapEffectEntries = mapEffectEntries,
+                NpcYellEntries = npcYellEntries,
+                SystemLogEntries = systemLogEntries,
+                AbilityByActionId = FreezeActionIndex(abilityByActionId),
+                StartsUsingByActionId = FreezeActionIndex(startsUsingByActionId),
+                StartsUsingResponsesByActionId = FreezeActionIndex(startsUsingResponsesByActionId),
+            };
+        }
+
+        private static void AddByActionIds(Dictionary<uint, List<TimelineEntry>> index, TimelineEntry entry)
+        {
+            foreach (var actionId in entry.ActionIds)
+                AddByActionId(index, actionId, entry);
+        }
+
+        private static void AddByActionId(Dictionary<uint, List<TimelineEntry>> index, uint actionId, TimelineEntry entry)
+        {
+            if (!index.TryGetValue(actionId, out var entries))
+            {
+                entries = new List<TimelineEntry>();
+                index[actionId] = entries;
+            }
+
+            entries.Add(entry);
+        }
+
+        private static IReadOnlyDictionary<uint, IReadOnlyList<TimelineEntry>> FreezeActionIndex(Dictionary<uint, List<TimelineEntry>> index)
+        {
+            var frozen = new Dictionary<uint, IReadOnlyList<TimelineEntry>>(index.Count);
+            foreach (var (actionId, entries) in index)
+                frozen[actionId] = entries;
+            return frozen;
+        }
+    }
 
     private sealed record TimelineLoadResult(TimelineDefinition Definition, string Path);
 

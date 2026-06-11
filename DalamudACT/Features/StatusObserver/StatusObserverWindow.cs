@@ -9,8 +9,10 @@ namespace DalamudACT;
 internal sealed class StatusObserverWindow : Window
 {
     private const ImGuiWindowFlags BaseFlags = ImGuiWindowFlags.NoCollapse
-                                             | ImGuiWindowFlags.NoTitleBar
-                                             | ImGuiWindowFlags.NoBackground;
+                                              | ImGuiWindowFlags.NoTitleBar
+                                              | ImGuiWindowFlags.NoBackground
+                                              | ImGuiWindowFlags.NoScrollbar
+                                              | ImGuiWindowFlags.NoScrollWithMouse;
     private const float MinimumExpandedWidth = 220f;
     private const int AutoResizeIconColumns = 8;
     private const float PanelPaddingX = 8f;
@@ -75,8 +77,6 @@ internal sealed class StatusObserverWindow : Window
     private ImGuiWindowFlags BuildWindowFlags()
     {
         var flags = BaseFlags;
-        if (collapsed)
-            flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
         if (!config.StatusObserver.LockWindow)
             return flags;
 

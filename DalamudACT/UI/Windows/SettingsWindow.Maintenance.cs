@@ -169,7 +169,7 @@ internal sealed partial class SettingsWindow
             config.Save();
         }
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("开启后按当前区域自动套用预设：主城/住宅=低负载，副本=低延迟，野外=标准。关闭后使用下方手动间隔。 ");
+            ImGui.SetTooltip("开启后按当前区域自动套用预设：主城/住宅=低负载，副本/野外=标准。关闭后使用下方手动间隔。 ");
         ImGui.SameLine(0f, 12f);
         ImGui.TextDisabled($"当前区域：{FormatRuntimeAreaKind(config.CurrentAreaKind)}");
 

@@ -19,6 +19,9 @@ public sealed partial class ACT
 
     private void OnCommand(string command, string args)
     {
+        if (isDisposing)
+            return;
+
         _ = command;
         var normalized = (args ?? string.Empty).Trim().ToLowerInvariant();
         switch (normalized)

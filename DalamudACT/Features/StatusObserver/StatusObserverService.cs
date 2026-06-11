@@ -13,6 +13,7 @@ internal sealed class StatusObserverService
     private IReadOnlyList<StatusObserverEntry> cachedTargetStatuses = [];
     private DateTime lastSelfStatusRefreshUtc;
     private DateTime lastTargetStatusRefreshUtc;
+    private readonly Dictionary<uint, (string Name, uint IconId)> statusInfoCache = new();
     public bool IsPausedOutOfCombat { get; private set; }
 
     public StatusObserverService(PluginConfiguration config)
@@ -113,8 +114,11 @@ internal sealed class StatusObserverService
             .ToList();
     }
 
-    private static (string Name, uint IconId) ResolveStatusInfo(uint statusId)
+    private (string Name, uint IconId) ResolveStatusInfo(uint statusId)
     {
+        if (statusInfoCache.TryGetValue(statusId, out var cached))
+            return cached;
+
         try
         {
             var sheet = DalamudApi.GameData.GetExcelSheet<Lumina.Excel.Sheets.Status>();
@@ -123,7 +127,7 @@ internal sealed class StatusObserverService
                 var name = row.Name.ToString();
                 var iconId = row.Icon;
                 if (!string.IsNullOrWhiteSpace(name))
-                    return (name, iconId);
+                    return statusInfoCache[statusId] = (name, iconId);
             }
         }
         catch (Exception ex)
@@ -131,6 +135,6 @@ internal sealed class StatusObserverService
             LogHelper.Debug("状态监控", ex, $"读取状态名称失败：{statusId}");
         }
 
-        return ($"Status {statusId}", 0);
+        return statusInfoCache[statusId] = ($"Status {statusId}", 0);
     }
 }

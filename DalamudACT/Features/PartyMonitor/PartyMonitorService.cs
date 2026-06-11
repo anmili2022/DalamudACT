@@ -108,28 +108,6 @@ internal sealed class PartyMonitorService
             return cachedMemberStates;
     }
 
-    public IReadOnlyList<PartyMemberState> GetDisplayMemberStates(DateTime nowUtc)
-    {
-        var states = GetMemberStates();
-        if (states.Count == 0)
-            return states;
-
-        var result = new List<PartyMemberState>(states.Count);
-        foreach (var state in states)
-        {
-            result.Add(new PartyMemberState(
-                state.ActorId,
-                state.Name,
-                state.JobId,
-                state.HasFood,
-                state.FoodRemainingSeconds,
-                BuildDisplaySkillStates(state.MitigationSkills, nowUtc),
-                BuildDisplaySkillStates(state.RaidBuffSkills, nowUtc)));
-        }
-
-        return result;
-    }
-
     public void Update()
     {
         if (!config.PartyMonitor.EnablePartyMonitor || !config.PartyMonitor.ShowPartyMonitorWindow)
@@ -519,17 +497,6 @@ internal sealed class PartyMonitorService
 
     private static long CombineKey(uint actorId, uint actionId)
         => ((long)actorId << 32) | actionId;
-
-    private static IReadOnlyList<SkillCooldownState> BuildDisplaySkillStates(IReadOnlyList<SkillCooldownState> states, DateTime nowUtc)
-    {
-        if (states.Count == 0)
-            return states;
-
-        var result = new List<SkillCooldownState>(states.Count);
-        foreach (var state in states)
-            result.Add(state.WithDynamicTime(nowUtc));
-        return result;
-    }
 
     private PartySkillEntry? FindSkillWithCustom(uint actionId)
     {

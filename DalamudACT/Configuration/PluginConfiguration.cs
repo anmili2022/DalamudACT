@@ -691,7 +691,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         return CurrentAreaKind switch
         {
             RuntimeAreaKind.City or RuntimeAreaKind.Housing => PresetLowLoadTimelineMs,
-            RuntimeAreaKind.Duty => active ? PresetLowLatencyTimelineMs : PresetStandardTimelineMs,
+            RuntimeAreaKind.Duty => PresetStandardTimelineMs,
             RuntimeAreaKind.Field => PresetStandardTimelineMs,
             _ => Math.Clamp(TimelineUpdateIntervalMs, 100, 2000),
         };
@@ -705,7 +705,7 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
         return CurrentAreaKind switch
         {
             RuntimeAreaKind.City or RuntimeAreaKind.Housing => lowLoadValue,
-            RuntimeAreaKind.Duty => lowLatencyValue,
+            RuntimeAreaKind.Duty => standardValue,
             RuntimeAreaKind.Field => standardValue,
             _ => Math.Clamp(manualValue, 100, 2000),
         };

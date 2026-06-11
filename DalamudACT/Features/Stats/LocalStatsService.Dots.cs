@@ -265,9 +265,10 @@ internal sealed partial class LocalStatsService
     {
         try
         {
-            var perfStart = System.Diagnostics.Stopwatch.GetTimestamp();
+            var perfEnabled = config.EnableEnhancedLog;
+            var perfStart = perfEnabled ? System.Diagnostics.Stopwatch.GetTimestamp() : 0;
             var perfLast = perfStart;
-            var perfParts = new List<string>(8);
+            List<string>? perfParts = perfEnabled ? new List<string>(8) : null;
             TrimRecentHostilePlayerActionsLocked(nowUtc);
 
             if (!ShouldRunDotAndWildfireAttribution())
@@ -398,7 +399,8 @@ internal sealed partial class LocalStatsService
                     $"清理玩家 DOT 活跃状态失败：异常={ex.GetType().Name}: {ex.Message}");
             }
 
-            LogStatsPerfIfSlow(perfStart, perfParts, inCombat);
+            if (perfEnabled)
+                LogStatsPerfIfSlow(perfStart, perfParts!, inCombat);
         }
         catch (Exception ex)
         {

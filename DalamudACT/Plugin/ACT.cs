@@ -41,6 +41,7 @@ public sealed partial class ACT : IDalamudPlugin
     private readonly ExcelSheet<Action> actionSheet;
     private bool frameworkUpdateFaulted;
     private bool abilityEffectFaulted;
+    private bool isDisposing;
     private DateTime lastUntrackedCombatDebugAtUtc;
     private DateTime lastBattleCharaPollUtc;
     private DateTime lastStatsUpdateUtc;
@@ -56,6 +57,9 @@ public sealed partial class ACT : IDalamudPlugin
     private DateTime lastRawPacketCorrelationAtUtc = DateTime.MinValue;
     private DateTime lastBattleCountdownFiveSecondsUtc = DateTime.MinValue;
     private RuntimeAreaKind lastRuntimeAreaKind = RuntimeAreaKind.Unknown;
+    private DateTime pendingPartyMonitorDutyEnterRefreshUntilUtc = DateTime.MinValue;
+    private DateTime pendingPartyMonitorDutyEnterPartyCountChangedUtc = DateTime.MinValue;
+    private int pendingPartyMonitorDutyEnterPartyCount = -1;
     private bool hasRuntimeAreaKindSnapshot;
 
     private Hook<ReceiveAbilityDelegate>? receiveAbilityHook;
@@ -108,15 +112,21 @@ public sealed partial class ACT : IDalamudPlugin
 
     public void Dispose()
     {
-        DalamudApi.Framework.Update -= OnFrameworkUpdate;
-        pluginInterface.UiBuilder.Draw -= ui.Draw;
-        pluginInterface.UiBuilder.OpenMainUi -= ui.OpenSettingsWindow;
-        pluginInterface.UiBuilder.OpenConfigUi -= ui.OpenSettingsWindow;
-        UnregisterChatHandlers();
-        UnregisterCommands();
-        ui.Dispose();
-        DisposeHooks();
-        Configuration.Save();
+        isDisposing = true;
+        LogHelper.Debug("插件", "开始卸载 DPS统计。 ");
+        SafeShutdownStep("取消 Framework 更新", () => DalamudApi.Framework.Update -= OnFrameworkUpdate);
+        SafeShutdownStep("取消 UI 绘制", () => pluginInterface.UiBuilder.Draw -= ui.Draw);
+        SafeShutdownStep("取消插件列表入口", () =>
+        {
+            pluginInterface.UiBuilder.OpenMainUi -= ui.OpenSettingsWindow;
+            pluginInterface.UiBuilder.OpenConfigUi -= ui.OpenSettingsWindow;
+        });
+        SafeShutdownStep("取消聊天事件", UnregisterChatHandlers);
+        SafeShutdownStep("取消命令", UnregisterCommands);
+        SafeShutdownStep("关闭 UI", ui.Dispose);
+        SafeShutdownStep("释放 Hook", DisposeHooks);
+        SafeShutdownStep("保存配置", Configuration.Save);
+        LogHelper.Debug("插件", "DPS统计 卸载完成。 ");
     }
 
 
@@ -124,9 +134,13 @@ public sealed partial class ACT : IDalamudPlugin
     {
         try
         {
-            var perfStart = Stopwatch.GetTimestamp();
+            if (isDisposing)
+                return;
+
+            var perfEnabled = Configuration.EnableEnhancedLog;
+            var perfStart = perfEnabled ? Stopwatch.GetTimestamp() : 0;
             var perfLast = perfStart;
-            var perfParts = new List<string>(8);
+            List<string>? perfParts = perfEnabled ? new List<string>(8) : null;
             _ = framework;
             var territoryId = DalamudApi.GetTerritoryTypeId();
             var zoneName = GetPlaceName(territoryId);
@@ -147,7 +161,7 @@ public sealed partial class ACT : IDalamudPlugin
             var timelineUpdateInterval = TimeSpan.FromMilliseconds(timelineUpdateIntervalMs);
             var shouldUpdateTimeline = nowUtc - lastTimelineUpdateUtc >= timelineUpdateInterval;
             var ranHeavyWork = false;
-            RefreshPartyMonitorAfterLeavingDuty(runtimeAreaKind, nowUtc);
+            RefreshPartyMonitorAfterDutyTransition(runtimeAreaKind, nowUtc);
 
             if (shouldUpdateStats)
             {
@@ -162,7 +176,10 @@ public sealed partial class ACT : IDalamudPlugin
                 }
             }
 
-            var shouldPollBattleCharas = !ranHeavyWork && timelineActive && nowUtc - lastBattleCharaPollUtc >= TimeSpan.FromMilliseconds(100);
+            var shouldPollBattleCharas = ShouldRunHeavyTimelineSync(runtimeAreaKind)
+                && !ranHeavyWork
+                && timelineActive
+                && nowUtc - lastBattleCharaPollUtc >= GetBattleCharaPollInterval(runtimeAreaKind);
             if (shouldPollBattleCharas)
             {
                 var battleCharas = DalamudApi.ObjectTable.OfType<IBattleChara>().ToArray();
@@ -172,7 +189,7 @@ public sealed partial class ACT : IDalamudPlugin
                 MarkFrameworkPerfSegment("casts", ref perfLast, perfParts);
                 ranHeavyWork = true;
             }
-            else if (!timelineActive)
+            else if (!timelineActive || !ShouldRunHeavyTimelineSync(runtimeAreaKind))
             {
                 timelineService.PollStartsUsingCasts(nowUtc, false, Array.Empty<IBattleChara>());
             }
@@ -198,7 +215,8 @@ public sealed partial class ACT : IDalamudPlugin
                 MarkFrameworkPerfSegment("rawHook", ref perfLast, perfParts);
             }
 
-            LogFrameworkPerfIfSlow(perfStart, perfParts, statsActive, timelineActive);
+            if (perfEnabled)
+                LogFrameworkPerfIfSlow(perfStart, perfParts!, statsActive, timelineActive);
             frameworkUpdateFaulted = false;
         }
         catch (Exception ex)
@@ -208,6 +226,20 @@ public sealed partial class ACT : IDalamudPlugin
                 frameworkUpdateFaulted = true;
                 LogHelper.Error("插件", ex, "在 Framework 更新期间刷新本地 DPS 统计失败。");
             }
+        }
+    }
+
+    private static void SafeShutdownStep(string label, System.Action action)
+    {
+        try
+        {
+            LogHelper.Debug("插件", $"卸载步骤开始：{label}。");
+            action();
+            LogHelper.Debug("插件", $"卸载步骤完成：{label}。");
+        }
+        catch (Exception ex)
+        {
+            LogHelper.Warning("插件", ex, $"卸载步骤失败：{label}。已继续卸载。 ");
         }
     }
 
@@ -225,25 +257,106 @@ public sealed partial class ACT : IDalamudPlugin
         LogHelper.Info("队友监控", "检测到团灭战斗结算，已重置队友技能冷却。");
     }
 
-    private void RefreshPartyMonitorAfterLeavingDuty(RuntimeAreaKind runtimeAreaKind, DateTime nowUtc)
+    private static TimeSpan GetBattleCharaPollInterval(RuntimeAreaKind runtimeAreaKind)
+        => runtimeAreaKind == RuntimeAreaKind.Duty
+            ? TimeSpan.FromMilliseconds(1000)
+            : TimeSpan.FromMilliseconds(100);
+
+    private bool ShouldRunHeavyTimelineSync(RuntimeAreaKind runtimeAreaKind)
+        => !Configuration.HighPerformanceMode
+           && runtimeAreaKind != RuntimeAreaKind.Duty;
+
+    private void RefreshPartyMonitorAfterDutyTransition(RuntimeAreaKind runtimeAreaKind, DateTime nowUtc)
     {
         var previousAreaKind = lastRuntimeAreaKind;
         var hadSnapshot = hasRuntimeAreaKindSnapshot;
         lastRuntimeAreaKind = runtimeAreaKind;
         hasRuntimeAreaKindSnapshot = true;
 
-        if (!hadSnapshot || previousAreaKind != RuntimeAreaKind.Duty || runtimeAreaKind == RuntimeAreaKind.Duty)
+        if (!hadSnapshot)
             return;
 
         if (!IsPartyMonitorModuleEnabled || ShouldSuppressCombatModuleWork)
             return;
 
+        if (previousAreaKind != RuntimeAreaKind.Duty && runtimeAreaKind == RuntimeAreaKind.Duty)
+        {
+            pendingPartyMonitorDutyEnterRefreshUntilUtc = nowUtc.AddSeconds(10);
+            pendingPartyMonitorDutyEnterPartyCountChangedUtc = DateTime.MinValue;
+            pendingPartyMonitorDutyEnterPartyCount = -1;
+            LogHelper.Debug("队友监控", "检测到进入副本，等待队伍列表加载完成后刷新技能监控缓存。");
+        }
+        else if (previousAreaKind == RuntimeAreaKind.Duty && runtimeAreaKind != RuntimeAreaKind.Duty)
+        {
+            pendingPartyMonitorDutyEnterRefreshUntilUtc = DateTime.MinValue;
+            pendingPartyMonitorDutyEnterPartyCountChangedUtc = DateTime.MinValue;
+            pendingPartyMonitorDutyEnterPartyCount = -1;
+            monitorService.RefreshOnce(nowUtc);
+            LogHelper.Debug("队友监控", "检测到从副本返回非副本区域，已刷新一次技能监控缓存。");
+            return;
+        }
+
+        if (runtimeAreaKind != RuntimeAreaKind.Duty || pendingPartyMonitorDutyEnterRefreshUntilUtc == DateTime.MinValue)
+            return;
+
+        if (nowUtc > pendingPartyMonitorDutyEnterRefreshUntilUtc)
+        {
+            pendingPartyMonitorDutyEnterRefreshUntilUtc = DateTime.MinValue;
+            pendingPartyMonitorDutyEnterPartyCountChangedUtc = DateTime.MinValue;
+            pendingPartyMonitorDutyEnterPartyCount = -1;
+            LogHelper.Debug("队友监控", "进入副本后等待队伍列表加载超时，已跳过本次自动刷新。");
+            return;
+        }
+
+        if (!IsPartyMonitorDutyPartyReady(nowUtc))
+            return;
+
+        pendingPartyMonitorDutyEnterRefreshUntilUtc = DateTime.MinValue;
+        pendingPartyMonitorDutyEnterPartyCountChangedUtc = DateTime.MinValue;
+        pendingPartyMonitorDutyEnterPartyCount = -1;
         monitorService.RefreshOnce(nowUtc);
-        LogHelper.Debug("队友监控", "检测到从副本返回非副本区域，已刷新一次技能监控缓存。");
+        LogHelper.Debug("队友监控", "进入副本后队伍列表已加载完成，已刷新一次技能监控缓存。");
     }
 
-    private void MarkFrameworkPerfSegment(string name, ref long lastTimestamp, List<string> parts)
+    private bool IsPartyMonitorDutyPartyReady(DateTime nowUtc)
     {
+        if (!DalamudApi.TryGetLocalPlayerInfo(out _, out _, out _, out _))
+            return false;
+
+        var partyCount = 0;
+        try
+        {
+            partyCount = DalamudApi.PartyList.Count();
+        }
+        catch
+        {
+            return false;
+        }
+
+        if (partyCount <= 0)
+            return false;
+
+        if (partyCount != pendingPartyMonitorDutyEnterPartyCount)
+        {
+            pendingPartyMonitorDutyEnterPartyCount = partyCount;
+            pendingPartyMonitorDutyEnterPartyCountChangedUtc = nowUtc;
+            return false;
+        }
+
+        if (pendingPartyMonitorDutyEnterPartyCountChangedUtc == DateTime.MinValue)
+        {
+            pendingPartyMonitorDutyEnterPartyCountChangedUtc = nowUtc;
+            return false;
+        }
+
+        return nowUtc - pendingPartyMonitorDutyEnterPartyCountChangedUtc >= TimeSpan.FromMilliseconds(750);
+    }
+
+    private void MarkFrameworkPerfSegment(string name, ref long lastTimestamp, List<string>? parts)
+    {
+        if (parts == null)
+            return;
+
         var now = Stopwatch.GetTimestamp();
         var elapsedMs = Stopwatch.GetElapsedTime(lastTimestamp, now).TotalMilliseconds;
         lastTimestamp = now;

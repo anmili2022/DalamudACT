@@ -155,6 +155,9 @@ public sealed partial class ACT
     {
         try
         {
+            if (isDisposing)
+                return;
+
             var text = ChatReflectionAccessor.ExtractChatMessageText(message);
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -188,6 +191,9 @@ public sealed partial class ACT
     {
         try
         {
+            if (isDisposing)
+                return;
+
             var text = ChatReflectionAccessor.ExtractLogMessageText(message);
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -213,6 +219,9 @@ public sealed partial class ACT
 
         try
         {
+            if (isDisposing)
+                return;
+
             var text = message.TextValue ?? message.ToString();
             if (string.IsNullOrWhiteSpace(text))
                 return;

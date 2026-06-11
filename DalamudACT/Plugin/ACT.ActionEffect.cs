@@ -19,6 +19,8 @@ public sealed partial class ACT
         GameObjectId* effectTrail)
     {
         receiveAbilityHook!.Original(sourceId, sourceCharacter, pos, effectHeader, effectArray, effectTrail);
+        if (isDisposing)
+            return;
 
         var numTargets = effectHeader->NumTargets;
         if (numTargets == 0)
@@ -50,7 +52,7 @@ public sealed partial class ACT
         uint sourceId,
         nint sourceCharacterAddress)
     {
-        var perfStart = Stopwatch.GetTimestamp();
+        var perfStart = Configuration.EnableEnhancedLog ? Stopwatch.GetTimestamp() : 0;
         var nowUtc = DateTime.UtcNow;
         if (ShouldSuppressCombatModuleWork)
             return;
@@ -64,10 +66,13 @@ public sealed partial class ACT
         var statsEventActive = statsModuleEnabled && (inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback);
         var partyMonitorEventActive = partyMonitorModuleEnabled && inCombatNow;
         var highPerformanceMode = Configuration.HighPerformanceMode;
+        var shouldObserveTimelineAbility = timelineModuleEnabled
+                                           && !highPerformanceMode
+                                           && Configuration.CurrentAreaKind != RuntimeAreaKind.Duty;
         var shouldInspectAbility = statsEventActive || partyMonitorEventActive;
         if (!shouldInspectAbility)
         {
-            if (timelineModuleEnabled && !highPerformanceMode)
+            if (shouldObserveTimelineAbility)
                 timelineService.ObserveAbility(actionId, nowUtc, sourceId);
             return;
         }
@@ -75,7 +80,7 @@ public sealed partial class ACT
         if (!statsEventActive)
         {
             HandlePartyMonitorAbilityOnly(header, actionId, sourceId, sourceCharacterAddress, nowUtc);
-            if (timelineModuleEnabled && !highPerformanceMode)
+            if (shouldObserveTimelineAbility)
                 timelineService.ObserveAbility(actionId, nowUtc, sourceId);
             return;
         }
@@ -248,7 +253,7 @@ public sealed partial class ACT
             }
         }
 
-        if (timelineModuleEnabled && !highPerformanceMode)
+        if (shouldObserveTimelineAbility)
             timelineService.ObserveAbility(actionId, nowUtc, sourceId);
 
         bool TryResolveFriendlySourceOnce(out uint observedSourceActorId)
@@ -267,16 +272,19 @@ public sealed partial class ACT
         string GetCurrentActionName()
             => actionName ??= GetActionName(actionId);
 
-        LogActionEffectPerfIfSlow(
-            perfStart,
-            actionId,
-            header->NumTargets,
-            sourceCanResolveToTrackedActor,
-            anyTargetTracked,
-            statsEventActive,
-            partyMonitorEventActive,
-            timelineModuleEnabled,
-            highPerformanceMode);
+        if (perfStart != 0)
+        {
+            LogActionEffectPerfIfSlow(
+                perfStart,
+                actionId,
+                header->NumTargets,
+                sourceCanResolveToTrackedActor,
+                anyTargetTracked,
+                statsEventActive,
+                partyMonitorEventActive,
+                timelineModuleEnabled,
+                highPerformanceMode);
+        }
 
     }
 

@@ -304,9 +304,10 @@ internal sealed partial class LocalStatsService
     public void Update(string zoneName, bool inCombat, bool forceOutOfCombat = false)
     {
         var nowUtc = DateTime.UtcNow;
-        var perfStart = Stopwatch.GetTimestamp();
+        var perfEnabled = config.EnableEnhancedLog;
+        var perfStart = perfEnabled ? Stopwatch.GetTimestamp() : 0;
         var perfLast = perfStart;
-        var perfParts = new List<string>(8);
+        List<string>? perfParts = perfEnabled ? new List<string>(8) : null;
 
         lock (gate)
         {
@@ -315,7 +316,7 @@ internal sealed partial class LocalStatsService
             currentEncounter.ZoneName = NormalizeZoneName(zoneName);
             PollPartyMemberDeaths(nowUtc, currentEncounter.ZoneName, effectiveInCombat);
             MarkStatsPerfSegment("deaths", ref perfLast, perfParts);
-            if (!config.HighPerformanceMode && !config.CombatTimelineLightweightMode)
+            if (!IsCombatTimelineEffectivelyLightweight())
                 PollCombatTimelineFriendlyStatusesLocked(nowUtc, effectiveInCombat);
             MarkStatsPerfSegment("statuses", ref perfLast, perfParts);
             if (!config.HighPerformanceMode)
@@ -354,11 +355,15 @@ internal sealed partial class LocalStatsService
             MarkStatsPerfSegment("display", ref perfLast, perfParts);
         }
 
-        LogStatsPerfIfSlow(perfStart, perfParts, inCombat && !forceOutOfCombat);
+        if (perfEnabled)
+            LogStatsPerfIfSlow(perfStart, perfParts!, inCombat && !forceOutOfCombat);
     }
 
-    private static void MarkStatsPerfSegment(string name, ref long lastTimestamp, List<string> parts)
+    private static void MarkStatsPerfSegment(string name, ref long lastTimestamp, List<string>? parts)
     {
+        if (parts == null)
+            return;
+
         var now = Stopwatch.GetTimestamp();
         var elapsedMs = Stopwatch.GetElapsedTime(lastTimestamp, now).TotalMilliseconds;
         lastTimestamp = now;

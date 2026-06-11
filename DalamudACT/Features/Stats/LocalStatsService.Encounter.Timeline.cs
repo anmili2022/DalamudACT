@@ -279,7 +279,7 @@ internal sealed partial class LocalStatsService
         if (!config.CombatTimelineRecordingEnabled)
             return false;
 
-        if (!config.HighPerformanceMode && !config.CombatTimelineLightweightMode)
+        if (!IsCombatTimelineEffectivelyLightweight())
             return true;
 
         return kind is CombatTimelineEntryKind.CombatStart
@@ -289,6 +289,11 @@ internal sealed partial class LocalStatsService
             or CombatTimelineEntryKind.TargetIcon
             or CombatTimelineEntryKind.Tether;
     }
+
+    private bool IsCombatTimelineEffectivelyLightweight()
+        => config.HighPerformanceMode
+            || config.CombatTimelineLightweightMode
+            || config.CurrentAreaKind == RuntimeAreaKind.Duty;
 
     private void TrimCombatTimelineEntriesLocked()
     {

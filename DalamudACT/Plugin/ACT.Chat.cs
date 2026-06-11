@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -165,7 +165,7 @@ public sealed partial class ACT
             var logKind = ChatReflectionAccessor.GetLogKind(message);
             if (IsNpcYellLikeChatKind(logKind))
             {
-                if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
+                if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabledInCurrentArea)
                     timelineService.ObserveNpcYell(text, DateTime.UtcNow);
                 return;
             }
@@ -175,7 +175,7 @@ public sealed partial class ACT
 
             var nowUtc = DateTime.UtcNow;
             ObserveBattleCountdownMessage(text, nowUtc);
-            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
+            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabledInCurrentArea)
             {
                 LogRawPacketsNearSystemMessage("handleable-chat", text);
                 timelineService.ObserveSystemLogMessage(text, nowUtc);
@@ -200,7 +200,7 @@ public sealed partial class ACT
 
             var nowUtc = DateTime.UtcNow;
             ObserveBattleCountdownMessage(text, nowUtc);
-            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
+            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabledInCurrentArea)
             {
                 LogRawPacketsNearSystemMessage("log-message", text);
                 timelineService.ObserveSystemLogMessage(text, nowUtc);
@@ -228,7 +228,7 @@ public sealed partial class ACT
 
             if (IsNpcYellLikeChatKind(type.ToString()))
             {
-                if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
+                if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabledInCurrentArea)
                     timelineService.ObserveNpcYell(text, DateTime.UtcNow);
                 return;
             }
@@ -238,7 +238,7 @@ public sealed partial class ACT
 
             var nowUtc = DateTime.UtcNow;
             ObserveBattleCountdownMessage(text, nowUtc);
-            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabled)
+            if (!ShouldSuppressCombatModuleWork && !Configuration.HighPerformanceMode && IsTimelineModuleEnabledInCurrentArea)
             {
                 LogRawPacketsNearSystemMessage("system-chat", text);
                 timelineService.ObserveSystemLogMessage(text, nowUtc);

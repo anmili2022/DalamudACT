@@ -202,6 +202,45 @@ internal sealed class TimelineService
         return "已取消强制加载时间轴。";
     }
 
+    public void DisableOutsideDuty(uint zoneId, string zoneName)
+    {
+        var disabledStatusText = string.IsNullOrWhiteSpace(zoneName)
+            ? "非副本区域不启用时间轴。"
+            : $"非副本区域不启用时间轴：{zoneName} ({zoneId})";
+
+        if (loadedZoneId == zoneId
+            && string.Equals(loadedZoneName, zoneName, StringComparison.Ordinal)
+            && definition == null
+            && pendingTimelineLoad == null
+            && string.Equals(statusText, disabledStatusText, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        loadedZoneId = zoneId;
+        loadedZoneName = zoneName;
+        startedAtUtc = null;
+        outOfCombatSinceUtc = null;
+        startedFromInCombatSync = false;
+        displayOffsetSeconds = 0f;
+        definition = null;
+        sourcePath = string.Empty;
+        pendingTimelineLoad = null;
+        pendingTimelineLoadKey = string.Empty;
+        pendingTimelineLoadForced = false;
+        lastSystemLogSyncTimeSeconds = 0f;
+        lastNpcYellSyncTimeSeconds = 0f;
+        lastMapEffectSyncTimeSeconds = 0f;
+        spokenTtsKeys.Clear();
+        spokenActionResponseKeys.Clear();
+        lastTimelineTtsTextUtc.Clear();
+        lastInstantTtsByActionKey.Clear();
+        observedStartsUsingCasts.Clear();
+        pendingInitialAbilitySyncs.Clear();
+        ResetRuntimeCaches();
+        statusText = disabledStatusText;
+    }
+
     public void Update(bool inCombat, uint zoneId, string zoneName)
     {
         EnsureTimelineForZone(zoneId, zoneName, inCombat);

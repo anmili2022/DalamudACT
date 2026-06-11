@@ -327,35 +327,14 @@ internal static partial class StatsPanel
 
     private static void DrawDpsTab(CombatDataWrapper combatData, PluginConfiguration config)
     {
-        var visibleRows = GetVisibleCombatantRows(combatData, config);
-        var nonHostileCombatants = visibleRows
-            .Where(static row => row.Kind != FloatingCombatantKind.HostileNpc)
-            .Select(static row => row.Combatant)
-            .OrderByDescending(static combatant => ParseMetric(combatant.EncDpsText))
-            .ThenBy(static combatant => combatant.Name, StringComparer.Ordinal)
-            .ToList();
-        var hostileCombatants = visibleRows
-            .Where(static row => row.Kind == FloatingCombatantKind.HostileNpc)
-            .Select(static row => row.Combatant)
-            .OrderByDescending(static combatant => ParseMetric(combatant.EncDpsText))
-            .ThenBy(static combatant => combatant.Name, StringComparer.Ordinal)
-            .ToList();
-        var orderedVisibleCombatants = nonHostileCombatants
-            .Concat(hostileCombatants)
-            .ToList();
-
-        var totalDps = nonHostileCombatants
-            .Sum(static c => ParseMetric(c.EncDpsText));
-        var totalDamage = FormatCompactAmount(nonHostileCombatants.Sum(static c => ParseLocalizedAmount(c.DamageText)));
-        var totalDeaths = nonHostileCombatants
-            .Sum(static c => ParseCount(c.DeathsText));
+        var dpsRows = GetDpsRowsSnapshot(combatData, config);
 
         DrawMetricTab(
             id: "dps",
             valueColumnLabel: "\u79d2\u4f24",
             combatData: combatData,
             config: config,
-            sourceRows: orderedVisibleCombatants,
+            sourceRows: dpsRows.OrderedCombatants,
             selector: static c => ParseMetric(c.EncDpsText),
             textSelector: static c => c.EncDpsText ?? "0",
             tooltipPrimaryLabel: "\u4f24\u5bb3\u91cf",
@@ -373,11 +352,11 @@ internal static partial class StatsPanel
             showSummaryRow: true,
             summaryName: "\u603bDPS",
             summaryJob: "\u5168\u961f",
-            summaryDamageText: totalDamage,
-            summaryValueText: FormatMetricValue(totalDps),
-            summaryDeathsText: totalDeaths.ToString(CultureInfo.InvariantCulture),
+            summaryDamageText: dpsRows.TotalDamageText,
+            summaryValueText: FormatMetricValue(dpsRows.TotalDps),
+            summaryDeathsText: dpsRows.TotalDeaths.ToString(CultureInfo.InvariantCulture),
             keepSourceOrder: true,
-            summaryRowInsertIndex: nonHostileCombatants.Count);
+            summaryRowInsertIndex: dpsRows.SummaryRowInsertIndex);
     }
 
 

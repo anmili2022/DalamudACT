@@ -690,9 +690,8 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
         return CurrentAreaKind switch
         {
-            RuntimeAreaKind.City or RuntimeAreaKind.Housing => PresetLowLoadTimelineMs,
+            RuntimeAreaKind.City or RuntimeAreaKind.Housing or RuntimeAreaKind.Field or RuntimeAreaKind.Special => PresetLowLoadTimelineMs,
             RuntimeAreaKind.Duty => PresetStandardTimelineMs,
-            RuntimeAreaKind.Field => PresetStandardTimelineMs,
             _ => Math.Clamp(TimelineUpdateIntervalMs, 100, 2000),
         };
     }
@@ -704,9 +703,8 @@ public sealed partial class PluginConfiguration : IPluginConfiguration
 
         return CurrentAreaKind switch
         {
-            RuntimeAreaKind.City or RuntimeAreaKind.Housing => lowLoadValue,
+            RuntimeAreaKind.City or RuntimeAreaKind.Housing or RuntimeAreaKind.Field or RuntimeAreaKind.Special => lowLoadValue,
             RuntimeAreaKind.Duty => standardValue,
-            RuntimeAreaKind.Field => standardValue,
             _ => Math.Clamp(manualValue, 100, 2000),
         };
     }

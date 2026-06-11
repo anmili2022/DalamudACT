@@ -138,8 +138,8 @@ internal static partial class StatsPanel
         }
 
         var sourceCombatants = sourceRows ?? GetVisibleCombatants(combatData, config);
-        var allRows = keepSourceOrder
-            ? sourceCombatants.ToList()
+        IReadOnlyList<Combatant> allRows = keepSourceOrder && sourceRows != null
+            ? sourceRows
             : sourceCombatants
                 .OrderByDescending(selector)
                 .ToList();
@@ -151,11 +151,19 @@ internal static partial class StatsPanel
             return;
         }
 
-        var rows = maxRows.HasValue
+        IReadOnlyList<Combatant> rows = maxRows.HasValue && allRows.Count > Math.Max(maxRows.Value, 1)
             ? allRows.Take(Math.Max(maxRows.Value, 1)).ToList()
             : allRows;
-        var maxValue = allRows.Max(selector);
-        var totalValue = allRows.Sum(selector);
+        var maxValue = 0d;
+        var totalValue = 0d;
+        foreach (var combatant in allRows)
+        {
+            var value = selector(combatant);
+            if (value > maxValue)
+                maxValue = value;
+
+            totalValue += value;
+        }
         var effectiveSummaryRowInsertIndex = showSummaryRow
             ? Math.Clamp(summaryRowInsertIndex ?? rows.Count, 0, rows.Count)
             : rows.Count;

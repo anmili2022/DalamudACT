@@ -62,13 +62,13 @@ public sealed partial class ACT
         var inDutyRecorderPlayback = DalamudApi.Conditions.Any(ConditionFlag.DutyRecorderPlayback);
         var statsModuleEnabled = IsStatsModuleEnabled;
         var partyMonitorModuleEnabled = IsPartyMonitorModuleEnabled;
-        var timelineModuleEnabled = IsTimelineModuleEnabled;
+        var timelineModuleEnabled = IsTimelineModuleEnabledInCurrentArea;
         var statsEventActive = statsModuleEnabled && (inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback);
         var partyMonitorEventActive = partyMonitorModuleEnabled && inCombatNow;
         var highPerformanceMode = Configuration.HighPerformanceMode;
         var shouldObserveTimelineAbility = timelineModuleEnabled
                                            && !highPerformanceMode
-                                           && Configuration.CurrentAreaKind != RuntimeAreaKind.Duty;
+                                           && ShouldRunHeavyTimelineSync(Configuration.CurrentAreaKind);
         var shouldInspectAbility = statsEventActive || partyMonitorEventActive;
         if (!shouldInspectAbility)
         {

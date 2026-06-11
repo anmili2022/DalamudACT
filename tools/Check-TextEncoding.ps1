@@ -71,11 +71,11 @@ function Get-CandidateFiles {
     $names = New-Object System.Collections.Generic.List[string]
 
     try {
-        (& git -C $rootPath diff --name-only) | ForEach-Object {
+        (& git -C $rootPath -c core.quotepath=false diff --name-only) | ForEach-Object {
             if (-not [string]::IsNullOrWhiteSpace($_)) { [void]$names.Add($_) }
         }
 
-        (& git -C $rootPath ls-files --others --exclude-standard) | ForEach-Object {
+        (& git -C $rootPath -c core.quotepath=false ls-files --others --exclude-standard) | ForEach-Object {
             if (-not [string]::IsNullOrWhiteSpace($_)) { [void]$names.Add($_) }
         }
     } catch {

@@ -35,26 +35,7 @@ internal static partial class StatsPanel
 
     private static void DrawMinimalDpsTab(CombatDataWrapper combatData, PluginConfiguration config)
     {
-        var visibleRows = GetVisibleCombatantRows(combatData, config);
-        var nonHostileCombatants = visibleRows
-            .Where(static row => row.Kind != FloatingCombatantKind.HostileNpc)
-            .Select(static row => row.Combatant)
-            .OrderByDescending(static combatant => ParseMetric(combatant.EncDpsText))
-            .ThenBy(static combatant => combatant.Name, StringComparer.Ordinal)
-            .ToList();
-        var hostileCombatants = visibleRows
-            .Where(static row => row.Kind == FloatingCombatantKind.HostileNpc)
-            .Select(static row => row.Combatant)
-            .OrderByDescending(static combatant => ParseMetric(combatant.EncDpsText))
-            .ThenBy(static combatant => combatant.Name, StringComparer.Ordinal)
-            .ToList();
-        var orderedVisibleCombatants = nonHostileCombatants
-            .Concat(hostileCombatants)
-            .ToList();
-
-        var totalDps = nonHostileCombatants.Sum(static c => ParseMetric(c.EncDpsText));
-        var totalDamage = FormatCompactAmount(nonHostileCombatants.Sum(static c => ParseLocalizedAmount(c.DamageText)));
-        var totalDeaths = nonHostileCombatants.Sum(static c => ParseCount(c.DeathsText));
+        var dpsRows = GetDpsRowsSnapshot(combatData, config);
         var durationText = combatData.Msg?.Encounter?.DurationText ?? "00:00";
 
         DrawMinimalMetricTab(
@@ -63,7 +44,7 @@ internal static partial class StatsPanel
             config: config,
             selector: static c => ParseMetric(c.EncDpsText),
             textSelector: static c => c.EncDpsText ?? "0",
-            sourceRows: orderedVisibleCombatants,
+            sourceRows: dpsRows.OrderedCombatants,
             showPlayerColumn: config.FloatingStatsMinimalShowPlayerColumn,
             showDamageColumn: config.FloatingStatsMinimalShowDamageColumn,
             damageColumnLabel: "伤害量",
@@ -72,17 +53,17 @@ internal static partial class StatsPanel
             maxRows: config.DpsVisibleCount,
             showSummaryRow: config.FloatingStatsMinimalShowSummaryRow,
             summaryName: "总DPS",
-            summaryDamageText: totalDamage,
-            summaryValueText: FormatMetricValue(totalDps),
-            summaryDeathsText: totalDeaths.ToString(CultureInfo.InvariantCulture),
+            summaryDamageText: dpsRows.TotalDamageText,
+            summaryValueText: FormatMetricValue(dpsRows.TotalDps),
+            summaryDeathsText: dpsRows.TotalDeaths.ToString(CultureInfo.InvariantCulture),
             summaryShareTextOverride: ResolveMinimalSummaryBarText(
                 durationText,
                 "总DPS",
-                FormatMetricValue(totalDps),
-                totalDamage,
-                totalDeaths.ToString(CultureInfo.InvariantCulture),
+                FormatMetricValue(dpsRows.TotalDps),
+                dpsRows.TotalDamageText,
+                dpsRows.TotalDeaths.ToString(CultureInfo.InvariantCulture),
                 config),
-            summaryRowInsertIndex: nonHostileCombatants.Count);
+            summaryRowInsertIndex: dpsRows.SummaryRowInsertIndex);
     }
 
     private static string ResolveMinimalShareText(
@@ -199,8 +180,8 @@ internal static partial class StatsPanel
             ImGui.SetWindowFontScale(minimalFontScale);
 
         var sourceCombatants = sourceRows ?? GetVisibleCombatants(combatData, config);
-        var allRows = sourceRows != null
-            ? sourceCombatants.ToList()
+        IReadOnlyList<Combatant> allRows = sourceRows != null
+            ? sourceRows
             : sourceCombatants
                 .OrderByDescending(selector)
                 .ToList();
@@ -215,11 +196,19 @@ internal static partial class StatsPanel
             return;
         }
 
-        var rows = maxRows.HasValue
+        IReadOnlyList<Combatant> rows = maxRows.HasValue && allRows.Count > Math.Max(maxRows.Value, 1)
             ? allRows.Take(Math.Max(maxRows.Value, 1)).ToList()
             : allRows;
-        var maxValue = allRows.Max(selector);
-        var totalValue = allRows.Sum(selector);
+        var maxValue = 0d;
+        var totalValue = 0d;
+        foreach (var combatant in allRows)
+        {
+            var value = selector(combatant);
+            if (value > maxValue)
+                maxValue = value;
+
+            totalValue += value;
+        }
         var effectiveSummaryRowInsertIndex = showSummaryRow
             ? Math.Clamp(summaryRowInsertIndex ?? rows.Count, 0, rows.Count)
             : rows.Count;

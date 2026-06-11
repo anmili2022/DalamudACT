@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Windowing;
@@ -13,6 +12,7 @@ internal sealed class TimelineWindow : Window
     private const float RowHeight = 18f;
     private const float Padding = 3f;
     private const float TimeColumnWidth = 54f;
+    private static readonly TimeSpan RowCacheDuration = TimeSpan.FromMilliseconds(100);
     private const ImGuiWindowFlags BaseFlags = ImGuiWindowFlags.NoScrollbar
                                              | ImGuiWindowFlags.NoScrollWithMouse
                                              | ImGuiWindowFlags.NoTitleBar
@@ -23,6 +23,14 @@ internal sealed class TimelineWindow : Window
     private bool resetSizeRequested;
     private bool observedLockTimelineWindow;
     private float? lockedPanelWidth;
+    private readonly List<TimelineRow> cachedRows = new(30);
+    private DateTime cachedRowsAtUtc = DateTime.MinValue;
+    private int cachedRowsMaxRows;
+    private int cachedRowsVisibleSeconds;
+    private bool cachedRowsDebugMode;
+    private float cachedRowsPanelWidth;
+    private string cachedRowsStatusText = string.Empty;
+    private string cachedRowsDebugText = string.Empty;
 
     public TimelineWindow(PluginConfiguration config, TimelineService timelineService, Action openSettings)
         : base("时间轴###TimelineWindow", BaseFlags | ImGuiWindowFlags.NoTitleBar)
@@ -93,17 +101,62 @@ internal sealed class TimelineWindow : Window
             : BaseFlags;
         BgAlpha = Math.Clamp(config.TimelineWindowOpacity, 0f, 1f);
 
-        var entries = timelineService.GetVisibleEntries();
-        var rows = entries.Count > 0
-            ? entries.Select(entry => TimelineRow.FromEntry(entry, config.TimelineVisibleSeconds)).ToList()
-            : config.TimelineDebugMode
-                ? BuildDebugRows(maxRows, panelWidth)
-                : BuildEmptyRows(maxRows);
+        var rows = GetRows(maxRows, panelWidth);
 
         DrawPanel(rows, maxRows, panelWidth, panelHeight, rowGap);
 
         if (!config.LockTimelineWindow && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && ImGui.IsWindowHovered())
             openSettings();
+    }
+
+    private IReadOnlyList<TimelineRow> GetRows(int maxRows, float panelWidth)
+    {
+        var visibleSeconds = Math.Clamp(config.TimelineVisibleSeconds, 10, 600);
+        var debugMode = config.TimelineDebugMode;
+        var statusText = debugMode ? timelineService.StatusText : string.Empty;
+        var debugText = debugMode ? timelineService.DebugText : string.Empty;
+        var nowUtc = DateTime.UtcNow;
+        if (cachedRows.Count > 0
+            && cachedRowsMaxRows == maxRows
+            && cachedRowsVisibleSeconds == visibleSeconds
+            && cachedRowsDebugMode == debugMode
+            && Math.Abs(cachedRowsPanelWidth - panelWidth) <= 0.5f
+            && string.Equals(cachedRowsStatusText, statusText, StringComparison.Ordinal)
+            && string.Equals(cachedRowsDebugText, debugText, StringComparison.Ordinal)
+            && nowUtc - cachedRowsAtUtc < RowCacheDuration)
+        {
+            return cachedRows;
+        }
+
+        cachedRows.Clear();
+        var entries = timelineService.GetVisibleEntries();
+        if (entries.Count > 0)
+        {
+            var rowWidth = Math.Max(1f, panelWidth - Padding * 2f);
+            foreach (var entry in entries)
+            {
+                if (cachedRows.Count >= maxRows)
+                    break;
+
+                cachedRows.Add(TimelineRow.FromEntry(entry, visibleSeconds, rowWidth));
+            }
+        }
+        else if (debugMode)
+        {
+            BuildDebugRows(cachedRows, maxRows, panelWidth, statusText, debugText);
+        }
+
+        while (cachedRows.Count < maxRows)
+            cachedRows.Add(TimelineRow.Empty);
+
+        cachedRowsAtUtc = nowUtc;
+        cachedRowsMaxRows = maxRows;
+        cachedRowsVisibleSeconds = visibleSeconds;
+        cachedRowsDebugMode = debugMode;
+        cachedRowsPanelWidth = panelWidth;
+        cachedRowsStatusText = statusText;
+        cachedRowsDebugText = debugText;
+        return cachedRows;
     }
 
     private void DrawPanel(IReadOnlyList<TimelineRow> rows, int maxRows, float panelWidth, float panelHeight, float rowGap)
@@ -150,40 +203,27 @@ internal sealed class TimelineWindow : Window
                 drawList.AddRectFilled(rowMin, new Vector2(rowMin.X + fillWidth, rowMax.Y), ToU32(barColor), 0f);
         }
 
-        var dynamicTimeWidth = string.IsNullOrWhiteSpace(row.TimeText)
-            ? 0f
-            : Math.Max(TimeColumnWidth, ImGui.CalcTextSize(row.TimeText).X + 12f);
-        var name = TruncateText(row.Name, row.IsStatus ? 10f : dynamicTimeWidth + 8f, rowMax.X - rowMin.X);
         var namePos = rowMin + new Vector2(5f, 1f);
-        DrawOutlinedText(drawList, namePos, name, new Vector4(1f, 1f, 1f, string.IsNullOrWhiteSpace(row.Name) ? 0.45f : 1f));
+        DrawOutlinedText(drawList, namePos, row.Name, new Vector4(1f, 1f, 1f, string.IsNullOrWhiteSpace(row.Name) ? 0.45f : 1f));
 
         if (!string.IsNullOrWhiteSpace(row.TimeText))
         {
-            var timeSize = ImGui.CalcTextSize(row.TimeText);
-            var timePos = new Vector2(Math.Max(rowMin.X + 5f, rowMax.X - timeSize.X - 12f), rowMin.Y + 1f);
+            var timePos = new Vector2(Math.Max(rowMin.X + 5f, rowMax.X - row.TimeTextWidth - 12f), rowMin.Y + 1f);
             DrawOutlinedText(drawList, timePos, row.TimeText, new Vector4(1f, 1f, 1f, 1f));
         }
     }
 
-    private List<TimelineRow> BuildDebugRows(int maxRows, float panelWidth)
+    private static void BuildDebugRows(
+        List<TimelineRow> rows,
+        int maxRows,
+        float panelWidth,
+        string statusText,
+        string debugText)
     {
-        var rows = new List<TimelineRow>();
-        AddDebugRows(rows, maxRows, timelineService.StatusText, panelWidth);
+        AddDebugRows(rows, maxRows, statusText, panelWidth);
 
-        foreach (var line in timelineService.DebugText.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        foreach (var line in debugText.Split('\n', StringSplitOptions.RemoveEmptyEntries))
             AddDebugRows(rows, maxRows, line, panelWidth);
-
-        while (rows.Count < maxRows)
-            rows.Add(TimelineRow.Empty);
-        return rows.Take(maxRows).ToList();
-    }
-
-    private static List<TimelineRow> BuildEmptyRows(int maxRows)
-    {
-        var rows = new List<TimelineRow>(maxRows);
-        while (rows.Count < maxRows)
-            rows.Add(TimelineRow.Empty);
-        return rows;
     }
 
     private static void AddDebugRows(List<TimelineRow> rows, int maxRows, string text, float panelWidth)
@@ -234,8 +274,6 @@ internal sealed class TimelineWindow : Window
         drawList.AddText(pos + new Vector2(1f, 0f), outlineColor, text);
         drawList.AddText(pos + new Vector2(0f, -1f), outlineColor, text);
         drawList.AddText(pos + new Vector2(0f, 1f), outlineColor, text);
-        drawList.AddText(pos + new Vector2(0.3f, 0f), textColor, text);
-        drawList.AddText(pos + new Vector2(-0.3f, 0f), textColor, text);
         drawList.AddText(pos, textColor, text);
     }
 
@@ -257,20 +295,30 @@ internal sealed class TimelineWindow : Window
     private static uint ToU32(Vector4 color)
         => ImGui.ColorConvertFloat4ToU32(color);
 
-    private readonly record struct TimelineRow(string Name, string TimeText, float Seconds, float FillRatio, bool IsStatus)
+    private readonly record struct TimelineRow(
+        string Name,
+        string TimeText,
+        float TimeTextWidth,
+        float Seconds,
+        float FillRatio,
+        bool IsStatus)
     {
-        public static readonly TimelineRow Empty = new(string.Empty, string.Empty, 999f, 0f, true);
+        public static readonly TimelineRow Empty = new(string.Empty, string.Empty, 0f, 999f, 0f, true);
 
-        public static TimelineRow FromEntry(TimelineVisibleEntry visible, int visibleSeconds)
+        public static TimelineRow FromEntry(TimelineVisibleEntry visible, int visibleSeconds, float rowWidth)
         {
             var seconds = Math.Max(0f, visible.RelativeSeconds);
             var windowSeconds = Math.Clamp(visibleSeconds <= 0 ? 90f : visibleSeconds, 10f, 600f);
             var normalizedRemaining = Math.Clamp(seconds / windowSeconds, 0f, 1f);
             var ratio = 1f - MathF.Sqrt(normalizedRemaining);
-            return new TimelineRow(visible.DisplayText, FormatCountdown(seconds), seconds, ratio, false);
+            var timeText = FormatCountdown(seconds);
+            var timeWidth = ImGui.CalcTextSize(timeText).X;
+            var dynamicTimeWidth = Math.Max(TimeColumnWidth, timeWidth + 12f);
+            var name = TruncateText(visible.DisplayText, dynamicTimeWidth + 8f, rowWidth);
+            return new TimelineRow(name, timeText, timeWidth, seconds, ratio, false);
         }
 
         public static TimelineRow Status(string text)
-            => new(text, string.Empty, 999f, 1f, true);
+            => new(text, string.Empty, 0f, 999f, 1f, true);
     }
 }

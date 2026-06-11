@@ -78,6 +78,9 @@ public sealed partial class ACT : IDalamudPlugin
 
     private bool IsTimelineModuleEnabled => Configuration.ShowTimelineWindow;
 
+    private bool IsTimelineModuleEnabledInCurrentArea
+        => IsTimelineModuleEnabled && IsTimelineRuntimeAreaEnabled(Configuration.CurrentAreaKind);
+
     private bool IsStatusObserverModuleEnabled => Configuration.StatusObserver.ShowWindow;
 
     private bool ShouldSuppressCombatModuleWork => DalamudApi.ClientState.IsPvP;
@@ -152,14 +155,16 @@ public sealed partial class ACT : IDalamudPlugin
             var suppressCombatModuleWork = ShouldSuppressCombatModuleWork;
             var replayStatsActive = Configuration.ReplayStatsMode && inDutyRecorderPlayback;
             var statsActive = !suppressCombatModuleWork && IsStatsModuleEnabled && (inCombat || replayStatsActive);
-            var timelineActive = !suppressCombatModuleWork && IsTimelineModuleEnabled && (inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter);
+            var timelineAreaEnabled = IsTimelineRuntimeAreaEnabled(runtimeAreaKind);
+            var timelineModuleEnabled = IsTimelineModuleEnabled;
+            var timelineActive = !suppressCombatModuleWork && timelineAreaEnabled && timelineModuleEnabled && (inCombat || inDutyRecorderPlayback && statsService.HasActiveEncounter);
             var nowUtc = DateTime.UtcNow;
             var forceReplayOutOfCombat = replayStatsActive && !inCombat && statsService.IsEncounterIdle(nowUtc, TimeSpan.FromSeconds(60));
             var statsUpdateIntervalMs = Configuration.GetEffectiveStatsUpdateIntervalMs();
             var shouldUpdateStats = nowUtc - lastStatsUpdateUtc >= TimeSpan.FromMilliseconds(statsUpdateIntervalMs);
             var timelineUpdateIntervalMs = Configuration.GetEffectiveTimelineUpdateIntervalMs(timelineActive);
             var timelineUpdateInterval = TimeSpan.FromMilliseconds(timelineUpdateIntervalMs);
-            var shouldUpdateTimeline = nowUtc - lastTimelineUpdateUtc >= timelineUpdateInterval;
+            var shouldUpdateTimeline = timelineModuleEnabled && nowUtc - lastTimelineUpdateUtc >= timelineUpdateInterval;
             var ranHeavyWork = false;
             RefreshPartyMonitorAfterDutyTransition(runtimeAreaKind, nowUtc);
 
@@ -203,7 +208,10 @@ public sealed partial class ACT : IDalamudPlugin
             if (!ranHeavyWork && shouldUpdateTimeline)
             {
                 lastTimelineUpdateUtc = nowUtc;
-                timelineService.Update(timelineActive, territoryId, zoneName);
+                if (timelineAreaEnabled)
+                    timelineService.Update(timelineActive, territoryId, zoneName);
+                else
+                    timelineService.DisableOutsideDuty(territoryId, zoneName);
                 MarkFrameworkPerfSegment("timeline", ref perfLast, perfParts);
                 ranHeavyWork = true;
             }
@@ -261,6 +269,9 @@ public sealed partial class ACT : IDalamudPlugin
         => runtimeAreaKind == RuntimeAreaKind.Duty
             ? TimeSpan.FromMilliseconds(1000)
             : TimeSpan.FromMilliseconds(100);
+
+    private static bool IsTimelineRuntimeAreaEnabled(RuntimeAreaKind runtimeAreaKind)
+        => runtimeAreaKind == RuntimeAreaKind.Duty;
 
     private bool ShouldRunHeavyTimelineSync(RuntimeAreaKind runtimeAreaKind)
         => !Configuration.HighPerformanceMode

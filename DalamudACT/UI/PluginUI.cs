@@ -94,7 +94,9 @@ internal sealed class PluginUI : IDisposable
 
     private void SyncTimelineVisibility()
     {
-        var shouldShow = config.ShowTimelineWindow && (config.TimelineDebugMode || timelineService.HasTimeline);
+        var shouldShow = config.ShowTimelineWindow
+                         && config.CurrentAreaKind == RuntimeAreaKind.Duty
+                         && (config.TimelineDebugMode || timelineService.HasTimeline);
         if (timelineWindow.IsOpen != shouldShow)
             timelineWindow.IsOpen = shouldShow;
     }

@@ -65,7 +65,7 @@ public sealed partial class ACT
                 case 0x1F9:
                 {
                     var utcNow = DateTime.UtcNow;
-                    if (IsTimelineModuleEnabled)
+                    if (IsTimelineModuleEnabledInCurrentArea)
                         timelineService.ObserveMapEffect(entityId, param1, param2, utcNow);
                     if (IsStatsModuleEnabled)
                         statsService.RecordCombatTimelineMapEffect(param1, param2, utcNow);

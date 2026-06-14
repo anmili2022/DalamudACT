@@ -388,6 +388,18 @@ internal sealed partial class CombatTimelineWindow
             ? contentFilters | flag
             : contentFilters & ~flag;
         config.CombatTimelineContentFilterMask = (int)contentFilters;
+        switch (flag)
+        {
+            case TimelineContentFilter.MapEffect:
+                config.CombatTimelineMapEffectEnabled = enabled;
+                break;
+            case TimelineContentFilter.TargetIcon:
+                config.CombatTimelineTargetIconEnabled = enabled;
+                break;
+            case TimelineContentFilter.Tether:
+                config.CombatTimelineTetherEnabled = enabled;
+                break;
+        }
         config.Save();
     }
 

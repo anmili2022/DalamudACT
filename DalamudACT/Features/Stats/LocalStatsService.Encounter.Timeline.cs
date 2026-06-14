@@ -60,7 +60,7 @@ internal sealed partial class LocalStatsService
     {
         lock (gate)
         {
-            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineTargetIconEnabled || !currentEncounter.Started)
+            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineMapEffectEnabled || !currentEncounter.Started)
                 return;
 
             AppendCombatTimelineEntryLocked(
@@ -79,7 +79,7 @@ internal sealed partial class LocalStatsService
     {
         lock (gate)
         {
-            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineMapEffectEnabled || !currentEncounter.Started)
+            if (!config.CombatTimelineRecordingEnabled || !config.CombatTimelineTargetIconEnabled || !currentEncounter.Started)
                 return;
 
             var sourceName = ResolveCombatTimelineSourceName(sourceActorId, nowUtc);
@@ -292,8 +292,7 @@ internal sealed partial class LocalStatsService
 
     private bool IsCombatTimelineEffectivelyLightweight()
         => config.HighPerformanceMode
-            || config.CombatTimelineLightweightMode
-            || config.CurrentAreaKind == RuntimeAreaKind.Duty;
+            || config.CombatTimelineLightweightMode;
 
     private void TrimCombatTimelineEntriesLocked()
     {

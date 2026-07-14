@@ -73,6 +73,8 @@ internal sealed class TimelineService
 
     public bool HasTimeline => definition != null;
 
+    public bool HasStartsUsingResponseTts => runtimeIndex?.StartsUsingResponsesByActionId.Count > 0;
+
     public bool HasForcedTimeline => !string.IsNullOrWhiteSpace(forcedTimelinePath);
 
     public string AutoDownloadStatusText => autoDownloadStatusText;
@@ -332,13 +334,16 @@ internal sealed class TimelineService
         return true;
     }
 
-    public void PollStartsUsingCasts(DateTime nowUtc, bool inCombat, IEnumerable<Dalamud.Game.ClientState.Objects.Types.IBattleChara>? battleCharas = null)
+    public void PollStartsUsingCasts(DateTime nowUtc, bool inCombat, IEnumerable<Dalamud.Game.ClientState.Objects.Types.IBattleChara>? battleCharas = null, bool allowSync = true)
     {
         if (definition == null || !inCombat)
         {
             observedStartsUsingCasts.Clear();
             return;
         }
+
+        if (!allowSync && runtimeIndex?.StartsUsingResponsesByActionId.Count is not > 0)
+            return;
 
         foreach (var battleChara in battleCharas ?? DalamudApi.ObjectTable.OfType<Dalamud.Game.ClientState.Objects.Types.IBattleChara>())
         {
@@ -349,13 +354,16 @@ internal sealed class TimelineService
             if (actionId == 0)
                 continue;
 
+            if (!allowSync && runtimeIndex?.StartsUsingResponsesByActionId.ContainsKey(actionId) != true)
+                continue;
+
             var sourceId = BattleCharaReflectionAccessor.GetActorId(battleChara);
             var sourceName = battleChara.Name.TextValue?.Trim() ?? string.Empty;
-            ObserveStartsUsing(actionId, nowUtc, sourceId, sourceName);
+            ObserveStartsUsing(actionId, nowUtc, sourceId, sourceName, allowSync);
         }
     }
 
-    private void ObserveStartsUsing(uint actionId, DateTime nowUtc, uint sourceId, string sourceName)
+    private void ObserveStartsUsing(uint actionId, DateTime nowUtc, uint sourceId, string sourceName, bool allowSync)
     {
         if (definition == null || actionId == 0)
             return;
@@ -367,6 +375,12 @@ internal sealed class TimelineService
         var wasRunning = startedAtUtc.HasValue;
         var current = wasRunning ? (float)(nowUtc - startedAtUtc!.Value).TotalSeconds : 0f;
         observedStartsUsingCasts[key] = nowUtc;
+
+        if (!allowSync)
+        {
+            ProcessStartsUsingResponseTts(actionId, nowUtc, current, wasRunning, sourceName);
+            return;
+        }
 
         var entriesByAction = runtimeIndex?.StartsUsingByActionId;
         var sourceCandidates = entriesByAction != null && entriesByAction.TryGetValue(actionId, out var indexedStartsUsingEntries)
@@ -812,7 +826,7 @@ internal sealed class TimelineService
         return null;
     }
 
-    public void ObserveAbility(uint actionId, DateTime nowUtc, uint sourceId = 0)
+    public void ObserveAbility(uint actionId, DateTime nowUtc, uint sourceId = 0, bool allowSync = true)
     {
         if (actionId == 0)
             return;
@@ -833,6 +847,9 @@ internal sealed class TimelineService
             return;
 
         ProcessActionResponseTts(actionId, candidates, nowUtc, current, wasRunning);
+
+        if (!allowSync)
+            return;
 
         if (TryConfirmInitialAbilitySync(actionId, nowUtc, out var confirmedEntry))
         {

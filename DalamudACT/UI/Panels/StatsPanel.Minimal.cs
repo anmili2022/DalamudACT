@@ -63,6 +63,7 @@ internal static partial class StatsPanel
                 dpsRows.TotalDamageText,
                 dpsRows.TotalDeaths.ToString(CultureInfo.InvariantCulture),
                 config),
+            summaryTooltipText: $"[{FormatEmptyAsFallback(durationText, "00:00")}-{FormatMetricValue(dpsRows.TotalDps)}]",
             summaryRowInsertIndex: dpsRows.SummaryRowInsertIndex);
     }
 
@@ -160,6 +161,7 @@ internal static partial class StatsPanel
         string? summaryValueText = null,
         string? summaryDeathsText = null,
         string? summaryShareTextOverride = null,
+        string? summaryTooltipText = null,
         int? summaryRowInsertIndex = null)
     {
         var style = ImGui.GetStyle();
@@ -303,7 +305,8 @@ internal static partial class StatsPanel
                     deathsColumnIndex,
                     summaryDeathsText,
                     shareColumnIndex,
-                    summaryShareTextOverride ?? ResolveMinimalSummaryShareText(summaryName, summaryValueText));
+                    summaryShareTextOverride ?? ResolveMinimalSummaryShareText(summaryName, summaryValueText),
+                    summaryTooltipText);
             }
 
             var combatant = rows[rowIndex];
@@ -389,7 +392,8 @@ internal static partial class StatsPanel
                 deathsColumnIndex,
                 summaryDeathsText,
                 shareColumnIndex,
-                summaryShareTextOverride ?? ResolveMinimalSummaryShareText(summaryName, summaryValueText));
+                summaryShareTextOverride ?? ResolveMinimalSummaryShareText(summaryName, summaryValueText),
+                summaryTooltipText);
         }
 
         if (minimalFontScale != 1f)
@@ -411,7 +415,8 @@ internal static partial class StatsPanel
         int? deathsColumnIndex,
         string? summaryDeathsText,
         int shareColumnIndex,
-        string summaryShareText)
+        string summaryShareText,
+        string? summaryTooltipText = null)
     {
         TableNextRow(rowHeight);
 
@@ -439,5 +444,7 @@ internal static partial class StatsPanel
         ImGui.TableSetColumnIndex(shareColumnIndex);
         AlignMinimalCellContentY(rowHeight);
         ImGui.TextUnformatted(summaryShareText);
+        if (!string.IsNullOrWhiteSpace(summaryTooltipText) && ImGui.IsItemHovered())
+            ImGui.SetTooltip(summaryTooltipText);
     }
 }

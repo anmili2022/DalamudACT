@@ -75,6 +75,15 @@ Expected result:
 0 errors
 ```
 
+If local build prints `Dalamud.NET.Sdk: root at ...\Hooks\dev\` but then fails with many missing `Dalamud`, `Dalamud.Bindings.ImGui`, `FFXIVClientStructs`, or `Lumina` references, MSBuild did not pass the local Dalamud path through to reference resolution. Verify the path exists, then build with an explicit `DalamudLibPath`:
+
+```powershell
+Test-Path -LiteralPath "$env:APPDATA\XIVLauncherCN\addon\Hooks\dev"
+dotnet build "DalamudACT/DalamudACT.csproj" --no-restore -p:DalamudLibPath="$env:APPDATA\XIVLauncherCN\addon\Hooks\dev\"
+```
+
+Expected result is still `0 warnings` and `0 errors`. This is a local build-environment fallback, not a source-code fix.
+
 If release-specific build parameters need checking:
 
 ```powershell

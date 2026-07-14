@@ -61,6 +61,26 @@ internal sealed class StatusObserverService
         return cachedTargetStatuses;
     }
 
+    public void RefreshOnce(bool refreshSelf, bool refreshTarget)
+    {
+        if (!config.StatusObserver.ShowWindow)
+            return;
+
+        if (refreshSelf)
+        {
+            var actor = DalamudApi.GetLocalPlayerBattleChara();
+            cachedSelfStatuses = GetStatuses(actor, Math.Clamp(config.StatusObserver.SelfMaxStatuses, 1, 200));
+            lastSelfStatusRefreshUtc = DateTime.UtcNow;
+        }
+
+        if (refreshTarget)
+        {
+            var target = DalamudApi.GetLocalPlayerBattleChara()?.TargetObject as IBattleChara;
+            cachedTargetStatuses = GetStatuses(target, Math.Clamp(config.StatusObserver.TargetMaxStatuses, 1, 200));
+            lastTargetStatusRefreshUtc = DateTime.UtcNow;
+        }
+    }
+
     private TimeSpan RefreshInterval => TimeSpan.FromMilliseconds(config.GetEffectiveStatusObserverUpdateIntervalMs());
 
     private bool ShouldRefreshStatuses()

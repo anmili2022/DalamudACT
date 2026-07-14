@@ -66,14 +66,16 @@ public sealed partial class ACT
         var statsEventActive = statsModuleEnabled && (inCombatNow || Configuration.ReplayStatsMode && inDutyRecorderPlayback);
         var partyMonitorEventActive = partyMonitorModuleEnabled && inCombatNow;
         var highPerformanceMode = Configuration.HighPerformanceMode;
+        var shouldRunHeavyTimelineSync = ShouldRunHeavyTimelineSync(Configuration.CurrentAreaKind);
+        var shouldObserveTimelineResponseTts = ShouldRunTimelineResponseTts(Configuration.CurrentAreaKind);
         var shouldObserveTimelineAbility = timelineModuleEnabled
                                            && !highPerformanceMode
-                                           && ShouldRunHeavyTimelineSync(Configuration.CurrentAreaKind);
+                                           && (shouldRunHeavyTimelineSync || shouldObserveTimelineResponseTts);
         var shouldInspectAbility = statsEventActive || partyMonitorEventActive;
         if (!shouldInspectAbility)
         {
             if (shouldObserveTimelineAbility)
-                timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+                timelineService.ObserveAbility(actionId, nowUtc, sourceId, shouldRunHeavyTimelineSync);
             return;
         }
 
@@ -81,7 +83,7 @@ public sealed partial class ACT
         {
             HandlePartyMonitorAbilityOnly(header, actionId, sourceId, sourceCharacterAddress, nowUtc);
             if (shouldObserveTimelineAbility)
-                timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+                timelineService.ObserveAbility(actionId, nowUtc, sourceId, shouldRunHeavyTimelineSync);
             return;
         }
 
@@ -254,7 +256,7 @@ public sealed partial class ACT
         }
 
         if (shouldObserveTimelineAbility)
-            timelineService.ObserveAbility(actionId, nowUtc, sourceId);
+            timelineService.ObserveAbility(actionId, nowUtc, sourceId, shouldRunHeavyTimelineSync);
 
         bool TryResolveFriendlySourceOnce(out uint observedSourceActorId)
         {

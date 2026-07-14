@@ -376,7 +376,8 @@ internal sealed class StatusObserverWindow : Window
         var lineCursor = ImGui.GetCursorScreenPos();
         if (service.IsPausedOutOfCombat)
         {
-            DrawPausedBadgeInline();
+            if (DrawPausedBadgeInline())
+                service.RefreshOnce(config.StatusObserver.ShowSelfStatuses, config.StatusObserver.ShowTargetStatuses);
             ImGui.SetCursorScreenPos(lineCursor);
         }
 
@@ -405,7 +406,7 @@ internal sealed class StatusObserverWindow : Window
         ImGui.Dummy(ImGui.CalcTextSize(text));
     }
 
-    private static void DrawPausedBadgeInline()
+    private static bool DrawPausedBadgeInline()
     {
         var textSize = ImGui.CalcTextSize("暂停");
         var size = textSize + new Vector2(10f, 4f);
@@ -420,7 +421,9 @@ internal sealed class StatusObserverWindow : Window
         drawList.AddText(pos + new Vector2(5f, 1f), text, "暂停");
         ImGui.SetCursorScreenPos(pos);
         ImGui.InvisibleButton("##status_observer_paused_badge", size);
+        var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
         if (ImGui.IsItemHovered())
-            ImGui.SetTooltip("非战斗中，已暂停刷新。显示最后一次缓存。");
+            ImGui.SetTooltip("非战斗中，已暂停刷新。点击立即刷新一次。");
+        return clicked;
     }
 }

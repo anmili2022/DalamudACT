@@ -181,7 +181,9 @@ public sealed partial class ACT : IDalamudPlugin
                 }
             }
 
-            var shouldPollBattleCharas = ShouldRunHeavyTimelineSync(runtimeAreaKind)
+            var shouldRunHeavyTimelineSync = ShouldRunHeavyTimelineSync(runtimeAreaKind);
+            var shouldPollTimelineResponseTts = ShouldRunTimelineResponseTts(runtimeAreaKind);
+            var shouldPollBattleCharas = (shouldRunHeavyTimelineSync || shouldPollTimelineResponseTts)
                 && !ranHeavyWork
                 && timelineActive
                 && nowUtc - lastBattleCharaPollUtc >= GetBattleCharaPollInterval(runtimeAreaKind);
@@ -189,12 +191,13 @@ public sealed partial class ACT : IDalamudPlugin
             {
                 var battleCharas = DalamudApi.ObjectTable.OfType<IBattleChara>().ToArray();
                 lastBattleCharaPollUtc = nowUtc;
-                statsService.PollCombatTimelineHostileCasts(nowUtc, statsActive, battleCharas);
-                timelineService.PollStartsUsingCasts(nowUtc, timelineActive, battleCharas);
+                if (shouldRunHeavyTimelineSync)
+                    statsService.PollCombatTimelineHostileCasts(nowUtc, statsActive, battleCharas);
+                timelineService.PollStartsUsingCasts(nowUtc, timelineActive, battleCharas, shouldRunHeavyTimelineSync);
                 MarkFrameworkPerfSegment("casts", ref perfLast, perfParts);
                 ranHeavyWork = true;
             }
-            else if (!timelineActive || !ShouldRunHeavyTimelineSync(runtimeAreaKind))
+            else if (!timelineActive || (!shouldRunHeavyTimelineSync && !shouldPollTimelineResponseTts))
             {
                 timelineService.PollStartsUsingCasts(nowUtc, false, Array.Empty<IBattleChara>());
             }
@@ -276,6 +279,13 @@ public sealed partial class ACT : IDalamudPlugin
     private bool ShouldRunHeavyTimelineSync(RuntimeAreaKind runtimeAreaKind)
         => !Configuration.HighPerformanceMode
            && runtimeAreaKind != RuntimeAreaKind.Duty;
+
+    private bool ShouldRunTimelineResponseTts(RuntimeAreaKind runtimeAreaKind)
+        => !Configuration.HighPerformanceMode
+           && runtimeAreaKind == RuntimeAreaKind.Duty
+           && Configuration.EnableTimelineDailyRoutinesTts
+           && Configuration.TimelineTtsResponse
+           && timelineService.HasStartsUsingResponseTts;
 
     private void RefreshPartyMonitorAfterDutyTransition(RuntimeAreaKind runtimeAreaKind, DateTime nowUtc)
     {

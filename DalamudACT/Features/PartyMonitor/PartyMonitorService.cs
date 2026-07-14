@@ -80,6 +80,7 @@ internal sealed class PartyMonitorService
     }
 
     private readonly Dictionary<long, DateTime> lastSkillUseUtc = new();
+    private readonly Dictionary<uint, RecentSkillUseSource> recentSkillUseSources = new();
     private DateTime lastFoodPollUtc;
     private DateTime lastUpdateUtc;
     private DateTime lastRebuildUtc = DateTime.MinValue;
@@ -158,7 +159,17 @@ internal sealed class PartyMonitorService
             return;
 
         lock (gate)
+        {
+            if (recentSkillUseSources.TryGetValue(skill.ActionId, out var recent)
+                && recent.ActorId != sourceActorId
+                && nowUtc - recent.UsedAtUtc < TimeSpan.FromMilliseconds(250))
+            {
+                return;
+            }
+
+            recentSkillUseSources[skill.ActionId] = new RecentSkillUseSource(sourceActorId, nowUtc);
             lastSkillUseUtc[CombineKey(sourceActorId, skill.ActionId)] = nowUtc;
+        }
     }
 
     public void ResetSkillCooldowns(DateTime nowUtc)
@@ -497,6 +508,8 @@ internal sealed class PartyMonitorService
 
     private static long CombineKey(uint actorId, uint actionId)
         => ((long)actorId << 32) | actionId;
+
+    private readonly record struct RecentSkillUseSource(uint ActorId, DateTime UsedAtUtc);
 
     private PartySkillEntry? FindSkillWithCustom(uint actionId)
     {

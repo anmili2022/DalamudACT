@@ -327,7 +327,8 @@ internal sealed class PartyMonitorWindow : Window
         var afterTitleCursor = ImGui.GetCursorScreenPos();
         if (showPausedBadge)
         {
-            DrawPausedBadgeRightAligned("非战斗中，已暂停刷新。显示最后一次缓存。");
+            if (DrawPausedBadgeRightAligned("非战斗中，已暂停刷新。点击立即刷新一次。"))
+                monitorService.RefreshOnce(DateTime.UtcNow);
             ImGui.SetCursorScreenPos(afterTitleCursor);
         }
 
@@ -345,7 +346,7 @@ internal sealed class PartyMonitorWindow : Window
         return clicked;
     }
 
-    private static void DrawPausedBadgeRightAligned(string tooltip)
+    private static bool DrawPausedBadgeRightAligned(string tooltip)
     {
         const string text = "暂停";
         var textSize = ImGui.CalcTextSize(text);
@@ -362,9 +363,11 @@ internal sealed class PartyMonitorWindow : Window
         var cursor = ImGui.GetCursorScreenPos();
         ImGui.SetCursorScreenPos(pos);
         ImGui.InvisibleButton("##party_monitor_paused_badge", size);
+        var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip(tooltip);
         ImGui.SetCursorScreenPos(cursor);
+        return clicked;
     }
 
     private void DrawSkillRow(

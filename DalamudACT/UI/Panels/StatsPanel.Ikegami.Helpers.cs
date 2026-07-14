@@ -510,6 +510,7 @@ internal static partial class StatsPanel
             try
             {
                 ImGui.TextUnformatted($"总伤：{FormatEmptyAsFallback(combatant.DamageText, "0")}");
+                ImGui.TextUnformatted($"死亡：{FormatEmptyAsFallback(combatant.DeathsText, "0")}");
                 ImGui.TextUnformatted($"暴击率：{ResolveCombatantCritRateText(combatant)}");
                 ImGui.TextUnformatted($"直爆率：{ResolveCombatantCritDirectRateText(combatant)}");
                 var maxHitText = ResolveCombatantTooltipMaxHitText(combatant);

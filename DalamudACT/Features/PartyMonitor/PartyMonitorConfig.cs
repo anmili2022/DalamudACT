@@ -17,6 +17,8 @@ public sealed class PartyMonitorConfig
 
     public bool MonitorFood { get; set; } = true;
 
+    public int FoodExpiryWarningMinutes { get; set; } = 10;
+
     public bool MonitorRaidBuffs { get; set; } = true;
 
     public bool MonitorMitigations { get; set; } = true;

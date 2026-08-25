@@ -25,7 +25,7 @@ internal sealed partial class SettingsWindow
             "##party_monitor_modules_card",
             "监控模块",
             "选择你要监控的模块：食物、团辅技能、减伤技能。",
-            5.2f,
+            pm.MonitorFood ? 7.4f : 5.2f,
             () =>
             {
                 var monitorFood = pm.MonitorFood;
@@ -57,6 +57,23 @@ internal sealed partial class SettingsWindow
                 {
                     pm.AnonymousMode = anonymousMode;
                     config.Save();
+                }
+
+                if (pm.MonitorFood)
+                {
+                    ImGui.Dummy(new Vector2(0f, 4f));
+                    var warningMinutes = pm.FoodExpiryWarningMinutes;
+                    if (DrawLabeledSliderInt(
+                            "食物到期提醒阈值",
+                            "##party_monitor_food_expiry_warning_minutes",
+                            ref warningMinutes,
+                            1,
+                            60,
+                            "%d 分钟"))
+                    {
+                        pm.FoodExpiryWarningMinutes = warningMinutes;
+                        config.Save();
+                    }
                 }
             });
 

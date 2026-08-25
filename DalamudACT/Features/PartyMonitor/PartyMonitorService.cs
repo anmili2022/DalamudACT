@@ -114,24 +114,25 @@ internal sealed class PartyMonitorService
         if (!config.PartyMonitor.EnablePartyMonitor || !config.PartyMonitor.ShowPartyMonitorWindow)
             return;
 
-        if (!DalamudApi.Conditions.Any(ConditionFlag.InCombat))
-        {
-            IsPausedOutOfCombat = true;
-            return;
-        }
-
-        IsPausedOutOfCombat = false;
-
         if (!config.PartyMonitor.MonitorFood && !config.PartyMonitor.MonitorSkills)
             return;
 
         var nowUtc = DateTime.UtcNow;
-        var updateIntervalMs = config.GetEffectivePartyMonitorUpdateIntervalMs();
+        var inCombat = DalamudApi.Conditions.Any(ConditionFlag.InCombat);
+        IsPausedOutOfCombat = !inCombat;
+
+        if (!inCombat && !config.PartyMonitor.MonitorFood)
+            return;
+
+        var updateIntervalMs = inCombat
+            ? config.GetEffectivePartyMonitorUpdateIntervalMs()
+            : 1000;
         if ((nowUtc - lastUpdateUtc).TotalMilliseconds < updateIntervalMs)
             return;
 
         lastUpdateUtc = nowUtc;
-        PollFoodBuffs(nowUtc);
+        if (config.PartyMonitor.MonitorFood)
+            PollFoodBuffs(nowUtc);
         if ((nowUtc - lastRebuildUtc).TotalMilliseconds >= updateIntervalMs)
         {
             lastRebuildUtc = nowUtc;

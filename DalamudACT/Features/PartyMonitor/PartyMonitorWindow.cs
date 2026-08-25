@@ -27,6 +27,8 @@ internal sealed class PartyMonitorWindow : Window
 
     private static readonly Vector4 GreenColor = new(0.4f, 1f, 0.4f, 1f);
     private static readonly Vector4 OrangeColor = new(1f, 0.6f, 0.2f, 1f);
+    private static readonly Vector4 FoodMissingColor = new(1f, 0.22f, 0.18f, 1f);
+    private static readonly Vector4 FoodExpiringColor = new(1f, 0.78f, 0.12f, 1f);
     private static readonly Vector4 PanelBorderColor = new(0.70f, 0.82f, 0.90f, 0.18f);
     private static readonly Vector4 TitleColor = new(0.96f, 0.98f, 1f, 1f);
     private static readonly Vector4 RaidBuffColor = new(0.84f, 0.47f, 1f, 1f);
@@ -66,7 +68,7 @@ internal sealed class PartyMonitorWindow : Window
         if (config.PartyMonitor.AutoResizePartyMonitorWindow && !collapsed)
             Flags |= ImGuiWindowFlags.AlwaysAutoResize;
         if (config.PartyMonitor.LockPartyMonitorWindow)
-            Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoInputs;
+            Flags |= ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize;
 
         ApplyCollapsedWindowSize();
 
@@ -590,23 +592,25 @@ internal sealed class PartyMonitorWindow : Window
         if (!config.PartyMonitor.MonitorFood)
             return;
 
-        var noFoodCount = 0;
+        var warningMinutes = Math.Clamp(config.PartyMonitor.FoodExpiryWarningMinutes, 1, 60);
+        var warningSeconds = warningMinutes * 60f;
+        var warningCount = 0;
         foreach (var member in members)
         {
-            if (!member.HasFood)
-                noFoodCount++;
+            if (!member.HasFood || member.FoodRemainingSeconds <= warningSeconds)
+                warningCount++;
         }
 
-        if (noFoodCount == 0)
+        if (warningCount == 0)
             return;
 
-        DrawGroupHeader($"食物 ({noFoodCount})", OrangeColor);
+        DrawGroupHeader($"需补食 ({warningCount})", OrangeColor);
         var availableWidth = ImGui.GetContentRegionAvail().X;
         var usedWidth = 0f;
         const float chipGap = 6f;
         foreach (var member in members)
         {
-            if (member.HasFood)
+            if (member.HasFood && member.FoodRemainingSeconds > warningSeconds)
                 continue;
 
             var label = GetMemberDisplayName(member);
@@ -620,10 +624,34 @@ internal sealed class PartyMonitorWindow : Window
             if (usedWidth > 0f)
                 ImGui.SameLine(0f, chipGap);
 
-            DrawNameChip(label, GetJobColor(member.JobId), itemWidth);
+            var warningColor = member.HasFood ? FoodExpiringColor : FoodMissingColor;
+            DrawNameChip(label, GetJobColor(member.JobId), itemWidth, warningColor, 2f);
+            if (ImGui.IsItemHovered())
+            {
+                if (member.HasFood)
+                {
+                    ImGui.SetTooltip(
+                        $"食物剩余时间：{FormatFoodRemaining(member.FoodRemainingSeconds)}\n" +
+                        $"提醒阈值：{warningMinutes}分钟");
+                }
+                else
+                {
+                    ImGui.SetTooltip("未检测到食物效果");
+                }
+            }
             usedWidth += (usedWidth > 0f ? chipGap : 0f) + itemWidth;
         }
         ImGui.Dummy(new Vector2(0f, 2f));
+    }
+
+    private static string FormatFoodRemaining(float remainingSeconds)
+    {
+        var seconds = Math.Max(0, (int)Math.Ceiling(remainingSeconds));
+        if (seconds >= 3600)
+            return $"{seconds / 3600}小时 {(seconds % 3600) / 60}分";
+        if (seconds >= 60)
+            return $"{seconds / 60}分 {seconds % 60}秒";
+        return $"{seconds}秒";
     }
 
     private static void DrawShadowText(string text, Vector4 color, bool bold = false, float width = 0f)
@@ -650,13 +678,25 @@ internal sealed class PartyMonitorWindow : Window
         ImGui.Dummy(new Vector2(width, height + 1f));
     }
 
-    private static void DrawNameChip(string text, Vector4 color, float width)
+    private static void DrawNameChip(
+        string text,
+        Vector4 color,
+        float width,
+        Vector4? warningBorderColor = null,
+        float warningBorderThickness = 1f)
     {
         var pos = ImGui.GetCursorScreenPos();
         var height = ImGui.GetTextLineHeight() + 5f;
         var drawList = ImGui.GetWindowDrawList();
         drawList.AddRectFilled(pos, pos + new Vector2(width, height), ImGui.ColorConvertFloat4ToU32(new Vector4(color.X, color.Y, color.Z, 0.82f)), 3f);
-        drawList.AddRect(pos, pos + new Vector2(width, height), ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.58f)), 3f);
+        var borderColor = warningBorderColor ?? new Vector4(0f, 0f, 0f, 0.58f);
+        drawList.AddRect(
+            pos,
+            pos + new Vector2(width, height),
+            ImGui.ColorConvertFloat4ToU32(borderColor),
+            3f,
+            ImDrawFlags.None,
+            warningBorderThickness);
         var textPos = pos + new Vector2(6f, 2f);
         drawList.PushClipRect(pos + new Vector2(4f, 0f), pos + new Vector2(width - 4f, height), true);
         drawList.AddText(textPos + new Vector2(1f, 1f), ImGui.ColorConvertFloat4ToU32(new Vector4(0f, 0f, 0f, 0.92f)), text);
